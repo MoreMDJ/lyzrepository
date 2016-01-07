@@ -13,13 +13,14 @@
 		<link rel="stylesheet" type="text/css" href="/client/css/other.css"/>
 		
 		<script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
-		<script src="/client/js/rich_lee.js" type="text/javascript"></script>
+		<script src="/client/js/index.js" type="text/javascript"></script>
 	</head>
 	<script type="text/javascript">
-		$(function(){
+		window.onload = function(){
 			turn_hei($('.det_banner'),0.8); 
 			$('.det_banner img').width($(window).width());
-		});
+			footer();
+		}
 	</script>
 	<body>
 		<div style="background: #f4f4f4;">

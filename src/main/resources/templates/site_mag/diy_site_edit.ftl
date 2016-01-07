@@ -107,17 +107,18 @@
         <dt>所属价目表</dt>
         <dd>
             <div class="rule-single-select">
-                <select name="priceListId" datatype="*" sucmsg=" ">
                     <#if !diy_site??>
-                    <option value="">请选择类别...</option>
-                    <#if price_list??>
-                        <#list price_list as c>
-                            <option value="${c.priceListId!''}" >${c.name!'wu'}</option>
-                        </#list>
-                    </#if>
+                        <select name="priceListId" datatype="*" sucmsg=" ">
+                        <option value="">请选择类别...</option>
+                        <#if price_list??>
+                            <#list price_list as c>
+                                <option value="${c.priceListId!''}" >${c.name!'wu'}</option>
+                            </#list>
+                        </#if>
                     </#if>
                     <#if diy_site??>
-                    <option selected="selected">${diy_site.priceListName!'暂无'}</option>
+                        <select>
+                        <option selected="selected">${diy_site.priceListName!'暂无'}</option>
                     </#if>
                 </select>
             </div>
@@ -148,14 +149,16 @@
       </div>
       <span class="Validform_checktip">*如果是旗舰店则地图显示不同</span>
     </dd>
-  </dl> -->
+  </dl> 
   <dl>
-    <dt>手机号</dt>
+    <dt>服务电话</dt>
     <dd>
-        <input name="mobile" type="text" value="<#if diy_site??>${diy_site.mobile!""}</#if>" class="input normal" > 
-        <span class="Validform_checktip">*用于接收通知短信</span>
+        <input name="mobile" type="text" value="<#if diy_site??>${diy_site.serviceTele!""}</#if>" class="input normal" > 
+        <span class="Validform_checktip">*用于会员联系门店</span>
     </dd>
   </dl>
+  -->
+  <#--
   <dl>
     <dt>客服QQ</dt>
     <dd>
@@ -163,8 +166,9 @@
         <span class="Validform_checktip"></span>
     </dd>
   </dl>
+  -->
   <dl>
-       <dt>*地区：</dt>
+       <dt>地区</dt>
        <dd>
              <div id="address">
              <select id="prov" name="regionId" class="prov" style="width: 100px;"></select>
@@ -174,12 +178,26 @@
        </dd>
   </dl>
   <dl>
-    <dt>自提点位置</dt>
+       <dt>门店类型</dt>
+       <dd>
+             <div id="address">
+                 <select id="status" name="status" class="dist" style="width: 100px;">
+                    <option value="0" <#if diy_site.status??&&diy_site.status==0>selected="selected"</#if>>直营</option>
+                    <option value="1" <#if diy_site.status??&&diy_site.status==1>selected="selected"</#if>>加盟门店</option>
+                    <option value="2" <#if diy_site.status??&&diy_site.status==2>selected="selected"</#if>>虚拟门店</option>
+                    <option value="3" <#if diy_site.status??&&diy_site.status==3>selected="selected"</#if>>第三方</option>
+                 </select>
+             </div>
+       </dd>
+  </dl>
+  <dl>
+    <dt>门店位置</dt>
     <dd>
       <input name="address" type="text" value="<#if diy_site??>${diy_site.address!""}</#if>" class="input normal" datatype="*" errormsg="" sucmsg=" ">
       <span class="Validform_checktip">该信息可以帮助用户选择最合适的自提点</span>
     </dd>
   </dl>
+  <#--
   <dl>
     <dt>经度</dt>
     <dd>
@@ -188,7 +206,6 @@
       <span class="Validform_checktip"></span>
     </dd>
   </dl>
-  
   <dl>
     <dt>纬度</dt>
     <dd>
@@ -213,28 +230,29 @@
     </dd>
   </dl>
   <dl id="div_show360_container">
-            <dt>展示图片</dt>
-            <dd>
-                <div class="upload-box upload-show360"></div>
-                <div class="photo-list_show360">
-                    <ul>
-                        <#if diy_site?? && diy_site.showPictures??>
-                            <#list diy_site.showPictures?split(",") as uri>
-                                <#if uri != "">
-                                <li>
-                                    <input type="hidden" name="hid_photo_name_show360" value="0|${uri!""}|${uri!""}">
-                                    <div class="img-box">
-                                        <img src="${uri!""}" bigsrc="${uri!""}">
-                                    </div>
-                                    <a href="javascript:;" onclick="delImg(this);">删除</a>
-                                </li>
-                                </#if>
-                            </#list>
-                        </#if>
-                    </ul>
-                </div>
-            </dd>
+        <dt>展示图片</dt>
+        <dd>
+            <div class="upload-box upload-show360"></div>
+            <div class="photo-list_show360">
+                <ul>
+                    <#if diy_site?? && diy_site.showPictures??>
+                        <#list diy_site.showPictures?split(",") as uri>
+                            <#if uri != "">
+                            <li>
+                                <input type="hidden" name="hid_photo_name_show360" value="0|${uri!""}|${uri!""}">
+                                <div class="img-box">
+                                    <img src="${uri!""}" bigsrc="${uri!""}">
+                                </div>
+                                <a href="javascript:;" onclick="delImg(this);">删除</a>
+                            </li>
+                            </#if>
+                        </#list>
+                    </#if>
+                </ul>
+            </div>
+        </dd>
   </dl>
+  -->
   <dl>
     <dt>排序数字</dt>
     <dd>
@@ -242,6 +260,7 @@
       <span class="Validform_checktip">*数字，越小越向前</span>
     </dd>
   </dl>
+  <#--
   <dl>
     <dt>营业时间</dt>
     <dd>
@@ -249,6 +268,7 @@
       <span class="Validform_checktip"></span>
     </dd>
   </dl>
+  -->
   <dl>
     <dt>客服电话</dt>
     <dd>
@@ -256,6 +276,7 @@
       <span class="Validform_checktip"></span>
     </dd>
   </dl>
+  <#--
    <dl>
     <dt>投诉电话</dt>
     <dd>
@@ -263,7 +284,6 @@
       <span class="Validform_checktip"></span>
     </dd>
   </dl>
-  
   <dl>
     <dt>描述说明</dt>
     <dd>
@@ -271,6 +291,7 @@
       <span class="Validform_checktip"></span>
     </dd>
   </dl>
+    -->
 </div>
 <!--/内容-->
 

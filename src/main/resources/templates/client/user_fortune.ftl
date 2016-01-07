@@ -13,11 +13,11 @@
         <link rel="stylesheet" type="text/css" href="/client/css/x_common.css"/>
         <link rel="stylesheet" type="text/css" href="/client/css/x_my_wealth.css"/>
         <script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
-        <script src="/client/js/rich_lee.js" type="text/javascript"></script>
+        <script src="/client/js/index.js" type="text/javascript"></script>
         <script type="text/javascript">
-            $(function(){
-                win_cla();
-            });
+            window.onload = function(){
+                footer();
+            }
         </script>
     </head>
     <body class="bgc-f3f4f6">

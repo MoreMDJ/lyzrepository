@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ynyes.lyz.entity.TdCity;
-import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.service.TdCityService;

@@ -16,9 +16,14 @@
         <link rel="stylesheet" type="text/css" href="/client/css/other.css"/>
         <link rel="stylesheet" type="text/css" href="/client/css/xiuxiu.css"/>
         <script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
-        <script src="/client/js/rich_lee.js" type="text/javascript"></script>
+        <script src="/client/js/index.js" type="text/javascript"></script>
         <script src="/client/js/user_order.js" type="text/javascript"></script>
     </head>
+    <script type="text/javascript">
+        window.onload = function(){
+            footer();
+        }
+    </script>
     <body style="background: #f3f4f6;>
         <#-- 引入公共confirm窗口 -->
         <#include "/client/common_confirm.ftl">
@@ -85,9 +90,10 @@
                                                 <#case 2>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
-                                                    <a href="/user/user/order/pay?id=${item.id?c}" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>
+                                                    <a href="/user/order/pay?id=${item.id?c}" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>
                                                 <#break>
                                                 <#case 3>
+                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                 <#break>
                                                 <#case 4>
@@ -154,6 +160,7 @@
                                                     <a href="" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>
                                                 <#break>
                                                 <#case 3>
+                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                 <#break>
                                                 <#case 4>
@@ -220,6 +227,7 @@
                                                     <a href="" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>
                                                 <#break>
                                                 <#case 3>
+                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                 <#break>
                                                 <#case 4>
@@ -286,6 +294,7 @@
                                                     <a href="" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>
                                                 <#break>
                                                 <#case 3>
+                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                 <#break>
                                                 <#case 4>

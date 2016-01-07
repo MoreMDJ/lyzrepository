@@ -22,7 +22,7 @@
     <!-- 头部 END -->
     
     <!-- 文字描述 -->
-    <article class="word-description"></article>
+    <article class="word-description"><#if article??>${article.content!''}</#if></article>
     <!-- 文字描述 END -->
     
     </body>

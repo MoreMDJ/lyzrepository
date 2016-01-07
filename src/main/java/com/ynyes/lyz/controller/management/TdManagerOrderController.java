@@ -577,6 +577,7 @@ public class TdManagerOrderController {
         
         String uris = parsePicUris(hid_photo_name_show360);
         
+        
         tdDiySite.setShowPictures(uris);
         
         if (null == tdDiySite.getId())

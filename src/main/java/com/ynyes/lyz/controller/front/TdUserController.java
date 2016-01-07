@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdArticle;
+import com.ynyes.lyz.entity.TdArticleCategory;
 import com.ynyes.lyz.entity.TdBalanceLog;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
@@ -38,6 +40,8 @@ import com.ynyes.lyz.entity.TdUserLevel;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdUserSuggestion;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
+import com.ynyes.lyz.service.TdArticleCategoryService;
+import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBalanceLogService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
@@ -120,6 +124,12 @@ public class TdUserController {
 
 	@Autowired
 	private TdPayTypeService tdPayTypeService;
+
+	@Autowired
+	private TdArticleCategoryService tdArticleCategoryService;
+
+	@Autowired
+	private TdArticleService tdArticleService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1322,5 +1332,31 @@ public class TdUserController {
 			return "redirect:/login";
 		}
 		return "/client/user_deposit";
+	}
+
+	/**
+	 * 跳转到优惠券使用说明的方法
+	 * 
+	 * @author dengxiao
+	 */
+	@RequestMapping(value = "/coupon/description")
+	public String userCouponDescription(HttpServletRequest req, ModelMap map) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
+
+		// 获取优惠券使用说明的文章分类
+		TdArticleCategory category = tdArticleCategoryService.findByTitle("优惠券使用规则");
+		// 获取指定的文章类别id获取所有的文章，按照排序号正序排序
+		if (null != category) {
+			List<TdArticle> article_list = tdArticleService.findByCategoryIdOrderBySortIdAsc(category.getId());
+			if (null != article_list && article_list.size() > 0) {
+				map.addAttribute("article", article_list.get(0));
+			}
+		}
+
+		return "/client/coupon_description";
 	}
 }

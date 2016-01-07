@@ -580,6 +580,7 @@
     background: #ddd url(/client/images/x_icon_delete_1.png) no-repeat center;
     -webkit-background-size: 20px auto;
             background-size: 20px auto;
+    -webkit-transition: all 0.3s linear;
 }
 
 .my-selected .selected-list .sec1 {
@@ -588,6 +589,7 @@
     padding: 8px 2%;
     width:96%;
     border-bottom: 1px solid #ddd;
+    -webkit-transition: all 0.3s linear;
 }
 .my-selected .selected-list .sec1 .img {
     float: left;
@@ -683,6 +685,17 @@
 					box-sizing: border-box;
 
 }
+
+/*总额*/
+#my_selected .select-total-money {
+	padding: 0 2%;
+	width:96%;
+	height:30px;
+	line-height:30px;
+	font-size:1.2em;
+	text-align:right;
+}
+#my_selected .select-total-money strong {color:#cc1421};
 /*查看已选订单 END*/
 
 /*填写订单*/

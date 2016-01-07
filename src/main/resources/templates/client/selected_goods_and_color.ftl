@@ -77,23 +77,12 @@
         </#list>
     </article>
 </#if>
- <div>总额：￥<#if totalPrice??>${totalPrice?string("0.00")}<#else>0.00</#if></div>
+<div class="select-total-money">总额：<strong>￥<#if totalPrice??>${totalPrice?string("0.00")}<#else>0.00</#if><strong></div>
 <#-- 创建一个隐藏标签用于存储当前已选有多少商品（整合后） -->
 <input id="number" type="hidden" value="${selected_number!'0'}">
 <script type="text/javascript">
 $(function touch(){
-    $(".my-selected .selected-list .swipe").on('touchmove', function(ev){
-        <#-- 阻止冒泡事件 -->
-        ev.preventDefault(); 
-    });
-    <#-- 向左滑动 -->
-    $(".my-selected .selected-list .swipe").on('swipeleft', function(ev){
-        $(this).parent().addClass("selected");
-    });
-    <#-- 向右滑动 -->
-    $(".my-selected .selected-list .swipe").on('swiperight', function(ev){
-        $(this).parent().removeClass("selected");
-    });
+   
     <#-- 点击删除 -->
     $(".btn-backspace").click(function(){
         <#--$(this).parent(".selected-list").remove();-->
@@ -126,6 +115,26 @@ $(function touch(){
         })
     });
 });
+</script>
+
+<script type="text/javascript">
+    $(function(){
+        var $bEdit = $("header .btn-edit");
+        var $move = $(".my-selected .selected-list .sec1");
+        var $bSpace = $(".my-selected .selected-list .btn-backspace");
+        var onOff = true;
+        
+        $bEdit.click(function(){
+            if(onOff){
+                $move.addClass("selected");
+                $bSpace.css("right","0px");       
+            }else{
+                $move.removeClass("selected");
+                $bSpace.css("right","-80px");
+            }
+            onOff = !onOff;
+      });
+    });
 </script>
 
 
