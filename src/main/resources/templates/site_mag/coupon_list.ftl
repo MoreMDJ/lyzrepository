@@ -98,7 +98,7 @@ function __doPostBack(eventTarget, eventArgument) {
                 </td>
                 <td>${item.getNumber?c!""}</td>
                 <td><#if item.leftNumber??>${item.leftNumber?c!""}</#if></td>
-                <td><input name="listSortId" type="text" value="${item.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
+                <td><input name="listSortId" type="text" disabled="" value="${item.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
                 <td align="center">
                     <a href="/Verwalter/coupon/edit?id=${item.id?c}">修改</a>
                 </td>

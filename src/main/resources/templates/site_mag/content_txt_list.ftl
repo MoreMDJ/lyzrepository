@@ -126,7 +126,7 @@ function __doPostBack(eventTarget, eventArgument) {
             </td>
             <td>${content.createTime!""}</td>
             <td>
-                <input name="listSortId" type="text" value="${content.sortId!""}" id="listSortId" class="sort" onkeydown="return checkNumber(event);">
+                <input name="listSortId" type="text"  disabled="" value="${content.sortId!""}" id="listSortId" class="sort" onkeydown="return checkNumber(event);">
             </td>
             <#--
             <td>

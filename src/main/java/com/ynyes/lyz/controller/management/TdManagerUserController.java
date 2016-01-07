@@ -250,24 +250,40 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/save")
-	public String orderEdit(TdUser tdUser, String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req) {
+	public String orderEdit(TdUser tdUser, String oldPassword, String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
 
-		if (null != birthdate) {
+		if (null != birthdate ) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			try {
-				Date brithday = sdf.parse(birthdate);
-				tdUser.setBirthday(brithday);
+				if (null != birthdate ) {
+					Date brithday = sdf.parse(birthdate);
+					tdUser.setBirthday(brithday);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
-		String password = tdUser.getPassword();
-		tdUser.setPassword(MD5.md5(password, 32));
+		//设置新密码 zhangji 2016-1-7 22:01:45
+		if(null != tdUser.getId())
+		{
+			String password = tdUser.getPassword();
+			if(null == password || password.equals(""))
+			{
+				tdUser.setPassword(oldPassword);
+			}
+			else{
+				tdUser.setPassword(MD5.md5(password, 32));
+			}
+		}
+		
+		
+//		String password = tdUser.getPassword();
+//		tdUser.setPassword(MD5.md5(password, 32));
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 

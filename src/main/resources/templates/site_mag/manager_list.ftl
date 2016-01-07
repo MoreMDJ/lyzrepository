@@ -89,7 +89,7 @@ var theForm = document.forms['form1'];
                 <td align="center">${item.createTime!""}</td>
                 <td align="center"><#if item.isEnable?? && item.isEnable><font color="#009900">正常</font><#else>禁用</#if></td>
                 <td align="center">
-                    <input name="listSortId" type="text" value="${item.sortId!""}" class="sort" onkeydown="return checkNumber(event);">
+                    <input name="listSortId" type="text" disabled="" value="${item.sortId!""}" class="sort" onkeydown="return checkNumber(event);">
                 </td>
                 <td align="center">
                     <a href="/Verwalter/manager/edit?id=${item.id?c}">修改</a>

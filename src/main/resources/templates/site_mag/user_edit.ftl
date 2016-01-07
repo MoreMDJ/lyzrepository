@@ -230,18 +230,22 @@ $(function () {
 <!--安全设置-->
 <div class="tab-content" style="display:none;">  
   <dl>
-    <dt>登录密码</dt>
-    <dd><input name="password" type="password" value="<#if user??>${user.password!''}</#if>" class="input normal" datatype="*6-20" nullmsg="请设置密码" errormsg="密码范围在6-20位之间" sucmsg=" " value=""> <span class="Validform_checktip">*登录的密码，至少6位</span></dd>
+    <dt>设置新密码</dt>
+    <dd><input name="password" type="password" value="" class="input normal" datatype="*6-20" ignore="ignore" nullmsg="请设置密码" errormsg="密码范围在6-20位之间" sucmsg=" " value=""> <span class="Validform_checktip">*新密码将覆盖原密码，至少6位</span></dd>
   </dl>
   <dl>
     <dt>确认密码</dt>
-    <dd><input name="password1" type="password" value="<#if user??>${user.password!''}</#if>" class="input normal" datatype="*" recheck="password" nullmsg="请再输入一次密码" errormsg="两次输入的密码不一致" sucmsg=" " value=""> <span class="Validform_checktip">*再次输入密码</span></dd>
+    <dd><input name="password1" type="password" value="" class="input normal" datatype="*" ignore="ignore"  recheck="password" nullmsg="请再输入一次密码" errormsg="两次输入的密码不一致" sucmsg=" " value=""> <span class="Validform_checktip">*再次输入密码</span></dd>
   </dl>
+  <#if user??>
+  	<input name="oldPassword" type="hidden" value="${user.password!''}" />
+  </#if>
+  <#--
   <dl>
     <dt>邮箱账号</dt>
     <dd><input name="email" type="text" value="<#if user??>${user.email!""}</#if>" id="txtEmail" class="input normal" ignore="ignore" datatype="e" sucmsg=" " > <span class="Validform_checktip">*取回密码时用到</span></dd>
   </dl>
-<#--  <dl>
+  <dl>
     <dt>手机号码</dt>
     <dd><input name="mobile" type="text" value="<#if user??>${user.mobile!""}</#if>" class="input normal" ignore="ignore" datatype="m" sucmsg=" " ></dd>
   </dl> 
@@ -252,7 +256,7 @@ $(function () {
  <dl>
     <dt>用户等级</dt>
     <dd><input name="userLevelId" type="text" value="<#if user??>${user.userLevelId!""}</#if>" class="input normal" datatype="n0-2" errormsg="请输入正确的等级" sucmsg=" " > <span class="Validform_checktip">*数字表示的用户等级，从1开始，熟悉越高等级越高</span></dd>
-  </dl> -->
+  </dl> 
   <dl>
     <dt>用户等级</dt>
     <dd>
@@ -270,11 +274,11 @@ $(function () {
          </div>
     </dd>
   </dl>
- <#--> <dl>
+  <dl>
     <dt>用户等级名称</dt>
     <dd><span><#if user??>${user.userLevelTitle!""}</#if></span></dd>
-  </dl>-->
-<#--  <dl>
+  </dl>
+  <dl>
     <dt>用户积分</dt>
     <dd><span><#if user??>${user.totalPoints!""}</#if></span></dd>
   </dl>
@@ -288,7 +292,7 @@ $(function () {
   <dl>
     <dt>咨询总数</dt>
     <dd><span><#if user??>${user.totalConsults!""}</#if></span></dd>
-  </dl>-->
+  </dl>
   <dl>
     <dt>评论总数</dt>
     <dd><span><#if user??>${user.totalComments!""}</#if></span></dd>
@@ -296,7 +300,7 @@ $(function () {
   <dl>
     <dt>退换货总数</dt>
     <dd><span><#if user??>${user.totalReturns!""}</#if></span></dd>
-  </dl>
+  </dl>-->
 </div>
 <!--/安全设置-->
 
@@ -330,6 +334,7 @@ $(function () {
     <dd><input name="cashRewardsFrozen" type="text" id="txtPay_Password" class="input normal"sucmsg=" " value="<#if user?? && user.cashRewardsFrozen??>${user.cashRewardsFrozen?c}</#if>"> <span class="Validform_checktip"></span></dd>
   </dl>
   </#if>
+  <#--
   <dl>
     <dt>银行卡号</dt>
     <dd><input name="bankCardCode" type="text" id="txtPay_Password" class="input normal"  sucmsg=" " value="<#if user??>${user.bankCardCode!""}</#if>"> <span class="Validform_checktip"></span></dd>
@@ -354,6 +359,7 @@ $(function () {
       <span class="Validform_checktip"></span>
     </dd>
   </dl> 
+  -->
   <#if !user?? || user?? && user.userType?? && user.userType == 2>
   <dl>
     <dt>虚拟币余额</dt>

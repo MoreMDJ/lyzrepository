@@ -119,7 +119,7 @@ function __doPostBack(eventTarget, eventArgument) {
               <a id="rptList2_ctl01_lbtnIsHot" title="设置热门" class="hot" href="javascript:__doPostBack('rptList2$ctl01$lbtnIsHot','')"></a>
               <a id="rptList2_ctl01_lbtnIsSlide" title="设置幻灯片" class="pic" href="javascript:__doPostBack('rptList2$ctl01$lbtnIsSlide','')"></a>
                 -->
-              <input name="listSortId" type="text" value="${content.sortId!""}" id="idListSortId" class="sort" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)));">
+              <input name="listSortId" type="text" disabled="" value="${content.sortId!""}" id="idListSortId" class="sort" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)));">
             </div>
             <div class="foot">
               <p class="time">${content.createTime!""}</p>

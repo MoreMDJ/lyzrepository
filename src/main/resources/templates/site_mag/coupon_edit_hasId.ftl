@@ -141,7 +141,7 @@ function getType()
   <dl>
     <dt>排序数字</dt>
     <dd>
-      <input name="sortId" type="text" value="<#if coupon??>${coupon.sortId!""}<#else>99</#if>" class="input small" datatype="n" sucmsg=" ">
+      <input name="sortId" type="text" value="<#if coupon??>${coupon.sortId!""}<#else>99</#if>" class="input small" datatype="/^(([1-9]\d{0,1})|0)((\.\d{2})|(\.\d{1}))?$/" sucmsg=" " errormsg="请输入不超过100的2位小数">
       <span class="Validform_checktip">*数字，越小越向前</span>
     </dd>
   </dl>

@@ -201,7 +201,7 @@ function __doPostBack(eventTarget, eventArgument) {
             </td>-->
             <td><#if activity.siteName??>${activity.siteName!''}</#if></td>
             <td>
-                <input name="listSortId" type="text" value="${activity.sortId!""}" id="listSortId" class="sort" onkeydown="return checkNumber(event);">
+                <input name="listSortId" type="text" disabled="" value="${activity.sortId!""}" id="listSortId" class="sort" onkeydown="return checkNumber(event);">
             </td>
             <#--<td>
               <div class="btn-tools">

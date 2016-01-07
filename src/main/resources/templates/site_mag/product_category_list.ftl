@@ -87,7 +87,7 @@ function __doPostBack(eventTarget, eventArgument) {
                 <a href="/Verwalter/product/category/edit?id=${cat.id!""}">${cat.title!""}</a>
             </td>
             <td>${cat.callIndex!""}</td>
-            <td><input name="listSortId" type="text" value="${cat.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
+            <td><input name="listSortId" type="text" value="${cat.sortId!""}"  disabled="" class="sort" onkeydown="return checkNumber(event);"></td>
             <td align="center">
                 <a href="/Verwalter/product/category/edit?id=${cat.id!""}&sub=1">添加子类</a>
                 <a href="/Verwalter/product/category/edit?id=${cat.id!""}">修改</a>

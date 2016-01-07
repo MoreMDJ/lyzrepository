@@ -199,7 +199,7 @@ function __doPostBack(eventTarget, eventArgument) {
             </td>
             <td><#if content.onSaleTime??>${content.onSaleTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
             <td>
-                <input name="listSortId" type="text" value="${content.sortId!""}" id="listSortId" class="sort" onkeydown="return checkNumber(event);">
+                <input name="listSortId" type="text" disabled="" value="${content.sortId!""}" id="listSortId" class="sort" onkeydown="return checkNumber(event);">
             </td>
             <td>
               <div class="btn-tools">

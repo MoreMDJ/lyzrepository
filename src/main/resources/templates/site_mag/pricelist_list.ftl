@@ -105,7 +105,7 @@ function __doPostBack(eventTarget, eventArgument) {
                 <td><a href="/Verwalter/pricelist/edit?id=${pricelist.id?c}">${pricelist.name!""}</a></td>
                 <td>${pricelist.cityName!""}</td>
                 <td>${pricelist.username!""}</td>
-	            <td><input name="listSortId" type="text" value="${pricelist.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
+	            <td><input name="listSortId" type="text" disabled="" value="${pricelist.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
 	            <td align="center">
 	                <a href="/Verwalter/pricelist/edit?id=${pricelist.id?c}">修改</a>
 	                &nbsp;|&nbsp;
