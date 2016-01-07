@@ -1,6 +1,9 @@
 package com.ynyes.lyz.controller.management;
 
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +39,7 @@ import com.ynyes.lyz.service.TdUserCommentService;
 import com.ynyes.lyz.service.TdUserLevelService;
 import com.ynyes.lyz.service.TdUserRecentVisitService;
 import com.ynyes.lyz.service.TdUserService;
+import com.ynyes.lyz.service.TdUserSuggestionCategoryService;
 import com.ynyes.lyz.service.TdUserSuggestionService;
 import com.ynyes.lyz.util.MD5;
 import com.ynyes.lyz.util.SiteMagConstant;
@@ -49,72 +53,83 @@ import com.ynyes.lyz.util.SiteMagConstant;
 @Controller
 @RequestMapping(value = "/Verwalter/user")
 public class TdManagerUserController {
+    
+    @Autowired
+    TdUserService tdUserService;
+    
+    @Autowired
+    TdUserLevelService tdUserLevelService;   
+    
+    @Autowired
+    TdUserCommentService tdUserCommentService;   
+    
+    @Autowired
+    TdUserCollectService tdUserCollectService;
+    
+    @Autowired
+    TdUserRecentVisitService tdUserRecentVisitService;
+    
+    @Autowired
+    TdManagerLogService tdManagerLogService;
+        
+    @Autowired
+    TdUserSuggestionService tdUserSuggestionService; //zhangji 2016-1-3 12:59:58
+    
+    @Autowired
+    TdMessageService tdMessageService; //zhangji 2016-1-3 15:29:21
+    
+    @Autowired
+    TdMessageTypeService tdMessageTypeService; //zhangji 2016-1-3 15:40:32
+    
+    @Autowired
+    TdUserSuggestionCategoryService tdUserSuggestionCategoryService;
+    
+    @Autowired
+    TdGoodsService tdGoodsService;
+    
+    @Autowired
+    TdOrderService tdOrderService;
+    
+    @RequestMapping(value="/check", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> validateForm(String param, Long id) {
+        Map<String, String> res = new HashMap<String, String>();
+        
+        res.put("status", "n");
+        
+        if (null == param || param.isEmpty())
+        {
+            res.put("info", "该字段不能为空");
+            return res;
+        }
+        
+        if (null == id)
+        {
+            if (null != tdUserService.findByUsername(param))
+            {
+                res.put("info", "已存在同名用户");
+                return res;
+            }
+        }
+        else
+        {
+//            if (null != tdUserService.findByUsernameAndIdNot(param, id))
+//            {
+//                res.put("info", "已存在同名用户");
+//                return res;
+//            }
+        }
+        
+        res.put("status", "y");
+        
+        return res;
+    }
+    
 
-	@Autowired
-	TdUserService tdUserService;
 
-	@Autowired
-	TdUserLevelService tdUserLevelService;
+	
 
-	@Autowired
-	TdUserCommentService tdUserCommentService;
-
-	@Autowired
-	TdUserCollectService tdUserCollectService;
-
-	@Autowired
-	TdUserRecentVisitService tdUserRecentVisitService;
-
-	@Autowired
-	TdManagerLogService tdManagerLogService;
-
-	@Autowired
-	TdOrderService tdOrderService; // zhangji
-
-	@Autowired
-	TdUserSuggestionService tdUserSuggestionService; // zhangji 2016-1-3
-														// 12:59:58
-
-	@Autowired
-	TdMessageService tdMessageService; // zhangji 2016-1-3 15:29:21
-
-	@Autowired
-	TdMessageTypeService tdMessageTypeService; // zhangji 2016-1-3 15:40:32
-
-	@Autowired
-	TdGoodsService tdGoodsService;
-
-	@RequestMapping(value = "/check", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, String> validateForm(String param, Long id) {
-		Map<String, String> res = new HashMap<String, String>();
-
-		res.put("status", "n");
-
-		if (null == param || param.isEmpty()) {
-			res.put("info", "该字段不能为空");
-			return res;
-		}
-
-		if (null == id) {
-			if (null != tdUserService.findByUsername(param)) {
-				res.put("info", "已存在同名用户");
-				return res;
-			}
-		} else {
-			// if (null != tdUserService.findByUsernameAndIdNot(param, id))
-			// {
-			// res.put("info", "已存在同名用户");
-			// return res;
-			// }
-		}
-
-		res.put("status", "y");
-
-		return res;
-	}
-
-	@RequestMapping(value = "/list")
+    @RequestMapping(value = "/list")
 	public String setting(Integer page, Integer size, String keywords, Long roleId, Long userLevelId,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
 			ModelMap map, HttpServletRequest req) {
@@ -210,6 +225,11 @@ public class TdManagerUserController {
 
 		return "/site_mag/user_list";
 	}
+
+   
+      
+
+
 
 	@RequestMapping(value = "/edit")
 	public String userEdit(Long id, Long roleId, String action, String __VIEWSTATE, ModelMap map,
@@ -441,9 +461,9 @@ public class TdManagerUserController {
 
 	/*----------------用户投诉咨询 begin ------------------*/
 	@RequestMapping(value = "/{type}/list")
-	public String list(@PathVariable String type, Integer page, Integer size, String __EVENTTARGET,
-			String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId, Long[] listSortId,
-			ModelMap map, HttpServletRequest req) {
+	public String list(@PathVariable String type, Integer page, Integer size, String __EVENTTARGET, String date_1,  
+			            			String date_2, String keywords, Long categoryId,  String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId, Long[] listSortId,
+			ModelMap map, HttpServletRequest req) throws ParseException {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -482,9 +502,120 @@ public class TdManagerUserController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
 		if (null != type) {
-			if (type.equalsIgnoreCase("suggestion")) // 投诉咨询
-			{
-				Page<TdUserSuggestion> suggestionPage = tdUserSuggestionService.findAll(page, size);
+			if (type.equalsIgnoreCase("suggestion"))  //投诉咨询
+            {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				Date date1 = null;
+				Date date2 = null;
+				if(null !=date_1 && !date_1.equals(""))
+				{
+					date1 = sdf.parse(date_1);
+				}
+				if(null !=date_2 && !date_2.equals(""))
+				{
+					date2 = sdf.parse(date_2);
+				}
+				Page<TdUserSuggestion> suggestionPage = null;
+				
+				//开始筛选 zhangji
+				if (null == keywords || "".equals(keywords)) {
+					if(null == date1)
+					{
+						if(null == date2)
+						{
+							if(null == categoryId)
+							{
+								suggestionPage = tdUserSuggestionService.findAll(page , size);
+							}
+							else{
+								suggestionPage = tdUserSuggestionService.findByCategoryId(categoryId, page, size);
+							}
+						}
+						else{
+							if(null == categoryId)
+							{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeBefore(date2, page, size);
+							}
+							else{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndCategoryId(date2,categoryId, page, size);
+							}
+						}
+						
+					}
+					else{
+						if(null == date2)
+						{
+							if(null == categoryId)
+							{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfter(date1, page, size);
+							}
+							else{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCategoryId(date1,categoryId, page, size);
+							}
+						}
+						else{
+							if(null == categoryId)
+							{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBefore(date1, date2, page, size);
+							}
+							else{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryId(date1,date2,categoryId, page, size);
+							}
+						}
+					}
+				}
+				else{
+					if(null == date1)
+					{
+						if(null == date2)
+						{
+							if(null == categoryId)
+							{
+								suggestionPage = tdUserSuggestionService.findBySearch(keywords,  page, size);
+							}
+							else{
+								suggestionPage = tdUserSuggestionService.findByCategoryIdAndSearch(categoryId, keywords,  page, size);
+							}
+						}
+						else{
+							if(null == categoryId)
+							{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndSearch(date2, keywords,  page, size);
+							}
+							else{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndCategoryIdAndSearch(date2, categoryId, keywords,  page, size);
+							}
+						}
+					}
+					else{
+						if(null == date2)
+						{
+							if(null == categoryId)
+							{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndSearch(date1, keywords,  page, size);
+							}
+							else{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCategoryIdAndSearch(date1, categoryId, keywords,  page, size);
+							}
+						}
+						else{
+							if(null == categoryId)
+							{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBeforeAndSearch(date1, date2, keywords,  page, size);
+							}
+							else{
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryIdAndSearch(date1, date2, categoryId, keywords,  page, size);
+							}
+						}
+					}
+				}
+				
+				map.addAttribute("category_list", tdUserSuggestionCategoryService.findByIsEnableTrueOrderBySortIdAsc());
+				map.addAttribute("date_1",date_1);
+				map.addAttribute("date_2",date_2);
+				map.addAttribute("keywords",keywords);
+				map.addAttribute("categoryId",categoryId);
+
 				map.addAttribute("user_suggestion_page", suggestionPage);
 				for (TdUserSuggestion item : suggestionPage.getContent()) {
 					TdUser user = tdUserService.findOne(item.getUserId());

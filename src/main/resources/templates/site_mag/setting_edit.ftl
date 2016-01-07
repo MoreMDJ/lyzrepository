@@ -238,6 +238,12 @@ $(function () {
             <span class="Validform_checktip">支持HTML</span>
         </dd>
     </dl>
+    <dl>
+        <dt>订单失效时间</dt>
+        <dd>
+            <input name="cancelTime" rows="2" cols="6" class="input" datatype="*0-255" sucmsg=" " value="<#if setting??>${setting.cancelTime!"0"}</#if>" />&nbsp;&nbsp;分钟
+        </dd>
+    </dl>
 </div>
 <div class="tab-content" style="display: none;">
     <dl>

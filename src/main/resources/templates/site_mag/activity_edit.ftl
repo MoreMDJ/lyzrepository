@@ -21,6 +21,29 @@
 $(function () {
     //初始化表单验证
     $("#form1").initValidform();
+    
+    $("#form1").addRule([
+    {
+        ele:"#sortId",
+        datatype:"s6-18",
+        ajaxurl:"valid.php",
+        nullmsg:"请输入昵称！",
+        errormsg:"昵称至少6个字符,最多18个字符！"
+    },
+    {
+        ele:"#userpassword",
+        datatype:"*6-16",
+        nullmsg:"请设置密码！",
+        errormsg:"密码范围在6~16位之间！"
+    },
+    {
+        ele:"#userpassword2",
+        datatype:"*",
+        recheck:"userpassword",
+        nullmsg:"请再输入一次密码！",
+        errormsg:"您两次输入的账号密码不一致！"
+    }
+]);
 
     //初始化编辑器
     var editor = KindEditor.create('.editor', {
@@ -267,7 +290,14 @@ function del_goods_comb(obj) {
     $("#totalComb").val(parseInt($("#totalComb").val())-1);
 }
 
-  
+  <#if fns??>
+  	$(document).ready(function(){
+  		alert("保存成功");
+  		location.href='/Verwalter/activity/list';
+  	});
+  <#else>
+  	console.log("aaa");	
+  </#if>
 </script>
 </head>
 <body class="mainbody">
@@ -353,7 +383,7 @@ function del_goods_comb(obj) {
         <dl>
             <dt>排序号</dt>
             <dd>
-                <input name="sortId" type="text" value="<#if activity??>${activity.sortId!"99"}</#if>" class="input normal" datatype="*1-100" sucmsg=" ">
+                <input name="sortId" type="text" value="<#if activity??>${activity.sortId}<#else>99</#if>" class="input normal" datatype="/^(([1-9]\d{0,1})|0)(\.\d{2})?$/" sucmsg=" " errormsg="请输入不超过100的2位小数">
                 <span class="Validform_checktip"></span>
             </dd>
         </dl>

@@ -128,6 +128,10 @@ public class TdSetting {
     // 安卓二维码
     @Column
     private String androidQrCode;
+    
+    //订单取消时间 zhangji 2016-1-7 17:36:10
+    @Column
+    private Long cancelTime;
 
     public Long getId() {
         return id;
@@ -352,4 +356,13 @@ public class TdSetting {
     public void setAndroidQrCode(String androidQrCode) {
         this.androidQrCode = androidQrCode;
     }
+
+	public Long getCancelTime() {
+		return cancelTime;
+	}
+
+	public void setCancelTime(Long cancelTime) {
+		this.cancelTime = cancelTime;
+	}
+    
 }

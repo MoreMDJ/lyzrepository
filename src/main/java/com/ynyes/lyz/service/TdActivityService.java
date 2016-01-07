@@ -103,10 +103,14 @@ public class TdActivityService {
 		}
 		String siteNameString = "";
 		String diySiteIdStr = "";
-		for (TdDiySiteList siteList : e.getSiteList()) {
-			siteNameString += siteList.getTitle() + ",";
+		if (null != e.getSiteList() && e.getSiteList().size() > 0)
+		{
+			for (TdDiySiteList siteList : e.getSiteList()) {
+				siteNameString += siteList.getTitle() + ",";
+			}
+			e.setSiteName(siteNameString);
 		}
-		e.setSiteName(siteNameString);
+
 
 		// 保存赠品
 		tdGoodsGiftService.save(e.getGiftList());
@@ -116,11 +120,14 @@ public class TdActivityService {
 
 		// 保存门店
 		tdDiySiteListService.save(e.getSiteList());
-		for (TdDiySiteList siteList : e.getSiteList()) 
+		if (null != e.getSiteList() && e.getSiteList().size() > 0)
 		{
-			diySiteIdStr += siteList.getSiteId() + ",";
+			for (TdDiySiteList siteList : e.getSiteList()) 
+			{
+				diySiteIdStr += siteList.getSiteId() + ",";
+			}
+			e.setDiySiteIds(diySiteIdStr);
 		}
-		e.setDiySiteIds(diySiteIdStr);
 		e = repository.save(e);
 
 		// 获取所有的城市id

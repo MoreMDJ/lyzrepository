@@ -6,6 +6,7 @@
 <script type="text/javascript" src="/mag/js/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="/mag/js/lhgdialog.js"></script>
 <script type="text/javascript" src="/mag/js/layout.js"></script>
+<script type="text/javascript" src="/mag/js/WdatePicker.js"></script>
 <link href="/mag/style/pagination.css" rel="stylesheet" type="text/css">
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
 </head>
@@ -52,6 +53,38 @@ var theForm = document.forms['form1'];
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除</span></a></li>
         </#if>
       </ul>
+    	<div class="menu-list">
+        	<span style="margin:9px 5px 0 5px;float:left; font-size:12px;">筛选查找：</span>
+		      <div class="input-date" style="width:204px;">
+		      	<span style="margin:9px 5px 0 5px;float:left; font-size:12px;" >从</span>
+		        <input  name="date_1" type="text" style="font-size:12px;" value="<#if date_1??>${date_1}</#if>" class="input date" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+		        <i>日期</i>
+		      </div>		
+	      		
+		      <div class="input-date" style="width:204px;">
+		      	<span style="margin:9px 5px 0 5px;float:left; font-size:12px;" >至</span>
+		        <input  name="date_2" type="text" style="font-size:12px;" value="<#if date_2??>${date_2}</#if>" class="input date" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+		        <i>日期</i>
+		      </div>			   
+		      
+		<div class="rule-single-select single-select">
+            <select name="categoryId" onchange="javascript:__doPostBack('','')" id="ddlCategoryId" style="display: none;">
+                <option <#if categoryId??><#else>selected="selected"</#if> value="">所有类别</option>
+                <#if category_list??>
+                    <#list category_list as c>
+                        <option value="${c.id!""}" <#if categoryId?? && c.id==categoryId>selected="selected"</#if> >${c.name!""}</option>
+                    </#list>
+                </#if>
+            </select>
+        </div>
+           
+	    </div>
+	    
+	    <div class="r-list">
+	    	<span style="float:left;font-size:12px;margin:9px 0 0 10px;">关键字：</span>
+		    <input name="keywords" type="text" class="keyword" value="${keywords!''}">
+		    <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
+	    </div>        
     </div>
   </div>
 </div>
