@@ -75,16 +75,14 @@ $(function () {
     <dt>优惠券类型</dt>
     <dd>
         <div class="rule-single-select">
-            <select id="type" name="typeId" datatype="*" sucmsg=" "  onchange="getType();" >
+            <select id="type" name="type" datatype="*" sucmsg=" "  onchange="getType();" >
                 <#if !coupon??>
-                <option value="">请选择类型...</option>
-                </#if>             
-                <#if coupon_type_list??>
-                    <#list coupon_type_list as c>
-                        <option value="${c.id?c!""}" <#if coupon?? && coupon.typeId==c.id>selected="selected"</#if>>${c.title!""}</option>                                                                  
-                    </#list>                                                                                
-                </#if>
-                <input type="hidden" name="typetitle" id="typetitle" value="">
+                	<option value="">请选择类型...</option>
+                <#else>
+                	<option value="通用现金券" selected="selected">通用现金券</option>
+                	<option value="指定商品现金券" selected="selected">指定商品现金券</option>
+                	<option value="产品券" selected="selected">产品券</option>
+                </#if> 
             </select> 
         </div>
     </dd>

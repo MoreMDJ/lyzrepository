@@ -116,7 +116,7 @@ public class TdManagerCouponController {
         TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
         TdManagerRole tdManagerRole = null;
         
-        if (null != tdManager.getRoleId())
+        if (null != tdManager && null != tdManager.getRoleId())
         {
             tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
         }
@@ -233,7 +233,7 @@ public class TdManagerCouponController {
         TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
         TdManagerRole tdManagerRole = null;
         
-        if (null != tdManager.getRoleId())
+        if (null != tdManager && null != tdManager.getRoleId())
         {
             tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
         }
