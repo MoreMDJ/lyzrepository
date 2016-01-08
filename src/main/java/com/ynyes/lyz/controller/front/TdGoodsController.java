@@ -220,6 +220,7 @@ public class TdGoodsController {
 					&& goods.getId() == cartColorPackage.getColorPackageId()) {
 				isHave = true;
 				cartColorPackage.setQuantity(tdCartColorPackage.getQuantity() + quantity);
+				cartColorPackage.setSalePrice(tdCartColorPackage.getSalePrice());
 			}
 		}
 		// 如果没有包含，则将新选择的调色包添加到已选中
@@ -308,6 +309,7 @@ public class TdGoodsController {
 				if (null != tdCartGoods && null != tdCartGoods.getGoodsId()
 						&& tdCartGoods.getGoodsId() == Long.parseLong(goodsId_quantity[0])) {
 					// 在goodsId相同的情况下就代表已经被选择了，修改被选数量即可
+					tdCartGoods.setPrice(tdCartGoods.getPrice());
 					tdCartGoods.setQuantity(tdCartGoods.getQuantity() + Long.parseLong(goodsId_quantity[1]));
 					isHave = true;
 				}
@@ -561,6 +563,15 @@ public class TdGoodsController {
 		} else {
 			res.put("number", 0);
 		}
+
+		Double price = 0.0;
+		for (TdCartGoods cartGoods : all) {
+			if (null != cartGoods && null != cartGoods.getPrice() && null != cartGoods.getQuantity()) {
+				price += (cartGoods.getPrice() * cartGoods.getQuantity());
+			}
+		}
+		res.put("all_price", price);
+
 		return res;
 	}
 

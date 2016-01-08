@@ -107,19 +107,19 @@
         <dt>所属价目表</dt>
         <dd>
             <div class="rule-single-select">
-                    <#if !diy_site??>
-                        <select name="priceListId" datatype="*" sucmsg=" ">
+                    <#--<#if !diy_site??>-->
+                        <select name="priceListId">
                         <option value="">请选择类别...</option>
                         <#if price_list??>
                             <#list price_list as c>
-                                <option value="${c.priceListId!''}" >${c.name!'wu'}</option>
+                                <option <#if diy_site??&&diy_site.priceListId??&&diy_site.priceListId==c.id>selected="selected"</#if> value="${c.id?c!''}" >${c.name!'无    '}</option>
                             </#list>
                         </#if>
-                    </#if>
-                    <#if diy_site??>
+                    <#--</#if>-->
+                    <#--<#if diy_site??>
                         <select>
                         <option selected="selected">${diy_site.priceListName!'暂无'}</option>
-                    </#if>
+                    </#if>-->
                 </select>
             </div>
         </dd>
@@ -182,10 +182,10 @@
        <dd>
              <div id="address">
                  <select id="status" name="status" class="dist" style="width: 100px;">
-                    <option value="0" <#if diy_site.status??&&diy_site.status==0>selected="selected"</#if>>直营</option>
-                    <option value="1" <#if diy_site.status??&&diy_site.status==1>selected="selected"</#if>>加盟门店</option>
-                    <option value="2" <#if diy_site.status??&&diy_site.status==2>selected="selected"</#if>>虚拟门店</option>
-                    <option value="3" <#if diy_site.status??&&diy_site.status==3>selected="selected"</#if>>第三方</option>
+                    <option value="0" <#if diy_site??&&diy_site.status??&&diy_site.status==0>selected="selected"</#if>>直营</option>
+                    <option value="1" <#if diy_site??&&diy_site.status??&&diy_site.status==1>selected="selected"</#if>>加盟门店</option>
+                    <option value="2" <#if diy_site??&&diy_site.status??&&diy_site.status==2>selected="selected"</#if>>虚拟门店</option>
+                    <option value="3" <#if diy_site??&&diy_site.status??&&diy_site.status==3>selected="selected"</#if>>第三方</option>
                  </select>
              </div>
        </dd>

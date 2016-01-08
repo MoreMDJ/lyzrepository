@@ -187,6 +187,15 @@ $(function () {
     <dd><input name="realName" type="text" value="<#if user??>${user.realName!""}</#if>" class="input normal"></dd>
   </dl>
   <dl>
+    <dt>归属门店</dt>
+    <dd>
+        <select name="upperDiySiteId">
+            <option></option>
+            <option></option>
+        </select>
+    </dd>
+  </dl>
+  <dl>
     <dt>上传头像</dt>
     <dd>
         <input id="txtImgUrl" name="headImageUri" type="text" value="<#if user??>${user.headImageUri!""}</#if>" class="input normal upload-path">
@@ -317,7 +326,7 @@ $(function () {
   </dl>
   <dl>
     <dt>不可提现余额</dt>
-    <dd><input name="不可提现余额" type="text" class="input normal"sucmsg=" " value="<#if user?? && user.不可提现余额??>${user.不可提现余额?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
+    <dd><input name="unCashBalance" type="text" class="input normal"sucmsg=" " value="<#if user?? && user.unCashBalance??>${user.unCashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
   </dl>
   </#if>
   <#if !user?? || user?? && user.userType?? && user.userType == 1>
@@ -359,7 +368,7 @@ $(function () {
       <span class="Validform_checktip"></span>
     </dd>
   </dl> 
-  -->
+  
   <#if !user?? || user?? && user.userType?? && user.userType == 2>
   <dl>
     <dt>虚拟币余额</dt>
@@ -371,6 +380,7 @@ $(function () {
   </dl>
   <dl>
   </#if>
+  -->
 </div> 
 
 <!--/账户信息-->

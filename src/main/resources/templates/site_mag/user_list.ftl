@@ -147,7 +147,9 @@ var theForm = document.forms['form1'];
                 			<#default>会员
                 		</#switch>
                 </td>
-                            <input type="radio" name="userType" value="0" datatype="n" <#if user?? && user.userType?? && user.userType==0>checked="checked"</#if>><label>普通会员</label>
+                <#--
+                <input type="radio" name="userType" value="0" datatype="n" <#if user?? && user.userType?? && user.userType==0>checked="checked"</#if>><label>普通会员</label>
+                -->
                 <td align="left">${user.diyName!""}</td>
                 <td align="center">${user.email!""}</td>
                 <td align="center">${user.lastLoginTime!""}</td>
@@ -163,7 +165,7 @@ var theForm = document.forms['form1'];
 </tbody>
 </table>
 
-<!--/列表-->
+<!--列表-->
 
 <!--内容底部-->
 <#assign PAGE_DATA=user_page />

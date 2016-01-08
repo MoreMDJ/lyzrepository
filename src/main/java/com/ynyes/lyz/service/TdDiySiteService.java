@@ -81,15 +81,13 @@ public class TdDiySiteService {
 		return (List<TdDiySite>) repository.findAll(ids);
 	}
 
-	public TdDiySite findByCustomerIdAndSobId(Long customerId,Long sobId)
-	{
-		if (customerId == null || sobId == null)
-		{
+	public TdDiySite findByCustomerIdAndSobId(Long customerId, Long sobId) {
+		if (customerId == null || sobId == null) {
 			return null;
 		}
 		return repository.findByCustomerIdAndSobId(customerId, sobId);
 	}
-	
+
 	public List<TdDiySite> findAll(Sort sort) {
 
 		return (List<TdDiySite>) repository.findAll(sort);
@@ -101,18 +99,14 @@ public class TdDiySiteService {
 	 * @param regionId
 	 * @author Mdj
 	 */
-	public List<TdDiySite> findByRegionIdAndIsEnableOrderBySortIdAsc(
-			Long regionId) {
-		return repository
-				.findByRegionIdAndIsEnableTrueOrderBySortIdAsc(regionId);
+	public List<TdDiySite> findByRegionIdAndIsEnableOrderBySortIdAsc(Long regionId) {
+		return repository.findByRegionIdAndIsEnableTrueOrderBySortIdAsc(regionId);
 	}
 
-	public Page<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(
-			Long regionId, int page, int size) {
+	public Page<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByRegionIdAndIsEnableTrueOrderBySortIdAsc(
-				regionId, pageRequest);
+		return repository.findByRegionIdAndIsEnableTrueOrderBySortIdAsc(regionId, pageRequest);
 	}
 
 	public List<TdDiySite> findByIsEnableTrue() {
@@ -120,18 +114,15 @@ public class TdDiySiteService {
 	}
 
 	public Page<TdDiySite> findAllOrderBySortIdAsc(int page, int size) {
-		PageRequest pageRequest = new PageRequest(page, size, new Sort(
-				Direction.ASC, "sortId"));
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
 
 		return repository.findAll(pageRequest);
 	}
 
-	public Page<TdDiySite> searchAllOrderBySortIdAsc(String keywords, int page,
-			int size) {
+	public Page<TdDiySite> searchAllOrderBySortIdAsc(String keywords, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByTitleContainingOrderBySortIdAsc(keywords,
-				pageRequest);
+		return repository.findByTitleContainingOrderBySortIdAsc(keywords, pageRequest);
 	}
 
 	/**
@@ -160,5 +151,12 @@ public class TdDiySiteService {
 			return null;
 		}
 		return repository.findByDisctrictIdOrderBySortIdAsc(districtId);
+	}
+
+	public TdDiySite findByTitleAndIsEnableTrue(String title) {
+		if (null == title) {
+			return null;
+		}
+		return repository.findByTitleAndIsEnableTrue(title);
 	}
 }

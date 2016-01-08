@@ -184,7 +184,7 @@ public class TdUserController {
 		}
 
 		// 查找所有的订单
-		List<TdOrder> all_order_list = tdOrderService.findByUsername(username);
+		List<TdOrder> all_order_list = tdOrderService.findByUsernameAndStatusIdNotOrderByOrderTimeDesc(username);
 		map.addAttribute("all_order_list", all_order_list);
 
 		// 查找所有待支付的订单
@@ -716,6 +716,8 @@ public class TdUserController {
 		if (0L == type) {
 			TdShippingAddress address = new TdShippingAddress();
 			address.setCity(user.getCityName());
+			// 默认联系人电话为会员的电话号码
+			address.setReceiverMobile(username);
 			map.addAttribute("address", address);
 		}
 
@@ -844,6 +846,7 @@ public class TdUserController {
 		}
 		address.setProvince(tdCity.getProvince());
 		address.setCity(tdCity.getCityName());
+		address.setCityId(tdCity.getId());
 		address.setDisctrict(district);
 		address.setSubdistrict(subdistrict);
 		address.setDetailAddress(detailAddress);
@@ -1228,6 +1231,7 @@ public class TdUserController {
 					order.setStatusId(3L);
 					user.setBalance(balance - total_price);
 					tdUserService.save(user);
+					tdOrderService.save(order);
 					res.put("message", "操作成功");
 					res.put("status", 0);
 					break;
@@ -1358,5 +1362,21 @@ public class TdUserController {
 		}
 
 		return "/client/coupon_description";
+	}
+
+	/**
+	 * 删除订单的方法
+	 * 
+	 * @author dengxiao
+	 */
+	@RequestMapping(value = "/order/delete")
+	@ResponseBody
+	public Map<String, Object> orderDelete(Long orderId) {
+		Map<String, Object> res = new HashMap<>();
+		TdOrder order = tdOrderService.findOne(orderId);
+		order.setStatusId(8L);
+		tdOrderService.save(order);
+		res.put("status", 0);
+		return res;
 	}
 }

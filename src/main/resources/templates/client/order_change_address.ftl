@@ -26,7 +26,7 @@
         <dl class="shipping-address">
             <#if address_list??>        
                 <#list address_list as item>
-                    <dt onclick="/order/address/check/${item.id?c}">
+                    <dt onclick="window.location.href='/order/address/check/${item.id?c}'">
                         <div class="address">
                             <div class="div1">
                                 <span class="c-fd9c11"><#if item.isDefaultAddress??&&item.isDefaultAddress>（默认）</#if></span>
