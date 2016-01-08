@@ -53,6 +53,10 @@ public class TdStorage {
 	@Column
 	private String remark;
 	
+	//排序
+	@Column
+	private Double sortId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -99,6 +103,14 @@ public class TdStorage {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public Double getSortId() {
+		return sortId;
+	}
+
+	public void setSortId(Double sortId) {
+		this.sortId = sortId;
 	}
 
 	@Override

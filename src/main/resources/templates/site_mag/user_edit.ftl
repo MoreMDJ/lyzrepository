@@ -171,16 +171,34 @@ $(function () {
       <span class="Validform_checktip">*禁用账户无法登录</span>
     </dd>
   </dl>
+  <#--
     <dl>
         <dt>用户名：</dt>
+         【备注人】张季 2016年1月8日10:18:05 【原版】用户名不可修改
         <dd>
             <#if user??>
                 <span>${user.username!""}</span>
             <#else>
                 <input name="username" type="text" maxlength="200" class="input normal" datatype="s6-20" ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id}</#if>" sucmsg=" " minlength="2">
             </#if>
+            
+       <dd>
+            <input name="username" type="text" value="<#if user??>${user.username!''}</#if>" maxlength="200" class="input normal" datatype="m|/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/" ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id}</#if>" sucmsg=" " minlength="2">
+       		<input name="oldUsername" type="hidden" value="<#if user??>${user.username!''}</#if>" />
+       </dd>
             <span class="Validform_checktip">
         </span></dd>
+    </dl>
+    -->
+    <dl>
+        <dt>用户名：</dt>
+        <dd>
+            <#if user??>
+                <span>${user.username!""}</span>
+            <#else>
+                <input name="username" type="text" maxlength="200" class="input normal" datatype="m|/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/"ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id}</#if>" sucmsg=" " minlength="2">
+            </#if>
+       <dd>
     </dl>
   <dl>
     <dt>真实姓名</dt>

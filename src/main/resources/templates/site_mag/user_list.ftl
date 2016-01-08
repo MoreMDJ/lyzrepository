@@ -108,7 +108,7 @@ var theForm = document.forms['form1'];
     <th width="8%">最近登录</th>
     <th width="8%">积分</th>
     <th width="6%">状态</th>
-    <th width="6%">操作</th>
+    <th width="10%">操作</th>
   </tr>
 
     <#if user_page??>
@@ -155,7 +155,8 @@ var theForm = document.forms['form1'];
                 <td align="center"><#if user.statusId??><#if user.statusId==0>待审核<#elseif user.statusId==1>正常</#if></#if></td>
                 <td align="center">
                     <a href="/Verwalter/user/edit?id=${user.id?c}&roleId=${roleId!""}">修改</a> | 
-                    <a href="/Verwalter/user/edit?id=${user.id?c}&roleId=${roleId!""}&action=view">查看</a></td>
+                    <a href="/Verwalter/user/edit?id=${user.id?c}&roleId=${roleId!""}&action=view">查看</a> |
+                    <a href="/Verwalter/user/setUsername?id=${user.id?c}&roleId=${roleId!""}">修改用户名</a></td>
               </tr>
         </#list>
     </#if>
