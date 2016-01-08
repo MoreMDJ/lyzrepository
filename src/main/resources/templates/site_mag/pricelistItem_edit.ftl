@@ -146,9 +146,9 @@ function pricelistSelect(id) {
     <input type="hidden" name="username" value="${pricelist.username!''}" />
     <input type="hidden" name="username" value="${pricelist.companyName!''}" />
         <dl>
-            <dt>所属区域</dt>
+            <dt>类型描述</dt>
             <dd>
-                ${pricelist.cityName!''}
+                ${pricelist.priceTypeDesc!''}
             </dd>
         </dl>
         <dl>

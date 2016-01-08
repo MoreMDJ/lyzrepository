@@ -40,10 +40,9 @@ function __doPostBack(eventTarget, eventArgument) {
         <a><span>价目表管理</span></a>
         <i class="arrow"></i>
         <span>价目表列表</span>
-          
     </div>
     <!--/导航栏-->
-    <!--工具栏-->
+    <!--工具栏
     <div class="toolbar-wrap">
         <div id="floatHead" class="toolbar">
             <div class="l-list">
@@ -64,51 +63,44 @@ function __doPostBack(eventTarget, eventArgument) {
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
             </div>
         </div>
-    </div>
+    </div>-->
     <!--/工具栏-->
     <!--列表-->
     
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ltable">
 <tbody>
     <tr class="odd_bg">
-        <th width="8%">
-            选择
-        </th>
         <th align="left">
-            价目表编号
+            价目表行编号
         </th>
         <th align="left" width="">
-            价目表名称
+            价目表行名称
         </th>
         <th align="left" width="">
-           所属城市id
+           商品名称
         </th>
         <th align="left" width="">
-           开始时间
+           商品编号
         </th>
+        <th align="left" width="12%">开始时间</th>
         <th align="left" width="12%">结束时间</th>
-        <th width="12%">操作</th>            
+        <th align="left" width="12%">销售价</th>
+        <th align="left" width="12%">实际价</th>       
     </tr>
 
-    <#if pricelist_page??>
-        <#list pricelist_page.content as pricelist>
+    <#if price_item_page??>
+        <#list price_item_page.content as pricelist>
             <tr>
-                <td align="center">
-                    <span class="checkall" style="vertical-align:middle;">
-                        <input id="listChkId" type="checkbox" name="listChkId" value="${pricelist_index}" >
-                    </span>
-                    <input type="hidden" name="listId" id="listId" value="${pricelist.id?c}">
-                </td>
                 <td>
-                    <#if pricelist.listHeaderId??>${pricelist.listHeaderId?c}</#if>
+                    <#if pricelist.listLineId??>${pricelist.listLineId?c}</#if>
                 </td>
-                <td>${pricelist.name!""}</td>
-                <td>${pricelist.cityId!""}</td>
+                <td><a href="/Verwalter/pricelist/edit?id=${pricelist.id?c}">${pricelist.priceListName!""}</a></td>
+                <td>${pricelist.itemDesc!""}</td>
+                <td>${pricelist.itemNum!""}</td>
                 <td>${pricelist.startDateActive!""}</td>
-	            <td>${pricelist.endDateActive!""}</td>
-	            <td align="center">
-	                <a href="/Verwalter/pricelist/itemEdit?id=${pricelist.id?c}">编辑商品</a>
-	            </td>                
+                <td>${pricelist.endDateActive!""}</td>
+	            <td>${pricelist.salePrice!""}</td>
+	            <td align="left">${pricelist.realSalePrice!""}</td>                
             </tr>
         </#list>
     </#if>
@@ -117,7 +109,7 @@ function __doPostBack(eventTarget, eventArgument) {
         
 <!--/列表-->
 <!--内容底部-->
-<#assign PAGE_DATA=pricelist_page />
+<#assign PAGE_DATA=price_item_page />
 <#include "/site_mag/list_footer.ftl" />
 <!--/内容底部-->
 </form>
