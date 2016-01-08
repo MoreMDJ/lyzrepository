@@ -70,7 +70,7 @@ public class TdPriceListService {
 	}
 
 	
-	public TdPriceList findByListHeaderId(Integer listHeaderId)
+	public TdPriceList findByListHeaderId(Long listHeaderId)
 	{
 		if (listHeaderId == null)
 		{
