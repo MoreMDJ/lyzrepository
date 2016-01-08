@@ -74,12 +74,76 @@ public class CallEBSImpl implements ICallEBS {
 	@Autowired
 	private TdGoodsLimitService tdGoodsLimitService;
 
-//	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
-//	{
-//		String Str = "test";
-//		
-//		return "test" + Str;
-//	}
+	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
+	{
+		System.out.println("getErpInfo called：");
+
+		if (null == STRTABLE || STRTABLE.isEmpty() || STRTABLE.equals("?"))
+		{
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>STRTABLE参数错误</MESSAGE></STATUS></RESULTS>";
+		}
+
+		if (null == XML || XML.isEmpty() || XML.equals("?")) 
+		{
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
+		}
+		
+		
+		String XMLStr = XML.trim();
+		
+		XMLStr = XML.replace("\n", "");
+		
+		byte[] decoded = Base64.decode(XMLStr);
+
+		String decodedXML = null;
+
+		try
+		{
+			decodedXML = new String(decoded, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			System.out.println("UnsupportedEncodingException for decodedXML");
+			e.printStackTrace();
+		}
+
+		if (null == decodedXML || decodedXML.isEmpty()) 
+		{
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后XML数据为空</MESSAGE></STATUS></RESULTS>";
+		}
+
+		System.out.println(decodedXML);
+
+		// 解析XML
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = null;
+		try
+		{
+			builder = factory.newDocumentBuilder();
+		}
+		catch (ParserConfigurationException e) 
+		{
+			e.printStackTrace();
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml参数错误</MESSAGE></STATUS></RESULTS>";
+		}
+
+		Document document = null;
+
+		InputSource is = new InputSource(new StringReader(decodedXML));
+
+		try
+		{
+			document = builder.parse(is);
+		} 
+		catch (SAXException | IOException e)
+		{
+			e.printStackTrace();
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
+		}
+		NodeList nodeList = document.getElementsByTagName("TABLE");
+		
+		return "test" + "return";
+	}
 	
 	public String GetErpInfo(String STRTABLE, String STRTYPE, String XML) 
 	{
