@@ -29,6 +29,8 @@ public interface ICallEBS {
 	String GetErpInfo(@WebParam(name = "STRTABLE") String STRTABLE,
 			@WebParam(name = "STRTYPE") String STRTYPE,
 			@WebParam(name = "XML") String XML);
-
+	String GetWMSInfo(@WebParam(name = "STRTABLE") String STRTABLE,
+			@WebParam(name = "STRTYPE") String STRTYPE,
+			@WebParam(name = "XML") String XML);
 }
 // END SNIPPET: service

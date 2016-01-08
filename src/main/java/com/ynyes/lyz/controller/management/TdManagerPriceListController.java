@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ynyes.lyz.entity.TdCity;
-import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.service.TdCityService;
@@ -41,7 +40,64 @@ public class TdManagerPriceListController {
 	@Autowired
 	TdCityService tdCityService;   //读取城市列表需要  zhangji
 	
+	@RequestMapping(value = "/pricelistitem/list")
+    public String settingDistrictList(Integer page,
+						            Integer size,
+						            String __EVENTTARGET,
+						            String __EVENTARGUMENT,
+						            String __VIEWSTATE,
+						            String action,
+						            Long[] listId,
+						            Integer[] listChkId,
+						            ModelMap map,
+						            HttpServletRequest req)
+    {
+    	String username = (String) req.getSession().getAttribute("manager");
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        if (null != __EVENTTARGET)
+        {
+            if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+            {
+                tdManagerLogService.addLog("delete", "删除行政区划", req);
+            }
+            else if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
+            {
+                if (null != __EVENTARGUMENT)
+                {
+                    page = Integer.parseInt(__EVENTARGUMENT);
+                }
+            }
+        }
+        
+        if (null == page || page < 0)
+        {
+            page = 0;
+        }
+        
+        if (null == size || size <= 0)
+        {
+            size = SiteMagConstant.pageSize;;
+        }
+        
+        map.addAttribute("page", page);
+        map.addAttribute("size", size);
+        map.addAttribute("action", action);
+        map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+        map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+        map.addAttribute("price_item_page", tdPriceListItemService.findAll(page, size));
+    	return "/site_mag/pricelist_item_list";
+    }
 	
+	/**
+	 * pirceList 表头
+	 * @param map
+	 * @param req
+	 * @return
+	 */
 	@RequestMapping(value="/list", method = RequestMethod.GET)
 	public String pricelist( 
 			          ModelMap map,
@@ -269,7 +325,6 @@ public class TdManagerPriceListController {
         return "/site_mag/pricelistItem_edit";
     }
 	
-	 
 	//保存价目表管理内容 zhangji
 	@RequestMapping(value = "/itemSave")
     public String priceListItemSave(TdPriceList tdPriceList,  ModelMap map,

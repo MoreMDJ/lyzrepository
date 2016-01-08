@@ -328,9 +328,9 @@ public class TdManagerOrderController {
             }
             else if (type.equalsIgnoreCase("diysite")) // 门店
             {
+            	map.addAttribute("price_list", tdPriceListService.findAll());
                 if (null != id)
                 {
-                	map.addAttribute("price_list", tdPriceListService.findAll());
                     map.addAttribute("diy_site", tdDiySiteService.findOne(id));
                 }
                 
@@ -576,6 +576,7 @@ public class TdManagerOrderController {
         }
         
         String uris = parsePicUris(hid_photo_name_show360);
+        
         
         tdDiySite.setShowPictures(uris);
         

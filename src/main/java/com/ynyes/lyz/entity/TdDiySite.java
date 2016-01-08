@@ -397,4 +397,12 @@ public class TdDiySite {
 	public void setIsDirect(Boolean isDirect) {
 		this.isDirect = isDirect;
 	}
+
+	public Long getStatus() {
+		return status;
+	}
+
+	public void setStatus(Long status) {
+		this.status = status;
+	}
 }

@@ -45,6 +45,8 @@
                                                <#case 2>"虚拟"<#break>
                                                <#case 3>"第三方"<#break>
                                            </#switch>
+                                       <#else>
+                                            "无"
                                        </#if>,
                             "address":"${item.address!'无'}",
                             "serviceTele":"${item.serviceTele!'00000000000'}"

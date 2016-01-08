@@ -10,38 +10,18 @@
     <link rel="stylesheet" type="text/css" href="/client/css/my_base.css"/>
     <link rel="stylesheet" type="text/css" href="/client/css/main.css"/>
     <link rel="stylesheet" type="text/css" href="/client/css/other.css"/>
+    <link rel="stylesheet" type="text/css" href="/client/css/swiper.min.css"/>
     
     <script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
-    <script src="/client/js/rich_lee.js" type="text/javascript"></script>
+    <script src="/client/js/index.js" type="text/javascript"></script>
+    <script src="/client/js/swiper.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-    $(function(){
-        win_cla();
-        <#-- 有奖问答拖拽 -->
-        var oWar = $('.warard')[0];
-        var disX =0;
-        var disY =0;
-        <#-- 按下 -->
-        oWar.addEventListener('touchstart',richStar,false);
-        function richStar(ev){
-            <#-- 阻止默认 -->
-            ev.preventDefault();
-            oWar.style.webkitTransition = '';
-            disX =event.changedTouches[0].pageX - oWar.offsetLeft;
-            disY =event.changedTouches[0].pageY - oWar.offsetTop;
+    window.onload = function(){
+            you_draf($('.index_scroll_goods'),$('.index_scroll_goods a'),$(window));
+            my_hei();
+            scroll_news();//滚动新闻                //index  00         
+            footer();//底部居中
         };
-        <#-- 拖拽 -->
-        oWar.addEventListener('touchmove',richMove,false);
-        function richMove(){
-            oWar.style.left =event.changedTouches[0].pageX - disX +'px';
-            oWar.style.top =event.changedTouches[0].pageY - disY +'px';
-        }; 
-        oWar.addEventListener('touchend',richEnd,false);
-        function richEnd(){
-            oWar.style.webkitTransition = '0.5s';
-            oWar.style.left =window.screen.width - oWar.offsetWidth + 'px';
-            oWar.style.top ='40%';
-        };
-    });
     </script>
     </head>
     <body>
@@ -69,18 +49,24 @@
             
             <#if circle_ad_list??>
                 <div class="index_banner">
-                    <div class="scroll_box">
-                        <#list circle_ad_list as item>
-                            <img onclick="window.locatioin.href='${item.linkUri!'#'}'" src="${item.fileUri!''}"/>
-                        </#list>
-                    </div>
-                    <div class="scroll_btn">
-                        <ul>
+                    <div class="swiper-container" style="width: 100%;height: 100%;">
+                        <div class="swiper-wrapper">
                             <#list circle_ad_list as item>
-                                <li></li>
+                                <div class="swiper-slide orange-slide">
+                                    <img src="${item.iconUri!''}"/>
+                                </div>
                             </#list>
-                        </ul>
-                    </div>              
+                        </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <script src="js/swiper.min.js"></script>
+                <script type="text/javascript">
+                    var mySwiper = new Swiper('.swiper-container',{
+                        loop: true,
+                        autoplay: 3000,
+                        pagination : '.swiper-pagination'
+                    });   
+                </script>
                 </div>
             </#if>
             <#if navi_bar_list??>

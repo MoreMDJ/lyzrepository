@@ -87,7 +87,7 @@ $(function () {
   <dl>
     <dt>城市名</dt>
     <dd>
-        <input name="cityName" type="text" value="<#if city??>${city.cityName!"1"}</#if>" class="input normal" datatype="*1-255" sucmsg=" "> 
+        <input name="cityName" type="text" value="<#if city??>${city.cityName!"0"}</#if>" class="input normal" datatype="*1-255" sucmsg=" "> 
         <span class="Validform_checktip">*城市名称</span>
     </dd>
   </dl>
@@ -101,7 +101,7 @@ $(function () {
                     </#if>
                     <#if SMSAccount_list??>
                         <#list SMSAccount_list as c>
-                         <option value="${c.id?c}" <#if city??&& city.smsAccountId?? && city.smsAccountId == c.id>selected="selected"</#if>>${c.encode!""}</option>
+                         <option value="${c.id?c}" <#if city??&& city.smsAccountId?? && city.smsAccountId == c.id>selected="selected"</#if>>${c.accountTitle!""}</option>
                         </#list>
                     </#if>
                 </select>
@@ -124,38 +124,38 @@ $(function () {
     <dl>
         <dt>配送起始小时</dt>
         <dd>
-            <input name="beginHour" type="text" value="<#if city?? && city.beginHour??>${city.beginHour?c!"1"}<#else>1</#if>" class="input normal" datatype="n" sucmsg=" ">
+            <input name="beginHour" type="text" value="<#if city?? && city.beginHour??>${city.beginHour?c}</#if>" class="input normal" datatype="n" sucmsg=" ">
             <span class="Validform_checktip">配送起始时间（小时）</span>
         </dd>
     </dl>
     <dl>
         <dt>配送起始分钟</dt>
         <dd>
-            <input name="beginMinute" type="text" value="<#if city?? && city.beginMinute??>${city.beginMinute?c!"1"}<#else>1</#if>" class="input normal" datatype="n" sucmsg=" ">
+            <input name="beginMinute" type="text" value="<#if city?? && city.beginMinute??>${city.beginMinute?c}</#if>" class="input normal" datatype="n" sucmsg=" ">
             <span class="Validform_checktip">配送起始时间（分钟）</span>
         </dd>
     </dl>
     <dl>
         <dt>配送结束小时</dt>
         <dd>
-            <input name="finishHour" type="text" value="<#if city?? && city.finishHour??>${city.finishHour?c!"1"}<#else>1</#if>" class="input normal" datatype="n" sucmsg=" ">
+            <input name="finishHour" type="text" value="<#if city?? && city.finishHour??>${city.finishHour?c}</#if>" class="input normal" datatype="n" sucmsg=" ">
             <span class="Validform_checktip">配送结束时间（小时）</span>
         </dd>
     </dl>
     <dl>
         <dt>配送结束分钟</dt>
         <dd>
-            <input name="finishMinute" type="text" value="<#if city?? && city.finishMinute??>${city.finishMinute?c!"1"}<#else>1</#if>" class="input normal" datatype="n" sucmsg=" ">
+            <input name="finishMinute" type="text" value="<#if city?? && city.finishMinute??>${city.finishMinute?c}</#if>" class="input normal" datatype="n" sucmsg=" ">
             <span class="Validform_checktip">配送结束时间（分钟）</span>
         </dd>
     </dl>
     <dl>
-        <dt>配送延迟时间</dt>
+        <dt>预约配送延迟时间</dt>
         <dd>
-            <input name="delayHour" type="text" value="<#if city?? && city.delayHour??>${city.delayHour?c!"1"}<#else>1</#if>" class="input normal" datatype="n" sucmsg=" ">
-            <span class="Validform_checktip">配送延迟时间（小时）</span>
+            <input name="delayHour" type="text" value="<#if city?? && city.delayHour??>${city.delayHour?c}</#if>" class="input normal" datatype="n" sucmsg=" ">
+            <span class="Validform_checktip">预约配送延迟时间（小时）</span>
         </dd>
-    </dl>    
+    </dl>
     <dl>
         <dt>排序数字</dt>
         <dd>

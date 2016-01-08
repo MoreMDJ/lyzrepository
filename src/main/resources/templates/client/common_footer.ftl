@@ -1,3 +1,5 @@
+<script>
+</script>
 <div class="footer_box">
     <div class="index_footer">
         <ul>
@@ -8,7 +10,7 @@
                 </a>
             </li>
             <li>
-                <a href='javascript:win_out()'>
+                <a id="go_out" onclick="win_out();">
                     <div></div>
                     <span>下单</span>
                 </a>

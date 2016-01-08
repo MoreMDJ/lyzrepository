@@ -633,6 +633,7 @@ public class TdManagerSettingController {
         {
             map.addAttribute("subdistrict", tdSubdistrictService.findOne(id));
         }
+        
         map.addAttribute("district_list",tdDistrictService.findAll());
         return "/site_mag/subdistrict_edit";
     }

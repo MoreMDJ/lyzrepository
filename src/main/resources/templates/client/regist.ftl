@@ -106,7 +106,7 @@
                         error:function(XMLHttpRequest, textStatus, errorThrown){
                             close(1);
                             $scope.time = 0;
-                            warning("发送失败，请与管理员联系");
+                            warning("亲，您的网速不给力啊！");
                         },
                         success:function(res){
                             close(1);
@@ -115,7 +115,7 @@
                                     setTimeout($scope.changeSms,1000);
                                 }else{
                                     $scope.time = 0;
-                                    warning("发送失败，请与管理员联系")
+                                    warning("验证码发送失败！")
                                     console.debug(res.code);
                                 }
                             }else{
@@ -163,6 +163,9 @@
             });
         </script>
     </head>
+    <script type="text/javascript">
+        document.getElementsByTagName('html')[0].style.fontSize = window.screen.width/10+'px';
+    </script>
     <body ng-app="regist">
         <#-- 引入警告提示样式 -->
         <#include "/client/common_warn.ftl">

@@ -193,10 +193,10 @@ public class TdOrderService {
 		}
 		return repository.findByUsernameAndStatusIdOrderByIdDesc(username, statusId);
 	}
-	
-	//根据用户名查找所有的订单（不分页）
-	public List<TdOrder> findByUsername(String username){
-		if(null == username){
+
+	// 根据用户名查找所有的订单（不分页）
+	public List<TdOrder> findByUsername(String username) {
+		if (null == username) {
 			return null;
 		}
 		return repository.findByUsernameOrderByIdDesc(username);
@@ -301,5 +301,12 @@ public class TdOrderService {
 	public List<TdOrder> save(List<TdOrder> entities) {
 
 		return (List<TdOrder>) repository.save(entities);
+	}
+
+	public List<TdOrder> findByUsernameAndStatusIdNotOrderByOrderTimeDesc(String username) {
+		if (null == username) {
+			return null;
+		}
+		return repository.findByUsernameAndStatusIdNotOrderByOrderTimeDesc(username, 8L);
 	}
 }
