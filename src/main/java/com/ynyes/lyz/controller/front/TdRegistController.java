@@ -23,9 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdCity;
+import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdSmsAccount;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdCityService;
+import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdSmsAccountService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.MD5;
@@ -45,6 +47,9 @@ public class TdRegistController {
 
 	@Autowired
 	private TdCityService tdCityService;
+
+	@Autowired
+	private TdDiySiteService tdDiySiteService;
 
 	@RequestMapping
 	public String regist(HttpServletRequest req, ModelMap map) {
@@ -103,6 +108,20 @@ public class TdRegistController {
 
 		// 根据城市的名称获取指定城市的信息
 		TdCity city = tdCityService.findByCityName(cityInfo);
+		if (null == city) {
+			city = new TdCity();
+		}
+
+		// 获取门店名称
+		TdDiySite diySite = tdDiySiteService.findByTitleAndIsEnableTrue(cityInfo + "默认门店");
+		if (null == diySite) {
+			diySite = new TdDiySite();
+			diySite.setCity(cityInfo);
+			diySite.setRegionId(city.getId());
+			diySite.setTitle(cityInfo + "默认门店");
+			diySite.setStatus(2L);
+			diySite = tdDiySiteService.save(diySite);
+		}
 
 		TdUser new_user = new TdUser();
 		new_user.setUsername(phone);

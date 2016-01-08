@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -141,7 +142,7 @@ public class TdManagerActivityCotroller
 		return "/site_mag/activity_edit";
 	}
 	@RequestMapping(value = "/edit")
-	public String goodsEdit(Long pid, Long id, String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE,
+	public String goodsEdit( Long fns, Long pid, Long id, String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE,
 			ModelMap map, HttpServletRequest req)
 	{
 		String username = (String) req.getSession().getAttribute("manager");
@@ -165,6 +166,10 @@ public class TdManagerActivityCotroller
 			}
 		}
 
+		if (null != fns)
+		{
+			map.addAttribute("fns", fns);
+		}
 		return "/site_mag/activity_edit";
 	}
 	
@@ -208,8 +213,11 @@ public class TdManagerActivityCotroller
 //		tdGoodsService.save(tdGoods, username);
 //
 		tdManagerLogService.addLog(type, "用户修改活动", req);
+		
+		//保存成功提示
+		Long fns = 1L;
 
-		return "redirect:/Verwalter/activity/edit";
+		return "redirect:/Verwalter/activity/edit?fns="+fns+"&id="+tdActivity.getId();
 	}
 	
 	@RequestMapping(value = "/gift/list")

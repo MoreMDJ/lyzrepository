@@ -1,10 +1,16 @@
 package com.ynyes.lyz.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 价目表项实体类
@@ -120,6 +126,33 @@ public class TdPriceListItem {
 	
 	//价格
 	private Double price;
+	// 开始时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date startDateActive;
+
+	// 结束时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date endDateActive;
+
+	public Date getStartDateActive() {
+		return startDateActive;
+	}
+
+	public void setStartDateActive(Date startDateActive) {
+		this.startDateActive = startDateActive;
+	}
+
+	public Date getEndDateActive() {
+		return endDateActive;
+	}
+
+	public void setEndDateActive(Date endDateActive) {
+		this.endDateActive = endDateActive;
+	}
 
 	public Long getListHeaderId() {
 		return listHeaderId;

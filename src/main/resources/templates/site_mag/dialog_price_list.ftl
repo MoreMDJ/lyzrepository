@@ -274,8 +274,8 @@
     <dl>
         <dt>是否推荐</dt>
         <dd>
-            <input type="radio" name="isCommendIndex" value="true" checked="checked"><label>推荐</label>
-            <input type="radio" name="isCommendIndex" value="false" ><label>不推荐</label>
+            <input type="radio" name="isCommendIndex" value="true" ><label>推荐</label>
+            <input type="radio" name="isCommendIndex" value="false" checked="checked"><label>不推荐</label>
         
         <#--
             <div class="rule-multi-radio multi-radio">

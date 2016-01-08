@@ -81,12 +81,12 @@ function __doPostBack(eventTarget, eventArgument) {
             价目表名称
         </th>
         <th align="left" width="">
-           所属区域城市名称
+           所属城市id
         </th>
         <th align="left" width="">
-           创建人
+           开始时间
         </th>
-        <th align="left" width="12%">排序</th>
+        <th align="left" width="12%">结束时间</th>
         <th width="12%">操作</th>            
     </tr>
 
@@ -100,15 +100,13 @@ function __doPostBack(eventTarget, eventArgument) {
                     <input type="hidden" name="listId" id="listId" value="${pricelist.id?c}">
                 </td>
                 <td>
-                    ${pricelist.priceListNumber!""}
+                    <#if pricelist.listHeaderId??>${pricelist.listHeaderId?c}</#if>
                 </td>
-                <td><a href="/Verwalter/pricelist/edit?id=${pricelist.id?c}">${pricelist.name!""}</a></td>
-                <td>${pricelist.cityName!""}</td>
-                <td>${pricelist.username!""}</td>
-	            <td><input name="listSortId" type="text" value="${pricelist.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
+                <td>${pricelist.name!""}</td>
+                <td>${pricelist.cityId!""}</td>
+                <td>${pricelist.startDateActive!""}</td>
+	            <td>${pricelist.endDateActive!""}</td>
 	            <td align="center">
-	                <a href="/Verwalter/pricelist/edit?id=${pricelist.id?c}">修改</a>
-	                &nbsp;|&nbsp;
 	                <a href="/Verwalter/pricelist/itemEdit?id=${pricelist.id?c}">编辑商品</a>
 	            </td>                
             </tr>

@@ -87,7 +87,7 @@ var theForm = document.forms['form1'];
                 <td align="center">${item.width!""}×${item.heigth!""}</td>
                 <td align="center">${item.createTime!""}</td>
                 <td align="center">
-                    <input name="listSortId" type="text" value="${item.sortId?c!""}" class="sort" onkeydown="return checkNumber(event);">
+                    <input name="listSortId" type="text" disabled="" value="${item.sortId?c!""}" class="sort" onkeydown="return checkNumber(event);">
                 </td>
                 <td align="center">
                     <a href="/Verwalter/ad/type/edit?id=${item.id?c}">修改</a>

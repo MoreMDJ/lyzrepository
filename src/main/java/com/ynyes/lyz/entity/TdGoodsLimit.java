@@ -25,6 +25,9 @@ public class TdGoodsLimit {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	//id(唯一标识)
+	@Column
+	private Long limitId;
 	// 分公司ID
 	@Column
 	private Long sobId;
@@ -64,6 +67,14 @@ public class TdGoodsLimit {
 	// 物料描述
 	@Column
 	private String itemDescription;
+
+	public Long getLimitId() {
+		return limitId;
+	}
+
+	public void setLimitId(Long limitId) {
+		this.limitId = limitId;
+	}
 
 	public Long getId() {
 		return id;

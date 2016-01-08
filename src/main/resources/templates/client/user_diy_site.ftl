@@ -28,29 +28,18 @@
         <!--弹窗-->
         <div id="bg"></div>
         <div id="pop-up">
-            <div class="div1">金科云湖天都自提柜</div>
+            <div id="diy_title" class="div1">金科云湖天都自提柜</div>
             <div class="div2">门店属性</div>
-            <div class="div3">直营</div>
+            <div id="diy_attr" class="div3">直营</div>
             <div class="div2">详细地址</div>
-            <div class="div3">重庆是九龙坡区科园一路（轻轨3号线石桥铺站）</div>
+            <div id="diy_address" class="div3">重庆是九龙坡区科园一路（轻轨3号线石桥铺站）</div>
             <div class="div2">电话号码</div>
-            <div class="div3">15213266666<a href="#">（点击拨打）</a></div>
+            <div id="diy_phone" class="div3">15213266666<a href="#">（点击拨打）</a></div>
             <div class="div4">
-              <a class="close" href="#" onclick="pupclose()">关闭</a>
-              <a class="select" href="#" onclick="pupclose()">选择</a>
+                <a class="close" onclick="pupclose()">关闭</a>
+                <a id="diy_check" class="select" onclick="pupclose()">选择</a>
             </div>
-         </div>
-         <script type="text/javascript">
-            $("#bg").height($(window).height());
-            function pupopen(){
-              document.getElementById("bg").style.display="block";
-              document.getElementById("pop-up").style.display="block" ;
-            }
-            function pupclose(){
-              document.getElementById("bg").style.display="none";
-              document.getElementById("pop-up").style.display="none" ;
-            }
-         </script>
+        </div>
          <!--弹窗 END-->
     
         <#-- 引入警告提示样式 -->

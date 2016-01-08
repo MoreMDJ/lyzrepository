@@ -103,11 +103,12 @@ var theForm = document.forms['form1'];
     <th align="left" colspan="2">用户名</th>
     <th align="left" width="6%">用户等级</th>
     <th align="left" width="6%">用户角色</th>
+    <th align="left" width="6%">归属门店</th>
     <th align="center" width="12%">邮箱</th>
     <th width="8%">最近登录</th>
     <th width="8%">积分</th>
     <th width="6%">状态</th>
-    <th width="6%">操作</th>
+    <th width="10%">操作</th>
   </tr>
 
     <#if user_page??>
@@ -136,14 +137,28 @@ var theForm = document.forms['form1'];
                   </div>
                 </td>
                 <td align="left">${user.userLevelTitle!""}</td>
-                <td></td>
+                <td align="left">
+                		<#switch user.userType>
+                			<#case 0>普通会员<#break>
+                			<#case 1>销售顾问<#break>
+                			<#case 2>店长<#break>
+                			<#case 3>店主<#break>
+                			<#case 4>区域经理<#break>
+                			<#default>会员
+                		</#switch>
+                </td>
+                <#--
+                <input type="radio" name="userType" value="0" datatype="n" <#if user?? && user.userType?? && user.userType==0>checked="checked"</#if>><label>普通会员</label>
+                -->
+                <td align="left">${user.diyName!""}</td>
                 <td align="center">${user.email!""}</td>
                 <td align="center">${user.lastLoginTime!""}</td>
                 <td align="center"></td>
                 <td align="center"><#if user.statusId??><#if user.statusId==0>待审核<#elseif user.statusId==1>正常</#if></#if></td>
                 <td align="center">
                     <a href="/Verwalter/user/edit?id=${user.id?c}&roleId=${roleId!""}">修改</a> | 
-                    <a href="/Verwalter/user/edit?id=${user.id?c}&roleId=${roleId!""}&action=view">查看</a></td>
+                    <a href="/Verwalter/user/edit?id=${user.id?c}&roleId=${roleId!""}&action=view">查看</a> |
+                    <a href="/Verwalter/user/setUsername?id=${user.id?c}&roleId=${roleId!""}">修改用户名</a></td>
               </tr>
         </#list>
     </#if>
@@ -151,7 +166,7 @@ var theForm = document.forms['form1'];
 </tbody>
 </table>
 
-<!--/列表-->
+<!--列表-->
 
 <!--内容底部-->
 <#assign PAGE_DATA=user_page />

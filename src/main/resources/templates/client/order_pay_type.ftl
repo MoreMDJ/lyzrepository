@@ -48,7 +48,7 @@
                     </#list>
                     <#if cashOndelivery??>
                         <div id="cashOndelivery" class="paylist" <#if cashOndelivery.id??&&payTypeId??&&cashOndelivery.id?c==payTypeId?c>style="display:block"<#else>style="display:none;"</#if>>
-                            <div class="left pre-deposit">货到付款</div>
+                            <div class="left pre-deposit">${cashOndelivery.title!''}</div>
                             <div class="right" style="float:right;">
                                 <img width="30" id="${cashOndelivery.id?c}" height="30" class="check" <#if cashOndelivery.id??&&payTypeId??&&cashOndelivery.id?c==payTypeId?c>src="/client/images/x_icon_checked.png"<#else>src="/client/images/x_icon_check.png"</#if> alt="">
                             </div>

@@ -203,6 +203,7 @@ public class TdCommonService {
 		visit.setGoodsTitle(goods.getTitle());
 		visit.setGoodsCoverImageUri(goods.getCoverImageUri());
 		visit.setVisitTime(new Date());
+		visit.setSku(goods.getCode());
 		// 默认排序号1
 		visit.setSortId(1.00);
 

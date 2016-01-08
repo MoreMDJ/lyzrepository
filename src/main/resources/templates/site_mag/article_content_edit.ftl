@@ -181,14 +181,14 @@
         <dl>
             <dt>排序数字</dt>
             <dd>
-                <input name="sortId" type="text" value="<#if article??>${article.sortId!""}<#else>99</#if>" id="txtSortId" class="input txt100" datatype="n" sucmsg=" ">
+                <input name="sortId" type="text" value="<#if article??>${article.sortId!""}<#else>99</#if>" id="txtSortId" class="input txt100" datatype="/^(([1-9]\d{0,1})|0)((\.\d{2})|(\.\d{1}))?$/" sucmsg=" " errormsg="请输入不超过100的2位小数">
                 <span class="Validform_checktip">*数字，越小越向前</span>
             </dd>
         </dl>
         <dl>
             <dt>浏览次数</dt>
             <dd>
-                <input name="viewCount" type="text"  value="<#if article??>${article.viewCount!""}</#if>" id="txtClick" class="input txt100" datatype="n" sucmsg=" ">
+                <input name="viewCount" type="text"  value="<#if article??>${article.viewCount!"0"}<#else>0</#if>" id="txtClick" class="input txt100" datatype="n" sucmsg=" ">
                 <span class="Validform_checktip">点击浏览该信息自动+1</span>
             </dd>
         </dl>

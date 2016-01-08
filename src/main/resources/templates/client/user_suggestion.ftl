@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN" class="bgc-f3f4f6">
     <head>
+    <style>
+        #suggestion_category{width:100%;height:30px;outline:none;border-radius:4px;};
+    </style>
         <meta charset="UTF-8">
         <meta name="keywords" content="">
         <meta name="copyright" content="" />
@@ -14,12 +17,12 @@
         <link rel="stylesheet" type="text/css" href="/client/css/other.css"/>
         
         <script type="text/javascript" src="/client/js/jquery-1.11.0.js"></script>
-        <script type="text/javascript" src="/client/js/rich_lee.js"></script>
         <script type="text/javascript" src="/client/js/user_suggestion.js"></script>
+        <script src="/client/js/index.js" type="text/javascript"></script>
         <script type="text/javascript">
-            $(function(){
-                win_cla();
-            });
+            window.onload = function(){
+                footer();
+            }
         </script>
         <style type="text/css">
             input{
@@ -48,7 +51,7 @@
         <article class="suggest">
             <div class="title">送货、退换货及咨询请联系<a href="tel://18580494867">电话客服</a></div>
             <#if category_list??&&category_list?size gt 0>
-                <div class="title">
+                <div class="title" style="background:none;">
                     <select name="categoryId" id="suggestion_category">
                         <#list category_list as item>
                             <option value="${item.id?c}">${item.name!''}</option>

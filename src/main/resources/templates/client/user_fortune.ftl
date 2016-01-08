@@ -13,11 +13,11 @@
         <link rel="stylesheet" type="text/css" href="/client/css/x_common.css"/>
         <link rel="stylesheet" type="text/css" href="/client/css/x_my_wealth.css"/>
         <script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
-        <script src="/client/js/rich_lee.js" type="text/javascript"></script>
+        <script src="/client/js/index.js" type="text/javascript"></script>
         <script type="text/javascript">
-            $(function(){
-                win_cla();
-            });
+            window.onload = function(){
+                footer();
+            }
         </script>
     </head>
     <body class="bgc-f3f4f6">
@@ -45,7 +45,7 @@
                     <a href="/user/recharge">充值</a>
                 </div>
                 <div class="div2">
-                    <a href="余额提现.html">提现</a>
+                    <a href="/user/deposit">提现</a>
                 </div>
             </section>
             
@@ -58,7 +58,7 @@
             <section class="coupon cash-coupon">
                 <a href="/user/coupon/0">
                     <div class="div1">我的现金劵</div>
-                    <div class="div2"><#if product_coupon_list??>${product_coupon_list?size}<#else>0</#if></div>
+                    <div class="div2">￥<#if no_product_total??>${no_product_total?string("0.00")}<#else>0</#if></div>
                 </a>
             </section>
         </article>

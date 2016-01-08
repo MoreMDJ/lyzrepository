@@ -21,6 +21,7 @@ import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdPayType;
+import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdSetting;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
@@ -33,6 +34,7 @@ import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
+import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
@@ -95,6 +97,9 @@ public class TdManagerOrderController {
     
     @Autowired
     private TdSubdistrictService tdSubdistrictService;
+    
+    @Autowired
+    private TdPriceListService tdPriceListService;
     
     //城市选择
     @RequestMapping(value = "/city",method = RequestMethod.POST)
@@ -323,9 +328,10 @@ public class TdManagerOrderController {
             }
             else if (type.equalsIgnoreCase("diysite")) // 门店
             {
+            	map.addAttribute("price_list", tdPriceListService.findAll());
                 if (null != id)
                 {
-                    map.addAttribute("diy_site", tdDiySiteService.findOne(id));                    
+                    map.addAttribute("diy_site", tdDiySiteService.findOne(id));
                 }
                 
                 return "/site_mag/diy_site_edit";
@@ -570,6 +576,7 @@ public class TdManagerOrderController {
         }
         
         String uris = parsePicUris(hid_photo_name_show360);
+        
         
         tdDiySite.setShowPictures(uris);
         

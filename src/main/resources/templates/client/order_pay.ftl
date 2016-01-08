@@ -42,12 +42,12 @@
                             </span>
                         </div>
                     </div>
-                    <a class="go-target" href="选择收货地址.html">
+                    <a class="go-target" href="/order/change/address">
                         <div class="div2">收货地址：<span>${address.city!''}${address.district!''}${address.subdistrict!''}${address.detail!''}</span></div>
                     </a>
                 </div>
             <#else>
-                <a href="/order/add/address">添加收货地址</a>
+                <a href="/order/add/address" style="background:#ffaa00;display:block;text-align:center;line-height:30px;width:92%;margin:0 4%;font-size:1.2em;color:white;border-radius:4px;margin-top:15px;">添加收货地址+</a>
             </#if>
             <!-- 编辑订单 -->
             <article class="fill-order-list">
@@ -69,7 +69,7 @@
                 <section class="delivery">
                     <div class="div1">
                         <label>配送方式</label>
-                        <a class="delivery-method" href="/order/delivery"><#if deliveryId??&&deliveryId==0>送货上门<#else>门店自提</#if></a>
+                        <a class="delivery-method" href="/order/delivery"><#if deliveryId??&&deliveryId==1>送货上门<#else>门店自提</#if></a>
                     </div>
                     <div class="div2">${order_deliveryDate!''}  ${order_deliveryDetail!''}</div>
                 </section>

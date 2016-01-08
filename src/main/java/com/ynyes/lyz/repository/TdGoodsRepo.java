@@ -21,6 +21,9 @@ import com.ynyes.lyz.entity.TdGoods;
 public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, JpaSpecificationExecutor<TdGoods> {
 
 	
+	//接口 - 物料id
+	TdGoods findByinventoryItemId(Long inventoryItemId);
+	
 	Page<TdGoods> findByCategoryIdTreeContainingAndIsOnSaleTrue(String categoryId, Pageable page);
 
 	Page<TdGoods> findByCategoryIdTreeContainingAndIsRecommendTypeTrueAndIsOnSaleTrueOrderByIdDesc(String categoryId,

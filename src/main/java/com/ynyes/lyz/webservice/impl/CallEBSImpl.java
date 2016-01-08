@@ -74,9 +74,9 @@ public class CallEBSImpl implements ICallEBS {
 	@Autowired
 	private TdGoodsLimitService tdGoodsLimitService;
 
-	public String GetErpInfo(String STRTABLE, String STRTYPE, String XML) 
+	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
-		System.out.println("getErpInfo called");
+		System.out.println("getErpInfo called：");
 
 		if (null == STRTABLE || STRTABLE.isEmpty() || STRTABLE.equals("?"))
 		{
@@ -87,15 +87,20 @@ public class CallEBSImpl implements ICallEBS {
 		{
 			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
 		}
-
-		byte[] decoded = Base64.decode(XML);
+		
+		
+		String XMLStr = XML.trim();
+		
+		XMLStr = XML.replace("\n", "");
+		
+		byte[] decoded = Base64.decode(XMLStr);
 
 		String decodedXML = null;
 
 		try
 		{
 			decodedXML = new String(decoded, "UTF-8");
-		} 
+		}
 		catch (UnsupportedEncodingException e)
 		{
 			System.out.println("UnsupportedEncodingException for decodedXML");
@@ -119,6 +124,7 @@ public class CallEBSImpl implements ICallEBS {
 		catch (ParserConfigurationException e) 
 		{
 			e.printStackTrace();
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml参数错误</MESSAGE></STATUS></RESULTS>";
 		}
 
 		Document document = null;
@@ -132,6 +138,78 @@ public class CallEBSImpl implements ICallEBS {
 		catch (SAXException | IOException e)
 		{
 			e.printStackTrace();
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
+		}
+		NodeList nodeList = document.getElementsByTagName("TABLE");
+		
+		return "test" + "return";
+	}
+	
+	public String GetErpInfo(String STRTABLE, String STRTYPE, String XML) 
+	{
+		System.out.println("getErpInfo called："+ XML);
+
+		if (null == STRTABLE || STRTABLE.isEmpty() || STRTABLE.equals("?"))
+		{
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>STRTABLE参数错误</MESSAGE></STATUS></RESULTS>";
+		}
+
+		if (null == XML || XML.isEmpty() || XML.equals("?")) 
+		{
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
+		}
+		
+		
+		String XMLStr = XML.trim();
+		
+		XMLStr = XML.replace("\n", "");
+		
+		byte[] decoded = Base64.decode(XMLStr);
+
+		String decodedXML = null;
+
+		try
+		{
+			decodedXML = new String(decoded, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			System.out.println("UnsupportedEncodingException for decodedXML");
+			e.printStackTrace();
+		}
+
+		if (null == decodedXML || decodedXML.isEmpty()) 
+		{
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后XML数据为空</MESSAGE></STATUS></RESULTS>";
+		}
+
+		System.out.println(decodedXML);
+
+		// 解析XML
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = null;
+		try
+		{
+			builder = factory.newDocumentBuilder();
+		}
+		catch (ParserConfigurationException e) 
+		{
+			e.printStackTrace();
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml参数错误</MESSAGE></STATUS></RESULTS>";
+		}
+
+		Document document = null;
+
+		InputSource is = new InputSource(new StringReader(decodedXML));
+
+		try
+		{
+			document = builder.parse(is);
+		} 
+		catch (SAXException | IOException e)
+		{
+			e.printStackTrace();
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
 		}
 		NodeList nodeList = document.getElementsByTagName("TABLE");
 		
@@ -140,17 +218,17 @@ public class CallEBSImpl implements ICallEBS {
 		{
 			for (int i = 0; i < nodeList.getLength(); i++)
 			{
-				Long sob_id = null;
-				Long customer_id = null;
-				String customer_number = null;
-				String customer_name = null;
-				String store_code = null;
-				String cust_type_code = null;
-				String cust_type_name = null;
-				String address = null;
-				String dept_code = null;
-				String dept_desc = null;
-				String enabled_flag = null;
+				Long sob_id = null;//分公司ID
+				Long customer_id = null;//客户id（分公司下唯一）
+				String customer_number = null;//客户编码（分公司下唯一）
+				String customer_name = null;//客户名称
+				String store_code = null;//门店编码（会员信息绑定在门店编码上）
+				String cust_type_code = null;//类型CODE（JX,ZY）
+				String cust_type_name = null;//类型名称（经销商，直营）
+				String address = null;//地址
+				String dept_code = null;//区域编码
+				String dept_desc = null;//区域描述
+				String enabled_flag = null;//分公司ID
 				
 				
 				Node node = nodeList.item(i);
@@ -248,9 +326,8 @@ public class CallEBSImpl implements ICallEBS {
 						}
 					}
 				}
-
-					
-					
+				
+				//保存 修改
 				TdDiySite diySite = tdDiySiteService.findByCustomerIdAndSobId(customer_id, sob_id);
 
 				if (diySite == null)
@@ -280,9 +357,12 @@ public class CallEBSImpl implements ICallEBS {
 				}
 				diySite.setTitle(customer_name);
 				diySite.setAddress(address);
-				diySite.setInfo(dept_desc);
 				diySite.setSobId(sob_id);
 				diySite.setCustomerNumber(customer_number);
+				diySite.setCustTypeName(cust_type_name);
+				diySite.setStoreCode(store_code);
+				diySite.setDeptCode(dept_code);
+				diySite.setDeptDesc(dept_desc);
 				tdDiySiteService.save(diySite);
 				
 				return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
@@ -380,11 +460,11 @@ public class CallEBSImpl implements ICallEBS {
 						}
 					}
 				}
-				TdPriceList tdPriceList = tdPriceListService.findOne(list_header_id);
+				TdPriceList tdPriceList = tdPriceListService.findByListHeaderId(list_header_id);
 				if (tdPriceList == null)
 				{
 					tdPriceList = new TdPriceList();
-					tdPriceList.setId(list_header_id);
+					tdPriceList.setListHeaderId(list_header_id);
 				}
 				tdPriceList.setCityId(sob_id);;
 				tdPriceList.setName(name);
@@ -393,20 +473,25 @@ public class CallEBSImpl implements ICallEBS {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				if (start_date_active != null)
 				{
-					try {
+					try
+					{
 						Date startdate = sdf.parse(start_date_active);
 						tdPriceList.setStartDateActive(startdate);
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
+					}
+					catch (ParseException e) 
+					{
 						e.printStackTrace();
 					}
 				}
 				if (end_date_active != null)
 				{
-					try {
+					try
+					{
 						Date enddate = sdf.parse(end_date_active);
 						tdPriceList.setEndDateActive(enddate);
-					} catch (ParseException e) {
+					}
+					catch (ParseException e) 
+					{
 						e.printStackTrace();
 					}
 				}
@@ -428,10 +513,10 @@ public class CallEBSImpl implements ICallEBS {
 				String item_num = null;//产品编号
 				String item_desc = null;//物料描述
 				String product_uom_code = null;//物料单位
-				Double price = null;//价格
+				Double price = null;//价格-零售价
 				String start_date_active = null;//生效日期
 				String end_date_active = null;//失效日期
-				
+				Double attribute1 = null; //价格-会员价
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -499,6 +584,13 @@ public class CallEBSImpl implements ICallEBS {
 								price = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
 							}
 						}
+						else if (childNode.getNodeName().equalsIgnoreCase("attribute1"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								attribute1 = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
+							}
+						}
 						else if (childNode.getNodeName().equalsIgnoreCase("start_date_active"))
 						{
 							if (null != childNode.getChildNodes().item(0))
@@ -517,21 +609,48 @@ public class CallEBSImpl implements ICallEBS {
 				}
 				//保存
 				
-				TdPriceListItem tdPriceListItem =  tdPriceListItemService.findOne(list_line_id);
+				TdPriceListItem tdPriceListItem =  tdPriceListItemService.findByListLineId(list_line_id);
 				if (tdPriceListItem == null)
 				{
 					tdPriceListItem = new TdPriceListItem();
-					tdPriceListItem.setId(list_line_id);
+					tdPriceListItem.setListLineId(list_line_id);
 				}
 				tdPriceListItem.setPriceListId(list_header_id);
 				tdPriceListItem.setDescription(description);
-				tdPriceListItem.setListLineId(list_line_id);
 				tdPriceListItem.setItemNum(item_num);
 				tdPriceListItem.setItemDesc(item_desc);
 				tdPriceListItem.setProductUomCode(product_uom_code);
 				tdPriceListItem.setPrice(price);
+				tdPriceListItem.setSalePrice(price);
 				tdPriceListItem.setGoodsId(inventory_item_id);
-				
+				tdPriceListItem.setPriceListName(description);
+				tdPriceListItem.setGoodsTitle(item_desc);
+				tdPriceListItem.setRealSalePrice(attribute1);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				if (start_date_active != null)
+				{
+					try 
+					{
+						Date startdate = sdf.parse(start_date_active);
+						tdPriceListItem.setStartDateActive(startdate);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				if (end_date_active != null)
+				{
+					try 
+					{
+						Date enddate = sdf.parse(end_date_active);
+						tdPriceListItem.setEndDateActive(enddate);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
 				tdPriceListItemService.save(tdPriceListItem);
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
@@ -550,7 +669,7 @@ public class CallEBSImpl implements ICallEBS {
 				String item_type_name = null;//物料类型名称
 				String item_type_code = null;//物料类型CODE
 				Integer inventory_item_status = null;//物料状态 0 失效，1 有效
-				String product_flag = null;//产品标识 LYZ乐易装,HR华润
+				String product_flag = null;//产品标识 LYZ乐易装,HR华润，YR银润
 				Double attribute1 = null;//采购价
 				
 				
@@ -650,19 +769,21 @@ public class CallEBSImpl implements ICallEBS {
 						}
 					}
 				}
-				//保存
+				//保存 修改
 				TdGoods tdGoods = null;
 				if (inv_category_id != null)
 				{
-				 tdGoods = tdGoodsService.findOne(inventory_item_id);
+				 tdGoods = tdGoodsService.findByinventoryItemId(inventory_item_id);
 				}
 				if (tdGoods == null)
 				{
 					tdGoods = new TdGoods();
-					tdGoods.setId(inventory_item_id);
+					tdGoods.setInventoryItemId(inventory_item_id);
 				}
 				tdGoods.setCode(item_code);
-				tdGoods.setDetail(item_description);
+				tdGoods.setName(item_description);
+				tdGoods.setTitle(item_description);
+				tdGoods.setSubTitle(item_description);
 				tdGoods.setItemBarcode(item_barcode);
 				tdGoods.setBradCategoryId(brad_category_id);
 				tdGoods.setProductCategoryId(product_category_id);
@@ -671,18 +792,29 @@ public class CallEBSImpl implements ICallEBS {
 				if (inventory_item_status == 0)
 				{
 					tdGoods.setIsOnSale(false);
+					tdGoods.setInventoryItemStatus(0L);
 				}
 				else
 				{
 					tdGoods.setIsOnSale(true);
+					tdGoods.setInventoryItemStatus(1L);
 				}
-				if (product_flag.equalsIgnoreCase("LYZ"))
+				
+				if (product_flag.equalsIgnoreCase("HR"))
+				{
+					tdGoods.setBelongTo(1L);
+				}
+				else if(product_flag.equalsIgnoreCase("LYZ"))
 				{
 					tdGoods.setBelongTo(2L);
 				}
+				else if(product_flag.equalsIgnoreCase("YR"))
+				{
+					tdGoods.setBelongTo(3L);
+				}
 				else
 				{
-					tdGoods.setBelongTo(1L);
+					tdGoods.setBelongTo(0L);
 				}
 				tdGoods.setAttribute1(attribute1);
 				tdGoodsService.save(tdGoods, "数据导入");
@@ -731,11 +863,11 @@ public class CallEBSImpl implements ICallEBS {
 						
 					}
 				}
-				TdLyzParameter tdLyzParameter = tdLyzParameterService.findOne(category_id);
+				TdLyzParameter tdLyzParameter = tdLyzParameterService.findByCategoryId(category_id);
 				if (tdLyzParameter == null)
 				{
 					tdLyzParameter = new TdLyzParameter();
-					tdLyzParameter.setId(category_id);
+					tdLyzParameter.setCategoryId(category_id);
 				}
 				tdLyzParameter.setConcatenatedSegments(concatenated_segments);
 				tdLyzParameter.setCategorySetName(category_set_name);
@@ -842,11 +974,11 @@ public class CallEBSImpl implements ICallEBS {
 					}
 				}
 				//保存
-				TdGoodsLimit tdGoodsLimit = tdGoodsLimitService.findOne(limit_id);
+				TdGoodsLimit tdGoodsLimit = tdGoodsLimitService.findByLimitId(limit_id);
 				if (tdGoodsLimit == null)
 				{
 					tdGoodsLimit = new TdGoodsLimit();
-					tdGoodsLimit.setId(limit_id);
+					tdGoodsLimit.setLimitId(limit_id);
 				}
 				tdGoodsLimit.setSobId(SOB_ID);
 				tdGoodsLimit.setCustomerId(customer_id);
@@ -858,7 +990,7 @@ public class CallEBSImpl implements ICallEBS {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				if (start_date_active != null)
 				{
-					try 
+					try
 					{
 						Date startdate = sdf.parse(start_date_active);
 						tdGoodsLimit.setBeginDate(startdate);
@@ -940,6 +1072,7 @@ public class CallEBSImpl implements ICallEBS {
 					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>该门店不存在，无法添加价目表</MESSAGE></STATUS></RESULTS>";
 				}
 				tdDiySite.setPriceListId(list_header_id);
+				tdDiySite.setPriceListName(name);
 				tdDiySiteService.save(tdDiySite);
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
@@ -947,5 +1080,7 @@ public class CallEBSImpl implements ICallEBS {
 		
 		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";
 	}
+
+	
 }
 // END SNIPPET: service

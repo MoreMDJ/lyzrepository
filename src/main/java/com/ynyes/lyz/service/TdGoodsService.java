@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.xerces.impl.xpath.regex.REUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -462,7 +463,21 @@ public class TdGoodsService {
 
 		return repository.findByCategoryIdTreeContainingAndIsOnSaleTrueOrderBySortIdAsc(catIdStr, pageRequest);
 	}
-
+	
+	/**
+	 * @author MDJ 接口查询
+	 */
+	//通过物料id查询
+	public TdGoods findByinventoryItemId(Long inventoryItemId)
+	{
+		if (inventoryItemId == null)
+		{
+			return null;
+		}
+		return repository.findByinventoryItemId(inventoryItemId);
+	}
+	
+	
 	/**
 	 * 搜索商品
 	 * 
@@ -1150,26 +1165,16 @@ public class TdGoodsService {
 			return null;
 		}
 
-		// 参数类型ID
-		Long paramCategoryId = null;
-
+		if (e.getMarketPrice() == null)
+		{
+			e.setMarketPrice(10.0);
+		}
 		// 保存分类名称
 		if (null != e.getCategoryId()) {
 			TdProductCategory cat = tdProductCategoryService.findOne(e.getCategoryId());
 			e.setCategoryTitle(cat.getTitle());
 			e.setCategoryIdTree(cat.getParentTree());
-
-			paramCategoryId = cat.getParamCategoryId();
 		}
-
-		// // 保存品牌名称
-		// if (null != e.getCategoryId()) {
-		// TdBrand brand = tdBrandService.findOne(e.getBrandId());
-		//
-		// if (null != brand) {
-		// e.setBrandTitle(brand.getTitle());
-		// }
-		// }
 
 		// 保存销售价
 		if (null == e.getReturnPrice()) {
@@ -1192,66 +1197,7 @@ public class TdGoodsService {
 			e.setOnSaleTime(new Date());
 		}
 
-		// 仓库名
-		// if (null != e.getWarehouseId()) {
-		// TdWarehouse w = tdWarehouseService.findOne(e.getWarehouseId());
-		//
-		// if (null != w) {
-		// e.setWarehouseTitle(w.getTitle());
-		// }
-		// }
 
-		// 当修改时，若切换过类型，参数数量由多变少，需要删除多余的参数
-		// if (null != e.getId() && null != paramCategoryId) {
-		// int count = tdParameterService
-		// .countByCategoryTreeContaining(paramCategoryId);
-		// int size = e.getParamList().size();
-		//
-		// if (size > count) {
-		// List<TdGoodsParameter> subList = e.getParamList().subList(
-		// count, size);
-		// tdGoodsParameterService.delete(subList);
-		// e.getParamList().removeAll(subList);
-		// }
-		// }
-
-		// 当修改时，赠品数量减少时，需删除多余的赠品
-		if (null != e.getId() && null != e.getGiftList() && null != e.getTotalGift()) {
-			int count = e.getTotalGift();
-			int size = e.getGiftList().size();
-
-			if (size > count) {
-				List<TdGoodsGift> subList = e.getGiftList().subList(count, size);
-				tdGoodsGiftService.delete(subList);
-				e.getGiftList().removeAll(subList);
-			}
-		}
-
-		// 当修改时，组合商品数量减少时，需删除多余的组合商品
-		if (null != e.getId() && null != e.getCombList() && null != e.getTotalComb()) {
-			int count = e.getTotalComb();
-			int size = e.getCombList().size();
-
-			if (size > count) {
-				List<TdGoodsCombination> subList = e.getCombList().subList(count, size);
-				tdGoodsCombinationService.delete(subList);
-				e.getCombList().removeAll(subList);
-			}
-		}
-
-		// if (null != e.getParamList() && e.getParamList().size() > 0) {
-		// String valueCollect = "";
-		// for (TdGoodsParameter gp : e.getParamList()) {
-		// valueCollect += gp.getValue();
-		// valueCollect += ",";
-		// }
-		// e.setParamValueCollect(valueCollect);
-		//
-		// // 保存参数
-		// tdGoodsParameterService.save(e.getParamList());
-		// } else {
-		// e.setParamValueCollect("");
-		// }
 
 		if (null == e.getId()) {
 			if (null != e.getGiftList() && e.getGiftList().size() > 0) {
@@ -1262,38 +1208,7 @@ public class TdGoodsService {
 				e.setTotalComb(e.getCombList().size());
 			}
 		}
-
-		// 保存赠品
-		tdGoodsGiftService.save(e.getGiftList());
-
-		// 保存组合
-		tdGoodsCombinationService.save(e.getCombList());
-
 		e = repository.save(e);
-
-		// 添加改价记录
-		TdPriceChangeLog priceLog = tdPriceChangeLogService.findTopByGoodsIdOrderByIdDesc(e.getId());
-
-		// 没有改过价，或改价后的记录与当前销售价不相等
-		if (null == priceLog || !priceLog.getPrice().equals(e.getSalePrice())) {
-			TdPriceChangeLog newPriceLog = new TdPriceChangeLog();
-
-			newPriceLog.setCreateTime(new Date());
-			newPriceLog.setGoodsId(e.getId());
-			newPriceLog.setGoodsTitle(e.getTitle() + (null == e.getSelectOneValue() ? "" : " " + e.getSelectOneValue())
-					+ (null == e.getSelectTwoValue() ? "" : " " + e.getSelectTwoValue())
-					+ (null == e.getSelectThreeValue() ? "" : " " + e.getSelectThreeValue()));
-			newPriceLog.setOperator(manager);
-
-			if (null != priceLog) {
-				newPriceLog.setOriginPrice(priceLog.getPrice());
-			}
-
-			newPriceLog.setPrice(e.getSalePrice());
-			newPriceLog.setSortId(99.00);
-
-			tdPriceChangeLogService.save(newPriceLog);
-		}
 
 		return e;
 	}

@@ -60,7 +60,7 @@ public class TdPriceList {
 //接口新增数据------------------------------《
 	//价目表ID
 	@Column
-	private Integer listHeaderId;
+	private Long listHeaderId;
 	
 	//分公司ID
 	@Column
@@ -123,11 +123,11 @@ public class TdPriceList {
 		this.priceTypeDesc = priceTypeDesc;
 	}
 
-	public Integer getListHeaderId() {
+	public Long getListHeaderId() {
 		return listHeaderId;
 	}
 
-	public void setListHeaderId(Integer listHeaderId) {
+	public void setListHeaderId(Long listHeaderId) {
 		this.listHeaderId = listHeaderId;
 	}
 

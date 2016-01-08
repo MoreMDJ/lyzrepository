@@ -206,6 +206,11 @@
             <artifactId>cxf-rt-transports-http</artifactId>
             <version>2.5.2</version>
         </dependency>
+        <dependency>
+        	<groupId>org.testng</groupId>
+        	<artifactId>testng</artifactId>
+        	<version>6.8.8</version>
+        </dependency>
 	</dependencies>
 
 	<properties>

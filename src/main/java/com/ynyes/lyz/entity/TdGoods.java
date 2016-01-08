@@ -378,12 +378,17 @@ public class TdGoods {
 	@Column
 	private String colorPackageSku;
 
-	// 归属： 1 华润商品 2 乐意装商品
+	// 归属：0 未知 1 华润商品 2 乐意装商品 3银润
 	@Column
 	private Long belongTo;
 	
 	
 //接口添加数据------------》
+	
+	//物料id（唯一标识）
+	@Column
+	private Long inventoryItemId;
+	
 	// 库存分类ID
 	@Column
 	private Long invCategoryId;
@@ -406,7 +411,7 @@ public class TdGoods {
 	
 	//物料状态 0 失效，1 有效
 	@Column
-	private String inventoryItemStatus;
+	private Long inventoryItemStatus;
 	
 	//产品条码
 	@Column
@@ -416,6 +421,14 @@ public class TdGoods {
 	@Column(scale = 2)
 	private Double attribute1;
 	
+	public Long getInventoryItemId() {
+		return inventoryItemId;
+	}
+
+	public void setInventoryItemId(Long inventoryItemId) {
+		this.inventoryItemId = inventoryItemId;
+	}
+
 	public Double getAttribute1() {
 		return attribute1;
 	}
@@ -464,11 +477,11 @@ public class TdGoods {
 		this.itemTypeCode = itemTypeCode;
 	}
 
-	public String getInventoryItemStatus() {
+	public Long getInventoryItemStatus() {
 		return inventoryItemStatus;
 	}
 
-	public void setInventoryItemStatus(String inventoryItemStatus) {
+	public void setInventoryItemStatus(Long inventoryItemStatus) {
 		this.inventoryItemStatus = inventoryItemStatus;
 	}
 

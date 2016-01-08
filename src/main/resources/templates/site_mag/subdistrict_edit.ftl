@@ -73,7 +73,24 @@ $(function () {
             <div class="rule-single-select">
                 <select name="districtId" datatype="*" sucmsg=" ">
                     <#if !subdistrict??>
-                    <option value="">请选择类别...</option>
+                    <option>请选择...</option>
+                    </#if>
+                    <#if district_list??>
+                        <#list district_list as c>
+                            <option value="${c.id!""}" <#if subdistrict?? && subdistrict.districtId==c.id>selected="selected"</#if>>${c.name!""}</option>
+                        </#list>
+                    </#if>
+                </select>
+            </div>
+        </dd>
+    </dl>
+   <dl>
+        <dt>所属配送仓库</dt>
+        <dd>
+            <div class="rule-single-select">
+                <select name="storageId" datatype="*" sucmsg=" ">
+                    <#if !subdistrict??>
+                        <option>请选择...</option>
                     </#if>
                     <#if district_list??>
                         <#list district_list as c>
@@ -85,7 +102,7 @@ $(function () {
         </dd>
     </dl>
   <dl>
-    <dt>行政街道</dt>
+    <dt>行政街道名</dt>
     <dd>
         <input name="name" type="text" value="<#if subdistrict??>${subdistrict.name!"1"}</#if>" class="input normal" datatype="*1-255" sucmsg=" "> 
         <span class="Validform_checktip">*行政街道名称</span>
@@ -101,7 +118,7 @@ $(function () {
   <dl>
     <dt>排序数字</dt>
     <dd>
-      <input name="sortId" type="text" value="<#if subdistrict??>${subdistrict.sortId!"0"}<#else>99</#if>" class="input small" datatype="n" sucmsg=" ">
+      <input name="sortId" type="text" value="<#if subdistrict??>${subdistrict.sortId!"0"}<#else>99</#if>" class="input small" datatype="/^(([1-9]\d{0,1})|0)((\.\d{2})|(\.\d{1}))?$/" sucmsg=" " errormsg="请输入不超过100的2位小数">
       <span class="Validform_checktip">*数字，越小越向前</span>
     </dd>
   </dl>

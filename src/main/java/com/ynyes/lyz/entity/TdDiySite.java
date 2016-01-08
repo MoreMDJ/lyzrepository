@@ -50,7 +50,7 @@ public class TdDiySite {
 	// 门店城市行政区划id
 	@Column
 	private Long disctrictId;
-	
+
 	// 门店城市名称
 	@Column
 	private String city;
@@ -98,21 +98,105 @@ public class TdDiySite {
 	// 门店所使用的价目表编号
 	@Column
 	private Long priceListId;
-	
-	//是否是直营门店
+
+	// 是否是直营门店
 	@Column
 	private Boolean isDirect;
+
+	// 门店属性（0. 直营门店；1. 加盟门店；2. 虚拟门店；3. 第三方）
+	@Column
+	private Long status;
+
+	// 行政街道名
+	@Column
+	private String subDisctrictName;
+
+	// 行政街道ID
+	@Column
+	private Long subDisctrictId;
 	
 	// 接口新加数据    <--------------
+	
 	//分公司ID
 	@Column
 	private Long sobId;
-	
-	@Column 
+	//客户id
+	@Column
 	private Long customerId;
-	
+	//客户编码
 	@Column
 	private String customerNumber;
+	//类型名称（经销商，直营）
+	@Column
+	private String custTypeName;
+	//门店编码
+	@Column
+	private String storeCode;
+	//区域编码
+	@Column
+	private String deptCode;
+	//区域描述
+	@Column
+	private String deptDesc;
+	//价目表名
+	@Column
+	private String priceListName;
+
+	public String getPriceListName() {
+		return priceListName;
+	}
+
+	public void setPriceListName(String priceListName) {
+		this.priceListName = priceListName;
+	}
+
+	public String getStoreCode() {
+		return storeCode;
+	}
+
+	public void setStoreCode(String storeCode) {
+		this.storeCode = storeCode;
+	}
+
+	public String getDeptCode() {
+		return deptCode;
+	}
+
+	public void setDeptCode(String deptCode) {
+		this.deptCode = deptCode;
+	}
+
+	public String getDeptDesc() {
+		return deptDesc;
+	}
+
+	public void setDeptDesc(String deptDesc) {
+		this.deptDesc = deptDesc;
+	}
+
+	public String getCustTypeName() {
+		return custTypeName;
+	}
+
+	public void setCustTypeName(String custTypeName) {
+		this.custTypeName = custTypeName;
+	}
+
+	public String getSubDisctrictName() {
+		return subDisctrictName;
+	}
+
+	public void setSubDisctrictName(String subDisctrictName) {
+		this.subDisctrictName = subDisctrictName;
+	}
+
+	public Long getSubDisctrictId() {
+		return subDisctrictId;
+	}
+
+	public void setSubDisctrictId(Long subDisctrictId) {
+		this.subDisctrictId = subDisctrictId;
+	}
 
 	public String getCustomerNumber() {
 		return customerNumber;
@@ -225,7 +309,7 @@ public class TdDiySite {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	
+
 	public Long getDisctrictId() {
 		return disctrictId;
 	}
@@ -312,5 +396,13 @@ public class TdDiySite {
 
 	public void setIsDirect(Boolean isDirect) {
 		this.isDirect = isDirect;
+	}
+
+	public Long getStatus() {
+		return status;
+	}
+
+	public void setStatus(Long status) {
+		this.status = status;
 	}
 }

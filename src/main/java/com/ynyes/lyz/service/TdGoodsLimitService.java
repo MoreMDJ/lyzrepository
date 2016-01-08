@@ -61,6 +61,15 @@ public class TdGoodsLimitService {
         return repository.save(e);
     }
     
+    public TdGoodsLimit findByLimitId(Long limitId)
+    {
+    	if (limitId == null)
+    	{
+			return null;
+		}
+    	return repository.findByLimitId(limitId);
+    }
+    
     public List<TdGoodsLimit> save(List<TdGoodsLimit> entities)
     {
         return (List<TdGoodsLimit>) repository.save(entities);

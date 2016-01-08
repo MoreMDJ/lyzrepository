@@ -69,7 +69,7 @@
 				<div class="det_pri">
 				    <#if goods??>
     					<p>${goods.name!''}</p>
-    					<label>123</label>
+    					<label>${goods.code!''}</label>
     					<p>￥<#if priceListItem??&&priceListItem.salePrice??>${priceListItem.salePrice?string("0.00")}<#else>0.00</#if></p>
     					<p>销量：${goods.soldNumber!'0'}件</p>
     					<#-- 该标签用以存储库存 -->
@@ -81,7 +81,7 @@
 				<ul class="det_list">
 					<li class="li01">
 						<div>品牌：</div>
-						<p>${goods.brandTitle!''}</p>
+						<p><#if goods.belongTo??&&goods.belongTo==1>华润<#else>乐易装</#if></p>
 					</li>
 				    <#--
 					<li class="li02">

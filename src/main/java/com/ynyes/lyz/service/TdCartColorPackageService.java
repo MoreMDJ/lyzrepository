@@ -30,6 +30,15 @@ public class TdCartColorPackageService {
 		}
 	}
 	
+	public List<TdCartColorPackage> findByUsername(String username)
+	{
+		if(null == username)
+		{
+			return null;
+		}
+		return repository.findByUsername(username);
+	}
+	
 	public TdCartColorPackage findOne(Long id){
 		if(null == id){
 			return null;

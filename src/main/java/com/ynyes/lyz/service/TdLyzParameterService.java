@@ -2,6 +2,7 @@ package com.ynyes.lyz.service;
 
 import java.util.List;
 
+import org.apache.xerces.impl.xpath.regex.REUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,6 +73,15 @@ public class TdLyzParameterService {
         }
         
         return repository.findOne(id);
+    }
+    
+    public TdLyzParameter findByCategoryId(Long categoryId)
+    {
+    	if (categoryId == null)
+    	{
+			return null;
+		}
+    	return repository.findByCategoryId(categoryId);
     }
     
     /**

@@ -38,7 +38,16 @@
                     <#list diysite_list as item>
                         {
                             "title":"${item.title!''}",
-                            "isDirect":<#if item.isDirect??&&item.isDirect>"直营"<#else>"非直营"</#if>,
+                            "isDirect":<#if item.status??>
+                                           <#switch item.status>
+                                               <#case 0>"直营"<#break>
+                                               <#case 1>"加盟"<#break>
+                                               <#case 2>"虚拟"<#break>
+                                               <#case 3>"第三方"<#break>
+                                           </#switch>
+                                       <#else>
+                                            "无"
+                                       </#if>,
                             "address":"${item.address!'无'}",
                             "serviceTele":"${item.serviceTele!'00000000000'}"
                         }

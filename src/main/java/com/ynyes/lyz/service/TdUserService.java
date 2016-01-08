@@ -40,6 +40,21 @@ public class TdUserService {
 		}
 		return repository.findOne(id);
 	}
+	
+	/**
+	 * 按username查找，自身除外
+	 * @author Zhangji
+	 * @param username
+	 * @param id
+	 * @return
+	 */
+	public TdUser findByUsernameAndIdNot(String username, Long id) {
+		if (null == username || null == id) {
+			return null;
+		}
+
+		return repository.findByUsernameAndIdNot(username, id);
+	}
 
 	public List<TdUser> findAll() {
 		return (List<TdUser>) repository.findAll();

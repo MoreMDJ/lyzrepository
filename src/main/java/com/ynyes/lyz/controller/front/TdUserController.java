@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdArticle;
+import com.ynyes.lyz.entity.TdArticleCategory;
 import com.ynyes.lyz.entity.TdBalanceLog;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
@@ -38,6 +40,8 @@ import com.ynyes.lyz.entity.TdUserLevel;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdUserSuggestion;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
+import com.ynyes.lyz.service.TdArticleCategoryService;
+import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBalanceLogService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
@@ -121,6 +125,12 @@ public class TdUserController {
 	@Autowired
 	private TdPayTypeService tdPayTypeService;
 
+	@Autowired
+	private TdArticleCategoryService tdArticleCategoryService;
+
+	@Autowired
+	private TdArticleService tdArticleService;
+
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
 	 * 
@@ -174,7 +184,7 @@ public class TdUserController {
 		}
 
 		// 查找所有的订单
-		List<TdOrder> all_order_list = tdOrderService.findByUsername(username);
+		List<TdOrder> all_order_list = tdOrderService.findByUsernameAndStatusIdNotOrderByOrderTimeDesc(username);
 		map.addAttribute("all_order_list", all_order_list);
 
 		// 查找所有待支付的订单
@@ -361,6 +371,8 @@ public class TdUserController {
 			return "redirect:/login";
 		}
 
+		Double total_price = 0.0;
+
 		// 获取所有已选的商品
 		List<TdCartGoods> all_selected = tdCommonService.getSelectedGoods(req);
 		for (int i = 0; i < all_selected.size(); i++) {
@@ -374,7 +386,9 @@ public class TdUserController {
 					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > goods.getLeftNumber()) {
 						cartGoods.setQuantity(goods.getLeftNumber());
 					}
-
+					if (null != cartGoods.getPrice() && null != cartGoods.getQuantity()) {
+						total_price += (cartGoods.getPrice() * cartGoods.getQuantity());
+					}
 				}
 			}
 		}
@@ -392,6 +406,9 @@ public class TdUserController {
 							&& cartColorPackage.getQuantity() > goods.getLeftNumber()) {
 						cartColorPackage.setQuantity(goods.getLeftNumber());
 					}
+					if (null != cartColorPackage.getSalePrice() && null != cartColorPackage.getQuantity()) {
+						total_price += (cartColorPackage.getSalePrice() * cartColorPackage.getQuantity());
+					}
 				}
 			}
 		}
@@ -405,6 +422,8 @@ public class TdUserController {
 		if (null != all) {
 			map.addAttribute("selected_number", all.size());
 		}
+
+		map.addAttribute("totalPrice", total_price);
 
 		return "/client/user_selected";
 	}
@@ -697,6 +716,8 @@ public class TdUserController {
 		if (0L == type) {
 			TdShippingAddress address = new TdShippingAddress();
 			address.setCity(user.getCityName());
+			// 默认联系人电话为会员的电话号码
+			address.setReceiverMobile(username);
 			map.addAttribute("address", address);
 		}
 
@@ -825,6 +846,7 @@ public class TdUserController {
 		}
 		address.setProvince(tdCity.getProvince());
 		address.setCity(tdCity.getCityName());
+		address.setCityId(tdCity.getId());
 		address.setDisctrict(district);
 		address.setSubdistrict(subdistrict);
 		address.setDetailAddress(detailAddress);
@@ -1017,11 +1039,23 @@ public class TdUserController {
 		// 检验当前优惠券是否存在过期的
 		tdCommonService.checkUserCoupon(req);
 
+		List<TdCoupon> no_product_coupon_list = tdCouponService
+				.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotOrderByGetTimeDesc(username, 3L);
+		List<TdCoupon> product_coupon_list = tdCouponService
+				.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdOrderByGetTimeDesc(username, 3L);
+
+		Double no_product_total = 0.0;
+
+		// 获取现金券的总额
+		for (TdCoupon coupon : no_product_coupon_list) {
+			if (null != coupon && null != coupon.getPrice()) {
+				no_product_total += coupon.getPrice();
+			}
+		}
+
 		map.addAttribute("user", user);
-		map.addAttribute("no_product_coupon_list", tdCouponService
-				.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotOrderByGetTimeDesc(username, 3L));
-		map.addAttribute("product_coupon_list", tdCouponService
-				.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdOrderByGetTimeDesc(username, 3L));
+		map.addAttribute("no_product_total", no_product_total);
+		map.addAttribute("product_coupon_list", product_coupon_list);
 
 		return "/client/user_fortune";
 	}
@@ -1197,6 +1231,7 @@ public class TdUserController {
 					order.setStatusId(3L);
 					user.setBalance(balance - total_price);
 					tdUserService.save(user);
+					tdOrderService.save(order);
 					res.put("message", "操作成功");
 					res.put("status", 0);
 					break;
@@ -1254,5 +1289,94 @@ public class TdUserController {
 		map.addAttribute("order", order);
 
 		return "/client/user_order_detail";
+	}
+
+	/**
+	 * 用户修改归属门店并且保存的方法
+	 * 
+	 * @author dengxiao
+	 */
+	@RequestMapping(value = "/diy/save")
+	@ResponseBody
+	public Map<String, Object> userDiySave(HttpServletRequest req, Long id) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+		// 获取登陆用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			res.put("message", "未获取到登陆用户的信息，操作失败");
+			return res;
+		}
+
+		// 获取指定id的门店信息
+		TdDiySite site = tdDiySiteService.findOne(id);
+		if (null == site) {
+			res.put("message", "未获取到指定门店的信息，操作失败");
+			return res;
+		}
+
+		user.setUpperDiySiteId(site.getId());
+		user.setDiyName(site.getTitle());
+		tdUserService.save(user);
+		res.put("status", 0);
+		return res;
+	}
+
+	/**
+	 * 跳转到提现页面的方法
+	 * 
+	 * @author dengxiao
+	 */
+	@RequestMapping(value = "/deposit")
+	public String userDeposit(HttpServletRequest req, ModelMap map) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
+		return "/client/user_deposit";
+	}
+
+	/**
+	 * 跳转到优惠券使用说明的方法
+	 * 
+	 * @author dengxiao
+	 */
+	@RequestMapping(value = "/coupon/description")
+	public String userCouponDescription(HttpServletRequest req, ModelMap map) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
+
+		// 获取优惠券使用说明的文章分类
+		TdArticleCategory category = tdArticleCategoryService.findByTitle("优惠券使用规则");
+		// 获取指定的文章类别id获取所有的文章，按照排序号正序排序
+		if (null != category) {
+			List<TdArticle> article_list = tdArticleService.findByCategoryIdOrderBySortIdAsc(category.getId());
+			if (null != article_list && article_list.size() > 0) {
+				map.addAttribute("article", article_list.get(0));
+			}
+		}
+
+		return "/client/coupon_description";
+	}
+
+	/**
+	 * 删除订单的方法
+	 * 
+	 * @author dengxiao
+	 */
+	@RequestMapping(value = "/order/delete")
+	@ResponseBody
+	public Map<String, Object> orderDelete(Long orderId) {
+		Map<String, Object> res = new HashMap<>();
+		TdOrder order = tdOrderService.findOne(orderId);
+		order.setStatusId(8L);
+		tdOrderService.save(order);
+		res.put("status", 0);
+		return res;
 	}
 }

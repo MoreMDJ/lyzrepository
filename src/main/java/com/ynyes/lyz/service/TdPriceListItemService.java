@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.xerces.impl.xpath.regex.REUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,14 +28,25 @@ public class TdPriceListItemService {
 		}
 		return repository.save(e);
 	}
-	
-	public TdPriceListItem findByListHeaderId(Integer listHeaderId)
+	/*
+	 * 接口 数据查询
+	 */
+	public TdPriceListItem findByListHeaderId(Long listHeaderId)
 	{
 		if (listHeaderId == null)
 		{
 			return null;
 		}
 		return repository.findByListHeaderId(listHeaderId);
+	}
+	
+	public TdPriceListItem findByListLineId(Long listLineId)
+	{
+		if (listLineId == null)
+		{
+			return null;
+		}
+		return repository.findByListLineId(listLineId);
 	}
 	
 	//zhangji

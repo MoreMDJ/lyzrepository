@@ -18,5 +18,5 @@ public interface TdLyzParameterRepo extends
 		PagingAndSortingRepository<TdLyzParameter, Long>,
 		JpaSpecificationExecutor<TdLyzParameter> 
 {
-    
+    TdLyzParameter findByCategoryId(Long categoryId);
 }

@@ -57,10 +57,25 @@ required:必选项
 			
 			// 遍历赋值市级下拉列表
 			temp_html=select_prehtml;
-			$.each(city_json.citylist[prov_id].c,function(i,city){
-				temp_html+="<option value='"+city.n+"'>"+city.n+"</option>";
-			});
-			city_obj.html(temp_html).attr("disabled",false).css({"display":"","visibility":""});
+			var city = prov_obj.val();
+			$.ajax({
+                type: "post",
+                url: "/Verwalter/order/district",
+                data: { "cityId": city },
+                dataType: "json",
+                async : false,
+                success: function (data) 
+                { 
+                	if (data.code == 1)
+                	{
+                		for(var i = 0; i <data.district.length; i++)
+                		{
+                			temp_html+="<option value='"+data.district[i].id+"'>"+data.district[i].name+"</option>";
+                		}
+                    }
+                	city_obj.html(temp_html).attr("disabled",false).css({"display":"","visibility":""});
+                }
+            });
 			distStart();
 		};
 
@@ -74,7 +89,7 @@ required:必选项
 			};
 			dist_obj.empty().attr("disabled",true);
 
-			if(prov_id<0||city_id<0||typeof(city_json.citylist[prov_id].c[city_id].a)=="undefined"){
+			if(prov_id<0||city_id<0){
 				if(settings.nodata=="none"){
 					dist_obj.css("display","none");
 				}else if(settings.nodata=="hidden"){
@@ -85,19 +100,47 @@ required:必选项
 			
 			// 遍历赋值市级下拉列表
 			temp_html=select_prehtml;
-			$.each(city_json.citylist[prov_id].c[city_id].a,function(i,dist){
-				temp_html+="<option value='"+dist.s+"'>"+dist.s+"</option>";
-			});
-			dist_obj.html(temp_html).attr("disabled",false).css({"display":"","visibility":""});
+			var dirct = city_obj.val();
+			$.ajax({
+                type: "post",
+                url: "/Verwalter/order/subdistrict",
+                data: { "districtId": dirct},
+                dataType: "json",
+                async : false,
+                success: function (data) 
+                {
+                	if (data.code == 1)
+                	{
+                		for(var i = 0; i <data.subdistrict.length; i++)
+                		{
+                			temp_html+="<option value='"+data.subdistrict[i].id+"'>"+data.subdistrict[i].name+"</option>";
+                		}
+                    }
+                	dist_obj.html(temp_html).attr("disabled",false).css({"display":"","visibility":""});
+                }
+            });
 		};
 
 		var init=function(){
 			// 遍历赋值省份下拉列表
 			temp_html=select_prehtml;
-			$.each(city_json.citylist,function(i,prov){
-				temp_html+="<option value='"+prov.p+"'>"+prov.p+"</option>";
-			});
-			prov_obj.html(temp_html);
+			$.ajax({
+                type: "post",
+                url: "/Verwalter/order/city",
+                dataType: "json",
+                async : false,
+                success: function (data) 
+                { 
+                	if (data.code == 1)
+                	{
+                		for(var i = 0; i <data.city.length; i++)
+                		{
+                			temp_html+="<option value='"+data.city[i].id+"'>"+data.city[i].cityName+"</option>";
+                		}
+                    }
+                	prov_obj.html(temp_html);
+                }
+            });
 
 			// 若有传入省份与市级的值，则选中。（setTimeout为兼容IE6而设置）
 			setTimeout(function(){

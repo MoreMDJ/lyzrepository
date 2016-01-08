@@ -1,6 +1,6 @@
-.top_head{width: 100%; height: 50px; background: #cc1421; float: left;line-height: 50px;}
-.top_head .head_back{width: 30%; height: 50px; background: url(/client/images/back_icon.png) no-repeat 20px; background-size:26px; float: left;}
-.top_head .head_title{width: 40%; height: 50px;text-align: center; font-size:1.2em; color: white; line-height: 50px; float: left; padding-right: 30%;}
+.top_head{width: 100%; height: 1.2rem; background: #cc1421; float: left;}
+.top_head .head_back{width: 30%; height: 1.2rem; background: url(/client/images/back_icon.png) no-repeat 20px; background-size: 20%; float: left;}
+.top_head .head_title{width: 40%; height: 1.2rem;text-align: center; font-size:0.6rem; color: white; line-height: 1.2rem; float: left; padding-right: 30%;}
 
 
 
@@ -456,7 +456,7 @@
 	width: 100%;
 	font-size: 1.1em;
 	min-height: 20%;
-	padding-top:2%;	
+	padding: 4% 0;	
 }
 .good03_box .box03_pri{
 	width: 100%;
@@ -464,7 +464,6 @@
 	text-align: center;
 	font-size: 1.2em;
 	color: #cc1421;
-	margin-top:2px
 }
 
 

@@ -37,6 +37,10 @@ public class TdUserRecentVisit {
     @Column
     private Long goodsId;
     
+    //商品SKU
+    @Column
+    private String sku; 
+    
     // 商品标题
     @Column
     private String goodsTitle;
@@ -86,7 +90,15 @@ public class TdUserRecentVisit {
         return goodsId;
     }
 
-    public void setGoodsId(Long goodsId) {
+    public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
+
+	public void setGoodsId(Long goodsId) {
         this.goodsId = goodsId;
     }
 

@@ -66,15 +66,9 @@ function orderPay() {
 		success : function(res) {
 			// 关闭等待图标
 			close(100);
-			if (0 == res.status) {
-				$("#buyNow").attr("href", "javascript:void(0);")
-			}
-			setTimeout(function() {
-				warning(res.message);
-			}, 500);
-			setTimeout(function() {
-				window.location.href = "/user/order/0";
-			}, 3000);
+			$("#buyNow").attr("href", "javascript:void(0);")
+			warning(res.message);
+			window.location.href = "/user/order/0";
 		}
 	});
 }

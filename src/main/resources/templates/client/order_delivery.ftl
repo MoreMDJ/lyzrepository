@@ -71,8 +71,7 @@
             } 
             </script>
             <ol>
-                <li <#if deliveryId??&&deliveryId==2>style="display:none"<#else>style="display:block"</#if>></li>
-                <li <#if deliveryId??&&deliveryId==2>style="display:list-item"<#else>style="display:none"</#if>>
+                <li>
                     <div class="div11">
                     <label>门店选择</label>
                     <a class="target"><#if diySite??>${diySite.title!''}</#if></a>
@@ -81,8 +80,8 @@
                     <#if diy_list??>
                         <article class="stores-select">
                             <#list diy_list as item>
-                                <section>
-                                    <img class="visi" src="/client/images/x_icon_checked.png" alt="">
+                                <section id="diySite${item.id?c}">
+                                    <img class="visi" <#if item.id?c==diySiteId?c>src="/client/images/x_icon_checked.png"<#else>src="/client/images/x_icon_check.png"</#if> alt="">
                                     <div class="address">
                                         <div class="div1">${item.title!''}</div>
                                         <div class="div2">${item.address!''}</div>
@@ -93,6 +92,16 @@
                     </#if>
                 </li>
             </ol>
+            <script type="text/javascript">   
+            $(".stores-select section").click(function(){
+                $(this).find("img.visi").attr("src","/client/images/x_icon_checked.png");
+                <#-- 切换隐藏标签的值 -->
+                var id = $(this).attr("id");
+                id = id.replace("diySite","");
+                $("#diySite").val(id);
+                $(this).siblings().find("img.visi").attr("src","/client/images/x_icon_check.png");
+            });
+           </script>
             <!-- 配送方式 END -->
             <script type="text/javascript">
             $('ul').on('click','a',function(){
@@ -103,7 +112,6 @@
                 var index = $active.prevAll('li').length;//当前索引
             
                 $active.addClass('active').siblings('li').removeClass('active');
-                $('ol').find('>li')[index==-1?'show':'hide']().eq(index).show();
             });
             </script>
         </article>

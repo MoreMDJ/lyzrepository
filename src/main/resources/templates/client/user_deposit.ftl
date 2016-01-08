@@ -8,57 +8,21 @@
         <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
         <title>乐易装</title>
         <!-- css -->
-        <link rel="stylesheet" type="text/css" href="css/my_base.css"/>
-        <link rel="stylesheet" type="text/css" href="css/x_common.css"/>
-        <link rel="stylesheet" type="text/css" href="css/x_my_wealth.css"/>
-        <!-- 1-6新增CSS样式，放到《x_my_wealth.css》文件末尾即可 -->
-        <style>
-            .tixian {
-                margin-top: 4%;
-                border-top: 1px solid #ddd;
+        <link rel="stylesheet" type="text/css" href="/client/css/my_base.css"/>
+        <link rel="stylesheet" type="text/css" href="/client/css/x_common.css"/>
+        <link rel="stylesheet" type="text/css" href="/client/css/x_my_wealth.css"/>
+        <script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
+        <script src="/client/js/index.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            window.onload = function(){
+                footer();
             }
-            .tixian .inp_text {
-                padding: 0 2%;
-                width: 96%;
-                height: 40px;
-                line-height: 40px;
-                background-color: #fff;
-                border-bottom: 1px solid #ddd;
-            }
-            .tixian .inp_text label {
-                float: left;
-                width: 15%;
-                text-align: center;
-            }
-            .tixian .inp_text .text {
-                float: left;
-                margin: 5px 0;
-                width: 85%;
-                height: 30px;
-                line-height: 30px;
-                border: none;
-            }
-            .tixian .inp_text .select {
-                color: #666;
-                background: url(img/x_icon_next.png) no-repeat right center;
-                -webkit-background-size: auto 15px;
-                background-size: auto 15px;
-                -webkit-appearance:none;
-                appearance:none;
-                outline: none;
-            }
-            .tixian .money {
-                margin-top: 4%;
-                border-top: 1px solid #ddd;
-            }
-            .tixian .tips {text-align: center;}
-            .tixian .tips span {color: #f60;}
-        </style>
+        </script>
     </head>
     <body class="bgc-f3f4f6">
         <!-- 头部 -->
         <header>
-            <a class="back" href="#"></a>
+            <a class="back" href="javascript:history.go(-1);"></a>
             <p>余额提现</p>
         </header>
         <!-- 头部 END -->

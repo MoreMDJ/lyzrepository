@@ -80,6 +80,12 @@ public class TdReturnNoteService {
         return (List<TdReturnNote>) repository.findAll(ids);
     }
     
+    //zhangji 修改用户名所用
+    public List<TdReturnNote> findByUsername(String username)
+    {
+        return (List<TdReturnNote>) repository.findByUsername(username);
+    }
+    
     public List<TdReturnNote> findAll()
     {
         return (List<TdReturnNote>) repository.findAll();

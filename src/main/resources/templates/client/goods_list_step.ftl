@@ -13,14 +13,13 @@
     <link rel="stylesheet" type="text/css" href="/client/css/other.css"/>
     
     <script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
-    <script src="/client/js/rich_lee.js" type="text/javascript"></script>
+    <script src="/client/js/index.js" type="text/javascript"></script>
     <script src="/client/js/goods_list.js" type="text/javascript"></script>
     <script src="/client/js/goods_list_step.js" text="text/javascript"></script>
     </head>
     <script type="text/javascript">
     window.onload = function(){
     	win_cla();//分类弹窗		
-    	my_check();//模拟checkbox
     	fen_scroll()
     	footer();
     };

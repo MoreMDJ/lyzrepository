@@ -52,14 +52,17 @@ function payNow() {
 		success : function(res) {
 			// 关闭等待图标
 			close(100);
+			$("#buyNow").attr("href", "javascript:void(0);")
 			setTimeout(function() {
 				warning(res.message);
 			}, 500);
 			if (0 == res.status) {
-				$("#buyNow").attr("href", "javascript:void(0);")
 				setTimeout(function() {
 					window.location.href = "/user/order/0";
-				}, 3000);
+				}, 1500);
+			}
+			if(-1 == res.status){
+				$("#buyNow").attr("href", "javascript:payNow();");
 			}
 		}
 	});

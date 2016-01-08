@@ -356,6 +356,17 @@ header .save {
 	line-height: 50px;
 	color: #fff;
 }
+/*编辑*/
+header .btn-edit {
+	position: absolute;
+    top: 0;
+    right: 2%;
+    z-index: 4;
+    width: 60px;
+    height: 50px;
+    line-height: 50px;
+    color: #fff;
+}
 
 /*订单管理头部*/
 header .date-group {

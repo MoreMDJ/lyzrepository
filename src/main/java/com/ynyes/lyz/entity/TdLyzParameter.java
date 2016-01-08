@@ -28,6 +28,18 @@ public class TdLyzParameter {
     // 类别集名称
     @Column
     private String categorySetName;
+    
+    //物料id
+    @Column
+    private Long categoryId;
+    
+	public Long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
+	}
 
 	public Long getId() {
 		return id;

@@ -18,8 +18,10 @@ import com.ynyes.lyz.entity.TdMessageType;
 import com.ynyes.lyz.entity.TdServiceItem;
 import com.ynyes.lyz.entity.TdSetting;
 import com.ynyes.lyz.entity.TdSmsAccount;
+import com.ynyes.lyz.entity.TdStorage;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
+import com.ynyes.lyz.repository.TdStorageRepo;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCompanyService;
 import com.ynyes.lyz.service.TdDistrictService;
@@ -28,6 +30,7 @@ import com.ynyes.lyz.service.TdMessageTypeService;
 import com.ynyes.lyz.service.TdServiceItemService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdSmsAccountService;
+import com.ynyes.lyz.service.TdStorageService;
 import com.ynyes.lyz.service.TdSubdistrictService;
 import com.ynyes.lyz.service.TdUserSuggestionCategoryService;
 import com.ynyes.lyz.util.SiteMagConstant;
@@ -73,6 +76,9 @@ public class TdManagerSettingController {
     
     @Autowired
     TdMessageTypeService tdMessageTypeService; //zhangji 2016-1-3 13:37:23
+    
+    @Autowired
+    TdStorageService tdStorageService;  //zhangji 2016-1-8 9:48:44
     
     @RequestMapping
     public String setting(Long status, ModelMap map,
@@ -627,6 +633,7 @@ public class TdManagerSettingController {
         {
             map.addAttribute("subdistrict", tdSubdistrictService.findOne(id));
         }
+        
         map.addAttribute("district_list",tdDistrictService.findAll());
         return "/site_mag/subdistrict_edit";
     }
@@ -689,6 +696,8 @@ public class TdManagerSettingController {
                 	break;
                 	case "messageType":  tdManagerLogService.addLog("delete", "删除信息", req);
                 	break;
+                	case "storage":  tdManagerLogService.addLog("delete", "删除仓库", req);
+                	break;
                 	default:tdManagerLogService.addLog("delete", "删除信息", req);
                 }
                 	
@@ -729,6 +738,9 @@ public class TdManagerSettingController {
 	    	
 	    	case "messageType":  map.addAttribute("messageType_list", tdMessageTypeService.findAll());
 	    	return "/site_mag/message_type_list";
+	    	
+	    	case "storage":  map.addAttribute("storage_list", tdStorageService.findAll());
+	    	return "/site_mag/storage_list";
 	    	
 	    	default: map.addAttribute("sms_page", tdSmsAccountService.findAll(page,size));
         }
@@ -775,6 +787,14 @@ public class TdManagerSettingController {
 		        	map.addAttribute("messageType", tdMessageTypeService.findOne(id));
 		        }
 	    	return "/site_mag/message_type_edit";
+	    	
+	    	case "storage":  
+	    		map.addAttribute("city_list", tdCityService.findAll());
+		        if (null != id)
+		        {
+		        	map.addAttribute("storage", tdStorageService.findOne(id));
+		        }
+	    	return "/site_mag/storage_edit";
 	    	
 	    	default: 
 		        if (null != id)
@@ -875,7 +895,43 @@ public class TdManagerSettingController {
         
         return "redirect:/Verwalter/setting/messageType/list";
     }
-    /*-------------------------短信账户 end -----------------------------*/
+    
+    //保存仓库 zhangji
+    @RequestMapping(value="/storage/save", method = RequestMethod.POST)
+    public String storageSave(TdStorage tdStorage,
+                        String __VIEWSTATE,
+                        ModelMap map,
+                        HttpServletRequest req) {
+        String username = (String) req.getSession().getAttribute("manager");
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+        String type = null;
+        if (null ==  tdStorage.getId())
+        {
+			type = "add";
+		} 
+        else 
+        {
+			type = "edit";
+		}
+        
+        if (null != tdStorage.getCityId())
+        {
+        	String cityName = tdCityService.findOne(tdStorage.getCityId()).getCityName();
+        	tdStorage.setCityName(cityName);
+        }
+        tdStorageService.save(tdStorage);
+        
+        tdManagerLogService.addLog(type, "修改仓库", req);
+        
+        return "redirect:/Verwalter/setting/storage/list";
+    }  
+    
+    /*-------------------------各种类别模块 end -----------------------------*/
     @ModelAttribute
     public void getModel(@RequestParam(value = "id", required = false) Long id,
                             @RequestParam(value = "serviceItemId", required = false) Long serviceItemId,
@@ -1036,7 +1092,10 @@ public class TdManagerSettingController {
                 {
                 	 tdMessageTypeService.delete(id);
                 }
-               
+                else if (type.equals("storage"))
+                {
+                	 tdStorageService.delete(id);
+                }
             }
         }
     }

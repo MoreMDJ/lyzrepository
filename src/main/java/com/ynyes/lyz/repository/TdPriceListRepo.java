@@ -12,5 +12,5 @@ public interface TdPriceListRepo
 	
 	Page<TdPriceList>findByNameContaining(String keywords , Pageable page);
 	
-	TdPriceList findByListHeaderId(Integer listHeaderId);
+	TdPriceList findByListHeaderId(Long listHeaderId);
 }
