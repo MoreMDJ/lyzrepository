@@ -77,7 +77,7 @@
         </#list>
     </article>
 </#if>
-<div class="select-total-money">总额：<strong>￥<#if totalPrice??>${totalPrice?string("0.00")}<#else>0.00</#if><strong></div>
+<div class="select-total-money">总额：<strong id="all_price">￥<#if totalPrice??>${totalPrice?string("0.00")}<#else>0.00</#if><strong></div>
 <#-- 创建一个隐藏标签用于存储当前已选有多少商品（整合后） -->
 <input id="number" type="hidden" value="${selected_number!'0'}">
 <script type="text/javascript">
@@ -111,6 +111,7 @@ $(function touch(){
                     warning("操作失败");
                 }
                 $("#number").val(res.number);                
+                $("#all_price").html("￥"+res.all_price);   
             }
         })
     });

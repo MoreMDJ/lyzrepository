@@ -3,9 +3,9 @@ package com.ynyes.lyz.controller.management;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdMessage;
 import com.ynyes.lyz.entity.TdMessageType;
 import com.ynyes.lyz.entity.TdOrder;
@@ -29,6 +30,7 @@ import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserComment;
 import com.ynyes.lyz.entity.TdUserLevel;
 import com.ynyes.lyz.entity.TdUserSuggestion;
+import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdMessageService;
@@ -89,6 +91,9 @@ public class TdManagerUserController {
     
     @Autowired
     TdOrderService tdOrderService;
+    
+    @Autowired
+    private TdCityService tdCityService;
     
     @RequestMapping(value="/check", method = RequestMethod.POST)
     @ResponseBody
@@ -246,6 +251,7 @@ public class TdManagerUserController {
 		}
 		// map.addAttribute("user_level_list",
 		// tdUserLevelService.findIsEnableTrue());
+		
 		return "/site_mag/user_edit";
 	}
 

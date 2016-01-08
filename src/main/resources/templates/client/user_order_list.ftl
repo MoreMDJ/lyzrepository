@@ -107,11 +107,11 @@
                                                 <#break>
                                                 <#case 6>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">删除订单</a>
+                                                    <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                                                 <#break>
                                                 <#case 7>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">删除订单</a>
+                                                    <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                                                 <#break>
                                             </#switch>
                                         </#if>
@@ -174,11 +174,11 @@
                                                 <#break>
                                                 <#case 6>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">删除订单</a>
+                                                    <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                                                 <#break>
                                                 <#case 7>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">删除订单</a>
+                                                    <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                                                 <#break>
                                             </#switch>
                                         </#if>
@@ -241,11 +241,11 @@
                                                 <#break>
                                                 <#case 6>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">删除订单</a>
+                                                    <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                                                 <#break>
                                                 <#case 7>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">删除订单</a>
+                                                    <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                                                 <#break>
                                             </#switch>
                                         </#if>
@@ -308,11 +308,11 @@
                                                 <#break>
                                                 <#case 6>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">删除订单</a>
+                                                    <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                                                 <#break>
                                                 <#case 7>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">删除订单</a>
+                                                    <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                                                 <#break>
                                             </#switch>
                                         </#if>

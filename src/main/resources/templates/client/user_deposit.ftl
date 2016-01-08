@@ -22,7 +22,7 @@
     <body class="bgc-f3f4f6">
         <!-- 头部 -->
         <header>
-            <a class="back" href="javascript:history(-1);"></a>
+            <a class="back" href="javascript:history.go(-1);"></a>
             <p>余额提现</p>
         </header>
         <!-- 头部 END -->

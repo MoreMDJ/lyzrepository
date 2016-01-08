@@ -14,10 +14,11 @@
         <link rel="stylesheet" type="text/css" href="/client/css/x_my_wealth.css"/>
         <!-- js -->
         <script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
-        <script src="/client/js/rich_lee.js" type="text/javascript"></script>
+        <script src="/client/js/index.js" type="text/javascript"></script>
         <script type="text/javascript">
             $(function(){
                 win_cla();
+                footer();
             });
         </script>
     </head>

@@ -29,14 +29,17 @@ public interface TdDiySiteRepo
 	 */
 	List<TdDiySite> findByDisctrictIdOrderBySortIdAsc(Long districtId);
 
-	TdDiySite findByCustomerIdAndSobId(Long customerId,Long sobId);
-	
+	TdDiySite findByCustomerIdAndSobId(Long customerId, Long sobId);
+
 	/**
 	 * 根据城市id 找下属门店
+	 * 
 	 * @param regionId
 	 * @author Mdj
 	 */
 	List<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId);
-	
-	Page<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId,Pageable page);
+
+	Page<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId, Pageable page);
+
+	TdDiySite findByTitleAndIsEnableTrue(String title);
 }

@@ -134,16 +134,18 @@ public class TdOrderController {
 		// 创建一个布尔变量代表当前能否使用优惠券，默认值为true，代表能使用优惠券
 		Boolean isCoupon = true;
 
-		if (null == addressId) {
+		TdShippingAddress address = tdShippingAddressService.findOne(addressId);
+		if (null == address) {
 			// 获取用户默认收货地址
 			List<TdShippingAddress> addressList = user.getShippingAddressList();
 			if (null != addressList) {
-				for (TdShippingAddress address : addressList) {
-					if (null != address && null != address.getIsDefaultAddress() && address.getIsDefaultAddress()) {
-						map.addAttribute("address", address);
-						req.getSession().setAttribute("order_addressId", address.getId());
+				for (TdShippingAddress address_item : addressList) {
+					if (null != address_item && null != address_item.getIsDefaultAddress()
+							&& address_item.getIsDefaultAddress()) {
+						map.addAttribute("address", address_item);
+						req.getSession().setAttribute("order_addressId", address_item.getId());
 						// 获取配送费用
-						Long subdistrictId = address.getSubdistrictId();
+						Long subdistrictId = address_item.getSubdistrictId();
 						TdSubdistrict subdistrict = tdSubdistrictService.findOne(subdistrictId);
 						if (null != subdistrict) {
 							deliveryFee = subdistrict.getDeliveryFee();
@@ -155,10 +157,7 @@ public class TdOrderController {
 				}
 			}
 		} else {
-			TdShippingAddress address = tdShippingAddressService.findOne(addressId);
-			if (null != address) {
-				req.getSession().setAttribute("order_addressId", address.getId());
-			}
+			req.getSession().setAttribute("order_addressId", address.getId());
 			map.addAttribute("address", address);
 			// 获取配送费用
 			Long subdistrictId = address.getSubdistrictId();
@@ -198,7 +197,11 @@ public class TdOrderController {
 			TdDiySite diySite = tdCommonService.getDiySite(req);
 			if (null != diySite) {
 				req.getSession().setAttribute("order_diySiteId", diySite.getId());
+				map.addAttribute("diySite", diySite);
 			}
+		}else{
+			TdDiySite diySite = tdDiySiteService.findOne(diySiteId);
+			map.addAttribute("diySite", diySite);
 		}
 		// 获取默认支付方式
 		if (null == payTypeId) {
@@ -882,6 +885,7 @@ public class TdOrderController {
 			return "redirect:/login";
 		}
 
+		
 		List<TdShippingAddress> address_list = user.getShippingAddressList();
 		map.addAttribute("address_list", address_list);
 		return "/client/order_change_address";
@@ -1187,6 +1191,9 @@ public class TdOrderController {
 		Double hr_ponit = hr_total / total_price;
 		Double lyz_point = lyz_total / total_price;
 
+		order_hr.setTotalPrice(hr_total);
+		order_lyz.setTotalPrice(lyz_total);
+
 		// 获取华润订单所使用现金券额度
 		order_hr.setCashCoupon(total_privilege * hr_ponit);
 		order_lyz.setCashCoupon(total_privilege * lyz_point);
@@ -1216,10 +1223,10 @@ public class TdOrderController {
 				if (order_lyz.getOrderGoodsList().size() > 0) {
 					tdOrderService.save(order_lyz);
 				}
-						
+
 				tdCommonService.clear(req);
 				res.put("status", -2);
-				res.put("message", "您的余额不足，请选择其他支付方式");
+				res.put("message", "您的余额不足");
 				return res;
 			} else {
 				order_hr.setStatusId(3L);

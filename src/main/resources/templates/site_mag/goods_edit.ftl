@@ -399,7 +399,7 @@ function del_goods_comb(obj) {
         </dl>
         
         <dl>
-            <dt>商品标题</dt>
+            <dt>商品简称</dt>
             <dd>
                 <input name="title" type="text" value="<#if goods??>${goods.title!""}</#if>" class="input normal" datatype="*2-100" sucmsg=" ">
                 <span class="Validform_checktip">*标题最多100个字符</span>
@@ -407,7 +407,7 @@ function del_goods_comb(obj) {
         </dl>
         
         <dl>
-            <dt>商品副标题</dt>
+            <dt>商品全称</dt>
             <dd>
                 <input name="subTitle" type="text" value="<#if goods??>${goods.subTitle!""}</#if>" class="input normal" datatype="*2-255" sucmsg=" ">
                 <span class="Validform_checktip">*标题最多255个字符</span>
