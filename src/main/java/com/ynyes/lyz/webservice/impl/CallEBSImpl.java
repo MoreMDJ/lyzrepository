@@ -39,7 +39,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.sun.swing.internal.plaf.basic.resources.basic;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdGoodsLimit;
@@ -75,9 +74,16 @@ public class CallEBSImpl implements ICallEBS {
 	@Autowired
 	private TdGoodsLimitService tdGoodsLimitService;
 
+//	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
+//	{
+//		String Str = "test";
+//		
+//		return "test" + Str;
+//	}
+	
 	public String GetErpInfo(String STRTABLE, String STRTYPE, String XML) 
 	{
-		System.out.println("getErpInfo called");
+		System.out.println("getErpInfo called："+ XML);
 
 		if (null == STRTABLE || STRTABLE.isEmpty() || STRTABLE.equals("?"))
 		{
@@ -91,6 +97,8 @@ public class CallEBSImpl implements ICallEBS {
 		
 		
 		String XMLStr = XML.trim();
+		
+		XMLStr = XML.replace("\n", "");
 		
 		byte[] decoded = Base64.decode(XMLStr);
 
@@ -174,7 +182,7 @@ public class CallEBSImpl implements ICallEBS {
 		catch (SAXException | IOException e)
 		{
 			e.printStackTrace();
-			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>xml参数错误</MESSAGE></STATUS></RESULTS>";
+			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
 		}
 		NodeList nodeList = document.getElementsByTagName("TABLE");
 		
@@ -478,10 +486,10 @@ public class CallEBSImpl implements ICallEBS {
 				String item_num = null;//产品编号
 				String item_desc = null;//物料描述
 				String product_uom_code = null;//物料单位
-				Double price = null;//价格
+				Double price = null;//价格-零售价
 				String start_date_active = null;//生效日期
 				String end_date_active = null;//失效日期
-				
+				Double attribute1 = null; //价格-会员价
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -549,6 +557,13 @@ public class CallEBSImpl implements ICallEBS {
 								price = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
 							}
 						}
+						else if (childNode.getNodeName().equalsIgnoreCase("attribute1"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								attribute1 = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
+							}
+						}
 						else if (childNode.getNodeName().equalsIgnoreCase("start_date_active"))
 						{
 							if (null != childNode.getChildNodes().item(0))
@@ -579,9 +594,11 @@ public class CallEBSImpl implements ICallEBS {
 				tdPriceListItem.setItemDesc(item_desc);
 				tdPriceListItem.setProductUomCode(product_uom_code);
 				tdPriceListItem.setPrice(price);
+				tdPriceListItem.setSalePrice(price);
 				tdPriceListItem.setGoodsId(inventory_item_id);
 				tdPriceListItem.setPriceListName(description);
 				tdPriceListItem.setGoodsTitle(item_desc);
+				tdPriceListItem.setRealSalePrice(attribute1);
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				if (start_date_active != null)
 				{
@@ -1036,5 +1053,7 @@ public class CallEBSImpl implements ICallEBS {
 		
 		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";
 	}
+
+	
 }
 // END SNIPPET: service
