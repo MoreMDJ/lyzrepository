@@ -38,7 +38,7 @@ public class TdManagerNaviBarItemController {
                           String __VIEWSTATE,
                           Long[] listId,
                           Integer[] listChkId,
-                          Long[] listSortId,
+                          Double[] listSortId,
                           ModelMap map,
                           HttpServletRequest req){
         String username = (String) req.getSession().getAttribute("manager");
@@ -123,7 +123,7 @@ public class TdManagerNaviBarItemController {
         }
     }
     
-    private void btnSave(Long[] ids, Long[] sortIds)
+    private void btnSave(Long[] ids, Double[] sortIds)
     {
         if (null == ids || null == sortIds
                 || ids.length < 1 || sortIds.length < 1)

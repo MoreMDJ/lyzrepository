@@ -2,7 +2,6 @@ package com.ynyes.lyz.controller.front;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +21,6 @@ import com.ynyes.lyz.entity.TdActivityGiftList;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
-import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDistrict;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
@@ -37,7 +35,6 @@ import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdCouponService;
-import com.ynyes.lyz.service.TdDeliveryTypeService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
@@ -61,9 +58,6 @@ public class TdOrderController {
 
 	@Autowired
 	private TdCommonService tdCommonService;
-
-	@Autowired
-	private TdDeliveryTypeService tdDeliveryTypeService;
 
 	@Autowired
 	private TdPayTypeService tdPayTypeService;
@@ -104,278 +98,39 @@ public class TdOrderController {
 	 * @author dengxiao
 	 */
 	@RequestMapping
-	public String writeOrderInfo(HttpServletRequest req, ModelMap map) {
+	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {
 			return "redirect:/login";
 		}
 
-		// 从session中获取一系列的信息
-		Long addressId = (Long) req.getSession().getAttribute("order_addressId");
-		Long payTypeId = (Long) req.getSession().getAttribute("order_payTypeId");
-		String remark = (String) req.getSession().getAttribute("order_remark");
-		Long diySiteId = (Long) req.getSession().getAttribute("order_diySiteId");
-		Long deliveryId = (Long) req.getSession().getAttribute("order_deliveryId");
-		String deliveryDate = (String) req.getSession().getAttribute("order_deliveryDate");
-		String deliveryDetail = (String) req.getSession().getAttribute("order_deliveryDetail");
-		Long deliveryDetailId = (Long) req.getSession().getAttribute("order_deliveryDetailId");
-
-		// 获取确定使用的现金券
-		@SuppressWarnings("unchecked")
-		List<TdCoupon> no_product_used = (List<TdCoupon>) req.getSession().getAttribute("order_noProductCouponUsed");
-		// 获取确定使用的产品券
-		@SuppressWarnings("unchecked")
-		List<TdCoupon> product_used = (List<TdCoupon>) req.getSession().getAttribute("order_productCouponUsed");
-
-		// 创建一个变量用于存储物流配送费用
-		Double deliveryFee = 0.00;
-
-		// 创建一个布尔变量代表当前能否使用优惠券，默认值为true，代表能使用优惠券
+		// 创建一个布尔值用于判断能否使用优惠券
 		Boolean isCoupon = true;
 
-		TdShippingAddress address = tdShippingAddressService.findOne(addressId);
-		if (null == address) {
-			// 获取用户默认收货地址
-			List<TdShippingAddress> addressList = user.getShippingAddressList();
-			if (null != addressList) {
-				for (TdShippingAddress address_item : addressList) {
-					if (null != address_item && null != address_item.getIsDefaultAddress()
-							&& address_item.getIsDefaultAddress()) {
-						map.addAttribute("address", address_item);
-						req.getSession().setAttribute("order_addressId", address_item.getId());
-						// 获取配送费用
-						Long subdistrictId = address_item.getSubdistrictId();
-						TdSubdistrict subdistrict = tdSubdistrictService.findOne(subdistrictId);
-						if (null != subdistrict) {
-							deliveryFee = subdistrict.getDeliveryFee();
-							if (null == deliveryFee) {
-								deliveryFee = 0.00;
-							}
-						}
-					}
-				}
+		TdOrder order = new TdOrder();
+		if (null == id) {
+			// 从session获取临时订单
+			order = (TdOrder) req.getSession().getAttribute("order_temp");
+			if (null == order) {
+				// 获取临时订单，拆单
+				order = tdCommonService.createOrder(req);
 			}
 		} else {
-			req.getSession().setAttribute("order_addressId", address.getId());
-			map.addAttribute("address", address);
-			// 获取配送费用
-			Long subdistrictId = address.getSubdistrictId();
-			TdSubdistrict subdistrict = tdSubdistrictService.findOne(subdistrictId);
-			if (null != subdistrict) {
-				deliveryFee = subdistrict.getDeliveryFee();
-				if (null == deliveryFee) {
-					deliveryFee = 0.00;
-				}
+			order = tdOrderService.findOne(id);
+			if (null == order) {
+				order = new TdOrder();
+				req.getSession().setAttribute("order_temp", order);
 			}
 		}
 
-		// 删除数据库中已有的用户已选
-		List<TdCartGoods> list = tdCartGoodsService.findByUsername(username);
-		tdCartGoodsService.deleteAll(list);
-
-		// 获取已选商品（整合后的）
-		List<TdCartGoods> selected_list = tdCommonService.getAllContainsColorPackage(req);
-		// 将整合后的已选商品存储到数据库中
-		for (TdCartGoods cartGoods : selected_list) {
-			cartGoods.setUsername(username);
-			tdCartGoodsService.save(cartGoods);
-		}
-		map.addAttribute("selected_list", selected_list);
-
-		// 获取默认的配送方式（1代表送货上门，2代表门店自提）
-		if (null == deliveryId) {
-			deliveryId = 1L;
-			req.getSession().setAttribute("order_deliveryId", deliveryId);
-			map.addAttribute("deliveryId", deliveryId);
-		} else {
-			map.addAttribute("deliveryId", deliveryId);
+		String deliverTypeTitle = order.getDeliverTypeTitle();
+		// 如果配送方式是到店自提，則不能使用任何优惠券
+		if ("门店自提".equals(deliverTypeTitle) && "到店支付".equals(order.getPayTypeTitle())) {
+			isCoupon = false;
 		}
 
-		// 获取默认的门店（用户归属门店）
-		if (null == diySiteId) {
-			TdDiySite diySite = tdCommonService.getDiySite(req);
-			if (null != diySite) {
-				req.getSession().setAttribute("order_diySiteId", diySite.getId());
-				map.addAttribute("diySite", diySite);
-			}
-		}else{
-			TdDiySite diySite = tdDiySiteService.findOne(diySiteId);
-			map.addAttribute("diySite", diySite);
-		}
-		// 获取默认支付方式
-		if (null == payTypeId) {
-			List<TdPayType> pay_type_list = tdPayTypeService.findAllOrderBySortIdAsc();
-			if (null != pay_type_list && pay_type_list.size() > 0) {
-				if (null != pay_type_list.get(0)) {
-					req.getSession().setAttribute("order_payTypeId", pay_type_list.get(0).getId());
-				}
-				map.addAttribute("pay_type", pay_type_list.get(0));
-			}
-		} else {
-			TdPayType payType = tdPayTypeService.findOne(payTypeId);
-			if (null != payType) {
-				req.getSession().setAttribute("order_payTypeId", payType.getId());
-			}
-			map.addAttribute("pay_type", payType);
-		}
-
-		// 如果配送方式是2（门店自提）并且支付方式为预存款或货到付款，则更换支付方式为到店支付，并且清空已选的优惠券
-		if (2L == deliveryId) {
-			TdPayType type = tdPayTypeService.findOne(payTypeId);
-			if ("预存款".equals(type.getTitle()) || "货到付款".equals(type.getTitle())) {
-				TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("到店支付");
-				req.getSession().setAttribute("order_payTypeId", payTypeId);
-				// 清空所有的优惠券使用的优惠券
-				req.getSession().setAttribute("order_noProductCouponUsed", new ArrayList<TdCoupon>());
-				req.getSession().setAttribute("order_productCouponUsed", new ArrayList<TdCoupon>());
-				no_product_used = new ArrayList<>();
-				product_used = new ArrayList<>();
-				map.addAttribute("pay_type", payType);
-				isCoupon = false;
-			}
-		}
-
-		// 如果配送方式是1（送货上门）并且支付方式为到店支付，则更换为货到付款
-		if (1L == deliveryId) {
-			payTypeId = (Long) req.getSession().getAttribute("order_payTypeId");
-			TdPayType type = tdPayTypeService.findOne(payTypeId);
-			if ("到店支付".equals(type.getTitle())) {
-				TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
-				req.getSession().setAttribute("order_payTypeId", payType.getId());
-				map.addAttribute("pay_type", payType);
-			}
-		}
-
-		// 如果配送方式是2（门店自提）并且支付方式为货到付款或预存款，则更换为到店支付
-		if (2L == deliveryId) {
-			payTypeId = (Long) req.getSession().getAttribute("order_payTypeId");
-			TdPayType type = tdPayTypeService.findOne(payTypeId);
-			if ("货到付款".equals(type.getTitle()) || "预存款".equals(type.getTitle())) {
-				TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("到店支付");
-				req.getSession().setAttribute("order_payTypeId", payType.getId());
-				map.addAttribute("pay_type", payType);
-			}
-		}
-
-		// 获取默认时间，默认为第二天的11:30-12:30
-		if (null == deliveryDate) {
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.DATE, 1);
-			Date date = cal.getTime();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			String order_deliveryDate = sdf.format(date);
-			req.getSession().setAttribute("order_deliveryDate", order_deliveryDate);
-			req.getSession().setAttribute("order_deliveryDetail", "11:30-12:30");
-			req.getSession().setAttribute("order_deliveryDetailId", 11L);
-			map.addAttribute("order_deliveryDate", order_deliveryDate);
-			map.addAttribute("order_deliveryDetail", "11:30-12:30");
-			map.addAttribute("order_deliveryDetailId", 11L);
-		} else {
-			map.addAttribute("order_deliveryDate", deliveryDate);
-			map.addAttribute("order_deliveryDetail", deliveryDetail);
-			map.addAttribute("deliveryDetailId", deliveryDetailId);
-		}
-
-		// 创建一个变量用于存储此单的总金额
-		Double totalPrice = 0.00;
-
-		// 创建一个变量用于存储此单能够使用的现金券的最大额（除去使用了产品券的部分）
-		Double maxPrivilege = 0.00;
-
-		// 检查用户所有的优惠券是否存在过期的
-		tdCommonService.checkUserCoupon(req);
-
-		// 获取用户所有未使用的现金券（同时，这个集合也可以存储此单能够使用的指定产品现金券）
-		List<TdCoupon> no_product_coupon_list = tdCouponService
-				.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseOrderByGetTimeDesc(username, 1L);
-		if (null == no_product_coupon_list) {
-			no_product_coupon_list = new ArrayList<>();
-		}
-		// 创建一个集合用于存储当前用户能够在此单使用的产品券
-		List<TdCoupon> product_coupon_list = new ArrayList<>();
-		// 遍历已选，一个一个的查找用户能够使用的产品券或指定产品现金券，同时计算此单的总金额
-		for (TdCartGoods cartGoods : selected_list) {
-			if (null != cartGoods) {
-				// 创建一个变量用于判断指定的商品使用产品券的数量
-				Long usedNumber = 0L;
-				if (null != product_used) {
-					for (TdCoupon coupon : product_used) {
-						if (null != coupon && null != coupon.getGoodsId()
-								&& coupon.getGoodsId() == cartGoods.getGoodsId()) {
-							usedNumber += 1L;
-						}
-					}
-				}
-
-				if (null != cartGoods.getPrice()) {
-					// 创建一个变量用于存储指定商品未使用产品券的数量
-					Long unUsed = 0L;
-					if (null == cartGoods.getPrice()) {
-						cartGoods.setPrice(0.00);
-					}
-					if (null == cartGoods.getQuantity()) {
-						cartGoods.setQuantity(0L);
-					}
-					if ((cartGoods.getQuantity() - usedNumber) > 0) {
-						unUsed = (cartGoods.getQuantity() - usedNumber);
-					}
-					if (null == cartGoods.getRealPrice()) {
-						cartGoods.setRealPrice(0.00);
-					}
-					// 总金额变化
-					totalPrice += (cartGoods.getPrice() * unUsed);
-					// 计算未使用产品券的部分能够使用的现金券的额度
-					maxPrivilege = ((cartGoods.getPrice() - cartGoods.getRealPrice()) * unUsed);
-				}
-			}
-
-			List<TdCoupon> product_coupon_by_goodsId = tdCouponService
-					.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-							username, cartGoods.getGoodsId());
-			if (null != product_coupon_by_goodsId && product_coupon_by_goodsId.size() > 0) {
-				product_coupon_list.addAll(product_coupon_by_goodsId);
-			}
-
-			List<TdCoupon> no_product_coupon_by_goodsId = tdCouponService
-					.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-							username, cartGoods.getGoodsId());
-			if (null != no_product_coupon_by_goodsId && no_product_coupon_by_goodsId.size() > 0) {
-				no_product_coupon_list.addAll(no_product_coupon_by_goodsId);
-			}
-		}
-
-		// 创建一个变量用于存储现金券所减少的金额
-		Double privilegePrice = 0.00;
-		// 遍历所有已选的现金券，计算现金券减少金额的总量
-		if (null != no_product_used) {
-			for (TdCoupon coupon : no_product_used) {
-				if (null != coupon && null != coupon.getPrice()) {
-					privilegePrice += coupon.getPrice();
-				}
-			}
-		}
-
-		// 判断实际减少额是否大于最大减少额
-		if (privilegePrice > maxPrivilege) {
-			privilegePrice = maxPrivilege;
-		}
-
-		// 总金额变化
-		totalPrice -= privilegePrice;
-
-		map.addAttribute("no_product_used", no_product_used);
-		map.addAttribute("product_used", product_used);
-
-		map.addAttribute("no_product_coupon_list", no_product_coupon_list);
-		map.addAttribute("product_coupon_list", product_coupon_list);
-
-		map.addAttribute("remark", remark);
-		map.addAttribute("user", user);
-
-		map.addAttribute("totalPrice", totalPrice);
-		map.addAttribute("deliveryFee", deliveryFee);
-
+		map.addAttribute("order", order);
 		map.addAttribute("isCoupon", isCoupon);
 		return "/client/order_pay";
 
@@ -472,8 +227,9 @@ public class TdOrderController {
 	public Map<String, Object> remarkSave(HttpServletRequest req, String remark) {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
-		req.getSession().setAttribute("order_remark", remark);
-		res.put("remark", remark);
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		order.setRemark(remark);
+		req.getSession().setAttribute("order_temp", order);
 		res.put("status", 0);
 		return res;
 	}
@@ -499,20 +255,24 @@ public class TdOrderController {
 		SimpleDateFormat mm = new SimpleDateFormat("mm");
 		SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy-MM-dd");
 
-		// 获取当前选择的门店
-		Long diySiteId = (Long) req.getSession().getAttribute("order_diySiteId");
-		// 获取当前选择的配送方式（0. 送货上门；1. 门店自提）
-		Long deliveryId = (Long) req.getSession().getAttribute("order_deliveryId");
-		// 获取当前选择的配送时间
-		String deliveryDate = (String) req.getSession().getAttribute("order_deliveryDate");
-		// 获取当前选择的配送时间段
-		String deliveryDetail = (String) req.getSession().getAttribute("order_deliveryDetail");
-		// 获取当前选择的配送时间段的id
-		Long deliveryDetailId = (Long) req.getSession().getAttribute("order_deliveryDetailId");
+		// 获取虚拟订单的信息
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 
-		// 获取所有的配送方式
-		List<TdDeliveryType> delivery_list = tdDeliveryTypeService.findAllOrderBySortIdAsc();
-		map.addAttribute("delivery_list", delivery_list);
+		// 获取当前选择的门店
+		Long diySiteId = order.getDiySiteId();
+		// 获取当前选择的配送方式（0. 送货上门；1. 门店自提）
+		String deliverTypeTitle = order.getDeliverTypeTitle();
+		Long deliveryId = null;
+		if ("送货上门".equals(deliverTypeTitle)) {
+			deliveryId = 1L;
+		}
+		if ("门店自提".equals(deliverTypeTitle)) {
+			deliveryId = 2L;
+		}
+		// 获取当前选择的配送时间
+		String deliveryDate = order.getDeliveryDate();
+		// 获取当前选择的配送时间段的id
+		Long deliveryDetailId = order.getDeliveryDetailId();
 
 		// 获取配送时间的限制（时间选择机制：如果是上午下单，最早的配送时间是当前下午，如果是下午下单，最早配送时间是第二天的上午）
 		Date now = new Date();
@@ -557,7 +317,6 @@ public class TdOrderController {
 		map.addAttribute("diySiteId", diySiteId);
 		map.addAttribute("deliveryId", deliveryId);
 		map.addAttribute("deliveryDate", deliveryDate);
-		map.addAttribute("deliveryDetail", deliveryDetail);
 		map.addAttribute("deliveryDetailId", deliveryDetailId);
 
 		return "/client/order_delivery";
@@ -576,11 +335,28 @@ public class TdOrderController {
 			return "redirect:/login";
 		}
 
-		req.getSession().setAttribute("order_deliveryId", type);
-		req.getSession().setAttribute("order_deliveryDate", date);
-		req.getSession().setAttribute("order_deliveryDetailId", detailTime);
-		req.getSession().setAttribute("order_deliveryDetail", detailTime + ":30-" + (detailTime + 1) + ":30");
-		req.getSession().setAttribute("order_diySiteId", diySite);
+		// 获取虚拟订单的信息
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		if (1L == type) {
+			order.setDeliverTypeTitle("送货上门");
+		}
+		if (2L == type) {
+			order.setDeliverTypeTitle("门店自提");
+		}
+
+		order.setDeliveryDate(date);
+		order.setDeliveryDetailId(detailTime);
+
+		// 获取指定的门店
+		TdDiySite tdDiySite = tdDiySiteService.findOne(diySite);
+		if (null == tdDiySite) {
+			tdDiySite = new TdDiySite();
+		}
+		order.setDiySiteId(tdDiySite.getId());
+		order.setDiySiteName(tdDiySite.getTitle());
+		order.setDiySitePhone(tdDiySite.getServiceTele());
+
+		req.getSession().setAttribute("order_temp", order);
 
 		return "redirect:/order";
 	}
@@ -598,46 +374,33 @@ public class TdOrderController {
 			return "redirect:/login";
 		}
 
-		// 获取当前选择的支付方式
-		Long payTypeId = (Long) req.getSession().getAttribute("order_payTypeId");
+		// 从session获取临时订单
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		if (null == order) {
+			order = new TdOrder();
+		}
 
-		map.addAttribute("payTypeId", payTypeId);
+		map.addAttribute("payTypeId", order.getPayTypeId());
 
 		// 获取所有的支付方式
 		List<TdPayType> pay_type_list = tdPayTypeService.findByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc();
 
 		// 获取配送方式
-		Long deliveryId = (Long) req.getSession().getAttribute("order_deliveryId");
+		String deliveryType = order.getDeliverTypeTitle();
 
-		List<TdPayType> type_list = new ArrayList<>();
-
-		if (1L == deliveryId) {
-			type_list.addAll(pay_type_list);
-			// 查询是否存在货到付款或到店支付的支付方式
-			TdPayType cashOnDelivery = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
-			if (null != cashOnDelivery) {
-				map.addAttribute("cashOndelivery", cashOnDelivery);
-			}
+		if ("送货上门".equals(deliveryType)) {
+			// 查询是否具有货到付款的支付方式
+			TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
+			map.addAttribute("cashOndelivery", payType);
 		}
 
-		if (2L == deliveryId) {
-			for (TdPayType tdPayType : pay_type_list) {
-				if (null != tdPayType) {
-					String title = tdPayType.getTitle();
-					if (null != title) {
-						if (!"预存款".equals(title.trim()) && !"货到付款".equals(title.trim())) {
-							type_list.add(tdPayType);
-						}
-					}
-				}
-			}
-			// 查询是否存在货到付款或到店支付的支付方式
-			TdPayType cashOnDelivery = tdPayTypeService.findByTitleAndIsEnableTrue("到店支付");
-			if (null != cashOnDelivery) {
-				map.addAttribute("cashOndelivery", cashOnDelivery);
-			}
+		if ("门店自提".equals(deliveryType)) {
+			// 查找是否具有到店支付的支付方式
+			TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("到店支付");
+			map.addAttribute("cashOndelivery", payType);
 		}
-		map.addAttribute("pay_type_list", type_list);
+
+		map.addAttribute("pay_type_list", pay_type_list);
 		return "/client/order_pay_type";
 	}
 
@@ -779,7 +542,11 @@ public class TdOrderController {
 			return "redirect:/login";
 		}
 		if (null != id) {
-			req.getSession().setAttribute("order_payTypeId", id);
+			TdPayType payType = tdPayTypeService.findOne(id);
+			TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+			order.setPayTypeTitle(payType.getTitle());
+			order.setPayTypeId(payType.getId());
+			req.getSession().setAttribute("order_temp", order);
 		}
 		return "redirect:/order";
 	}
@@ -867,7 +634,12 @@ public class TdOrderController {
 		addressList.add(address);
 		tdUserService.save(user);
 
-		req.getSession().setAttribute("order_addressId", address.getId());
+		// 从session获取临时订单
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		order.setShippingAddress(
+				address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
+		order.setShippingName(address.getReceiverName());
+		order.setShippingPhone(address.getReceiverMobile());
 
 		return "redirect:/order";
 	}
@@ -885,7 +657,6 @@ public class TdOrderController {
 			return "redirect:/login";
 		}
 
-		
 		List<TdShippingAddress> address_list = user.getShippingAddressList();
 		map.addAttribute("address_list", address_list);
 		return "/client/order_change_address";
@@ -1020,8 +791,8 @@ public class TdOrderController {
 		order_hr.setDeliveryDate(deliveryDate);
 		order_lyz.setDeliveryDate(deliveryDate);
 
-		order_hr.setDeliveryDetail(deliveryDetailId + ":30-" + (deliveryDetailId + 1) + ":30");
-		order_lyz.setDeliveryDetail(deliveryDetailId + ":30-" + (deliveryDetailId + 1) + ":30");
+		order_hr.setDeliveryDetailId(deliveryDetailId);
+		order_lyz.setDeliveryDetailId(deliveryDetailId);
 
 		// 获取所有的已选商品，整合后
 		List<TdCartGoods> selected_all = tdCommonService.getAllContainsColorPackage(req);

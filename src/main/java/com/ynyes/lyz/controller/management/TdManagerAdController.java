@@ -37,7 +37,7 @@ public class TdManagerAdController {
 
 	@RequestMapping(value = "/list")
 	public String setting(Integer page, Integer size, String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE,
-			Long[] listId, Integer[] listChkId, Long[] listSortId, ModelMap map, HttpServletRequest req) {
+			Long[] listId, Integer[] listChkId, Double[] listSortId, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -125,7 +125,7 @@ public class TdManagerAdController {
 		}
 	}
 
-	private void btnSave(Long[] ids, Long[] sortIds) {
+	private void btnSave(Long[] ids, Double[] sortIds) {
 		if (null == ids || null == sortIds || ids.length < 1 || sortIds.length < 1) {
 			return;
 		}

@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hibernate.usertype.UserCollectionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -26,8 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCoupon;
-import com.ynyes.lyz.entity.TdDeposit;
-import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdMessage;
 import com.ynyes.lyz.entity.TdMessageType;
 import com.ynyes.lyz.entity.TdOrder;
@@ -40,8 +37,8 @@ import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdUserSuggestion;
 import com.ynyes.lyz.service.TdCartColorPackageService;
 import com.ynyes.lyz.service.TdCartGoodsService;
-import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdCityService;
+import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdMessageService;
@@ -1308,7 +1305,7 @@ public class TdManagerUserController {
 		return dataPage;
 	}
 
-	private void btnSave(String type, Long[] ids, Long[] sortIds) {
+	private void btnSave(String type, Long[] ids, Double[] sortIds) {
 		if (null == ids || null == sortIds || ids.length < 1 || sortIds.length < 1 || null == type || "".equals(type)) {
 			return;
 		}

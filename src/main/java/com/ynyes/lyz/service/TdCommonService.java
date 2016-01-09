@@ -2,6 +2,7 @@ package com.ynyes.lyz.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -74,9 +75,6 @@ public class TdCommonService {
 
 	@Autowired
 	private TdBrandService tdBrandService;
-
-	@Autowired
-	private TdShippingAddressService tdShippingAddressService;
 
 	@Autowired
 	private TdPayTypeService tdPayTypeService;
@@ -716,12 +714,18 @@ public class TdCommonService {
 	 * 
 	 * @author dengxiao
 	 */
-	public Map<Long, TdOrder> createOrder(HttpServletRequest req, ModelMap map) {
+	public TdOrder createOrder(HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsername(username);
 		if (null == user) {
 			return null;
 		}
+
+		// 生成一个虚拟订单用于存储默认收货地址、默认支付方式、默认配送方式、默认配送日期、默认配送时间段、默认门店
+		TdOrder order_temp = new TdOrder();
+		order_temp.setOrderGoodsList(new ArrayList<TdOrderGoods>());
+		order_temp.setTotalGoodsPrice(0.00);
+		order_temp.setTotalPrice(0.00);
 
 		Map<Long, TdOrder> order_map = new HashMap<>();
 
@@ -738,15 +742,40 @@ public class TdCommonService {
 				}
 			}
 		}
+		if (null == defaultAddress) {
+			defaultAddress = new TdShippingAddress();
+		}
+
+		// 默认的配送方式1（1代表送货上门，2代表门店自提）
+		String delivery = "送货上门";
+
+		// 默认门店为用户的归属门店
+		TdDiySite defaultDiy = this.getDiySite(req);
+
+		// 默认的配送日期：第二天的的上午11:30——12:30
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, 1);
+		Date date = cal.getTime();
+		SimpleDateFormat sdf_ymd = new SimpleDateFormat("yyyy-MM-dd");
+		String order_deliveryDate = sdf_ymd.format(date);
+		Long order_deliveryDeatilId = 11L;
 
 		// 获取默认的支付方式
+		TdPayType defaultType = new TdPayType();
 		List<TdPayType> payTypeList = tdPayTypeService.findAllOrderBySortIdAsc();
-		
+		if (null != payTypeList) {
+			for (TdPayType type : payTypeList) {
+				if (null != type && null != type.getTitle() && !"到店支付".equals(type.getTitle())) {
+					defaultType = type;
+					break;
+				}
+			}
+		}
 
 		// 以下代码用于生成订单编号
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		Date date = new Date();
-		String sDate = sdf.format(date);
+		Date now = new Date();
+		String sDate = sdf.format(now);
 		Random random = new Random();
 		Integer suiji = random.nextInt(900) + 100;
 		String orderNum = sDate + suiji;
@@ -768,6 +797,27 @@ public class TdCommonService {
 					order.setProductCoupon("");
 					order.setCashCoupon(0.00);
 					order.setCashCouponId("");
+					order.setStatusId(2L);
+
+					// 开始设置默认属性
+					order.setShippingAddress(defaultAddress.getCity() + defaultAddress.getDisctrict()
+							+ defaultAddress.getSubdistrict() + defaultAddress.getDetailAddress());
+					order.setShippingName(defaultAddress.getReceiverName());
+					order.setShippingPhone(defaultAddress.getReceiverMobile());
+
+					order.setDeliverTypeTitle(delivery);
+
+					order.setDeliveryDate(order_deliveryDate);
+					order.setDeliveryDetailId(order_deliveryDeatilId);
+
+					order.setPayTypeId(defaultType.getId());
+					order.setPayTypeTitle(defaultType.getTitle());
+
+					order.setDiySiteId(defaultDiy.getId());
+					order.setDiySiteName(defaultDiy.getTitle());
+					order.setDiySitePhone(defaultDiy.getServiceTele());
+					// 默认属性设置结束
+
 					order_map.put(brand.getId(), order);
 				}
 			}
@@ -790,16 +840,50 @@ public class TdCommonService {
 					Long brandId = cartGoods.getBrandId();
 					TdOrder order = order_map.get(brandId);
 					if (null != order && null != order.getOrderGoodsList()) {
-						order.getOrderGoodsList().add(orderGoods);
+						List<TdOrderGoods> order_goods_list = order.getOrderGoodsList();
+						List<TdOrderGoods> order_temp_goods_list = order_temp.getOrderGoodsList();
+						order_temp.getOrderGoodsList().add(orderGoods);
+						order_goods_list.add(orderGoods);
+						order_temp_goods_list.add(orderGoods);
+						order.setOrderGoodsList(order_goods_list);
+						order.setOrderGoodsList(order_temp_goods_list);
 						order.setTotalGoodsPrice(
 								order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
+						order.setTotalPrice(
+								order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
+						order_temp.setTotalGoodsPrice(
+								order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
+						order_temp.setTotalPrice(
+								order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
+						order = tdOrderService.save(order);
+						order_map.put(brandId, order);
 					}
 				}
 			}
 		}
+
+		// 设置临时订单的默认属性
+		order_temp.setShippingAddress(defaultAddress.getCity() + defaultAddress.getDisctrict()
+				+ defaultAddress.getSubdistrict() + defaultAddress.getDetailAddress());
+		order_temp.setShippingName(defaultAddress.getReceiverName());
+		order_temp.setShippingPhone(defaultAddress.getReceiverMobile());
+
+		order_temp.setDeliverTypeTitle(delivery);
+
+		order_temp.setDeliveryDate(order_deliveryDate);
+		order_temp.setDeliveryDetailId(order_deliveryDeatilId);
+
+		order_temp.setPayTypeId(defaultType.getId());
+		order_temp.setPayTypeTitle(defaultType.getTitle());
+
+		order_temp.setDiySiteId(defaultDiy.getId());
+		order_temp.setDiySiteName(defaultDiy.getTitle());
+		// 临时订单默认属性设置结束
+
 		// 返回之前将整个map存储到session中
 		req.getSession().setAttribute("all_order", order_map);
-		return order_map;
+		req.getSession().setAttribute("order_temp", order_temp);
+		return order_temp;
 	}
 
 	public static String getIp(HttpServletRequest request) {

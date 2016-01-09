@@ -39,7 +39,7 @@ public class TdManagerArticleController {
 	                                String __VIEWSTATE,
 	                                Long[] listId,
 	                                Integer[] listChkId,
-	                                Long[] listSortId,
+	                                Double[] listSortId,
 	                                ModelMap map,
 	                                HttpServletRequest req){
 	        String username = (String) req.getSession().getAttribute("manager");
@@ -92,7 +92,7 @@ public class TdManagerArticleController {
 	                            String __VIEWSTATE,
 	                            Long[] listId,
 	                            Integer[] listChkId,
-	                            Long[] listSortId,
+	                            Double[] listSortId,
 	                            ModelMap map,
 	                            HttpServletRequest req){
 	        String username = (String) req.getSession().getAttribute("manager");
@@ -636,7 +636,7 @@ public class TdManagerArticleController {
 	     * @param chkIds
 	     * @param sortIds
 	     */
-	    private void articleCategoryBtnSave(Long[] ids, Long[] sortIds)
+	    private void articleCategoryBtnSave(Long[] ids, Double[] sortIds)
 	    {
 	        if (null == ids || null == sortIds
 	                || ids.length < 1 || sortIds.length < 1)

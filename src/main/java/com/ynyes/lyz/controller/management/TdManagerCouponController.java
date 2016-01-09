@@ -220,7 +220,7 @@ public class TdManagerCouponController {
                           String __VIEWSTATE,
                           Long[] listId,
                           Integer[] listChkId,
-                          Long[] listSortId,
+                          Double[] listSortId,
                           ModelMap map,
                           HttpServletRequest req){
         
@@ -325,7 +325,7 @@ public class TdManagerCouponController {
                           String __VIEWSTATE,
                           Long[] listId,
                           Integer[] listChkId,
-                          Long[] listSortId,
+                          Double[] listSortId,
                           ModelMap map,
                           Long diysiteId,
                           String keywords,
@@ -596,7 +596,7 @@ public class TdManagerCouponController {
 //                    coupon.setLeftNumber(leftNumber);
                     coupon.setTypeId(typeId);
 //                    coupon.setCanUsePrice(tdCouponType.getCanUsePrice());
-                    coupon.setSortId(99L);
+                    coupon.setSortId(99.00);
                     coupon.setPrice(tdCouponType.getPrice());
                  
 //                    coupon.setCanUsePrice(tdCouponType.getCanUsePrice());
@@ -677,7 +677,7 @@ public class TdManagerCouponController {
                     coupon.setLeftNumber(leftNumber);
                     coupon.setTypeId(typeId);
 //                    coupon.setCanUsePrice(tdCouponType.getCanUsePrice());
-                    coupon.setSortId(99L);
+                    coupon.setSortId(99.00);
                     coupon.setPrice(tdCouponType.getPrice());
                 }
                 else
@@ -814,7 +814,7 @@ public class TdManagerCouponController {
         }
     }
     
-    private void btnSave(Long[] ids, Long[] sortIds)
+    private void btnSave(Long[] ids, Double[] sortIds)
     {
         if (null == ids || null == sortIds
                 || ids.length < 1 || sortIds.length < 1)

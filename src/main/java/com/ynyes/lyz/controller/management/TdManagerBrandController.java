@@ -1,39 +1,60 @@
 package com.ynyes.lyz.controller.management;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ynyes.lyz.entity.TdAdType;
-import com.ynyes.lyz.service.TdAdTypeService;
+import com.ynyes.lyz.entity.TdBrand;
+import com.ynyes.lyz.entity.TdManager;
+import com.ynyes.lyz.entity.TdManagerRole;
+import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdManagerLogService;
+import com.ynyes.lyz.service.TdManagerRoleService;
+import com.ynyes.lyz.service.TdManagerService;
+import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
 /**
- * 后台广告位管理控制器
+ * 后台用户管理控制器
  * 
  * @author Sharon
  */
 
 @Controller
-@RequestMapping(value="/Verwalter/ad/type")
-public class TdManagerAdTypeController {
+@RequestMapping(value="/Verwalter/brand")
+public class TdManagerBrandController {
     
     @Autowired
-    TdAdTypeService tdAdTypeService;
+    TdBrandService tdBrandService;
+    
+    @Autowired
+    TdProductCategoryService tdProductCategoryService;
     
     @Autowired
     TdManagerLogService tdManagerLogService;
     
+    @Autowired
+    TdManagerRoleService tdManagerRoleService;
+    
+    @Autowired
+    TdManagerService tdManagerService;
+    
     @RequestMapping(value="/list")
     public String setting(Integer page,
                           Integer size,
+                          String keywords,
                           String __EVENTTARGET,
                           String __EVENTARGUMENT,
                           String __VIEWSTATE,
@@ -43,29 +64,40 @@ public class TdManagerAdTypeController {
                           ModelMap map,
                           HttpServletRequest req){
         String username = (String) req.getSession().getAttribute("manager");
-        if (null == username)
-        {
+        if (null == username) {
             return "redirect:/Verwalter/login";
         }
+        //管理员角色
+        TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+        TdManagerRole tdManagerRole = null;
+        
+        if (null != tdManager.getRoleId())
+        {
+            tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+        }
+        
+        if (null != tdManagerRole) {
+			map.addAttribute("tdManagerRole", tdManagerRole);
+		}
         
         if (null != __EVENTTARGET)
         {
-            if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
-            {
-                btnDelete(listId, listChkId);
-                tdManagerLogService.addLog("delete", "用户删除广告位", req);
-            }
-            else if (__EVENTTARGET.equalsIgnoreCase("btnSave"))
-            {
-                btnSave(listId, listSortId);
-                tdManagerLogService.addLog("edit", "用户修改广告位", req);
-            }
-            else if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
+            if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
             {
                 if (null != __EVENTARGUMENT)
                 {
                     page = Integer.parseInt(__EVENTARGUMENT);
                 } 
+            }
+            else if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+            {
+                btnDelete(listId, listChkId);
+                tdManagerLogService.addLog("delete", "删除品牌", req);
+            }
+            else if (__EVENTTARGET.equalsIgnoreCase("btnSave"))
+            {
+                btnSave(listId, listSortId);
+                tdManagerLogService.addLog("edit", "修改品牌", req);
             }
         }
         
@@ -79,15 +111,32 @@ public class TdManagerAdTypeController {
             size = SiteMagConstant.pageSize;;
         }
         
+        if (null != keywords)
+        {
+            keywords = keywords.trim();
+        }
+        
         map.addAttribute("page", page);
         map.addAttribute("size", size);
+        map.addAttribute("keywords", keywords);
         map.addAttribute("__EVENTTARGET", __EVENTTARGET);
         map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+
+        Page<TdBrand> brandPage = null;
         
-        map.addAttribute("ad_type_page", tdAdTypeService.findAllOrderBySortIdAsc(page, size));
+        if (null == keywords || "".equalsIgnoreCase(keywords))
+        {
+            brandPage = tdBrandService.findAllOrderBySortIdAsc(page, size);
+        }
+        else
+        {
+            brandPage = tdBrandService.searchAndOrderBySortIdAsc(keywords, page, size);
+        }
         
-        return "/site_mag/ad_type_list";
+        map.addAttribute("brand_page", brandPage);
+        
+        return "/site_mag/brand_list";
     }
     
     @RequestMapping(value="/edit")
@@ -101,17 +150,19 @@ public class TdManagerAdTypeController {
             return "redirect:/Verwalter/login";
         }
         
+        map.addAttribute("category_list", tdProductCategoryService.findAll());
+        
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
         if (null != id)
         {
-            map.addAttribute("ad_type", tdAdTypeService.findOne(id));
+            map.addAttribute("brand", tdBrandService.findOne(id));
         }
-        return "/site_mag/ad_type_edit";
+        return "/site_mag/brand_edit";
     }
     
     @RequestMapping(value="/save")
-    public String orderEdit(TdAdType tdAdType,
+    public String orderEdit(TdBrand tdBrand,
                         String __VIEWSTATE,
                         ModelMap map,
                         HttpServletRequest req){
@@ -123,35 +174,31 @@ public class TdManagerAdTypeController {
         
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
         
-        String type = null;
-        
-        if (null == tdAdType.getId())
+        if (null == tdBrand.getId())
         {
-            type = "add";
+            tdManagerLogService.addLog("add", "用户修改品牌", req);
         }
         else
         {
-            type = "edit";
+            tdManagerLogService.addLog("edit", "用户修改品牌", req);
         }
         
-        tdAdTypeService.save(tdAdType);
+        tdBrandService.save(tdBrand);
         
-        tdManagerLogService.addLog(type, "用户修改广告位", req);
-        
-        return "redirect:/Verwalter/ad/type/list";
+        return "redirect:/Verwalter/brand/list";
     }
 
     @ModelAttribute
     public void getModel(@RequestParam(value = "id", required = false) Long id,
                         Model model) {
         if (null != id) {
-            model.addAttribute("tdAdType", tdAdTypeService.findOne(id));
+            model.addAttribute("tdBrand", tdBrandService.findOne(id));
         }
     }
     
     private void btnSave(Long[] ids, Double[] sortIds)
     {
-        if (null == ids || null == sortIds
+		if (null == ids || null == sortIds
                 || ids.length < 1 || sortIds.length < 1)
         {
             return;
@@ -161,14 +208,14 @@ public class TdManagerAdTypeController {
         {
             Long id = ids[i];
             
-            TdAdType e = tdAdTypeService.findOne(id);
+            TdBrand e = tdBrandService.findOne(id);
             
             if (null != e)
             {
                 if (sortIds.length > i)
                 {
                     e.setSortId(new Double(sortIds[i]));
-                    tdAdTypeService.save(e);
+                    tdBrandService.save(e);
                 }
             }
         }
@@ -188,7 +235,7 @@ public class TdManagerAdTypeController {
             {
                 Long id = ids[chkId];
                 
-                tdAdTypeService.delete(id);
+                tdBrandService.delete(id);
             }
         }
     }

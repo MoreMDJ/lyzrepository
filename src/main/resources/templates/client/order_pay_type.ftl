@@ -35,7 +35,7 @@
                     <#list pay_type_list as item>
                         <div class="paylist">
                             <div class="left pre-deposit">
-                                <img class="way" width="78" height="40" src="${item.coverImageUri!''}" alt="支付宝支付">
+                                <img class="way" width="78" height="40" src="${item.coverImageUri!''}" alt="支付方式">
                             </div>
                             <div class="zfb">
                                 <div class="div1"><span>${item.title!''}</span></div>

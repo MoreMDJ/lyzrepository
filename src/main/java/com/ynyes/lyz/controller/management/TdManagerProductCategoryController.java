@@ -44,7 +44,7 @@ public class TdManagerProductCategoryController {
     @RequestMapping(value = "/list")
     public String categoryList(String __EVENTTARGET, String __EVENTARGUMENT,
             String __VIEWSTATE, Long[] listId, Integer[] listChkId,
-            Long[] listSortId, ModelMap map, HttpServletRequest req) {
+            Double[] listSortId, ModelMap map, HttpServletRequest req) {
         String username = (String) req.getSession().getAttribute("manager");
         if (null == username) {
             return "redirect:/Verwalter/login";
@@ -176,7 +176,7 @@ public class TdManagerProductCategoryController {
         return res;
     }
 
-    private void productCategoryBtnSave(Long[] ids, Long[] sortIds) {
+    private void productCategoryBtnSave(Long[] ids, Double[] sortIds) {
         if (null == ids || null == sortIds || ids.length < 1
                 || sortIds.length < 1) {
             return;

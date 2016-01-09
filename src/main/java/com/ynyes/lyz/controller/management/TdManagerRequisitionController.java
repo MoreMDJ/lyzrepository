@@ -38,7 +38,7 @@ public class TdManagerRequisitionController {
 			            String __VIEWSTATE,
 			            Long[] listId,
 			            Integer[] listChkId,
-			            Long[] listSortId,
+			            Double[] listSortId,
 			            ModelMap map,
 			            HttpServletRequest req){
 		String username = (String) req.getSession().getAttribute("manager");
@@ -258,7 +258,7 @@ public class TdManagerRequisitionController {
         }
     }
 	
-	 private void btnSave(String type, Long[] ids, Long[] sortIds)
+	 private void btnSave(String type, Long[] ids, Double[] sortIds)
 	    {
 	        if (null == type || type.isEmpty())
 	        {

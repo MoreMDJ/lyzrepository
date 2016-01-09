@@ -35,4 +35,5 @@ public interface TdPayTypeRepo
 	 * @author dengxiao
 	 */
 	List<TdPayType> findByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc();
+	
 }

@@ -198,7 +198,7 @@ public class TdManagerGoodsController {
 	@RequestMapping(value = "/list")
 	public String goodsList(Integer page, Integer size, Long categoryId, String property, String __EVENTTARGET,
 			String __EVENTARGUMENT, String __VIEWSTATE, String keywords, Long[] listId, Integer[] listChkId,
-			Long[] listSortId, ModelMap map, HttpServletRequest req) {
+			Double[] listSortId, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -310,7 +310,7 @@ public class TdManagerGoodsController {
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	public String goodsListPost(Integer page, Integer size, Long categoryId, String property, String saleType,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, String keywords, Long[] listId,
-			Integer[] listChkId, Long[] listSortId, ModelMap map, HttpServletRequest req) {
+			Integer[] listChkId, Double[] listSortId, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -1003,7 +1003,7 @@ public class TdManagerGoodsController {
 	 * @param sortIds
 	 * @param username
 	 */
-	private void btnSave(Long[] ids, Long[] sortIds, String username) {
+	private void btnSave(Long[] ids, Double[] sortIds, String username) {
 		if (null == ids || null == sortIds || ids.length < 1 || sortIds.length < 1) {
 			return;
 		}

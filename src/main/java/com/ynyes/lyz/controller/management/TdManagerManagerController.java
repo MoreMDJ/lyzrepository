@@ -60,7 +60,7 @@ public class TdManagerManagerController {
 	@RequestMapping(value = "/list")
 	public String managerList(Integer page, Integer size, String __EVENTTARGET,
 			String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId,
-			Integer[] listChkId, Long[] listSortId, ModelMap map,
+			Integer[] listChkId, Double[] listSortId, ModelMap map,
 			HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
@@ -561,7 +561,7 @@ public class TdManagerManagerController {
 		}
 	}
 
-	private void btnSave(Long[] ids, Long[] sortIds) {
+	private void btnSave(Long[] ids, Double[] sortIds) {
 		if (null == ids || null == sortIds || ids.length < 1
 				|| sortIds.length < 1) {
 			return;

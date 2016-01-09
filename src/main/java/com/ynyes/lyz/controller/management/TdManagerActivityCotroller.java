@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -223,7 +222,7 @@ public class TdManagerActivityCotroller
 	@RequestMapping(value = "/gift/list")
 	public String giftList(Integer page, Integer size, Long categoryId,String saleType, String property, String __EVENTTARGET,
             String __EVENTARGUMENT, String __VIEWSTATE, String keywords,
-            Long[] listId, Integer[] listChkId, Long[] listSortId,
+            Long[] listId, Integer[] listChkId, Double[] listSortId,
             ModelMap map, HttpServletRequest req)
 	{
 		String username = (String)req.getSession().getAttribute("manager");
@@ -547,7 +546,7 @@ public class TdManagerActivityCotroller
 			}
 		}
 	}
-	private void btnGiftSave(Long[] ids, Long[] sortIds, String username) {
+	private void btnGiftSave(Long[] ids, Double[] sortIds, String username) {
 		if (null == ids || null == sortIds || ids.length < 1 || sortIds.length < 1) {
 			return;
 		}

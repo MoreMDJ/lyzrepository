@@ -65,17 +65,13 @@ public class TdOrder {
 	@Column(scale = 2)
 	private Double payTypeFee;
 
-	// 配送方式
-	@Column
-	private Long deliverTypeId;
-
 	// 配送方式名称
 	@Column
 	private String deliverTypeTitle;
 
-	// 配送方式手续费
+	// 配送费用
 	@Column(scale = 2)
-	private Double deliverTypeFee;
+	private Double deliverFee;
 
 	// 配送门店id
 	@Column
@@ -84,6 +80,10 @@ public class TdOrder {
 	// 配送门店名称
 	@Column
 	private String diySiteName;
+
+	// 配送门店联系电话
+	@Column
+	private String diySitePhone;
 
 	// 后台备注
 	@Column
@@ -188,7 +188,7 @@ public class TdOrder {
 	@Column(scale = 2)
 	private Double cashBalanceUsed;
 
-	// 不可提现预存款金额
+	// 使用不可提现预存款金额
 	@Column(scale = 2)
 	private Double unCashBalanceUsed;
 
@@ -214,7 +214,7 @@ public class TdOrder {
 
 	// 配送时间段
 	@Column
-	private String deliveryDetail;
+	private Long deliveryDetailId;
 
 	// 订单备注
 	@Column
@@ -378,20 +378,12 @@ public class TdOrder {
 		this.deliverTypeTitle = deliverTypeTitle;
 	}
 
-	public Long getDeliverTypeId() {
-		return deliverTypeId;
+	public Double getDeliverFee() {
+		return deliverFee;
 	}
 
-	public void setDeliverTypeId(Long deliverTypeId) {
-		this.deliverTypeId = deliverTypeId;
-	}
-
-	public Double getDeliverTypeFee() {
-		return deliverTypeFee;
-	}
-
-	public void setDeliverTypeFee(Double deliverTypeFee) {
-		this.deliverTypeFee = deliverTypeFee;
+	public void setDeliverFee(Double deliverFee) {
+		this.deliverFee = deliverFee;
 	}
 
 	public String getRemarkInfo() {
@@ -594,12 +586,12 @@ public class TdOrder {
 		this.deliveryDate = deliveryDate;
 	}
 
-	public String getDeliveryDetail() {
-		return deliveryDetail;
+	public Long getDeliveryDetailId() {
+		return deliveryDetailId;
 	}
 
-	public void setDeliveryDetail(String deliveryDetail) {
-		this.deliveryDetail = deliveryDetail;
+	public void setDeliveryDetailId(Long deliveryDetailId) {
+		this.deliveryDetailId = deliveryDetailId;
 	}
 
 	public Boolean getIsPromotion() {
@@ -696,5 +688,13 @@ public class TdOrder {
 
 	public void setActualPay(Double actualPay) {
 		this.actualPay = actualPay;
+	}
+
+	public String getDiySitePhone() {
+		return diySitePhone;
+	}
+
+	public void setDiySitePhone(String diySitePhone) {
+		this.diySitePhone = diySitePhone;
 	}
 }

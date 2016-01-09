@@ -30,20 +30,20 @@
         <!-- 填写订单 -->
         <article>
             <!-- 用户信息 -->
-            <#if address??>
+            <#if order??&&order.shippingName??&&order.shippingPhone??&&order.shippingAddress??>
                 <div class="receiver-info">    
                     <div class="div1">
-                        <div class="div1-1">收货人：<span>${address.receiverName!''}</span></div>
+                        <div class="div1-1">收货人：<span>${order.shippingName!''}</span></div>
                         <div class="div1-2">电话：
                             <span>
-                                <#if address.receiverMobile??&&address.receiverMobile?length==11>
-                                    ${address.receiverMobile[0..2]}****${address.receiverMobile[7..10]}
+                                <#if order.shippingPhone??&&order.shippingPhone?length==11>
+                                    ${order.shippingPhone[0..2]}****${order.shippingPhone[7..10]}
                                 </#if>
                             </span>
                         </div>
                     </div>
                     <a class="go-target" href="/order/change/address">
-                        <div class="div2">收货地址：<span>${address.city!''}${address.district!''}${address.subdistrict!''}${address.detail!''}</span></div>
+                        <div class="div2">收货地址：<span>${order.shippingAddress!''}</span></div>
                     </a>
                 </div>
             <#else>
@@ -52,16 +52,16 @@
             <!-- 编辑订单 -->
             <article class="fill-order-list">
                 <!-- 商品清单 -->
-                <#if selected_list??>
+                <#if order??&&order.orderGoodsList??>
                     <section class="pro-list">
                         <a class="div1" href="/order/selected">
-                            <#list selected_list as item>
+                            <#list order.orderGoodsList as item>
                                 <#-- 此处实际只能放入3个已选的图片 -->
                                 <#if item_index lt 3>
                                     <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                                 </#if>
                             </#list>
-                            <div class="total">共${selected_list?size}件</div>
+                            <div class="total">共${order.orderGoodsList?size}件</div>
                         </a>
                     </section>
                 </#if>
@@ -69,23 +69,23 @@
                 <section class="delivery">
                     <div class="div1">
                         <label>配送方式</label>
-                        <a class="delivery-method" href="/order/delivery"><#if deliveryId??&&deliveryId==1>送货上门<#else>门店自提</#if></a>
+                        <a class="delivery-method" href="/order/delivery">${order.deliverTypeTitle!''}</a>
                     </div>
-                    <div class="div2">${order_deliveryDate!''}  ${order_deliveryDetail!''}</div>
+                    <div class="div2">${order.deliveryDate!''}  ${order.deliveryDetailId!''}:30-${(order.deliveryDetailId+1)?eval}:30</div>
                 </section>
                 <!-- 支付方式 -->
                 <section class="pay-method">
                     <label>支付方式</label>
-                    <a class="target" href="/order/paytype"><#if pay_type??>${pay_type.title!''}</#if></a>
+                    <a class="target" href="/order/paytype">${order.payTypeTitle!''}</a>
                 </section>
                 <!-- 发票信息 -->
                 <section class="invoice-info">
                     <label>发票信息</label>
-                    <div>联系门店<#if diySite??>（${diySite.serviceTele!''}）</#if></div>
+                    <div>${order.diySiteName!''}（${order.diySitePhone!''}）</div>
                 </section>
                 <!-- 留言 -->
                 <section class="leave-message">
-                    <input id="remark" onblur="userRemark('${remark!''}');" type="text" maxlength="50" value="${remark!''}" placeholder="给商家留言">
+                    <input id="remark" onblur="userRemark('${order.remark!''}');" type="text" maxlength="50" value="${order.remark!''}" placeholder="给商家留言">
                 </section>
                 <!-- 优惠劵 -->
                 <section class="coupon">
@@ -154,11 +154,11 @@
                 <section class="pro-price">
                     <div class="div1">
                         <label>商品金额</label>
-                        <div>￥<#if totalPrice??>${totalPrice?string("0.00")}<#else>0.00</#if></div>
+                        <div>￥<#if order??&&order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></div>
                     </div>
                     <div class="div1">
                         <label>运费</label>
-                        <div>￥<#if deliveryFee??>${deliveryFee?string("0.00")}<#else>0.00</#if></div>
+                        <div>￥<#if order??&&order.deliveryFee??>${order.deliveryFee?string("0.00")}<#else>0.00</#if></div>
                     </div>
                 </section>
             </article>
@@ -169,7 +169,7 @@
         
         <!-- 底部 -->
         <footer class="fill-order-foot">
-            <div class="disbur">实付款：￥<span>${(totalPrice+deliveryFee)?string("0.00")}</span></div>
+            <div class="disbur">实付款：￥<span><#if order??&&order.totalPrice??&&order.deliveryFee??>${(order.totalPrice+order.deliveryFee)?string("0.00")}<#else>0.00</#if></span></div>
             <a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>
         </footer>
         <!-- 底部 END -->

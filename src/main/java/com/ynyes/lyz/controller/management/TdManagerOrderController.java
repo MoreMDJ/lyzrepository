@@ -21,10 +21,7 @@ import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdPayType;
-import com.ynyes.lyz.entity.TdPriceList;
-import com.ynyes.lyz.entity.TdSetting;
 import com.ynyes.lyz.entity.TdShippingAddress;
-import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdDeliveryTypeService;
@@ -41,8 +38,6 @@ import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.SiteMagConstant;
-
-import scala.reflect.macros.internal.macroImpl;
 
 
 
@@ -146,7 +141,7 @@ public class TdManagerOrderController {
                           String __VIEWSTATE,
                           Long[] listId,
                           Integer[] listChkId,
-                          Long[] listSortId,
+                          Double[] listSortId,
                           ModelMap map,
                           HttpServletRequest req){
         String username = (String) req.getSession().getAttribute("manager");
@@ -686,13 +681,13 @@ public class TdManagerOrderController {
             {
                 double goodsPrice = Double.parseDouble(data);
                 order.setTotalGoodsPrice(goodsPrice);
-                order.setTotalPrice(goodsPrice + order.getPayTypeFee() + order.getDeliverTypeFee());
+                order.setTotalPrice(goodsPrice + order.getPayTypeFee() + order.getDeliverFee());
             }
             // 修改配送费用
             else if (type.equalsIgnoreCase("editDeliveryPrice"))
             {
                 double deliveryPrice = Double.parseDouble(data);
-                order.setDeliverTypeFee(deliveryPrice);
+                order.setDeliverFee(deliveryPrice);
                 order.setTotalPrice(deliveryPrice + order.getPayTypeFee() + order.getTotalGoodsPrice());
             }
             // 修改支付手续费
@@ -700,7 +695,7 @@ public class TdManagerOrderController {
             {
                 double payPrice = Double.parseDouble(data);
                 order.setPayTypeFee(payPrice);
-                order.setTotalPrice(payPrice + order.getTotalGoodsPrice() + order.getDeliverTypeFee());
+                order.setTotalPrice(payPrice + order.getTotalGoodsPrice() + order.getDeliverFee());
             }
             // 修改联系方式
             else if (type.equalsIgnoreCase("editContact"))
@@ -744,7 +739,6 @@ public class TdManagerOrderController {
             {
                 if (order.getStatusId().equals(3L))
                 {
-                    order.setDeliverTypeId(deliverTypeId);
                     order.setStatusId(4L);
                     order.setSendTime(new Date());
                 }
@@ -816,7 +810,7 @@ public class TdManagerOrderController {
         }
     }
     
-    private void btnSave(String type, Long[] ids, Long[] sortIds)
+    private void btnSave(String type, Long[] ids, Double[] sortIds)
     {
         if (null == type || type.isEmpty())
         {

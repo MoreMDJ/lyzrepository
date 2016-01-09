@@ -44,7 +44,7 @@
                 <div class="div11">
                     <label>具体时间</label>
                     <a class="btn-select" id="btn_select">
-                        <span class="cur-select">${deliveryDetail!''}</span>
+                        <span class="cur-select">${deliveryDetailId}:30-${(deliveryDetailId+1)?eval}:30</span>
                         <select>
                            <#list 9..18 as item>
                                 <option <#if deliveryDetailId??&&deliveryDetailId==item>selected="selected"</#if> value="${item}">${item}:30-${item+1}:30</option>
