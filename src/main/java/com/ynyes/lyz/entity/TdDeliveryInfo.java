@@ -29,122 +29,40 @@ public class TdDeliveryInfo {
 	private Long id;
 
 	// 任务编号
-	@Column(unique = true)
+	@Column
 	private String taskNo;
 
-	// 是否属于首页推荐活动
+	// 仓库编号
 	@Column
-	private Boolean isCommendIndex;
+	private String whNo;
 
-	// 活动开始时间
-	@Column
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date beginDate;
-
-	// 活动结束时间
+	// 开始时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date finishDate;
+	private Date beginDt;
 
-	// 排序号
+	// 结束时间
 	@Column
-	private Double sortId;
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date endDt;
 
-	// 参加活动商品及其数量（规则以id_numbers代表一对数据，多对数据之前以","分割）
+	// 操作状态(初始、作业中、完成、结案)
 	@Column
-	private String goodsNumber;
+	private String opStatus;
 
-	// 赠送的礼品的id及其数量（规则以id_numbers代表一对数据，多对数据之前以","分割）
+	// 作业人员
 	@Column
-	private String giftNumber;
+	private String opUser;
 
-	// 城市id
+	// 修改人员
 	@Column
-	private Long cityId;
+	private String modifiedUserno;
 
-	// 城市名称
+	// 委托业主
 	@Column
-	private String cityName;
-	
-	// 门店名称
-	private String siteName;
-
-	// 是否是小辅料赠送活动
-	@Column
-	private Boolean isPresented;
-
-	// 门店id（多个以","分割）
-	@Column
-	private String diySiteIds;
-
-	// 参加活动的商品的名称（多个以","分割）
-	@Column
-	private String goodsNames;
-
-	// 赠送的礼品的名称（多个以","分割）
-	@Column
-	private String giftNames;
-
-	// 参加活动商品个数
-	@Column
-	private Integer totalGoods;
-	// 参加活动商品个数
-	@Column
-	private Integer totalGift;
-	
-	@Column
-	private Integer totalDiySite;
-
-	// 赠品
-	@OneToMany
-	@JoinColumn(name = "ownerActivityId")
-	private List<TdGoodsGift> giftList;
-
-	// 商品
-	@OneToMany
-	@JoinColumn(name = "ownerActivityId")
-	private List<TdGoodsCombination> combList;
-
-	// 商品
-	@OneToMany
-	@JoinColumn(name = "ownerActivityId")
-	private List<TdDiySiteList> siteList;
-	
-	
-	// 赠送类型（目前：0. 代表赠送的商品；1. 代表赠送的产品券）
-	@Column
-	private Long giftType;
-	
-	//活动图片
-	@Column
-	private String activityImg;
-
-	
-	public String getSiteName() {
-		return siteName;
-	}
-
-	public void setSiteName(String siteName) {
-		this.siteName = siteName;
-	}
-
-	public List<TdDiySiteList> getSiteList() {
-		return siteList;
-	}
-
-	public void setSiteList(List<TdDiySiteList> siteList) {
-		this.siteList = siteList;
-	}
-
-	public Integer getTotalDiySite() {
-		return totalDiySite;
-	}
-
-	public void setTotalDiySite(Integer totalDiySite) {
-		this.totalDiySite = totalDiySite;
-	}
+	private String ownerNo;
 
 	public Long getId() {
 		return id;
@@ -154,149 +72,67 @@ public class TdDeliveryInfo {
 		this.id = id;
 	}
 
-	public Boolean getIsCommendIndex() {
-		return isCommendIndex;
+	public String getTaskNo() {
+		return taskNo;
 	}
 
-	public void setIsCommendIndex(Boolean isCommendIndex) {
-		this.isCommendIndex = isCommendIndex;
+	public void setTaskNo(String taskNo) {
+		this.taskNo = taskNo;
 	}
 
-	public Date getBeginDate() {
-		return beginDate;
+	public String getWhNo() {
+		return whNo;
 	}
 
-	public void setBeginDate(Date beginDate) {
-		this.beginDate = beginDate;
+	public void setWhNo(String whNo) {
+		this.whNo = whNo;
 	}
 
-	public Date getFinishDate() {
-		return finishDate;
+	public Date getBeginDt() {
+		return beginDt;
 	}
 
-	public void setFinishDate(Date finishDate) {
-		this.finishDate = finishDate;
+	public void setBeginDt(Date beginDt) {
+		this.beginDt = beginDt;
 	}
 
-	public Double getSortId() {
-		return sortId;
+	public Date getEndDt() {
+		return endDt;
 	}
 
-	public void setSortId(Double sortId) {
-		this.sortId = sortId;
+	public void setEndDt(Date endDt) {
+		this.endDt = endDt;
 	}
 
-	public String getGoodsNumber() {
-		return goodsNumber;
+	public String getOpStatus() {
+		return opStatus;
 	}
 
-	public void setGoodsNumber(String goodsNumber) {
-		this.goodsNumber = goodsNumber;
+	public void setOpStatus(String opStatus) {
+		this.opStatus = opStatus;
 	}
 
-	public String getGiftNumber() {
-		return giftNumber;
+	public String getOpUser() {
+		return opUser;
 	}
 
-	public void setGiftNumber(String giftNumber) {
-		this.giftNumber = giftNumber;
+	public void setOpUser(String opUser) {
+		this.opUser = opUser;
 	}
 
-	public Long getCityId() {
-		return cityId;
+	public String getModifiedUserno() {
+		return modifiedUserno;
 	}
 
-	public void setCityId(Long cityId) {
-		this.cityId = cityId;
+	public void setModifiedUserno(String modifiedUserno) {
+		this.modifiedUserno = modifiedUserno;
 	}
 
-	public String getCityName() {
-		return cityName;
+	public String getOwnerNo() {
+		return ownerNo;
 	}
 
-	public void setCityName(String cityName) {
-		this.cityName = cityName;
+	public void setOwnerNo(String ownerNo) {
+		this.ownerNo = ownerNo;
 	}
-
-	public Boolean getIsPresented() {
-		return isPresented;
-	}
-
-	public void setIsPresented(Boolean isPresented) {
-		this.isPresented = isPresented;
-	}
-
-	public String getDiySiteIds() {
-		return diySiteIds;
-	}
-
-	public void setDiySiteIds(String diySiteIds) {
-		this.diySiteIds = diySiteIds;
-	}
-
-	public String getGoodsNames() {
-		return goodsNames;
-	}
-
-	public void setGoodsNames(String goodsNames) {
-		this.goodsNames = goodsNames;
-	}
-
-	public String getGiftNames() {
-		return giftNames;
-	}
-
-	public void setGiftNames(String giftNames) {
-		this.giftNames = giftNames;
-	}
-
-	public Integer getTotalGoods() {
-		return totalGoods;
-	}
-
-	public void setTotalGoods(Integer totalGoods) {
-		this.totalGoods = totalGoods;
-	}
-
-	public Integer getTotalGift() {
-		return totalGift;
-	}
-
-	public void setTotalGift(Integer totalGift) {
-		this.totalGift = totalGift;
-	}
-
-	public List<TdGoodsGift> getGiftList() {
-		return giftList;
-	}
-
-	public void setGiftList(List<TdGoodsGift> giftList) {
-		this.giftList = giftList;
-	}
-
-	public List<TdGoodsCombination> getCombList() {
-		return combList;
-	}
-
-	public void setCombList(List<TdGoodsCombination> combList) {
-		this.combList = combList;
-	}
-
-	public Long getGiftType() {
-		return giftType;
-	}
-
-	public void setGiftType(Long giftType) {
-		this.giftType = giftType;
-	}
-
-	public String getActivityImg() {
-		return activityImg;
-	}
-
-	public void setActivityImg(String activityImg) {
-		this.activityImg = activityImg;
-	}
-	
-
 }
