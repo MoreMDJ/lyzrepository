@@ -64,7 +64,7 @@ public class TdPriceList {
 	
 	//分公司ID
 	@Column
-	private Integer sobId;
+	private Long sobId;
 	
 	// 活动开始时间
 	@Column
@@ -131,11 +131,11 @@ public class TdPriceList {
 		this.listHeaderId = listHeaderId;
 	}
 
-	public Integer getSobId() {
+	public Long getSobId() {
 		return sobId;
 	}
 
-	public void setSobId(Integer sobId) {
+	public void setSobId(Long sobId) {
 		this.sobId = sobId;
 	}
 

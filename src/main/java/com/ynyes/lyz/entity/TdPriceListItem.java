@@ -124,8 +124,10 @@ public class TdPriceListItem {
 	//物料单位
 	private String productUomCode;
 	
-	//价格
+	//价格(进货价，或者是：销售价salePrice 根据价目表类型判断)
 	private Double price;
+	
+	
 	// 开始时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

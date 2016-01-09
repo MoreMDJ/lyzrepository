@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.management;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -331,6 +332,33 @@ public class TdManagerOrderController {
             	map.addAttribute("price_list", tdPriceListService.findAll());
                 if (null != id)
                 {
+                	TdDiySite tdDiySite = tdDiySiteService.findOne(id);
+                	List<TdPriceList> price_list = tdPriceListService.findBySobId(tdDiySite.getSobId());
+                	for (int i = 0; i < price_list.size(); i++)
+                	{
+                		TdPriceList priceList = price_list.get(i);
+                		Date nowTime = new Date();
+						if (priceList.getActiveFlag().equalsIgnoreCase("N"))
+						{
+							price_list.remove(priceList);
+						}
+						if (priceList.getStartDateActive() !=null)
+						{
+							if (priceList.getStartDateActive().getTime() > nowTime.getTime())
+							{
+								price_list.remove(priceList);
+							}
+						}
+						if (priceList.getEndDateActive() !=null)
+						{
+							if (priceList.getEndDateActive().getTime() < nowTime.getTime())
+							{
+								price_list.remove(priceList);
+							}
+						}
+					}
+                	map.addAttribute("choose_price_list", tdPriceListService.findBySobId(tdDiySite.getSobId()));
+                	
                     map.addAttribute("diy_site", tdDiySiteService.findOne(id));
                 }
                 

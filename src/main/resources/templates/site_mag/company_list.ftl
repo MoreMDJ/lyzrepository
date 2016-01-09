@@ -47,7 +47,7 @@ var theForm = document.forms['form1'];
   <div id="floatHead" class="toolbar" style="position: static; top: 42px;">
     <div class="l-list">
       <ul class="icon-list">
-        <li><a class="add" href="/Verwalter/setting/company/edit"><i></i><span>导入</span></a></li>
+        <li><a class="add" href="/Verwalter/setting/company/edit"><i></i><span>新建</span></a></li>
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除子公司</span></a></li>
       </ul>
