@@ -25,7 +25,7 @@ public class TdLoginController {
 
 	@Autowired
 	private TdUserService tdUserService;
-	
+
 	@Autowired
 	private TdCartGoodsService tdCartGoodsSerivce;
 
@@ -46,9 +46,9 @@ public class TdLoginController {
 			// 设置session失效时间为一天
 			req.getSession().setMaxInactiveInterval((60 * 60 * 24));
 			req.getSession().setAttribute("username", username);
-			
-			//删除用户的已选
-			List<TdCartGoods> list = tdCartGoodsSerivce.findByUsername(username);
+
+			// 删除用户的已选
+			List<TdCartGoods> list = tdCartGoodsSerivce.findByUserId(user.getId());
 			tdCartGoodsSerivce.deleteAll(list);
 		}
 

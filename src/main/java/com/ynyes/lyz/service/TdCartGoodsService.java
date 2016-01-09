@@ -23,9 +23,9 @@ public class TdCartGoodsService {
 		}
 		return repository.save(entity);
 	}
-	
-	public List<TdCartGoods> save(List<TdCartGoods> list){
-		if(null == list){
+
+	public List<TdCartGoods> save(List<TdCartGoods> list) {
+		if (null == list) {
 			return null;
 		}
 		return (List<TdCartGoods>) repository.save(list);
@@ -53,8 +53,8 @@ public class TdCartGoodsService {
 	 * 
 	 * @author dengxiao
 	 */
-	public void deleteAll(List<TdCartGoods> all){
-		if(null != all){
+	public void deleteAll(List<TdCartGoods> all) {
+		if (null != all) {
 			repository.delete(all);
 		}
 	}
@@ -81,6 +81,37 @@ public class TdCartGoodsService {
 			return null;
 		}
 		return repository.findByUsernameAndGoodsId(username, goodsId);
+	}
+
+	public List<TdCartGoods> findByUserId(Long userId) {
+		if (null == userId) {
+			return null;
+		}
+		return repository.findByUserId(userId);
+	}
+
+	/**
+	 * 根据用户id查找已选商品的数量
+	 * 
+	 * @author dengxiao
+	 */
+	public Long countByUserId(Long userId) {
+		if (null == userId) {
+			return null;
+		}
+		return repository.countByUserId(userId);
+	}
+
+	/**
+	 * 根据用户id查找已选调色包商品
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdCartGoods> findByUserIdAndIsColorTrue(Long userId) {
+		if (null == userId) {
+			return null;
+		}
+		return repository.findByUserIdAndIsColorTrue(userId);
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.ynyes.lyz.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,13 +19,18 @@ import org.springframework.ui.ModelMap;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
+import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
+import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdOrderGoods;
+import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdProductCategory;
+import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.util.ClientConstant;
@@ -61,6 +68,18 @@ public class TdCommonService {
 
 	@Autowired
 	private TdCartGoodsService tdCartGoodsService;
+
+	@Autowired
+	private TdOrderService tdOrderService;
+
+	@Autowired
+	private TdBrandService tdBrandService;
+
+	@Autowired
+	private TdShippingAddressService tdShippingAddressService;
+
+	@Autowired
+	private TdPayTypeService tdPayTypeService;
 
 	/**
 	 * 获取登陆用户信息的方法
@@ -690,6 +709,97 @@ public class TdCommonService {
 		// 在数据库中，删除当前用户所有的已选
 		List<TdCartGoods> list = tdCartGoodsService.findByUsername(username);
 		tdCartGoodsService.deleteAll(list);
+	}
+
+	/**
+	 * 通过登陆用户的已选生成订单并拆单的方法
+	 * 
+	 * @author dengxiao
+	 */
+	public Map<Long, TdOrder> createOrder(HttpServletRequest req, ModelMap map) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsername(username);
+		if (null == user) {
+			return null;
+		}
+
+		Map<Long, TdOrder> order_map = new HashMap<>();
+
+		// 获取所有的品牌，根据品牌数量生成相同数量的订单
+		List<TdBrand> all_brand = tdBrandService.findAll();
+
+		TdShippingAddress defaultAddress = null;
+		// 获取默认的收货地址
+		List<TdShippingAddress> addressList = user.getShippingAddressList();
+		if (null != addressList) {
+			for (TdShippingAddress address : addressList) {
+				if (null != address && null != address.getIsDefaultAddress() && address.getIsDefaultAddress()) {
+					defaultAddress = address;
+				}
+			}
+		}
+
+		// 获取默认的支付方式
+		List<TdPayType> payTypeList = tdPayTypeService.findAllOrderBySortIdAsc();
+		
+
+		// 以下代码用于生成订单编号
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		Date date = new Date();
+		String sDate = sdf.format(date);
+		Random random = new Random();
+		Integer suiji = random.nextInt(900) + 100;
+		String orderNum = sDate + suiji;
+		// 订单编号生成结束
+
+		if (null != all_brand) {
+			for (TdBrand brand : all_brand) {
+				if (null != brand && null != brand.getId()) {
+					TdOrder order = new TdOrder();
+					String shortName = brand.getShortName();
+					if (null == shortName) {
+						shortName = "";
+					}
+					order.setBrandId(brand.getId());
+					order.setBrandTitle(brand.getTitle());
+					order.setOrderNumber(shortName + orderNum);
+					order.setOrderGoodsList(new ArrayList<TdOrderGoods>());
+					order.setTotalGoodsPrice(0.00);
+					order.setProductCoupon("");
+					order.setCashCoupon(0.00);
+					order.setCashCouponId("");
+					order_map.put(brand.getId(), order);
+				}
+			}
+		}
+
+		// 获取当前用户所有的已选
+		List<TdCartGoods> select_goods = tdCartGoodsService.findByUserId(user.getId());
+		if (null != select_goods) {
+			for (TdCartGoods cartGoods : select_goods) {
+				if (null != cartGoods) {
+					// 以下代码用于设置属性
+					TdOrderGoods orderGoods = new TdOrderGoods();
+					orderGoods.setGoodsId(cartGoods.getGoodsId());
+					orderGoods.setGoodsTitle(cartGoods.getGoodsTitle());
+					orderGoods.setGoodsCoverImageUri(cartGoods.getGoodsCoverImageUri());
+					orderGoods.setSku(cartGoods.getSku());
+					orderGoods.setPrice(cartGoods.getPrice());
+					orderGoods.setQuantity(cartGoods.getQuantity());
+					// 设置属性结束
+					Long brandId = cartGoods.getBrandId();
+					TdOrder order = order_map.get(brandId);
+					if (null != order && null != order.getOrderGoodsList()) {
+						order.getOrderGoodsList().add(orderGoods);
+						order.setTotalGoodsPrice(
+								order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
+					}
+				}
+			}
+		}
+		// 返回之前将整个map存储到session中
+		req.getSession().setAttribute("all_order", order_map);
+		return order_map;
 	}
 
 	public static String getIp(HttpServletRequest request) {

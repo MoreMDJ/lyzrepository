@@ -85,41 +85,9 @@ public class TdOrder {
 	@Column
 	private String diySiteName;
 
-	// 快递公司
-	@Column
-	private String expressCampany;
-
-	// 快递单号
-	@Column
-	private String expressNumber;
-
-	// 快递详情查询接口
-	@Column
-	private String expressUri;
-
-	// 快递用户留言备注
-	@Column
-	private String userRemarkInfo;
-
 	// 后台备注
 	@Column
 	private String remarkInfo;
-
-	// 是否索要发票
-	@Column
-	private Boolean isNeedInvoice;
-
-	// 发票抬头
-	@Column
-	private String invoiceTitle;
-
-	// 发票内容
-	@Column
-	private String invoiceContent;
-
-	// 发票类型
-	@Column
-	private String invoiceType;
 
 	// 下单时间
 	@Column
@@ -184,10 +152,6 @@ public class TdOrder {
 	@Column
 	private Long typeId;
 
-	// 订单取消原因
-	@Column
-	private String cancelReason;
-
 	// 是否取消订单
 	@Column
 	private Boolean isCancel;
@@ -208,10 +172,6 @@ public class TdOrder {
 	@Column
 	private String username;
 
-	// 配货人
-	@Column
-	private String deliveryPerson;
-
 	// 配送人
 	@Column
 	private String distributionPerson;
@@ -224,9 +184,21 @@ public class TdOrder {
 	@Column(scale = 2)
 	private Double totalGoodsPrice;
 
+	// 使用可提现预存款金额
+	@Column(scale = 2)
+	private Double cashBalanceUsed;
+
+	// 不可提现预存款金额
+	@Column(scale = 2)
+	private Double unCashBalanceUsed;
+
 	// 订单总金额
 	@Column(scale = 2)
 	private Double totalPrice;
+
+	// 实收款
+	@Column(scale = 2)
+	private Double actualPay;
 
 	// 排序号
 	@Column
@@ -236,44 +208,56 @@ public class TdOrder {
 	@Column
 	private Boolean isOnlinePay;
 
-	// 分享用户id
-	@Column
-	private Long shareId;
-	
-	//配送日期
+	// 配送日期
 	@Column
 	private String deliveryDate;
-	
-	//配送时间段
+
+	// 配送时间段
 	@Column
 	private String deliveryDetail;
-	
-	//订单备注
+
+	// 订单备注
 	@Column
 	private String remark;
-	
-	//是否参加了促销
+
+	// 是否参加了促销
 	@Column
 	private Boolean isPromotion;
-	
-	//使用现金券额度
+
+	// 使用现金券额度
 	@Column
 	private Double cashCoupon;
-	
-	//使用产品券情况
+
+	// 使用产品券情况
 	@Column
 	private String productCoupon;
-	
-	//促销活动赠送列表
+
+	// 使用产品券id，多个之间以","分割
+	@Column
+	private String productCouponId;
+
+	// 使用现金券的id，多个之间以","分割
+	@Column
+	private String cashCouponId;
+
+	// 促销活动赠送列表
 	@OneToMany
 	@JoinColumn(name = "presentedListId")
 	private List<TdOrderGoods> presentedList;
-	
-	//小辅料赠送列表
+
+	// 小辅料赠送列表
 	@OneToMany
 	@JoinColumn(name = "giftListId")
 	private List<TdOrderGoods> giftGoodsList;
-	
+
+	// 品牌名称
+	@Column
+	private String brandTitle;
+
+	// 品牌id
+	@Column
+	private Long brandId;
+
 	public Double getRefund() {
 		return refund;
 	}
@@ -288,14 +272,6 @@ public class TdOrder {
 
 	public void setIsCancel(Boolean isCancel) {
 		this.isCancel = isCancel;
-	}
-
-	public Long getShareId() {
-		return shareId;
-	}
-
-	public void setShareId(Long shareId) {
-		this.shareId = shareId;
 	}
 
 	public Long getId() {
@@ -418,52 +394,12 @@ public class TdOrder {
 		this.deliverTypeFee = deliverTypeFee;
 	}
 
-	public String getUserRemarkInfo() {
-		return userRemarkInfo;
-	}
-
-	public void setUserRemarkInfo(String userRemarkInfo) {
-		this.userRemarkInfo = userRemarkInfo;
-	}
-
 	public String getRemarkInfo() {
 		return remarkInfo;
 	}
 
 	public void setRemarkInfo(String remarkInfo) {
 		this.remarkInfo = remarkInfo;
-	}
-
-	public Boolean getIsNeedInvoice() {
-		return isNeedInvoice;
-	}
-
-	public void setIsNeedInvoice(Boolean isNeedInvoice) {
-		this.isNeedInvoice = isNeedInvoice;
-	}
-
-	public String getInvoiceTitle() {
-		return invoiceTitle;
-	}
-
-	public void setInvoiceTitle(String invoiceTitle) {
-		this.invoiceTitle = invoiceTitle;
-	}
-
-	public String getInvoiceContent() {
-		return invoiceContent;
-	}
-
-	public void setInvoiceContent(String invoiceContent) {
-		this.invoiceContent = invoiceContent;
-	}
-
-	public String getInvoiceType() {
-		return invoiceType;
-	}
-
-	public void setInvoiceType(String invoiceType) {
-		this.invoiceType = invoiceType;
 	}
 
 	public Date getOrderTime() {
@@ -522,52 +458,12 @@ public class TdOrder {
 		this.statusId = statusId;
 	}
 
-	public String getCancelReason() {
-		return cancelReason;
-	}
-
-	public void setCancelReason(String cancelReason) {
-		this.cancelReason = cancelReason;
-	}
-
 	public String getUsername() {
 		return username;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public String getExpressCampany() {
-		return expressCampany;
-	}
-
-	public void setExpressCampany(String expressCampany) {
-		this.expressCampany = expressCampany;
-	}
-
-	public String getExpressNumber() {
-		return expressNumber;
-	}
-
-	public void setExpressNumber(String expressNumber) {
-		this.expressNumber = expressNumber;
-	}
-
-	public String getExpressUri() {
-		return expressUri;
-	}
-
-	public void setExpressUri(String expressUri) {
-		this.expressUri = expressUri;
-	}
-
-	public String getDeliveryPerson() {
-		return deliveryPerson;
-	}
-
-	public void setDeliveryPerson(String deliveryPerson) {
-		this.deliveryPerson = deliveryPerson;
 	}
 
 	public String getDistributionPerson() {
@@ -744,5 +640,61 @@ public class TdOrder {
 
 	public void setGiftGoodsList(List<TdOrderGoods> giftGoodsList) {
 		this.giftGoodsList = giftGoodsList;
+	}
+
+	public String getProductCouponId() {
+		return productCouponId;
+	}
+
+	public void setProductCouponId(String productCouponId) {
+		this.productCouponId = productCouponId;
+	}
+
+	public String getCashCouponId() {
+		return cashCouponId;
+	}
+
+	public void setCashCouponId(String cashCouponId) {
+		this.cashCouponId = cashCouponId;
+	}
+
+	public String getBrandTitle() {
+		return brandTitle;
+	}
+
+	public void setBrandTitle(String brandTitle) {
+		this.brandTitle = brandTitle;
+	}
+
+	public Long getBrandId() {
+		return brandId;
+	}
+
+	public void setBrandId(Long brandId) {
+		this.brandId = brandId;
+	}
+
+	public Double getCashBalanceUsed() {
+		return cashBalanceUsed;
+	}
+
+	public void setCashBalanceUsed(Double cashBalanceUsed) {
+		this.cashBalanceUsed = cashBalanceUsed;
+	}
+
+	public Double getUnCashBalanceUsed() {
+		return unCashBalanceUsed;
+	}
+
+	public void setUnCashBalanceUsed(Double unCashBalanceUsed) {
+		this.unCashBalanceUsed = unCashBalanceUsed;
+	}
+
+	public Double getActualPay() {
+		return actualPay;
+	}
+
+	public void setActualPay(Double actualPay) {
+		this.actualPay = actualPay;
 	}
 }

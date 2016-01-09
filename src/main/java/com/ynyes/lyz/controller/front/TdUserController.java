@@ -43,6 +43,7 @@ import com.ynyes.lyz.entity.TdUserSuggestionCategory;
 import com.ynyes.lyz.service.TdArticleCategoryService;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBalanceLogService;
+import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdCouponService;
@@ -130,6 +131,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdArticleService tdArticleService;
+
+	@Autowired
+	private TdCartGoodsService tdCartGoodsService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -374,7 +378,7 @@ public class TdUserController {
 		Double total_price = 0.0;
 
 		// 获取所有已选的商品
-		List<TdCartGoods> all_selected = tdCommonService.getSelectedGoods(req);
+		List<TdCartGoods> all_selected = tdCartGoodsService.findByUserId(user.getId());
 		for (int i = 0; i < all_selected.size(); i++) {
 			TdCartGoods cartGoods = all_selected.get(i);
 			// 获取已选商品的库存
@@ -385,44 +389,15 @@ public class TdUserController {
 					// 如果已选数量大于了最大库存，则消减已选数量
 					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > goods.getLeftNumber()) {
 						cartGoods.setQuantity(goods.getLeftNumber());
+						cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
+						tdCartGoodsService.save(cartGoods);
 					}
-					if (null != cartGoods.getPrice() && null != cartGoods.getQuantity()) {
-						total_price += (cartGoods.getPrice() * cartGoods.getQuantity());
-					}
+					total_price += cartGoods.getTotalPrice();
 				}
 			}
 		}
-		// 获取所有的调色包
-		List<TdCartColorPackage> selected_colors = tdCommonService.getSelectedColorPackage(req);
-		for (int i = 0; i < selected_colors.size(); i++) {
-			TdCartColorPackage cartColorPackage = selected_colors.get(i);
-			// 获取已选调色包的库存
-			if (null != cartColorPackage) {
-				TdGoods goods = tdGoodsService.findOne(cartColorPackage.getGoodsId());
-				if (null != goods) {
-					map.addAttribute("color" + i, goods.getLeftNumber());
-					// 如果已选数量大于了最大库存，则消减已选数量
-					if (null != cartColorPackage.getQuantity()
-							&& cartColorPackage.getQuantity() > goods.getLeftNumber()) {
-						cartColorPackage.setQuantity(goods.getLeftNumber());
-					}
-					if (null != cartColorPackage.getSalePrice() && null != cartColorPackage.getQuantity()) {
-						total_price += (cartColorPackage.getSalePrice() * cartColorPackage.getQuantity());
-					}
-				}
-			}
-		}
-		req.getSession().setAttribute("all_selected", all_selected);
-		req.getSession().setAttribute("all_color", selected_colors);
 		map.addAttribute("all_selected", all_selected);
-		map.addAttribute("selected_colors", selected_colors);
-
-		// 获取所有的已选商品（整合后）
-		List<TdCartGoods> all = tdCommonService.getAllContainsColorPackage(req);
-		if (null != all) {
-			map.addAttribute("selected_number", all.size());
-		}
-
+		map.addAttribute("selected_number", tdCartGoodsService.countByUserId(user.getId()));
 		map.addAttribute("totalPrice", total_price);
 
 		return "/client/user_selected";

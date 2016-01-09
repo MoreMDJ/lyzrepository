@@ -30,4 +30,25 @@ public interface TdCartGoodsRepo
 	 * @author dengxiao
 	 */
 	TdCartGoods findByUsernameAndGoodsId(String username, Long goodsId);
+
+	/**
+	 * 根据用户id查找购物车项
+	 * 
+	 * @author dengxiao
+	 */
+	List<TdCartGoods> findByUserId(Long userId);
+
+	/**
+	 * 根据用户id查找已选的调色包商品
+	 * 
+	 * @author dengxiao
+	 */
+	List<TdCartGoods> findByUserIdAndIsColorTrue(Long userId);
+
+	/**
+	 * 根据用户id查找已选商品的数量
+	 * 
+	 * @author dengxiao
+	 */
+	Long countByUserId(Long userId);
 }

@@ -26,6 +26,7 @@ import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserCollect;
 import com.ynyes.lyz.entity.TdUserComment;
 import com.ynyes.lyz.service.TdActivityService;
+import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdPriceListItemService;
@@ -62,6 +63,9 @@ public class TdGoodsController {
 	@Autowired
 	private TdSettingService tdSettingService;
 
+	@Autowired
+	private TdCartGoodsService tdCartGoodsService;
+
 	/*
 	 *********************************** 普通下单模式的控制器和方法********************************************
 	 */
@@ -81,7 +85,7 @@ public class TdGoodsController {
 
 		tdCommonService.setHeader(req, map);
 		tdCommonService.getCategory(req, map);
-		Long number = tdCommonService.getSelectedNumber(req);
+		Long number = tdCartGoodsService.countByUserId(user.getId());
 		// 将已选商品的数量（包括调色包）添加到ModelMap中
 		map.addAttribute("selected_number", number);
 		return "/client/goods_list_normal";
@@ -109,7 +113,7 @@ public class TdGoodsController {
 
 		tdCommonService.setHeader(req, map);
 		tdCommonService.getCategory(req, map);
-		Long number = tdCommonService.getSelectedNumber(req);
+		Long number = tdCartGoodsService.countByUserId(user.getId());
 		// 将已选商品的数量（包括调色包）添加到ModelMap中
 		map.addAttribute("selected_number", number);
 		return "/client/goods_list_step";
@@ -185,9 +189,17 @@ public class TdGoodsController {
 	 */
 	@RequestMapping(value = "/color/add")
 	public String colorAdd(String colorName, Long quantity, ModelMap map, HttpServletRequest req) {
+		// 获取登陆用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsername(username);
+		if (null == user) {
+			user = new TdUser();
+		}
+
 		colorName = colorName.trim();
 		// 获取指定调色包商品
 		TdGoods goods = tdGoodsService.findByCode(colorName);
+
 		// 获取该调色包的价格
 		TdDiySite diySite = tdCommonService.getDiySite(req);
 		Long priceListId = null;
@@ -196,44 +208,53 @@ public class TdGoodsController {
 		}
 		// 根据价目表id和调色包商品的id查找到指定的调色包价目表项
 		TdPriceListItem priceListItem = tdPriceListItemService.findByPriceListIdAndGoodsId(priceListId, goods.getId());
-		// 创建一个已选调色包实体，用于存储各项已选数据
-		TdCartColorPackage tdCartColorPackage = new TdCartColorPackage();
+		if (null == priceListItem) {
+			priceListItem = new TdPriceListItem();
+		}
+
+		// 创建一个已选商品实体，用于存储各项已选数据
+		TdCartGoods cartGoods = new TdCartGoods();
 		// ********************************开始设置属性*******************************************
-		tdCartColorPackage.setQuantity(quantity);
-		tdCartColorPackage.setSalePrice(priceListItem.getSalePrice());
-		tdCartColorPackage.setRealPrice(priceListItem.getRealSalePrice());
-		tdCartColorPackage.setTotalPrice(tdCartColorPackage.getQuantity() * tdCartColorPackage.getSalePrice());
-		tdCartColorPackage.setGoodsId(goods.getId());
-		tdCartColorPackage.setImageUri(goods.getCoverImageUri());
-		tdCartColorPackage.setNumber(goods.getCode());
-		tdCartColorPackage.setGoodsTitle(goods.getTitle());
+		cartGoods.setQuantity(quantity);
+		cartGoods.setPrice(priceListItem.getSalePrice());
+		cartGoods.setRealPrice(priceListItem.getRealSalePrice());
+		cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
+		cartGoods.setRealTotalPrice(cartGoods.getRealPrice() * cartGoods.getQuantity());
+		cartGoods.setGoodsId(goods.getId());
+		cartGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
+		cartGoods.setSku(goods.getCode());
+		cartGoods.setGoodsTitle(goods.getTitle());
+		cartGoods.setIsColor(true);
+		cartGoods.setUserId(user.getId());
+		cartGoods.setUsername(username);
 		// ********************************设置属性结束*******************************************
 
-		// 获取所有已经选择的调色包
-		List<TdCartColorPackage> all_color = tdCommonService.getSelectedColorPackage(req);
-
-		// 创建一个布尔对象用于表示当前添加的调色包是不是已选中已经有了的，其初始值为false，表示没有
+		// 查找到所有的已选商品
+		List<TdCartGoods> selected_goods = tdCartGoodsService.findByUserId(user.getId());
 		Boolean isHave = false;
-		for (int i = 0; i < all_color.size(); i++) {
-			TdCartColorPackage cartColorPackage = all_color.get(i);
-			if (null != cartColorPackage && null != cartColorPackage.getGoodsId()
-					&& goods.getId() == cartColorPackage.getColorPackageId()) {
+		// 创建一个布尔对象用于表示当前添加的调色包是不是已选中已经有了的，其初始值为false，表示没有
+		for (int i = 0; i < selected_goods.size(); i++) {
+			TdCartGoods cart = selected_goods.get(i);
+			if (null != cart && null != cart.getGoodsId() && goods.getId() == cart.getGoodsId()) {
 				isHave = true;
-				cartColorPackage.setQuantity(tdCartColorPackage.getQuantity() + quantity);
-				cartColorPackage.setSalePrice(tdCartColorPackage.getSalePrice());
+				cart.setQuantity(cart.getQuantity() + cartGoods.getQuantity());
+				cart.setPrice(cartGoods.getPrice());
+				cart.setRealPrice(cartGoods.getRealPrice());
+				cart.setTotalPrice(cart.getPrice() * cart.getQuantity());
+				cart.setRealPrice(cart.getRealPrice() * cart.getQuantity());
+				cart.setIsColor(true);
+				tdCartGoodsService.save(cart);
 			}
 		}
-		// 如果没有包含，则将新选择的调色包添加到已选中
+		// 如果没有包含，则直接保存
 		if (!isHave) {
-			all_color.add(tdCartColorPackage);
+			tdCartGoodsService.save(cartGoods);
 		}
 
-		req.getSession().setAttribute("all_color", all_color);
-
 		map.addAttribute("unit_price", priceListItem.getSalePrice());
-		map.addAttribute("select_colors", tdCommonService.getSelectedColorPackage(req));
+		map.addAttribute("select_colors", tdCartGoodsService.findByUserIdAndIsColorTrue(user.getId()));
 		// 获取所有已选商品的数量
-		map.addAttribute("selected_number", tdCommonService.getSelectedNumber(req));
+		map.addAttribute("selected_number", tdCartGoodsService.countByUserId(user.getId()));
 		return "/client/selected_color_package";
 	}
 
@@ -248,22 +269,24 @@ public class TdGoodsController {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsername(username);
+		if (null == user) {
+			user = new TdUser();
+		}
+
 		// 获取所有已经选择的调色包
-		List<TdCartColorPackage> all_color = tdCommonService.getSelectedColorPackage(req);
-		// 创建一个新的集合用于存储删除已选调色包后的数据
-		List<TdCartColorPackage> new_color = new ArrayList<>();
+		List<TdCartGoods> all_color = tdCartGoodsService.findByUserIdAndIsColorTrue(user.getId());
+
 		// 遍历已选调色包，找到指定id的调色包
 		for (int i = 0; i < all_color.size(); i++) {
-			TdCartColorPackage cartColorPackage = all_color.get(i);
-			if (null != cartColorPackage && null != cartColorPackage.getGoodsId()
-					&& cartColorPackage.getGoodsId() != colorPackageGoodsId) {
-				new_color.add(cartColorPackage);
+			TdCartGoods cartGoods = all_color.get(i);
+			if (null != cartGoods && null != cartGoods.getGoodsId() && cartGoods.getGoodsId() == colorPackageGoodsId) {
+				tdCartGoodsService.delete(cartGoods.getId());
 			}
 		}
-		// 操作完成之后让原集合失效
-		all_color = null;
-		req.getSession().setAttribute("all_color", new_color);
-		res.put("selected_number", tdCommonService.getSelectedNumber(req));
+
+		res.put("selected_number", tdCartGoodsService.countByUserId(user.getId()));
 		res.put("status", 0);
 		return res;
 	}
@@ -281,7 +304,16 @@ public class TdGoodsController {
 		res.put("status", -1);
 		// 获取登陆用户的门店信息
 		TdDiySite diySite = tdCommonService.getDiySite(req);
-		List<TdCartGoods> selected_goods = tdCommonService.getSelectedGoods(req);
+		// 获取登陆用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsername(username);
+		if (null == user) {
+			user = new TdUser();
+		}
+
+		// 获取所有的已选商品
+		List<TdCartGoods> selected_goods = tdCartGoodsService.findByUserId(user.getId());
+
 		// param的格式为：goodsId+quantity
 		String[] param = params.split("\\-");
 		for (int i = 0; i < param.length; i++) {
@@ -301,6 +333,11 @@ public class TdGoodsController {
 				cartGoods.setPrice(priceListItem.getSalePrice());
 				cartGoods.setRealPrice(priceListItem.getRealSalePrice());
 				cartGoods.setSku(goods.getCode());
+				cartGoods.setUserId(user.getId());
+				cartGoods.setUsername(username);
+			}
+			if (null != goods.getIsColorPackage() && goods.getIsColorPackage()) {
+				cartGoods.setIsColor(true);
 			}
 			Boolean isHave = false;
 			// 遍历已选商品的集合，判断新的商品是否已选
@@ -309,18 +346,25 @@ public class TdGoodsController {
 				if (null != tdCartGoods && null != tdCartGoods.getGoodsId()
 						&& tdCartGoods.getGoodsId() == Long.parseLong(goodsId_quantity[0])) {
 					// 在goodsId相同的情况下就代表已经被选择了，修改被选数量即可
-					tdCartGoods.setPrice(tdCartGoods.getPrice());
+					tdCartGoods.setPrice(cartGoods.getPrice());
 					tdCartGoods.setQuantity(tdCartGoods.getQuantity() + Long.parseLong(goodsId_quantity[1]));
 					isHave = true;
+					tdCartGoods.setTotalPrice(tdCartGoods.getPrice() * tdCartGoods.getQuantity());
+					tdCartGoods.setRealPrice(cartGoods.getPrice());
+					tdCartGoods.setRealTotalPrice(tdCartGoods.getRealPrice() * tdCartGoods.getQuantity());
+					tdCartGoods.setIsColor(cartGoods.getIsColor());
+					tdCartGoodsService.save(tdCartGoods);
 				}
 			}
 			// 新的商品没有在已选中找到，则将其添加进入已选
 			if (!isHave) {
-				selected_goods.add(cartGoods);
+				cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
+				cartGoods.setRealPrice(cartGoods.getRealPrice() * cartGoods.getQuantity());
+				tdCartGoodsService.save(cartGoods);
 			}
 		}
-		req.getSession().setAttribute("all_selected", selected_goods);
-		res.put("selected_number", tdCommonService.getSelectedNumber(req));
+		Long number = tdCartGoodsService.countByUserId(user.getId());
+		res.put("selected_number", number);
 		res.put("stauts", 0);
 		return res;
 	}
@@ -362,7 +406,7 @@ public class TdGoodsController {
 		List<TdActivity> activity_list = new ArrayList<>();
 
 		// 获取该商品参加的所有活动
-		if (null == priceListItem.getActivities()) {
+		if (null != priceListItem.getActivities()) {
 			String activities = priceListItem.getActivities();
 			if (null != activities) {
 				String[] all_activity = activities.split(",");
@@ -518,58 +562,32 @@ public class TdGoodsController {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 
-		// 获取所有的已选商品
-		List<TdCartGoods> selected_goods = tdCommonService.getSelectedGoods(req);
-		// 获取所有已选的调色包
-		List<TdCartColorPackage> selected_colors = tdCommonService.getSelectedColorPackage(req);
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsername(username);
+		if (null == user) {
+			user = new TdUser();
+		}
 
-		// 创建一个布尔变量表示是否在已选商品中查找指定的商品
-		Boolean isFind = false;
+		Double price = 0.0;
+
+		// 获取所有的已选商品
+		List<TdCartGoods> selected_goods = tdCartGoodsService.findByUserId(user.getId());
+
 		// 遍历所有的已选商品，查找出指定id的已选
 		if (null != selected_goods) {
 			for (int i = 0; i < selected_goods.size(); i++) {
 				TdCartGoods cartGoods = selected_goods.get(i);
 				if (null != cartGoods) {
 					if (null != cartGoods.getGoodsId() && cartGoods.getGoodsId() == goodsId) {
-						isFind = true;
-						selected_goods.remove(i);
-						req.getSession().setAttribute("all_selected", selected_goods);
+						tdCartGoodsService.delete(cartGoods.getId());
 						res.put("status", 0);
+					} else {
+						price += cartGoods.getTotalPrice();
 					}
 				}
 			}
 		}
 
-		// 在已选商品中没有找到指定goodsId的商品时，遍历已选调色包
-		if (!isFind) {
-			if (null != selected_colors) {
-				for (int i = 0; i < selected_colors.size(); i++) {
-					TdCartColorPackage colorPackage = selected_colors.get(i);
-					if (null != colorPackage) {
-						if (null != colorPackage.getGoodsId() && colorPackage.getGoodsId() == goodsId) {
-							selected_colors.remove(i);
-							req.getSession().setAttribute("all_color", selected_colors);
-							res.put("status", 0);
-						}
-					}
-				}
-			}
-		}
-
-		// 获取所有的已选商品（整合后）
-		List<TdCartGoods> all = tdCommonService.getAllContainsColorPackage(req);
-		if (null != all) {
-			res.put("number", all.size());
-		} else {
-			res.put("number", 0);
-		}
-
-		Double price = 0.0;
-		for (TdCartGoods cartGoods : all) {
-			if (null != cartGoods && null != cartGoods.getPrice() && null != cartGoods.getQuantity()) {
-				price += (cartGoods.getPrice() * cartGoods.getQuantity());
-			}
-		}
 		res.put("all_price", price);
 
 		return res;

@@ -745,7 +745,6 @@ public class TdManagerOrderController {
                 if (order.getStatusId().equals(3L))
                 {
                     order.setDeliverTypeId(deliverTypeId);
-                    order.setExpressNumber(expressNumber);
                     order.setStatusId(4L);
                     order.setSendTime(new Date());
                 }

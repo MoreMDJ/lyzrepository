@@ -110,6 +110,8 @@ public class TdRegistController {
 		TdCity city = tdCityService.findByCityName(cityInfo);
 		if (null == city) {
 			city = new TdCity();
+			city.setCityName(cityInfo);
+			city = tdCityService.save(city);
 		}
 
 		// 获取门店名称

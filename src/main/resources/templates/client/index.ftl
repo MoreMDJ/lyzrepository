@@ -53,13 +53,12 @@
                         <div class="swiper-wrapper">
                             <#list circle_ad_list as item>
                                 <div class="swiper-slide orange-slide">
-                                    <img src="${item.iconUri!''}"/>
+                                    <img src="${item.linkUri!''}"/>
                                 </div>
                             </#list>
                         </div>
                     <div class="swiper-pagination"></div>
                 </div>
-                <script src="js/swiper.min.js"></script>
                 <script type="text/javascript">
                     var mySwiper = new Swiper('.swiper-container',{
                         loop: true,

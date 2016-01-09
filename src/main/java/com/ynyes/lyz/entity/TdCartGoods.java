@@ -34,6 +34,10 @@ public class TdCartGoods {
 	@Column
 	private String username;
 
+	// 用户id
+	@Column
+	private Long userId;
+
 	// 商品ID
 	@Column
 	private Long goodsId;
@@ -49,8 +53,8 @@ public class TdCartGoods {
 	// 商品数量
 	@Column
 	private Long quantity;
-	
-	//商品SKU
+
+	// 商品SKU
 	@Column
 	private String sku;
 
@@ -61,6 +65,22 @@ public class TdCartGoods {
 	// 实际价格
 	@Column
 	private Double realPrice;
+
+	// 品牌名称
+	@Column
+	private String brandTitle;
+
+	// 品牌id
+	@Column
+	private Long brandId;
+
+	// 虚拟总价
+	@Column(scale = 2)
+	private Double totalPrice;
+
+	// 实际总价
+	@Column(scale = 2)
+	private Double realTotalPrice;
 
 	// 销售类型 0：正常销售 1：抢购 2：团购
 	@Column
@@ -85,6 +105,10 @@ public class TdCartGoods {
 	// 使用产品券的数量，默认为0
 	@Column
 	private Long couponNumber;
+
+	// 是否是调色包
+	@Column
+	private Boolean isColor;
 
 	public Long getId() {
 		return id;
@@ -204,5 +228,53 @@ public class TdCartGoods {
 
 	public void setSku(String sku) {
 		this.sku = sku;
+	}
+
+	public Double getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(Double totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public String getBrandTitle() {
+		return brandTitle;
+	}
+
+	public void setBrandTitle(String brandTitle) {
+		this.brandTitle = brandTitle;
+	}
+
+	public Long getBrandId() {
+		return brandId;
+	}
+
+	public void setBrandId(Long brandId) {
+		this.brandId = brandId;
+	}
+
+	public Double getRealTotalPrice() {
+		return realTotalPrice;
+	}
+
+	public void setRealTotalPrice(Double realTotalPrice) {
+		this.realTotalPrice = realTotalPrice;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Boolean getIsColor() {
+		return isColor;
+	}
+
+	public void setIsColor(Boolean isColor) {
+		this.isColor = isColor;
 	}
 }
