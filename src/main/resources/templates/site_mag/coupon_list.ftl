@@ -63,9 +63,7 @@ function __doPostBack(eventTarget, eventArgument) {
   <tbody>
   <tr class="odd_bg">
     <th width="8%">选择</th>
-    <th align="left">优惠券名称</th>
     <th align="left">优惠券类型</th>
-    <th align="left" width="17%">已领用数量</th>
     <th align="left" width="17%">剩余数量</th>
     <th align="left" width="12%">排序</th>
     <th width="10%">操作</th>
@@ -80,7 +78,6 @@ function __doPostBack(eventTarget, eventArgument) {
                     </span>
                     <input type="hidden" name="listId" id="listId" value="${item.id?c}">
                 </td>
-                <td><a href="/Verwalter/coupon/edit?id=${item.id?c}">${item.typeTitle!""}</a></td>
                 <td>
                 <#switch item.typeCategoryId>
                 <#case 0>
@@ -96,7 +93,6 @@ function __doPostBack(eventTarget, eventArgument) {
                 	无类别	
                 </#switch>			
                 </td>
-                <td>${item.getNumber?c!""}</td>
                 <td><#if item.leftNumber??>${item.leftNumber?c!""}</#if></td>
                 <td><input name="listSortId" type="text" disabled="" value="${item.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
                 <td align="center">

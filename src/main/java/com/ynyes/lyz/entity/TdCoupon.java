@@ -24,13 +24,21 @@ public class TdCoupon {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	// 优惠券分类ID
+	// 优惠券获取方式：1. 后台手动发放 2. 用户抢券
 	@Column
 	private Long typeId;
 
-	// 优惠券限用分类类型ID
+	// 优惠券限用分类类型ID: 1. 通用现金券；2. 指定商品现金券；3. 产品券
 	@Column
 	private Long typeCategoryId;
+	
+	// 券所属公司ID
+	@Column
+	private Long brandId;
+	
+	// 券所属公司名称
+	@Column
+	private String brandTitle;
 
 	/*
 	 * 可使用商品id（针对于通用 现金券，其值为null）
@@ -303,5 +311,21 @@ public class TdCoupon {
 
 	public void setPicUri(String picUri) {
 		this.picUri = picUri;
+	}
+
+	public Long getBrandId() {
+		return brandId;
+	}
+
+	public void setBrandId(Long brandId) {
+		this.brandId = brandId;
+	}
+
+	public String getBrandTitle() {
+		return brandTitle;
+	}
+
+	public void setBrandTitle(String brandTitle) {
+		this.brandTitle = brandTitle;
 	}
 }
