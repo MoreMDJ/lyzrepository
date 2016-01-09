@@ -7,5 +7,5 @@ import com.ynyes.lyz.entity.TdBrand;
 
 public interface TdBrandRepo extends PagingAndSortingRepository<TdBrand, Long>, JpaSpecificationExecutor<TdBrand> {
 	
-	
+	TdBrand findByShortName(String shortName);
 }

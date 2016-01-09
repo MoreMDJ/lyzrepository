@@ -39,6 +39,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
@@ -46,6 +47,7 @@ import com.ynyes.lyz.entity.TdGoodsLimit;
 import com.ynyes.lyz.entity.TdLyzParameter;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
+import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsLimitService;
@@ -78,6 +80,9 @@ public class CallEBSImpl implements ICallEBS {
 	
 	@Autowired
 	private TdDeliveryInfoService tdDeliveryInfoService;
+	
+	@Autowired
+	private TdBrandService tdBrandService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -934,22 +939,12 @@ public class CallEBSImpl implements ICallEBS {
 					tdGoods.setInventoryItemStatus(1L);
 				}
 				
-				if (product_flag.equalsIgnoreCase("HR"))
+				TdBrand tdBrand = tdBrandService.findByShortName(product_flag);
+				if (tdBrand != null)
 				{
-					tdGoods.setBelongTo(1L);
-				}
-				else if(product_flag.equalsIgnoreCase("LYZ"))
-				{
-					tdGoods.setBelongTo(2L);
-				}
-				else if(product_flag.equalsIgnoreCase("YR"))
-				{
-					tdGoods.setBelongTo(3L);
-				}
-				else
-				{
-					tdGoods.setBelongTo(0L);
-				}
+					tdGoods.setBrandId(tdBrand.getId());
+					tdGoods.setBrandTitle(tdBrand.getTitle());
+				}				
 				tdGoods.setAttribute1(attribute1);
 				tdGoodsService.save(tdGoods, "数据导入");
 			}
@@ -962,13 +957,13 @@ public class CallEBSImpl implements ICallEBS {
 				Long category_id = null; //类别ID
 				String concatenated_segments = null;//物料类别组合
 				String category_set_name = null;//类别集名称
-				
+
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
 				for (int idx = 0; idx < childNodeList.getLength(); idx++)
 				{
 					Node childNode = childNodeList.item(idx);
-					
+
 					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
 					{
 						// 比较字段名
@@ -994,7 +989,7 @@ public class CallEBSImpl implements ICallEBS {
 								category_set_name = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						
+
 					}
 				}
 				TdLyzParameter tdLyzParameter = tdLyzParameterService.findByCategoryId(category_id);
