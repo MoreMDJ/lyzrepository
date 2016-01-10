@@ -27,10 +27,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.jws.WebService;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.apache.geronimo.mail.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
@@ -1301,6 +1303,30 @@ public class CallEBSImpl implements ICallEBS {
 		}
 		
 		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";
+	}
+	
+	public static void sendMsgToWMS()
+	{
+		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();  
+		org.apache.cxf.endpoint.Client client = dcf.createClient("http://localhost:8080/facelook/services/facelookWebService?wsdl");  
+		//url为调用webService的wsdl地址  
+		QName name=new QName("http://server.webservice.facelook.com/","getAlbumList"); 
+		String xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"  
+						+ "     <facelook>"
+						+ "        <condition>"  
+						+ "            <name>家</name>"  
+						+ "            <description></description>"  
+						+ "            <pageno></pageno>"  
+						+ "            <pagesize></pagesize>"  
+						+ "        </condition>"  
+						+ "     </facelook>";  
+		//paramvalue为参数值  
+		try {
+        	Object[] objects=client.invoke(name,xmlStr);
+        } catch (Exception e) {
+        	// TODO Auto-generated catch block
+        	e.printStackTrace();
+        }  
 	}
 
 	
