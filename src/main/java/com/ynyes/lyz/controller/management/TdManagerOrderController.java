@@ -22,6 +22,7 @@ import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdPayType;
+import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
