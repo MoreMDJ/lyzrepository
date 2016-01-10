@@ -1200,6 +1200,7 @@ public class CallEBSImpl implements ICallEBS {
 				{
 					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>该门店不存在，无法添加价目表</MESSAGE></STATUS></RESULTS>";
 				}
+
 				tdDiySite.setPriceListId(list_header_id);
 				tdDiySite.setPriceListName(name);
 				tdDiySiteService.save(tdDiySite);

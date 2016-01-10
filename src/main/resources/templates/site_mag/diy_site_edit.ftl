@@ -107,7 +107,7 @@
         <dt>所属价目表</dt>
         <dd>
             <div class="rule-single-select">
-                    <#--<#if !diy_site??>-->
+                    <#if !diy_site??>
                         <select name="priceListId">
                         <option value="">请选择类别...</option>
                         <#if price_list??>
@@ -115,11 +115,16 @@
                                 <option <#if diy_site??&&diy_site.priceListId??&&diy_site.priceListId==c.id>selected="selected"</#if> value="${c.id?c!''}" >${c.name!'无    '}</option>
                             </#list>
                         </#if>
-                    <#--</#if>-->
-                    <#--<#if diy_site??>
+                    </#if>
+                    <#if diy_site??>
                         <select>
                         <option selected="selected">${diy_site.priceListName!'暂无'}</option>
-                    </#if>-->
+                        <#if choose_price_list??>
+                        <#list choose_price_list as item>
+                        <option selected="selected">${item.description!'暂无'}</option>
+                        </#list>
+                        </#if>
+                    </#if>
                 </select>
             </div>
         </dd>
