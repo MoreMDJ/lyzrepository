@@ -281,7 +281,99 @@ public class CallEBSImpl implements ICallEBS {
 				return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 			}
 		}
-		return "test" + "return";
+		else if (STRTABLE.equalsIgnoreCase("tbw_send_task_d"))
+		{
+			for (int i = 0; i < nodeList.getLength(); i++)
+			{
+				String c_task_no = null;//任务编号
+				String c_begin_dt = null;//开始时间
+				String c_end_dt = null;//结束时间
+				String c_wh_no = null;//仓库编号
+				String c_op_status = null;//操作状态(初始、作业中、完成、结案)
+				String c_op_user = null;//作业人员
+				String c_modified_userno = null;//修改人员
+				String c_owner_no = null;//委托业主
+				
+				Node node = nodeList.item(i);
+				NodeList childNodeList = node.getChildNodes();
+
+				for (int idx = 0; idx < childNodeList.getLength(); idx++)
+				{
+ 					Node childNode = childNodeList.item(idx);
+					
+					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
+					{
+						// 比较字段名
+						if (childNode.getNodeName().equalsIgnoreCase("c_task_no"))
+						{
+							// 有值
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_task_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+							// 空值
+							else
+							{
+								c_task_no = null;
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_begin_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_begin_dt = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_end_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_end_dt = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_wh_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_wh_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_op_status"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_op_status = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_op_user"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_op_user = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_modified_userno = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_owner_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_owner_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+					}
+				}
+				
+				//保存 修改
+			}
+			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
+		}
+		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";
 	}
 	
 	public String GetErpInfo(String STRTABLE, String STRTYPE, String XML) 

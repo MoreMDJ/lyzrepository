@@ -16,13 +16,13 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * 物流信息实体类
+ * 物流信息详细实体类
  * 
  * @author
  */
 
 @Entity
-public class TdDeliveryInfo {
+public class TdDeliveryInfoDetail {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
