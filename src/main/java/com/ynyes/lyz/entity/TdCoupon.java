@@ -128,6 +128,11 @@ public class TdCoupon {
 	// 排序号
 	@Column
 	private Double sortId;
+	
+	// 使用日期
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date addTime;
 
 	public Long getId() {
 		return id;
@@ -328,4 +333,14 @@ public class TdCoupon {
 	public void setBrandTitle(String brandTitle) {
 		this.brandTitle = brandTitle;
 	}
+
+	public Date getAddTime() {
+		return addTime;
+	}
+
+	public void setAddTime(Date addTime) {
+		this.addTime = addTime;
+	}
+	
+	
 }

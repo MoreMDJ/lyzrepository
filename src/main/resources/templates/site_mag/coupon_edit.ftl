@@ -36,6 +36,15 @@ $(function () {
     }
 });
 
+function changeType(e)
+{
+    if(e.value==3 || e.value==2)
+    {
+        $("#search").css("display","block");
+    }else{
+         $("#search").css("display","none");
+    }
+}
 
 </script>
 </head>
@@ -75,7 +84,7 @@ $(function () {
     <dt>优惠券类型</dt>
     <dd>
         <div class="rule-single-select">
-            <select id="type" name="typeCategoryId" datatype="n" sucmsg=" ">
+            <select id="type" name="typeCategoryId" datatype="n" sucmsg=" " onchange="changeType(this)">
                 <#if !coupon??>
                 	<option value="">请选择类型...</option>
                 </#if> 
@@ -103,7 +112,7 @@ $(function () {
     <dt>所属公司</dt>
     <dd>
         <div class="rule-single-select">
-            <select name="brandId" datatype="*" sucmsg=" ">
+            <select name="brandId" >
             	<option value="">请选择...</option>
                 <#if brand_list??>
                     <#list brand_list as item>
@@ -112,6 +121,13 @@ $(function () {
                 </#if>
             </select>
         </div>
+    </dd>
+  </dl>
+  <dl>
+    <dt>现金券名称</dt>
+    <dd>
+      <input name="typeTitle" type="text" value="<#if coupon??&&coupon.typeTitle??>${coupon.typeTitle!''}</#if>" class="input txt100" datatype="*2-255" sucmsg=" ">
+      <span class="Validform_checktip">*</span>
     </dd>
   </dl>
   <dl>
@@ -128,6 +144,16 @@ $(function () {
       <span class="Validform_checktip">*可用数量</span>
     </dd>
   </dl>
+  <#if cou_goods??>
+        <dl>
+            <dt>指定产品</dt>
+            <dd>
+              <input name="goodsId" type="hidden" value="${cou_goods.id!'0'}" >
+              <input  type="text" value="${cou_goods.title!''}" class="input text">
+              <span class="Validform_checktip">*仅相对于指定商品券和产品券</span>
+            </dd>
+         </dl>
+  </#if>
   <dl>
     <dt>排序数字</dt>
     <dd>
@@ -136,9 +162,34 @@ $(function () {
     </dd>
   </dl>
   
+  <dl id="search" style="display:none;">
+    <dt>产品关键字</dt>
+    <dd>
+      <input  type="text" value="" id="keywords" class="input text"  onblur="javascript:searchGoods();">
+      <span class="Validform_checktip">*仅相对于指定商品券和产品券</span>
+    </dd>
+  </dl>
+<div id="goodsDiv" >
+    
+</div>
 </div>
 <!--/内容-->
+<script type="text/javascript">
+function searchGoods()
+{
+    var keywords = $("#keywords").val();
+    $.ajax({
+        type : "post",
+        url : "/Verwalter/coupon/search",
+        data : {"keywords":keywords},
+        success:function(res)
+        {
+            $("#goodsDiv").html(res);
+        }　
+    })
+}
 
+</script>
 
 <!--工具栏-->
 <div class="page-footer">
