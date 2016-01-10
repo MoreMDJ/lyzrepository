@@ -40,6 +40,15 @@ public class TdBrandService {
 		}
 		return repository.findOne(id);
 	}
+	
+	public TdBrand findByShortName(String shortName)
+	{
+		if (shortName == null)
+		{
+			return null;
+		}
+		return repository.findByShortName(shortName);
+	}
 
 	public List<TdBrand> findAll() {
 		return (List<TdBrand>) repository.findAll();

@@ -17,4 +17,5 @@ public interface TdBrandRepo extends PagingAndSortingRepository<TdBrand, Long>, 
 	Page<TdBrand> findByTitleContainingAndShortNameContainingOrderBySortIdAsc(String keywords1, String keywords2,
 			Pageable page);
 
+	TdBrand findByShortName(String shortName);
 }

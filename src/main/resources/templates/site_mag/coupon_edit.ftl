@@ -75,51 +75,66 @@ $(function () {
     <dt>优惠券类型</dt>
     <dd>
         <div class="rule-single-select">
-            <select id="type" name="type" datatype="*" sucmsg=" "  onchange="getType();" >
+            <select id="type" name="typeCategoryId" datatype="n" sucmsg=" ">
                 <#if !coupon??>
                 	<option value="">请选择类型...</option>
-                <#else>
-                	<option value="通用现金券" selected="selected">通用现金券</option>
-                	<option value="指定商品现金券" selected="selected">指定商品现金券</option>
-                	<option value="产品券" selected="selected">产品券</option>
                 </#if> 
+            	<option value="1" <#if coupon?? && coupon.typeCategoryId==1>selected="selected"</#if>>通用现金券</option>
+            	<option value="2" <#if coupon?? && coupon.typeCategoryId==2>selected="selected"</#if>>指定商品现金券</option>
+            	<option value="3" <#if coupon?? && coupon.typeCategoryId==3>selected="selected"</#if>>产品券</option>
             </select> 
         </div>
     </dd>
   </dl>
   <dl>
-    <dt>所属类别</dt>
+    <dt>发放方式</dt>
+    <dd>
+    	<div class="rule-multi-radio multi-radio">
+            <span>
+                <input type="radio" name="typeId" value="1" <#if !coupon?? || coupon.typeId==1>checked="checked"</#if>>
+                <label>手动发放</label>
+                <input type="radio" name="typeId" value="2" <#if coupon?? && coupon.typeId==2>checked="checked"</#if>>
+                <label>用户抢券</label>
+            </span>
+        </div>
+    </dd>
+  </dl>
+  <dl>
+    <dt>所属公司</dt>
     <dd>
         <div class="rule-single-select">
-            <select name="diySiteId" datatype="*" sucmsg=" " disabled="disabled">
-                <#if product_category_list??>
-                    <#list product_category_list as item>
-                        <option value="${item.id?c!""}" <#if coupon?? && coupon.diySiteId?? && coupon.diySiteId==item.id>selected="selected"</#if>>${item.title!""}</option>
+            <select name="brandId" datatype="*" sucmsg=" ">
+            	<option value="">请选择...</option>
+                <#if brand_list??>
+                    <#list brand_list as item>
+                        <option value="${item.id?c!""}" <#if coupon?? && coupon.brandId?? && coupon.brandId==item.id>selected="selected"</#if>>${item.title!""}</option>
                     </#list>
                 </#if>
             </select>
         </div>
     </dd>
   </dl>
-    
+  <dl>
+    <dt>现金券金额</dt>
+    <dd>
+      <input name="price" type="text" value="<#if coupon??&&coupon.price??>${coupon.price?string("0.00")}<#else>0.00</#if>" class="input txt100" datatype="/^(([1-9]\d{0,1})|0)((\.\d{2})|(\.\d{1}))?$/" sucmsg=" ">
+      <span class="Validform_checktip">*仅现金券设置</span>
+    </dd>
+  </dl>
   <dl>
     <dt>剩余数量</dt>
     <dd>
       <input name="leftNumber" type="text" value="<#if coupon??&&coupon.leftNumber??>${coupon.leftNumber?c!""}<#else>1</#if>" class="input small" datatype="n" sucmsg=" ">
-      <span class="Validform_checktip"></span>
+      <span class="Validform_checktip">*可用数量</span>
     </dd>
   </dl>
   <dl>
     <dt>排序数字</dt>
     <dd>
-      <input name="sortId" type="text" value="<#if coupon??>${coupon.sortId!""}<#else>99</#if>" class="input small" datatype="/^(([1-9]\d{0,1})|0)((\.\d{2})|(\.\d{1}))?$/" sucmsg=" " errormsg="请输入不超过100的2位小数">
+      <input name="sortId" type="text" value="<#if coupon??>${coupon.sortId!""}<#else>99</#if>" class="input small" datatype="n" sucmsg=" " errormsg="请输入不超过100的2位小数">
       <span class="Validform_checktip">*数字，越小越向前</span>
     </dd>
   </dl>
-
-  
-
-  
   
 </div>
 <!--/内容-->

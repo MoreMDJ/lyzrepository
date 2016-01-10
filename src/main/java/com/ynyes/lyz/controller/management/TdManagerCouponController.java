@@ -24,6 +24,7 @@ import com.ynyes.lyz.entity.TdCouponType;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
+import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdCouponTypeService;
 import com.ynyes.lyz.service.TdDiySiteService;
@@ -59,7 +60,10 @@ public class TdManagerCouponController {
     private TdProductCategoryService tdProductCategoryService;
     
     @Autowired
-    TdManagerRoleService tdManagerRoleService;
+    private TdManagerRoleService tdManagerRoleService;
+    
+    @Autowired
+    private TdBrandService tdBrandService;
     
     @Autowired
     TdManagerService tdManagerService;
@@ -301,13 +305,7 @@ public class TdManagerCouponController {
         
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
         
-        map.addAttribute("product_category_list", tdProductCategoryService.findAll());
-        
-        List<TdCouponType> couponTypeList = null;
-        
-        couponTypeList = tdCouponTypeService.findAllOrderBySortIdAsc();
-        
-        map.addAttribute("coupon_type_list", couponTypeList);
+        map.addAttribute("brand_list", tdBrandService.findAll());
 
         if (null != id)
         {
@@ -662,40 +660,41 @@ public class TdManagerCouponController {
         {
             tdManagerLogService.addLog("add", "用户添加优惠券", req);
             
-           
             
-            if ( null != leftNumber 
-                    && null != typeId)
-            {
-            	TdCouponType tdCouponType = tdCouponTypeService.findOne(typeId);
-                         
-				TdCoupon coupon = tdCouponService.findTopByTypeIdAndIsDistributtedFalse(typeId);
-                
-                if (null == coupon)
-                {
-                    coupon = new TdCoupon();                        
-                    coupon.setLeftNumber(leftNumber);
-                    coupon.setTypeId(typeId);
+//            if ( null != leftNumber 
+//                    && null != typeId)
+//            {
+//            	TdCouponType tdCouponType = tdCouponTypeService.findOne(typeId);
+//                         
+//				TdCoupon coupon = tdCouponService.findTopByTypeIdAndIsDistributtedFalse(typeId);
+//                
+//                if (null == coupon)
+//                {
+//                    coupon = new TdCoupon();                        
+//                    coupon.setLeftNumber(leftNumber);
+//                    coupon.setTypeId(typeId);
 //                    coupon.setCanUsePrice(tdCouponType.getCanUsePrice());
-                    coupon.setSortId(99.00);
-                    coupon.setPrice(tdCouponType.getPrice());
-                }
-                else
-                {
-                    coupon.setLeftNumber(coupon.getLeftNumber() + leftNumber);
-                }
-                
-                tdCouponService.save(coupon);
-			
-            }          
+//                    coupon.setSortId(99.00);
+//                    coupon.setPrice(tdCouponType.getPrice());
+//                }
+//                else
+//                {
+//                    coupon.setLeftNumber(coupon.getLeftNumber() + leftNumber);
+//                }
+//                
+//                tdCouponService.save(coupon);
+//			
+//            }          
 				
             
+            tdCoupon.setIsDistributted(false);
         }
         else
         {
             tdManagerLogService.addLog("edit", "用户修改优惠券", req);
-            tdCouponService.save(tdCoupon);
         }
+        
+        tdCouponService.save(tdCoupon);
         
         return "redirect:/Verwalter/coupon/list";
     }

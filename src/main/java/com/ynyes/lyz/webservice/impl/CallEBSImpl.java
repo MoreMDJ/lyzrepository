@@ -39,12 +39,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.ynyes.lyz.entity.TdBrand;
+import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdGoodsLimit;
 import com.ynyes.lyz.entity.TdLyzParameter;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
+import com.ynyes.lyz.service.TdBrandService;
+import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsLimitService;
 import com.ynyes.lyz.service.TdGoodsService;
@@ -73,10 +77,16 @@ public class CallEBSImpl implements ICallEBS {
 	
 	@Autowired
 	private TdGoodsLimitService tdGoodsLimitService;
+	
+	@Autowired
+	private TdDeliveryInfoService tdDeliveryInfoService;
+	
+	@Autowired
+	private TdBrandService tdBrandService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
-		System.out.println("getErpInfo called：");
+		System.out.println("getWMSInfo called：");
 
 		if (null == STRTABLE || STRTABLE.isEmpty() || STRTABLE.equals("?"))
 		{
@@ -141,7 +151,136 @@ public class CallEBSImpl implements ICallEBS {
 			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
 		}
 		NodeList nodeList = document.getElementsByTagName("TABLE");
-		
+		if (STRTABLE.equalsIgnoreCase("tbw_send_task_m"))
+		{
+			for (int i = 0; i < nodeList.getLength(); i++)
+			{
+				String c_task_no = null;//任务编号
+				String c_begin_dt = null;//开始时间
+				String c_end_dt = null;//结束时间
+				String c_wh_no = null;//仓库编号
+				String c_op_status = null;//操作状态(初始、作业中、完成、结案)
+				String c_op_user = null;//作业人员
+				String c_modified_userno = null;//修改人员
+				String c_owner_no = null;//委托业主
+				
+				Node node = nodeList.item(i);
+				NodeList childNodeList = node.getChildNodes();
+
+				for (int idx = 0; idx < childNodeList.getLength(); idx++)
+				{
+ 					Node childNode = childNodeList.item(idx);
+					
+					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
+					{
+						// 比较字段名
+						if (childNode.getNodeName().equalsIgnoreCase("c_task_no"))
+						{
+							// 有值
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_task_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+							// 空值
+							else
+							{
+								c_task_no = null;
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_begin_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_begin_dt = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_end_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_end_dt = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_wh_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_wh_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_op_status"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_op_status = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_op_user"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_op_user = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_modified_userno = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_owner_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_owner_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+					}
+				}
+				
+				//保存 修改
+				TdDeliveryInfo tdDeliveryInfo = tdDeliveryInfoService.findByTaskNo(c_task_no);
+				if (tdDeliveryInfo == null)
+				{
+					tdDeliveryInfo = new TdDeliveryInfo();
+				}
+				tdDeliveryInfo.setTaskNo(c_task_no);
+				tdDeliveryInfo.setWhNo(c_wh_no);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+				if (c_begin_dt != null)
+				{
+					try 
+					{
+						Date startdate = sdf.parse(c_begin_dt);
+						tdDeliveryInfo.setBeginDt(startdate);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				if (c_end_dt != null)
+				{
+					try 
+					{
+						Date enddate = sdf.parse(c_end_dt);
+						tdDeliveryInfo.setEndDt(enddate);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				tdDeliveryInfo.setOpStatus(c_op_status);
+				tdDeliveryInfo.setOpUser(c_op_user);
+				tdDeliveryInfo.setModifiedUserno(c_modified_userno);
+				tdDeliveryInfo.setOwnerNo(c_owner_no);
+				tdDeliveryInfoService.save(tdDeliveryInfo);
+				
+				return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
+			}
+		}
 		return "test" + "return";
 	}
 	
@@ -800,22 +939,12 @@ public class CallEBSImpl implements ICallEBS {
 					tdGoods.setInventoryItemStatus(1L);
 				}
 				
-				if (product_flag.equalsIgnoreCase("HR"))
+				TdBrand tdBrand = tdBrandService.findByShortName(product_flag);
+				if (tdBrand != null)
 				{
-					tdGoods.setBelongTo(1L);
-				}
-				else if(product_flag.equalsIgnoreCase("LYZ"))
-				{
-					tdGoods.setBelongTo(2L);
-				}
-				else if(product_flag.equalsIgnoreCase("YR"))
-				{
-					tdGoods.setBelongTo(3L);
-				}
-				else
-				{
-					tdGoods.setBelongTo(0L);
-				}
+					tdGoods.setBrandId(tdBrand.getId());
+					tdGoods.setBrandTitle(tdBrand.getTitle());
+				}				
 				tdGoods.setAttribute1(attribute1);
 				tdGoodsService.save(tdGoods, "数据导入");
 			}
@@ -828,13 +957,13 @@ public class CallEBSImpl implements ICallEBS {
 				Long category_id = null; //类别ID
 				String concatenated_segments = null;//物料类别组合
 				String category_set_name = null;//类别集名称
-				
+
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
 				for (int idx = 0; idx < childNodeList.getLength(); idx++)
 				{
 					Node childNode = childNodeList.item(idx);
-					
+
 					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
 					{
 						// 比较字段名
@@ -860,7 +989,7 @@ public class CallEBSImpl implements ICallEBS {
 								category_set_name = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						
+
 					}
 				}
 				TdLyzParameter tdLyzParameter = tdLyzParameterService.findByCategoryId(category_id);

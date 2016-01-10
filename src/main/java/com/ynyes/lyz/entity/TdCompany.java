@@ -18,7 +18,11 @@ public class TdCompany {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-
+	
+	// 分公司id：由EBS提供
+	@Column
+	private Long sobIdCompany;
+	
 	// 分公司名称
 	@Column(unique = true)
 	private String name;
@@ -37,6 +41,14 @@ public class TdCompany {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getSobIdCompany() {
+		return sobIdCompany;
+	}
+
+	public void setSobIdCompany(Long sobIdCompany) {
+		this.sobIdCompany = sobIdCompany;
 	}
 
 	public String getName() {
