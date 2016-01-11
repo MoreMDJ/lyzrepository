@@ -206,17 +206,28 @@
             <artifactId>cxf-rt-transports-http</artifactId>
             <version>2.5.2</version>
         </dependency>
+        <!--添加 MDJ-->
         <dependency>
-        	<groupId>org.testng</groupId>
-        	<artifactId>testng</artifactId>
-        	<version>6.8.8</version>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>2.2.4-1</version>
         </dependency>
         <dependency>
-        	<groupId>org.codehaus.janino</groupId>
-        	<artifactId>commons-compiler</artifactId>
-        	<version>2.6.1</version>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
         </dependency>
-	</dependencies>
+        <!-- end MDJ -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.8.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-neo4j</artifactId>
+        </dependency>
+    </dependencies>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

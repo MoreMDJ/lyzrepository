@@ -1331,4 +1331,18 @@ public class TdGoodsService {
 		}
 		return repository.searchGoodsOrderBySoldNumberDesc(keywords);
 	}
+	
+	public List<TdGoods> searchGoods(String keywords)
+	{
+		if(null == keywords)
+		{
+			return null ;
+		}
+		return repository.findByTitleContainingOrSubTitleContainingOrCodeContainingOrderBySortIdDesc(keywords,keywords,keywords);
+	}
+	
+	
+	
+	
+	
 }

@@ -64,8 +64,11 @@ function __doPostBack(eventTarget, eventArgument) {
   <tr class="odd_bg">
     <th width="8%">选择</th>
     <th align="left">优惠券类型</th>
-    <th align="left" width="17%">剩余数量</th>
-    <th align="left" width="12%">排序</th>
+    <th align="left">优惠券名称</th>
+    <th align="left">发放类型</th>
+    <th align="left">剩余数量</th>
+    <th align="left">添加时间</th>
+    <th align="left">排序</th>
     <th width="10%">操作</th>
   </tr>
 
@@ -80,22 +83,28 @@ function __doPostBack(eventTarget, eventArgument) {
                 </td>
                 <td>
                 <#switch item.typeCategoryId>
-                <#case 0>
-                	全场通用券
-                	<#break>	
                 <#case 1>
-                	分品类满减券
+                	通用现金券
                 	<#break>	
                 <#case 2>
-                	不分品类满减券
-                	<#break>	
+                	指定商品现金券
+                	<#break>
+                <#case 3>
+                    产品券
+                    <#break>	
                 <#default>
                 	无类别	
                 </#switch>			
                 </td>
+                <td>${item.typeTitle!''}</td>
+                <td>
+                <#if item.typeId?? && item.typeId==2>用户抢券<#else>手动发券</#if>
+                </td>
                 <td><#if item.leftNumber??>${item.leftNumber?c!""}</#if></td>
+                <td><#if item.addTime??>${item.addTime?string('yyyy-MM-dd HH:mm')}</#if></td>
                 <td><input name="listSortId" type="text" disabled="" value="${item.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
                 <td align="center">
+                    <#if item.typeId?? && item.typeId==1><a href="/Verwalter/coupon/grant/${item.id?c}" >发放</a>&nbsp/&nbsp;</#if>
                     <a href="/Verwalter/coupon/edit?id=${item.id?c}">修改</a>
                 </td>
               </tr>

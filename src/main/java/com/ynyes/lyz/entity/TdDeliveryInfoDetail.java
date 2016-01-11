@@ -1,25 +1,28 @@
 package com.ynyes.lyz.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * 物流信息实体类
+ * 物流信息详细实体类
  * 
  * @author
  */
 
 @Entity
-public class TdDeliveryInfo {
+public class TdDeliveryInfoDetail {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
