@@ -26,7 +26,8 @@ function showCityInfo() {
 					close(1);
 				}
 			}else{
-				console.debug("城市信息获取失败");
+				close(1);
+				warning("定位失败");
 			}
 		});
 	});

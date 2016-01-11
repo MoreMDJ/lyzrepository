@@ -23,6 +23,10 @@ public class TdCity {
 	// 省份
 	@Column
 	private String province;
+	
+	//EBS传递下来的唯一标示，本用作分公司id，赋值到此处
+	@Column
+	private Long sobIdCity;
 
 	// 所属分公司id
 	@Column
@@ -193,6 +197,14 @@ public class TdCity {
 
 	public void setDelayHour(Long delayHour) {
 		this.delayHour = delayHour;
+	}
+
+	public Long getSobIdCity() {
+		return sobIdCity;
+	}
+
+	public void setSobIdCity(Long sobIdCity) {
+		this.sobIdCity = sobIdCity;
 	}
 
 	@Override

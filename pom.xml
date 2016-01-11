@@ -211,6 +211,11 @@
         	<artifactId>testng</artifactId>
         	<version>6.8.8</version>
         </dependency>
+        <dependency>
+        	<groupId>org.codehaus.janino</groupId>
+        	<artifactId>commons-compiler</artifactId>
+        	<version>2.6.1</version>
+        </dependency>
 	</dependencies>
 
 	<properties>

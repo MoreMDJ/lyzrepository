@@ -79,6 +79,8 @@ public class TdActivityGift {
 	@JoinColumn(name = "ownerActivityGiftId")
 	private List<TdActivityGiftList> giftList;
 	
+	
+	
 	// 赠品数量
 	@Column
 	private Integer totalGift;

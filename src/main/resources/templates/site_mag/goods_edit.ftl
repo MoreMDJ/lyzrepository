@@ -346,19 +346,6 @@ function del_goods_comb(obj) {
             </dd>
         </dl>
         <dl>
-            <dt>商品归属</dt>
-            <dd>
-                <div class="rule-multi-radio multi-radio">
-                    <span>
-                        <input type="radio" name="belongTo" value="1" <#if goods??==false || goods.belongTo?? && goods.belongTo==1>checked="checked"</#if>>
-                        <label>华润</label>
-                        <input type="radio" name="belongTo" value="2" <#if goods?? && goods.belongTo?? && goods.belongTo==2>checked="checked"</#if>>
-                        <label>乐意装</label>
-                    </span>
-                </div>
-            </dd>
-        </dl>
-        <dl>
             <dt>库存余量</dt>
             <dd>
                 <input name="leftNumber" type="text" value="<#if goods?? && goods.leftNumber??>${goods.leftNumber?c!"1"}<#else>1</#if>" class="input normal" datatype="n" sucmsg=" ">

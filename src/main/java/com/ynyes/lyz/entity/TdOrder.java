@@ -37,6 +37,10 @@ public class TdOrder {
 	@JoinColumn(name = "tdOrderId")
 	private List<TdOrderGoods> orderGoodsList;
 
+	// 用户id
+	@Column
+	private Long userId;
+
 	// 收货地址
 	@Column
 	private String shippingAddress;
@@ -257,6 +261,10 @@ public class TdOrder {
 	// 品牌id
 	@Column
 	private Long brandId;
+
+	// 使用优惠券限额
+	@Column(scale = 2)
+	private Double limitCash;
 
 	public Double getRefund() {
 		return refund;
@@ -696,5 +704,21 @@ public class TdOrder {
 
 	public void setDiySitePhone(String diySitePhone) {
 		this.diySitePhone = diySitePhone;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Double getLimitCash() {
+		return limitCash;
+	}
+
+	public void setLimitCash(Double limitCash) {
+		this.limitCash = limitCash;
 	}
 }

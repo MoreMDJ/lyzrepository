@@ -85,6 +85,14 @@ public class TdOrderGoods {
     // 评论ID
     @Column
     private Long commentId;
+    
+    //商品品牌标题
+    @Column
+    private String brandTitle;
+    
+    //商品的品牌id
+    @Column
+    private Long brandId;
 
     public Boolean getIsCommented() {
 		return isCommented;
@@ -221,5 +229,20 @@ public class TdOrderGoods {
 	public void setSku(String sku) {
 		this.sku = sku;
 	}
-    
+
+	public String getBrandTitle() {
+		return brandTitle;
+	}
+
+	public void setBrandTitle(String brandTitle) {
+		this.brandTitle = brandTitle;
+	}
+
+	public Long getBrandId() {
+		return brandId;
+	}
+
+	public void setBrandId(Long brandId) {
+		this.brandId = brandId;
+	}
 }

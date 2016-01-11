@@ -18,4 +18,6 @@ public interface TdBrandRepo extends PagingAndSortingRepository<TdBrand, Long>, 
 			Pageable page);
 
 	TdBrand findByShortName(String shortName);
+	
+	TdBrand findByTitle(String title);
 }

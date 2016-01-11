@@ -125,17 +125,20 @@
                             </#if>
                         </a>
                     </div>
-                    <#--
                     <div class="div2">
                         <label>钱包余额</label>
                         <div class="wallet-balance">
-                            <div class="first">共￥<span>20.00</span>，本单可用<strong>￥<span>20.00</span></strong></div>
+                            <div class="first">共￥<span><#if user??&&user.balance??>${user.balance?string("0.00")}<#else>0.00</#if></span>，本单可用<strong>￥<span><#if order??&&order.limitCash??>${order.limitCash?string("0.00")}<#else>0.00</#if></span></strong></div>
                             <div class="checked"></div>
                         </div>
                     </div>
-                    -->
+                    <div class="div2">
+                        <label>本次使用</label>
+                        <div class="wallet-balance">
+                            <input id="amount" style="border-radius: 3px;" class="usebalance" type="text">
+                        </div>
+                    </div>
                 </section>
-                <#--
                 <script type="text/javascript">
                     $(document).ready(function(){
                         var onOff = true;
@@ -149,16 +152,15 @@
                         });
                     });
                 </script>
-                -->
                 <!-- 商品费用 -->
                 <section class="pro-price">
                     <div class="div1">
                         <label>商品金额</label>
-                        <div>￥<#if order??&&order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></div>
+                        <div>￥<span><#if order??&&order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if><span></div>
                     </div>
                     <div class="div1">
                         <label>运费</label>
-                        <div>￥<#if order??&&order.deliveryFee??>${order.deliveryFee?string("0.00")}<#else>0.00</#if></div>
+                        <div>￥<#if order??&&order.deliverFee??>${order.deliverFee?string("0.00")}<#else>0.00</#if></div>
                     </div>
                 </section>
             </article>
@@ -169,7 +171,7 @@
         
         <!-- 底部 -->
         <footer class="fill-order-foot">
-            <div class="disbur">实付款：￥<span><#if order??&&order.totalPrice??&&order.deliveryFee??>${(order.totalPrice+order.deliveryFee)?string("0.00")}<#else>0.00</#if></span></div>
+            <div class="disbur">实付款：￥<span><#if order??&&order.totalPrice??&&order.deliverFee??>${(order.totalPrice+order.deliverFee)?string("0.00")}<#else>0.00</#if></span></div>
             <a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>
         </footer>
         <!-- 底部 END -->
