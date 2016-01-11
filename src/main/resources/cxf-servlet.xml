@@ -23,4 +23,9 @@
             <bean class="com.ynyes.lyz.webservice.impl.CallEBSImpl"/>
         </jaxws:serviceBean>
     </jaxws:server>
+    <jaxws:server serviceClass="com.ynyes.lyz.webservice.ICallWMS" address="/CallWMS">
+        <jaxws:serviceBean>
+            <bean class="com.ynyes.lyz.webservice.impl.CallWMSImpl"/>
+        </jaxws:serviceBean>
+    </jaxws:server>
 </beans>

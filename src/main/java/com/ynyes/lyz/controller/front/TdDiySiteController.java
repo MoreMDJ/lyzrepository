@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdUserService;
+import com.ynyes.lyz.webservice.impl.CallWMSImpl;
 
 @Controller
 @RequestMapping(value = "/diysite")
@@ -43,5 +45,13 @@ public class TdDiySiteController {
 		List<TdDiySite> diysite_list = tdDiySiteService.findByRegionIdAndIsEnableOrderBySortIdAsc(cityId);
 		map.addAttribute("diysite_list", diysite_list);
 		return "/client/diy_site_list";
+	}
+	@RequestMapping(value="testWMS")
+	@ResponseBody
+	public String testWMS()
+	{
+		CallWMSImpl iml = new CallWMSImpl();
+		String result = iml.sendMsgToWMS("test");
+		return result;
 	}
 }
