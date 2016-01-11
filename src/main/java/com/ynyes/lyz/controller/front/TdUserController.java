@@ -1,5 +1,7 @@
 package com.ynyes.lyz.controller.front;
 
+import static org.apache.commons.lang3.StringUtils.leftPad;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdArticle;
@@ -31,6 +35,7 @@ import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceListItem;
+import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdSetting;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdSubdistrict;
@@ -53,6 +58,7 @@ import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceListItemService;
+import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
@@ -134,6 +140,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdCartGoodsService tdCartGoodsService;
+	
+	@Autowired
+	private TdReturnNoteService tdReturnNoteService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1027,10 +1036,20 @@ public class TdUserController {
 				no_product_total += coupon.getPrice();
 			}
 		}
+		
+		// 产品全张数
+		Long totalNummber=0L;
+		for (TdCoupon tdCoupon : product_coupon_list) {
+			if(null != tdCoupon && null != tdCoupon.getGetNumber())
+			{
+				totalNummber += tdCoupon.getGetNumber();
+			}
+		}
 
 		map.addAttribute("user", user);
 		map.addAttribute("no_product_total", no_product_total);
 		map.addAttribute("product_coupon_list", product_coupon_list);
+		map.addAttribute("totalNumber", totalNummber);
 
 		return "/client/user_fortune";
 	}
@@ -1354,4 +1373,97 @@ public class TdUserController {
 		res.put("status", 0);
 		return res;
 	}
+	
+	/**
+	 * 申请退货
+	 * 
+	 * @author Max
+	 */
+	@RequestMapping(value="/order/return",method=RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> orderReturn(Long id,String remark, HttpServletRequest req)
+	{
+		Map<String,Object> res = new HashMap<>();
+		res.put("code", 1);
+		
+		String username = (String)req.getSession().getAttribute("username");
+		
+		if(null == username)
+		{
+			res.put("message", "请重新登录");
+			return res;
+		}
+		
+		if(null != id)
+		{
+			TdOrder order = tdOrderService.findOne(id);
+			
+			if(null != order)
+			{
+				TdReturnNote returnNote = new TdReturnNote();
+				
+				// 退货单编号
+				Date current = new Date();
+		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+		        String curStr = sdf.format(current);
+		        Random random = new Random();
+		        
+		        returnNote.setReturnNumber("T" + curStr
+		                + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+				
+				// 添加订单信息
+				returnNote.setOrderNumber(order.getOrderNumber());
+				returnNote.setStatusId(1L);
+				// 支付方式
+				returnNote.setPayTypeId(order.getPayTypeId());
+				returnNote.setPayTypeTitle(order.getPayTypeTitle());
+				// 门店信息
+				if(null != order.getDiySiteId())
+				{
+					TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
+					returnNote.setDiySiteId(order.getDiySiteId());
+					returnNote.setDiySiteTel(diySite.getServiceTele());
+					returnNote.setDiySiteTitle(diySite.getTitle());
+					returnNote.setDiySiteAddress(diySite.getAddress());
+				}
+				
+				// 退货信息
+				returnNote.setUsername(username);
+				returnNote.setRemarkInfo(remark);
+				
+				returnNote.setOrderTime(new Date());
+//				returnNote.setReturnGoodsList(order.getOrderGoodsList());
+				
+				// 保存退货单
+				tdReturnNoteService.save(returnNote);
+				
+				order.setIsRefund(true);
+				tdOrderService.save(order);
+				
+				
+				res.put("code", 0);
+				res.put("message", "提交退货成功");
+				return res;
+			}
+		}
+		
+		res.put("message", "参数错误");
+		
+		return res;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

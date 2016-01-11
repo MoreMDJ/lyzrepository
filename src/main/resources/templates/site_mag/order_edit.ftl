@@ -359,46 +359,6 @@
                             </span>
                         </div>
                     <#elseif order.statusId == 2>
-                        <#if order.isOnlinePay>
-                            <div class="order-flow-left">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">订单已生成</p>
-                                    <p>${order.orderTime!""}</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-wait">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">待付款</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-wait">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">待发货</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-wait">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">待收货</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-wait">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">待评价</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-right-wait">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">未完成</p>
-                                    <p></p>
-                                </span>
-                            </div>
-                        <#else>
                             <div class="order-flow-left">
                                 <a class="order-flow-input"></a>
                                 <span>
@@ -432,7 +392,6 @@
                                     <p></p>
                                 </span>
                             </div>
-                        </#if>
                     <#elseif order.statusId == 3>
                         <div class="order-flow-left">
                             <a class="order-flow-input"></a>
@@ -515,6 +474,7 @@
                             </span>
                         </div>
                     <#elseif order.statusId == 5>
+                    <#--
                         <#if order.isOnlinePay>
                             <div class="order-flow-left">
                                 <a class="order-flow-input"></a>
@@ -557,6 +517,7 @@
                                 </span>
                             </div>
                         <#else>
+                            -->
                             <div class="order-flow-left">
                                 <a class="order-flow-input"></a>
                                 <span>
@@ -591,52 +552,7 @@
                                     <p></p>
                                 </span>
                             </div>
-                        </#if>
                     <#elseif order.statusId == 6>
-                        <#if order.isOnlinePay>
-                            <div class="order-flow-left">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">订单已生成</p>
-                                    <p>${order.orderTime!""}</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-arrive">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">已付款</p>
-                                    <p>${order.payTime!""}</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-arrive">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">已发货</p>
-                                    <p>${order.sendTime!''}</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-arrive">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">已收货</p>
-                                    <p>${order.receiveTime!''}</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-arrive">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">已评价</p>
-                                    <p>${order.finishTime!''}</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-right-arrive">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">已完成</p>
-                                    <p>${order.finishTime!''}</p>
-                                </span>
-                            </div>
-                        <#else>
                             <div class="order-flow-left">
                                 <a class="order-flow-input"></a>
                                 <span>
@@ -672,7 +588,6 @@
                                     <p>${order.finishTime!''}</p>
                                 </span>
                             </div>
-                        </#if>
                     <#elseif order.statusId == 7>
                         <div class="order-flow-left">
                             <a class="order-flow-input"></a>
@@ -759,12 +674,10 @@
                                 <span id="spanRealAmountValue">
                                     <#if order.totalGoodsPrice??>${order.totalGoodsPrice?string("0.00")}</#if>
                                 </span> 元
-                                <#if order.statusId==1 || order.statusId==2 && order.isOnlinePay>
-                                <input name="btnEditRealAmount" type="button" id="btnEditRealAmount" class="ibtn" value="调价">
-                                </#if>
                             </div>
                         </td>
                     </tr>
+                    <#--
                     <tr>
                         <th>
                             配送费用
@@ -778,6 +691,7 @@
                             </div>
                         </td>
                     </tr>
+                   
                     <tr>
                         <th>
                             支付手续费
@@ -791,6 +705,7 @@
                             </div>
                         </td>
                     </tr>
+                     -->
                     <tr>
                         <th>
                             可获取积分总计
@@ -918,12 +833,8 @@
                 <input type="button" id="btnConfirm" value="确认订单" class="btn">
                 <input type="button" id="btnCancel" value="取消订单" class="btn green">
             <#elseif order.statusId==2>
-                <#if order.isOnlinePay>
                     <input type="button" id="btnPayment" value="确认付款" class="btn">
                     <input type="button" id="btnCancel" value="取消订单" class="btn green">
-                <#else>
-                    <input type="button" id="btnHDFKPayment" value="确认付款" class="btn">
-                </#if>
             <#elseif order.statusId==3>
                 <input type="button" id="btnOrderExpress" value="确认发货" class="btn">
                 <input type="button" id="btnCancel" value="取消订单" class="btn green">

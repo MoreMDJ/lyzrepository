@@ -3,6 +3,7 @@
     <head>
         <style type="text/css">
             html,body{width:100%;height: 100%;}
+
         </style>
         <meta name="keywords" content="">
         <meta name="description" content="">
@@ -18,15 +19,57 @@
         <script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
         <script src="/client/js/index.js" type="text/javascript"></script>
         <script src="/client/js/user_order.js" type="text/javascript"></script>
+<script src="/client/js/Validform_v5.3.2_min.js" type="text/javascript"></script>
+
     </head>
     <script type="text/javascript">
+    $(document).ready(function(){
+            $("#form1").Validform({
+                tiptype:4, 
+                ajaxPost:true,
+                callback:function(data){
+                    alert(data.message);
+                    if(data.code==0)
+                    {
+                        win_no();
+                        window.location.reload();
+                    }
+                }
+            });
+     })
+          function win_yes(id){
+            var he = ($(window).height() - $('.turn_div div').height())/2 - 50;
+            $('.turn_div div').css({marginTop:he});   
+            $('.turn_div').fadeIn(600);
+            $("#orderId").attr("value",id);
+        };
+        
+        function win_no(){  
+            $('.turn_div').fadeOut(600);
+        };
+        
         window.onload = function(){
             footer();
         }
+  
     </script>
-    <body style="background: #f3f4f6;>
-        <#-- 引入公共confirm窗口 -->
-        <#include "/client/common_confirm.ftl">
+    <body style="background: #f3f4f6;">
+    <div class="turn_div">
+        <form id="form1" action="/user/order/return" method="post">
+          <input type="hidden" value="" id="orderId" name="id">
+        <div>                   
+            <p id="title">退货原因</p>
+            <textarea name="remark"></textarea>
+            <span>
+            
+            <input onclick="subReturn();" type="submit" name="" id="" value="是" />
+            <input onclick="win_no();" type="button" name="" id="" value="否" />
+            </span>             
+        </div>
+        </form>
+    </div>
+        <#-- 引入公共confirm窗口
+        <#include "/client/common_confirm.ftl"> -->
         <#-- 引入警告提示样式 -->
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
@@ -103,7 +146,10 @@
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                                    <#if item.isRefund?? && !item.isRefund>
+                                                    <a href="javascript:;" onclick="win_yes(${item.id?c})">申请退货</a>
                                                     <a href="">立即评价</a>
+                                                    </#if>
                                                 <#break>
                                                 <#case 6>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
@@ -170,7 +216,10 @@
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                                    <#if item.isRefund?? && !item.isRefund>
+                                                    <a href="javascript:;" onclick="win_yes(${item.id?c})">申请退货</a>
                                                     <a href="">立即评价</a>
+                                                    </#if>
                                                 <#break>
                                                 <#case 6>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
@@ -237,7 +286,10 @@
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                                    <#if item.isRefund?? && !item.isRefund>
+                                                    <a href="javascript:;" onclick="win_yes(${item.id?c})">申请退货</a>
                                                     <a href="">立即评价</a>
+                                                    </#if>
                                                 <#break>
                                                 <#case 6>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
@@ -304,6 +356,7 @@
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                                    <a href="">申请退货</a>
                                                     <a href="">立即评价</a>
                                                 <#break>
                                                 <#case 6>
@@ -324,6 +377,7 @@
                 </article>
                 <!-- 用户订单 END -->							
             </section>
+
             
             <div class="index_test_box02"></div>
             <#include "/client/common_footer.ftl">

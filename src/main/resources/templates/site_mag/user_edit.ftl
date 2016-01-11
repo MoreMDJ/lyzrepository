@@ -207,10 +207,8 @@ $(function () {
   <dl>
     <dt>归属门店</dt>
     <dd>
-        <select name="upperDiySiteId">
-            <option></option>
-            <option></option>
-        </select>
+        <input type="hidden" value="<#if user?? && user.upperDiySiteId??>${user.upperDiySiteId?c}</#if>" name="upperDiySiteId">
+        <span ><#if user??>${user.diyName!''}</#if></span>
     </dd>
   </dl>
   <dl>
