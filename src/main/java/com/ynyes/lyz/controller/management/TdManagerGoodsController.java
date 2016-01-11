@@ -23,6 +23,7 @@ import com.ynyes.lyz.entity.TdPriceChangeLog;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.service.TdArticleService;
+import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdInventoryLogService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -57,8 +58,8 @@ public class TdManagerGoodsController {
 	@Autowired
 	TdManagerLogService tdManagerLogService;
 
-	// @Autowired
-	// TdBrandService tdBrandService;
+	 @Autowired
+	 TdBrandService tdBrandService;
 
 	// @Autowired
 	// TdParameterService tdParameterService;
@@ -68,10 +69,10 @@ public class TdManagerGoodsController {
 
 	@Autowired
 	TdPriceChangeLogService tdPriceChangeLogService;
-	
+
 	@Autowired
 	private TdInventoryLogService tdInventoryLogService;
-	@Autowired  //zhangji 2015-12-30 16:26:29
+	@Autowired // zhangji 2015-12-30 16:26:29
 	TdPriceListService tdPriceListService;
 
 	@RequestMapping(value = "/edit/parameter/{categoryId}", method = RequestMethod.POST)
@@ -94,12 +95,11 @@ public class TdManagerGoodsController {
 				map.addAttribute("product_list", tdProductService.findByProductCategoryTreeContaining(categoryId));
 
 				// 查找品牌
-				// map.addAttribute("brand_list",
-				// tdBrandService.findByProductCategoryTreeContaining(categoryId));
+				map.addAttribute("brand_list",
+						tdBrandService.findAll());
 			}
 
 		}
-
 		return "/site_mag/goods_category_param_list";
 	}
 
@@ -385,7 +385,6 @@ public class TdManagerGoodsController {
 
 		Page<TdGoods> goodsPage = null;
 
-
 		if (null == categoryId) {
 			if ("isOnSale".equalsIgnoreCase(property)) {
 				if ("flashSale".equalsIgnoreCase(saleType)) {
@@ -564,9 +563,9 @@ public class TdManagerGoodsController {
 	}
 
 	@RequestMapping(value = "/list/dialog/{type}")
-	public String goodsListDialog(@PathVariable String type, String keywords, Long categoryId, Integer page, Long priceId,
-			Integer size, Integer total, String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, ModelMap map,
-			HttpServletRequest req) {
+	public String goodsListDialog(@PathVariable String type, String keywords, Long categoryId, Integer page,
+			Long priceId, Integer size, Integer total, String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE,
+			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -627,17 +626,13 @@ public class TdManagerGoodsController {
 
 		if (null != type && type.equalsIgnoreCase("gift")) {
 			return "/site_mag/dialog_goods_gift_list";
-		}
-		else if (null != type && type.equalsIgnoreCase("price")){
-			if (null != priceId)
-			{
+		} else if (null != type && type.equalsIgnoreCase("price")) {
+			if (null != priceId) {
 				TdPriceList pricelist = tdPriceListService.findOne(priceId);
 				map.addAttribute("pricelist", pricelist);
 			}
 			return "/site_mag/dialog_price_list";
 		}
-
-
 
 		return "/site_mag/dialog_goods_combination_list";
 	}
@@ -673,8 +668,8 @@ public class TdManagerGoodsController {
 						tdProductService.findByProductCategoryTreeContaining(tdGoods.getCategoryId()));
 
 				// 查找品牌
-				// map.addAttribute("brand_list",
-				// tdBrandService.findByProductCategoryTreeContaining(tdGoods.getCategoryId()));
+				 map.addAttribute("brand_list",
+				 tdBrandService.findAll());
 
 				// map.addAttribute("warehouse_list",
 				// tdWarehouseService.findAll());
@@ -869,8 +864,7 @@ public class TdManagerGoodsController {
 		return "redirect:/Verwalter/goods/list?__EVENTTARGET=" + __EVENTTARGET + "&__EVENTARGUMENT=" + __EVENTARGUMENT
 				+ "&__VIEWSTATE=" + __VIEWSTATE;
 	}
-	
-	
+
 	/**
 	 * 
 	 * 库存管理日志
@@ -885,86 +879,67 @@ public class TdManagerGoodsController {
 	 * @return
 	 */
 	@RequestMapping(value = "/inventory/list")
-	public String inventoryLog(HttpServletRequest req,ModelMap map,Integer page,
-            Integer size,
-            String __EVENTTARGET,
-            String __EVENTARGUMENT,
-            String __VIEWSTATE,
-            String action,
-            Long[] listId,
-            Integer[] listChkId)
-	{
+	public String inventoryLog(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,
+			String __EVENTARGUMENT, String __VIEWSTATE, String action, Long[] listId, Integer[] listChkId) {
 		String username = (String) req.getSession().getAttribute("manager");
-		if (null == username)
-		{
+		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
-		if (null != __EVENTTARGET)
-        {
-            if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
-            {
-                btnDeleteLog(listId, listChkId);
-                tdManagerLogService.addLog("delete", "删除管理日志", req);
-            }
-            else if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
-            {
-                if (null != __EVENTARGUMENT)
-                {
-                    page = Integer.parseInt(__EVENTARGUMENT);
-                } 
-            }
-        }
-        
-        if (null == page || page < 0)
-        {
-            page = 0;
-        }
-        
-        if (null == size || size <= 0)
-        {
-            size = SiteMagConstant.pageSize;;
-        }
-        
-        map.addAttribute("page", page);
-        map.addAttribute("size", size);
-        map.addAttribute("action", action);
-        map.addAttribute("__EVENTTARGET", __EVENTTARGET);
-        map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
-        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
-		
-        map.addAttribute("log_page", tdInventoryLogService.findAll(page, size));
-        
+		if (null != __EVENTTARGET) {
+			if (__EVENTTARGET.equalsIgnoreCase("btnDelete")) {
+				btnDeleteLog(listId, listChkId);
+				tdManagerLogService.addLog("delete", "删除管理日志", req);
+			} else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
+				if (null != __EVENTARGUMENT) {
+					page = Integer.parseInt(__EVENTARGUMENT);
+				}
+			}
+		}
+
+		if (null == page || page < 0) {
+			page = 0;
+		}
+
+		if (null == size || size <= 0) {
+			size = SiteMagConstant.pageSize;
+			;
+		}
+
+		map.addAttribute("page", page);
+		map.addAttribute("size", size);
+		map.addAttribute("action", action);
+		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+
+		map.addAttribute("log_page", tdInventoryLogService.findAll(page, size));
+
 		return "site_mag/inventory_log";
 	}
-	
+
 	/**
 	 * 删除库存日志
+	 * 
 	 * @param ids
 	 * @param chkIds
 	 */
-    private void btnDeleteLog(Long[] ids, Integer[] chkIds)
-    {
-        if (null == ids || null == chkIds || ids.length < 1 || chkIds.length < 1)
-        {
-            return ;
-        }
-        
-        for (int chkId : chkIds)
-        {
-            if (chkId >=0 && ids.length > chkId)
-            {
-                Long id = ids[chkId];
-                
-                tdInventoryLogService.delete(id);
-            }
-        }
-    }
-	
+	private void btnDeleteLog(Long[] ids, Integer[] chkIds) {
+		if (null == ids || null == chkIds || ids.length < 1 || chkIds.length < 1) {
+			return;
+		}
+
+		for (int chkId : chkIds) {
+			if (chkId >= 0 && ids.length > chkId) {
+				Long id = ids[chkId];
+
+				tdInventoryLogService.delete(id);
+			}
+		}
+	}
+
 	@ModelAttribute
-	public void getModel(@RequestParam(value = "id", required = false) Long id, Model model) 
-	{
-		if (id != null)
-		{
+	public void getModel(@RequestParam(value = "id", required = false) Long id, Model model) {
+		if (id != null) {
 			TdGoods goods = tdGoodsService.findOne(id);
 			model.addAttribute("tdGoods", goods);
 		}

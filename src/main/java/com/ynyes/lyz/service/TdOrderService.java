@@ -294,7 +294,9 @@ public class TdOrderService {
 	 * @return
 	 */
 	public TdOrder save(TdOrder e) {
-
+		if (null == e) {
+			return e;
+		}
 		return repository.save(e);
 	}
 

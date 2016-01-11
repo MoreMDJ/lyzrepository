@@ -21,6 +21,28 @@
             win_colo_temp();//颜色调理窗口窗口
             <#-- win_cla();//分类弹窗-->        
             footer();//底部居中
+            var aBox = $('.lei_box01');
+            for(var i=0;i<aBox.length;i++){
+                go_go(aBox[i]);
+            };
+            function go_go(obj){
+                var oBtn = obj.children[0];
+                var aShow = obj.getElementsByTagName('dl'); 
+                var onOff = true;
+                oBtn.onclick = function(){
+                    if(onOff){
+                        for(var i=0;i<aShow.length;i++){
+                            aShow[i].style.display = 'block';
+                            console.log(0)
+                        };
+                    }else{
+                        for(var i=0;i<aShow.length;i++){
+                            aShow[i].style.display = 'none';
+                        };  
+                    };
+                    onOff=!onOff;
+                };
+            };
         });
     </script>
     <body>

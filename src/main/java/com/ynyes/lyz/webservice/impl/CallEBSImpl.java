@@ -27,12 +27,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.jws.WebService;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.apache.geronimo.mail.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
@@ -42,7 +40,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.ynyes.lyz.entity.TdBrand;
-import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdGoodsLimit;
@@ -55,6 +52,7 @@ import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsLimitService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdLyzParameterService;
+import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.webservice.ICallEBS;
@@ -85,299 +83,10 @@ public class CallEBSImpl implements ICallEBS {
 	
 	@Autowired
 	private TdBrandService tdBrandService;
-
-	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
-	{
-		System.out.println("getWMSInfo called：");
-
-		if (null == STRTABLE || STRTABLE.isEmpty() || STRTABLE.equals("?"))
-		{
-			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>STRTABLE参数错误</MESSAGE></STATUS></RESULTS>";
-		}
-
-		if (null == XML || XML.isEmpty() || XML.equals("?")) 
-		{
-			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
-		}
-		
-		
-		String XMLStr = XML.trim();
-		
-		XMLStr = XML.replace("\n", "");
-		
-		byte[] decoded = Base64.decode(XMLStr);
-
-		String decodedXML = null;
-
-		try
-		{
-			decodedXML = new String(decoded, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			System.out.println("UnsupportedEncodingException for decodedXML");
-			e.printStackTrace();
-		}
-
-		if (null == decodedXML || decodedXML.isEmpty()) 
-		{
-			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后XML数据为空</MESSAGE></STATUS></RESULTS>";
-		}
-
-		System.out.println(decodedXML);
-
-		// 解析XML
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = null;
-		try
-		{
-			builder = factory.newDocumentBuilder();
-		}
-		catch (ParserConfigurationException e) 
-		{
-			e.printStackTrace();
-			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml参数错误</MESSAGE></STATUS></RESULTS>";
-		}
-
-		Document document = null;
-
-		InputSource is = new InputSource(new StringReader(decodedXML));
-
-		try
-		{
-			document = builder.parse(is);
-		} 
-		catch (SAXException | IOException e)
-		{
-			e.printStackTrace();
-			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
-		}
-		NodeList nodeList = document.getElementsByTagName("TABLE");
-		if (STRTABLE.equalsIgnoreCase("tbw_send_task_m"))
-		{
-			for (int i = 0; i < nodeList.getLength(); i++)
-			{
-				String c_task_no = null;//任务编号
-				String c_begin_dt = null;//开始时间
-				String c_end_dt = null;//结束时间
-				String c_wh_no = null;//仓库编号
-				String c_op_status = null;//操作状态(初始、作业中、完成、结案)
-				String c_op_user = null;//作业人员
-				String c_modified_userno = null;//修改人员
-				String c_owner_no = null;//委托业主
-				
-				Node node = nodeList.item(i);
-				NodeList childNodeList = node.getChildNodes();
-
-				for (int idx = 0; idx < childNodeList.getLength(); idx++)
-				{
- 					Node childNode = childNodeList.item(idx);
-					
-					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
-					{
-						// 比较字段名
-						if (childNode.getNodeName().equalsIgnoreCase("c_task_no"))
-						{
-							// 有值
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_task_no = childNode.getChildNodes().item(0).getNodeValue();
-							}
-							// 空值
-							else
-							{
-								c_task_no = null;
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_begin_dt"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_begin_dt = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_end_dt"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_end_dt = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_wh_no"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_wh_no = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_op_status"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_op_status = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_op_user"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_op_user = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_modified_userno = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_owner_no"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_owner_no = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-					}
-				}
-				
-				//保存 修改
-				TdDeliveryInfo tdDeliveryInfo = tdDeliveryInfoService.findByTaskNo(c_task_no);
-				if (tdDeliveryInfo == null)
-				{
-					tdDeliveryInfo = new TdDeliveryInfo();
-				}
-				tdDeliveryInfo.setTaskNo(c_task_no);
-				tdDeliveryInfo.setWhNo(c_wh_no);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
-				if (c_begin_dt != null)
-				{
-					try 
-					{
-						Date startdate = sdf.parse(c_begin_dt);
-						tdDeliveryInfo.setBeginDt(startdate);
-					}
-					catch (ParseException e) 
-					{
-						e.printStackTrace();
-					}
-				}
-				if (c_end_dt != null)
-				{
-					try 
-					{
-						Date enddate = sdf.parse(c_end_dt);
-						tdDeliveryInfo.setEndDt(enddate);
-					}
-					catch (ParseException e) 
-					{
-						e.printStackTrace();
-					}
-				}
-				tdDeliveryInfo.setOpStatus(c_op_status);
-				tdDeliveryInfo.setOpUser(c_op_user);
-				tdDeliveryInfo.setModifiedUserno(c_modified_userno);
-				tdDeliveryInfo.setOwnerNo(c_owner_no);
-				tdDeliveryInfoService.save(tdDeliveryInfo);
-				
-				return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
-			}
-		}
-		else if (STRTABLE.equalsIgnoreCase("tbw_send_task_d"))
-		{
-			for (int i = 0; i < nodeList.getLength(); i++)
-			{
-				String c_task_no = null;//任务编号
-				String c_begin_dt = null;//开始时间
-				String c_end_dt = null;//结束时间
-				String c_wh_no = null;//仓库编号
-				String c_op_status = null;//操作状态(初始、作业中、完成、结案)
-				String c_op_user = null;//作业人员
-				String c_modified_userno = null;//修改人员
-				String c_owner_no = null;//委托业主
-				
-				Node node = nodeList.item(i);
-				NodeList childNodeList = node.getChildNodes();
-
-				for (int idx = 0; idx < childNodeList.getLength(); idx++)
-				{
- 					Node childNode = childNodeList.item(idx);
-					
-					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
-					{
-						// 比较字段名
-						if (childNode.getNodeName().equalsIgnoreCase("c_task_no"))
-						{
-							// 有值
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_task_no = childNode.getChildNodes().item(0).getNodeValue();
-							}
-							// 空值
-							else
-							{
-								c_task_no = null;
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_begin_dt"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_begin_dt = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_end_dt"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_end_dt = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_wh_no"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_wh_no = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_op_status"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_op_status = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_op_user"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_op_user = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_modified_userno = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_owner_no"))
-						{
-							if (null != childNode.getChildNodes().item(0))
-							{
-								c_owner_no = childNode.getChildNodes().item(0).getNodeValue();
-							}
-						}
-					}
-				}
-				
-				//保存 修改
-			}
-			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
-		}
-		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";
-	}
 	
+	@Autowired
+	private TdOrderService tdOrderService;
+
 	public String GetErpInfo(String STRTABLE, String STRTYPE, String XML) 
 	{
 		System.out.println("getErpInfo called："+ XML);
@@ -904,7 +613,7 @@ public class CallEBSImpl implements ICallEBS {
 				Integer inventory_item_status = null;//物料状态 0 失效，1 有效
 				String product_flag = null;//产品标识 LYZ乐易装,HR华润，YR银润
 				Double attribute1 = null;//采购价
-				
+				String unit_name = null;//单位名称
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -928,6 +637,13 @@ public class CallEBSImpl implements ICallEBS {
 							if (null != childNode.getChildNodes().item(0))
 							{
 								item_code = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("unit_name"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								unit_name = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
 						else if (childNode.getNodeName().equalsIgnoreCase("item_description"))
@@ -1022,6 +738,7 @@ public class CallEBSImpl implements ICallEBS {
 				tdGoods.setProductCategoryId(product_category_id);
 				tdGoods.setItemTypeName(item_type_name);
 				tdGoods.setItemTypeCode(item_type_code);
+				tdGoods.setUnitName(unit_name);
 				if (inventory_item_status == 0)
 				{
 					tdGoods.setIsOnSale(false);
@@ -1304,31 +1021,6 @@ public class CallEBSImpl implements ICallEBS {
 		
 		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";
 	}
-	
-	public static void sendMsgToWMS()
-	{
-		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();  
-		org.apache.cxf.endpoint.Client client = dcf.createClient("http://localhost:8080/facelook/services/facelookWebService?wsdl");  
-		//url为调用webService的wsdl地址  
-		QName name=new QName("http://server.webservice.facelook.com/","getAlbumList"); 
-		String xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"  
-						+ "     <facelook>"
-						+ "        <condition>"  
-						+ "            <name>家</name>"  
-						+ "            <description></description>"  
-						+ "            <pageno></pageno>"  
-						+ "            <pagesize></pagesize>"  
-						+ "        </condition>"  
-						+ "     </facelook>";  
-		//paramvalue为参数值  
-		try {
-        	Object[] objects=client.invoke(name,xmlStr);
-        } catch (Exception e) {
-        	// TODO Auto-generated catch block
-        	e.printStackTrace();
-        }  
-	}
-
 	
 }
 // END SNIPPET: service

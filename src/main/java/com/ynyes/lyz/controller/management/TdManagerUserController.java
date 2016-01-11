@@ -1,6 +1,5 @@
 package com.ynyes.lyz.controller.management;
 
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
+import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdMessage;
 import com.ynyes.lyz.entity.TdMessageType;
 import com.ynyes.lyz.entity.TdOrder;
@@ -39,6 +40,7 @@ import com.ynyes.lyz.service.TdCartColorPackageService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCouponService;
+import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdMessageService;
@@ -64,103 +66,94 @@ import com.ynyes.lyz.util.SiteMagConstant;
 @Controller
 @RequestMapping(value = "/Verwalter/user")
 public class TdManagerUserController {
-    
-    @Autowired
-    TdUserService tdUserService;
-    
-    @Autowired
-    TdUserLevelService tdUserLevelService;   
-    
-    @Autowired
-    TdUserCommentService tdUserCommentService;   
-    
-    @Autowired
-    TdUserCollectService tdUserCollectService;
-    
-    @Autowired
-    TdUserRecentVisitService tdUserRecentVisitService;
-    
-    @Autowired
-    TdManagerLogService tdManagerLogService;
-        
-    @Autowired
-    TdUserSuggestionService tdUserSuggestionService; //zhangji 2016-1-3 12:59:58
-    
-    @Autowired
-    TdMessageService tdMessageService; //zhangji 2016-1-3 15:29:21
-    
-    @Autowired
-    TdMessageTypeService tdMessageTypeService; //zhangji 2016-1-3 15:40:32
 
-    /**
-     * 修改账户名所用
-     * 2016-1-8 10:34:46
-     * @author Zhangji
-     */
-    @Autowired
-    TdCartColorPackageService TdCartColorPackageService; 
-    @Autowired
-    TdCartGoodsService tdCartGoodsService;
-    @Autowired
-    TdCouponService tdCouponService;
-    @Autowired
-    TdReturnNoteService tdReturnNoteService;
-    
-    
-    
-    
-    @Autowired
-    TdUserSuggestionCategoryService tdUserSuggestionCategoryService;
-    
-    @Autowired
-    TdGoodsService tdGoodsService;
-    
-    @Autowired
-    TdOrderService tdOrderService;
-    
-    @Autowired
-    private TdCityService tdCityService;
-    
-    @RequestMapping(value="/check", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, String> validateForm(String param, Long id) {
-        Map<String, String> res = new HashMap<String, String>();
-        
-        res.put("status", "n");
-        
-        if (null == param || param.isEmpty())
-        {
-            res.put("info", "该字段不能为空");
-            return res;
-        }
-        
-        if (null == id)
-        {
-            if (null != tdUserService.findByUsername(param))
-            {
-                res.put("info", "已存在同名用户");
-                return res;
-            }
-        }
-        else
-        {
-            if (null != tdUserService.findByUsernameAndIdNot(param, id))
-            {
-                res.put("info", "已存在同名用户");
-                return res;
-            }
-        }
-        
-        res.put("status", "y");
-        
-        return res;
-    }
-    
+	@Autowired
+	TdUserService tdUserService;
 
+	@Autowired
+	TdUserLevelService tdUserLevelService;
 
-	
+	@Autowired
+	TdUserCommentService tdUserCommentService;
 
-    @RequestMapping(value = "/list")
+	@Autowired
+	TdUserCollectService tdUserCollectService;
+
+	@Autowired
+	TdUserRecentVisitService tdUserRecentVisitService;
+
+	@Autowired
+	TdManagerLogService tdManagerLogService;
+
+	@Autowired
+	TdUserSuggestionService tdUserSuggestionService; // zhangji 2016-1-3
+														// 12:59:58
+
+	@Autowired
+	TdMessageService tdMessageService; // zhangji 2016-1-3 15:29:21
+
+	@Autowired
+	TdMessageTypeService tdMessageTypeService; // zhangji 2016-1-3 15:40:32
+
+	@Autowired
+	private TdDiySiteService tdDiySiteService;
+
+	/**
+	 * 修改账户名所用 2016-1-8 10:34:46
+	 * 
+	 * @author Zhangji
+	 */
+	@Autowired
+	TdCartColorPackageService TdCartColorPackageService;
+	@Autowired
+	TdCartGoodsService tdCartGoodsService;
+	@Autowired
+	TdCouponService tdCouponService;
+	@Autowired
+	TdReturnNoteService tdReturnNoteService;
+
+	@Autowired
+	TdUserSuggestionCategoryService tdUserSuggestionCategoryService;
+
+	@Autowired
+	TdGoodsService tdGoodsService;
+
+	@Autowired
+	TdOrderService tdOrderService;
+
+	@Autowired
+	private TdCityService tdCityService;
+
+	@RequestMapping(value = "/check", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, String> validateForm(String param, Long id) {
+		Map<String, String> res = new HashMap<String, String>();
+
+		res.put("status", "n");
+
+		if (null == param || param.isEmpty()) {
+			res.put("info", "该字段不能为空");
+			return res;
+		}
+
+		if (null == id) {
+			if (null != tdUserService.findByUsername(param)) {
+				res.put("info", "已存在同名用户");
+				return res;
+			}
+		} else {
+			if (null != tdUserService.findByUsernameAndIdNot(param, id)) {
+				res.put("info", "已存在同名用户");
+				return res;
+			}
+		}
+
+		res.put("status", "y");
+
+		return res;
+	}
+
+	@RequestMapping(value = "/list")
 	public String setting(Integer page, Integer size, String keywords, Long roleId, Long userLevelId,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
 			ModelMap map, HttpServletRequest req) {
@@ -257,11 +250,6 @@ public class TdManagerUserController {
 		return "/site_mag/user_list";
 	}
 
-   
-      
-
-
-
 	@RequestMapping(value = "/edit")
 	public String userEdit(Long id, Long roleId, String action, String __VIEWSTATE, ModelMap map,
 			HttpServletRequest req) {
@@ -270,28 +258,36 @@ public class TdManagerUserController {
 			return "redirect:/Verwalter/login";
 		}
 
+		TdUser user = tdUserService.findOne(id);
+		// 获取用户所在城市
+		Long cityId = user.getCityId();
+		TdCity city = tdCityService.findOne(cityId);
+		// 获取指定id城市下的所有门店
+		List<TdDiySite> site_list = tdDiySiteService.findBySobIdOrderBySortIdAsc(city.getSobIdCity());
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("roleId", roleId);
 		if (null != id) {
-			map.addAttribute("user", tdUserService.findOne(id));
+			map.addAttribute("user", user);
 		}
+		map.addAttribute("site_list", site_list);
 		// map.addAttribute("user_level_list",
 		// tdUserLevelService.findIsEnableTrue());
-		
+
 		return "/site_mag/user_edit";
 	}
 
 	@RequestMapping(value = "/save")
-	public String orderEdit(TdUser tdUser, /*String oldUsername,*/ String oldPassword, String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req) {
+	public String orderEdit(TdUser tdUser, /* String oldUsername, */ String oldPassword, String __VIEWSTATE,
+			ModelMap map, String birthdate, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
 
-		if (null != birthdate ) {
+		if (null != birthdate) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			try {
-				if (null != birthdate ) {
+				if (null != birthdate) {
 					Date brithday = sdf.parse(birthdate);
 					tdUser.setBirthday(brithday);
 				}
@@ -299,83 +295,86 @@ public class TdManagerUserController {
 				e.printStackTrace();
 			}
 		}
-//		//修改用户名 zhangji 2016-1-8 10:30:38
-//		if(null != oldUsername && !oldUsername.equals(tdUser.getUsername()))
-//		{
-//			List<TdCartColorPackage> tdCartColorPackage = TdCartColorPackageService.findByUsername(oldUsername);
-//			for(TdCartColorPackage item : tdCartColorPackage)
-//			{
-//				item.setUsername(tdUser.getUsername());
-//				TdCartColorPackageService.save(item);
-//			}
-//			
-//			List<TdCartGoods> tdCartGoods = tdCartGoodsService.findByUsername(oldUsername);
-//			for(TdCartGoods item : tdCartGoods)
-//			{
-//				item.setUsername(tdUser.getUsername());
-//				tdCartGoodsService.save(item);
-//			}
-//			
-//			List<TdCoupon> tdCoupon = tdCouponService.findByUsername(oldUsername);
-//			for(TdCoupon item : tdCoupon)
-//			{
-//				item.setUsername(tdUser.getUsername());
-//				tdCouponService.save(item);
-//			}
-//			
-//			List<TdReturnNote> tdReturnNote = tdReturnNoteService.findByUsername(oldUsername);
-//			for(TdReturnNote item : tdReturnNote)
-//			{
-//				item.setUsername(tdUser.getUsername());
-//				tdReturnNoteService.save(item);
-//			}
-//			
-//			List<TdOrder> tdOrder = tdOrderService.findByUsername(oldUsername);
-//			for(TdOrder item : tdOrder)
-//			{
-//				item.setUsername(tdUser.getUsername());
-//				tdOrderService.save(item);
-//			}
-//			
-//			List<TdUserCollect> tdUserCollect = tdUserCollectService.findByUsername(oldUsername);
-//			for(TdUserCollect item : tdUserCollect)
-//			{
-//				item.setUsername(tdUser.getUsername());
-//				tdUserCollectService.save(item);
-//			}
-//			
-//			List<TdUserComment> tdUserComment = tdUserCommentService.findByUsername(oldUsername);
-//			for(TdUserComment item : tdUserComment)
-//			{
-//				item.setUsername(tdUser.getUsername());
-//				tdUserCommentService.save(item);
-//			}
-//			
-//			List<TdUserRecentVisit> tdUserRecentVisit = tdUserRecentVisitService.findByUsername(oldUsername);
-//			for(TdUserRecentVisit item : tdUserRecentVisit)
-//			{
-//				item.setUsername(tdUser.getUsername());
-//				tdUserRecentVisitService.save(item);
-//			}
-//			
-//		}
+		// //修改用户名 zhangji 2016-1-8 10:30:38
+		// if(null != oldUsername && !oldUsername.equals(tdUser.getUsername()))
+		// {
+		// List<TdCartColorPackage> tdCartColorPackage =
+		// TdCartColorPackageService.findByUsername(oldUsername);
+		// for(TdCartColorPackage item : tdCartColorPackage)
+		// {
+		// item.setUsername(tdUser.getUsername());
+		// TdCartColorPackageService.save(item);
+		// }
+		//
+		// List<TdCartGoods> tdCartGoods =
+		// tdCartGoodsService.findByUsername(oldUsername);
+		// for(TdCartGoods item : tdCartGoods)
+		// {
+		// item.setUsername(tdUser.getUsername());
+		// tdCartGoodsService.save(item);
+		// }
+		//
+		// List<TdCoupon> tdCoupon =
+		// tdCouponService.findByUsername(oldUsername);
+		// for(TdCoupon item : tdCoupon)
+		// {
+		// item.setUsername(tdUser.getUsername());
+		// tdCouponService.save(item);
+		// }
+		//
+		// List<TdReturnNote> tdReturnNote =
+		// tdReturnNoteService.findByUsername(oldUsername);
+		// for(TdReturnNote item : tdReturnNote)
+		// {
+		// item.setUsername(tdUser.getUsername());
+		// tdReturnNoteService.save(item);
+		// }
+		//
+		// List<TdOrder> tdOrder = tdOrderService.findByUsername(oldUsername);
+		// for(TdOrder item : tdOrder)
+		// {
+		// item.setUsername(tdUser.getUsername());
+		// tdOrderService.save(item);
+		// }
+		//
+		// List<TdUserCollect> tdUserCollect =
+		// tdUserCollectService.findByUsername(oldUsername);
+		// for(TdUserCollect item : tdUserCollect)
+		// {
+		// item.setUsername(tdUser.getUsername());
+		// tdUserCollectService.save(item);
+		// }
+		//
+		// List<TdUserComment> tdUserComment =
+		// tdUserCommentService.findByUsername(oldUsername);
+		// for(TdUserComment item : tdUserComment)
+		// {
+		// item.setUsername(tdUser.getUsername());
+		// tdUserCommentService.save(item);
+		// }
+		//
+		// List<TdUserRecentVisit> tdUserRecentVisit =
+		// tdUserRecentVisitService.findByUsername(oldUsername);
+		// for(TdUserRecentVisit item : tdUserRecentVisit)
+		// {
+		// item.setUsername(tdUser.getUsername());
+		// tdUserRecentVisitService.save(item);
+		// }
+		//
+		// }
 
-		//设置新密码 zhangji 2016-1-7 22:01:45
-		if(null != tdUser.getId())
-		{
+		// 设置新密码 zhangji 2016-1-7 22:01:45
+		if (null != tdUser.getId()) {
 			String password = tdUser.getPassword();
-			if(null == password || password.equals(""))
-			{
+			if (null == password || password.equals("")) {
 				tdUser.setPassword(oldPassword);
-			}
-			else{
+			} else {
 				tdUser.setPassword(MD5.md5(password, 32));
 			}
 		}
-		
-		
-//		String password = tdUser.getPassword();
-//		tdUser.setPassword(MD5.md5(password, 32));
+
+		// String password = tdUser.getPassword();
+		// tdUser.setPassword(MD5.md5(password, 32));
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
@@ -389,15 +388,14 @@ public class TdManagerUserController {
 
 		return "redirect:/Verwalter/user/list/";
 	}
-	
-	
+
 	/**
 	 * 修改用户名
+	 * 
 	 * @author Zhangji
 	 */
 	@RequestMapping(value = "/setUsername")
-	public String setUsername(Long id, Long roleId, String __VIEWSTATE, ModelMap map,
-			HttpServletRequest req) {
+	public String setUsername(Long id, Long roleId, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -412,78 +410,68 @@ public class TdManagerUserController {
 		// tdUserLevelService.findIsEnableTrue());
 		return "/site_mag/user_username_edit";
 	}
-	
-	@RequestMapping(value = "/username" ,method=RequestMethod.POST)
-	public String username(Long id, String oldUsername, String newUsername, String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req) {
+
+	@RequestMapping(value = "/username", method = RequestMethod.POST)
+	public String username(Long id, String oldUsername, String newUsername, String __VIEWSTATE, ModelMap map,
+			String birthdate, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
 
-		TdUser tdUser =tdUserService.findOne(id);
-		//修改用户名 zhangji 2016-1-8 10:30:38
-		if(null != oldUsername && !oldUsername.equals(newUsername))
-		{
+		TdUser tdUser = tdUserService.findOne(id);
+		// 修改用户名 zhangji 2016-1-8 10:30:38
+		if (null != oldUsername && !oldUsername.equals(newUsername)) {
 			List<TdCartColorPackage> tdCartColorPackage = TdCartColorPackageService.findByUsername(oldUsername);
-			for(TdCartColorPackage item : tdCartColorPackage)
-			{
+			for (TdCartColorPackage item : tdCartColorPackage) {
 				item.setUsername(newUsername);
 				TdCartColorPackageService.save(item);
 			}
-			
+
 			List<TdCartGoods> tdCartGoods = tdCartGoodsService.findByUsername(oldUsername);
-			for(TdCartGoods item : tdCartGoods)
-			{
+			for (TdCartGoods item : tdCartGoods) {
 				item.setUsername(newUsername);
 				tdCartGoodsService.save(item);
 			}
-			
+
 			List<TdCoupon> tdCoupon = tdCouponService.findByUsername(oldUsername);
-			for(TdCoupon item : tdCoupon)
-			{
+			for (TdCoupon item : tdCoupon) {
 				item.setUsername(newUsername);
 				tdCouponService.save(item);
 			}
-			
+
 			List<TdReturnNote> tdReturnNote = tdReturnNoteService.findByUsername(oldUsername);
-			for(TdReturnNote item : tdReturnNote)
-			{
+			for (TdReturnNote item : tdReturnNote) {
 				item.setUsername(newUsername);
 				tdReturnNoteService.save(item);
 			}
-			
+
 			List<TdOrder> tdOrder = tdOrderService.findByUsername(oldUsername);
-			for(TdOrder item : tdOrder)
-			{
+			for (TdOrder item : tdOrder) {
 				item.setUsername(newUsername);
 				tdOrderService.save(item);
 			}
-			
+
 			List<TdUserCollect> tdUserCollect = tdUserCollectService.findByUsername(oldUsername);
-			for(TdUserCollect item : tdUserCollect)
-			{
+			for (TdUserCollect item : tdUserCollect) {
 				item.setUsername(newUsername);
 				tdUserCollectService.save(item);
 			}
-			
+
 			List<TdUserComment> tdUserComment = tdUserCommentService.findByUsername(oldUsername);
-			for(TdUserComment item : tdUserComment)
-			{
+			for (TdUserComment item : tdUserComment) {
 				item.setUsername(newUsername);
 				tdUserCommentService.save(item);
 			}
-			
+
 			List<TdUserRecentVisit> tdUserRecentVisit = tdUserRecentVisitService.findByUsername(oldUsername);
-			for(TdUserRecentVisit item : tdUserRecentVisit)
-			{
+			for (TdUserRecentVisit item : tdUserRecentVisit) {
 				item.setUsername(newUsername);
 				tdUserRecentVisitService.save(item);
 			}
-			
+
 		}
 
-		
-	
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
 		if (null == tdUser.getId()) {
@@ -677,9 +665,9 @@ public class TdManagerUserController {
 
 	/*----------------用户投诉咨询 begin ------------------*/
 	@RequestMapping(value = "/{type}/list")
-	public String list(@PathVariable String type, Integer page, Integer size, String __EVENTTARGET, String date_1,  
-			            			String date_2, String keywords, Long categoryId,  String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId, Long[] listSortId,
-			ModelMap map, HttpServletRequest req) throws ParseException {
+	public String list(@PathVariable String type, Integer page, Integer size, String __EVENTTARGET, String date_1,
+			String date_2, String keywords, Long categoryId, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId,
+			Integer[] listChkId, Long[] listSortId, ModelMap map, HttpServletRequest req) throws ParseException {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -718,119 +706,102 @@ public class TdManagerUserController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
 		if (null != type) {
-			if (type.equalsIgnoreCase("suggestion"))  //投诉咨询
-            {
+			if (type.equalsIgnoreCase("suggestion")) // 投诉咨询
+			{
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				Date date1 = null;
 				Date date2 = null;
-				if(null !=date_1 && !date_1.equals(""))
-				{
+				if (null != date_1 && !date_1.equals("")) {
 					date1 = sdf.parse(date_1);
 				}
-				if(null !=date_2 && !date_2.equals(""))
-				{
+				if (null != date_2 && !date_2.equals("")) {
 					date2 = sdf.parse(date_2);
 				}
 				Page<TdUserSuggestion> suggestionPage = null;
-				
-				//开始筛选 zhangji
+
+				// 开始筛选 zhangji
 				if (null == keywords || "".equals(keywords)) {
-					if(null == date1)
-					{
-						if(null == date2)
-						{
-							if(null == categoryId)
-							{
-								suggestionPage = tdUserSuggestionService.findAll(page , size);
-							}
-							else{
+					if (null == date1) {
+						if (null == date2) {
+							if (null == categoryId) {
+								suggestionPage = tdUserSuggestionService.findAll(page, size);
+							} else {
 								suggestionPage = tdUserSuggestionService.findByCategoryId(categoryId, page, size);
 							}
-						}
-						else{
-							if(null == categoryId)
-							{
+						} else {
+							if (null == categoryId) {
 								suggestionPage = tdUserSuggestionService.findByCreateTimeBefore(date2, page, size);
-							}
-							else{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndCategoryId(date2,categoryId, page, size);
+							} else {
+								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndCategoryId(date2,
+										categoryId, page, size);
 							}
 						}
-						
-					}
-					else{
-						if(null == date2)
-						{
-							if(null == categoryId)
-							{
+
+					} else {
+						if (null == date2) {
+							if (null == categoryId) {
 								suggestionPage = tdUserSuggestionService.findByCreateTimeAfter(date1, page, size);
+							} else {
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCategoryId(date1,
+										categoryId, page, size);
 							}
-							else{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCategoryId(date1,categoryId, page, size);
+						} else {
+							if (null == categoryId) {
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBefore(date1,
+										date2, page, size);
+							} else {
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryId(date1, date2, categoryId,
+												page, size);
 							}
 						}
-						else{
-							if(null == categoryId)
-							{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBefore(date1, date2, page, size);
+					}
+				} else {
+					if (null == date1) {
+						if (null == date2) {
+							if (null == categoryId) {
+								suggestionPage = tdUserSuggestionService.findBySearch(keywords, page, size);
+							} else {
+								suggestionPage = tdUserSuggestionService.findByCategoryIdAndSearch(categoryId, keywords,
+										page, size);
 							}
-							else{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryId(date1,date2,categoryId, page, size);
+						} else {
+							if (null == categoryId) {
+								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndSearch(date2,
+										keywords, page, size);
+							} else {
+								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndCategoryIdAndSearch(
+										date2, categoryId, keywords, page, size);
+							}
+						}
+					} else {
+						if (null == date2) {
+							if (null == categoryId) {
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndSearch(date1, keywords,
+										page, size);
+							} else {
+								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCategoryIdAndSearch(
+										date1, categoryId, keywords, page, size);
+							}
+						} else {
+							if (null == categoryId) {
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeAfterAndCreateTimeBeforeAndSearch(date1, date2, keywords, page,
+												size);
+							} else {
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryIdAndSearch(date1, date2,
+												categoryId, keywords, page, size);
 							}
 						}
 					}
 				}
-				else{
-					if(null == date1)
-					{
-						if(null == date2)
-						{
-							if(null == categoryId)
-							{
-								suggestionPage = tdUserSuggestionService.findBySearch(keywords,  page, size);
-							}
-							else{
-								suggestionPage = tdUserSuggestionService.findByCategoryIdAndSearch(categoryId, keywords,  page, size);
-							}
-						}
-						else{
-							if(null == categoryId)
-							{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndSearch(date2, keywords,  page, size);
-							}
-							else{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndCategoryIdAndSearch(date2, categoryId, keywords,  page, size);
-							}
-						}
-					}
-					else{
-						if(null == date2)
-						{
-							if(null == categoryId)
-							{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndSearch(date1, keywords,  page, size);
-							}
-							else{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCategoryIdAndSearch(date1, categoryId, keywords,  page, size);
-							}
-						}
-						else{
-							if(null == categoryId)
-							{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBeforeAndSearch(date1, date2, keywords,  page, size);
-							}
-							else{
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryIdAndSearch(date1, date2, categoryId, keywords,  page, size);
-							}
-						}
-					}
-				}
-				
+
 				map.addAttribute("category_list", tdUserSuggestionCategoryService.findByIsEnableTrueOrderBySortIdAsc());
-				map.addAttribute("date_1",date_1);
-				map.addAttribute("date_2",date_2);
-				map.addAttribute("keywords",keywords);
-				map.addAttribute("categoryId",categoryId);
+				map.addAttribute("date_1", date_1);
+				map.addAttribute("date_2", date_2);
+				map.addAttribute("keywords", keywords);
+				map.addAttribute("categoryId", categoryId);
 
 				map.addAttribute("user_suggestion_page", suggestionPage);
 				for (TdUserSuggestion item : suggestionPage.getContent()) {

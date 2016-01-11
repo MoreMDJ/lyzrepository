@@ -39,9 +39,21 @@ public class TdActivityGiftList {
 	@Column
 	private Double sortId;
 	
+	//品牌标题
+	@Column
+	private String brandTitle;
+	
+	//品牌id
+	@Column
+	private Long brandId;
+	
 	// 数量
 	@Column
 	private Long number;
+	
+	//商品的SKU
+	@Column
+	private String code;
 
 	public Long getId() {
 		return id;
@@ -98,7 +110,28 @@ public class TdActivityGiftList {
 	public void setNumber(Long number) {
 		this.number = number;
 	}
-	
-	
 
+	public String getBrandTitle() {
+		return brandTitle;
+	}
+
+	public void setBrandTitle(String brandTitle) {
+		this.brandTitle = brandTitle;
+	}
+
+	public Long getBrandId() {
+		return brandId;
+	}
+
+	public void setBrandId(Long brandId) {
+		this.brandId = brandId;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 }

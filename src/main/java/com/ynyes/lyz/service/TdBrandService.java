@@ -64,4 +64,10 @@ public class TdBrandService {
 		return repository.findByTitleContainingAndShortNameContainingOrderBySortIdAsc(keywords, keywords, pageRequest);
 	}
 
+	public TdBrand findByTitle(String title){
+		if(null == title){
+			return null;
+		}
+		return repository.findByTitle(title);
+	}
 }

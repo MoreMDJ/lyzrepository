@@ -15,9 +15,10 @@ $(function() {
 			$("#unsignin_orders").css("display", "block");
 		} else if ("uncommend" == li_id) {
 			$(".some_orders").css("display", "none");
-			$("#uncommend_orders").css("display", "block");
+			$("#uncomment_orders").css("display", "block");
 		}
 	});
+	
 	var init_id = $("#typeId").val();
 	if (0 == init_id) {
 

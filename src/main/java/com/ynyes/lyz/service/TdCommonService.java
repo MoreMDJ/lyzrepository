@@ -20,7 +20,6 @@ import org.springframework.ui.ModelMap;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
-import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCoupon;
@@ -32,6 +31,7 @@ import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.entity.TdShippingAddress;
+import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.util.ClientConstant;
@@ -74,10 +74,13 @@ public class TdCommonService {
 	private TdOrderService tdOrderService;
 
 	@Autowired
-	private TdBrandService tdBrandService;
+	private TdPayTypeService tdPayTypeService;
 
 	@Autowired
-	private TdPayTypeService tdPayTypeService;
+	private TdOrderGoodsService tdOrderGoodsService;
+
+	@Autowired
+	private TdSubdistrictService tdSubdistrictService;
 
 	/**
 	 * 获取登陆用户信息的方法
@@ -145,6 +148,7 @@ public class TdCommonService {
 				for (int k = 0; k < goods_list.size(); k++) {
 					TdGoods goods = goods_list.get(k);
 					if (null != goods) {
+
 						TdPriceListItem priceListItem = tdPriceListItemService.findByPriceListIdAndGoodsId(priceListId,
 								goods.getId());
 						map.addAttribute("priceListItem" + i + "_" + j + "_" + k, priceListItem);
@@ -412,139 +416,130 @@ public class TdCommonService {
 	 * @param selected代表已选商品
 	 * @return 表示活动赠送的赠品
 	 */
-	public List<TdCartGoods> getPresent(HttpServletRequest req, List<TdCartGoods> selected,
-			List<TdCartGoods> presented) {
-		// 获取当前已选能够参加的活动
-		List<TdActivity> activities = this.getActivityBySelected(req);
-		// 创建一个布尔类型变量表示能否是否还能参加活动（用于跳出递归）
-		Boolean isActivity = false;
-		// 遍历活动集合，按照活动执行顺序判断所获取的赠品
-		for (TdActivity activity : activities) {
-			if (null != activity) {
-				// 创建一个布尔变量表示已选商品能否参加指定的活动
-				Boolean isJoin = true;
-				// 获取该活动所需要的商品及其数量的列表
-				String goodsAndNumber = activity.getGoodsNumber();
-				if (null != goodsAndNumber) {
-					// 拆分列表，使其成为【商品id_数量】的个体
-					String[] item = goodsAndNumber.split(",");
-					if (null != item) {
-						for (String each_item : item) {
-							if (null != each_item) {
-								// 拆分个体以获取id和数量的属性
-								String[] param = each_item.split("_");
-								// 当个体不为空且长度为2的时候才是正确的数据
-								if (null != param && param.length == 2) {
-									Long id = Long.parseLong(param[0]);
-									Long quantity = Long.parseLong(param[1]);
-									// 遍历selected（已选商品）
-									for (int i = 0; i < selected.size(); i++) {
-										TdCartGoods cartGoods = selected.get(i);
-										if (cartGoods.getGoodsId() == id && cartGoods.getQuantity() < quantity) {
-											isJoin = false;
-										}
-									}
-								}
-							}
-						}
-						// 如果循环结束，isJoin的值还是true，则代表该活动可以参加
-						if (isJoin) {
-							isActivity = true;
-							// 获取活动的赠品
-							String giftAndNumber = activity.getGiftNumber();
-							// 拆分得到赠品的【id_数量】个体
-							if (null != giftAndNumber) {
-								String[] singles = giftAndNumber.split(",");
-								for (String single : singles) {
-									// 拆分个体，获取赠品的id和数量属性
-									if (null != single) {
-										String[] param = single.split("_");
-										Long id = Long.parseLong(param[0]);
-										Long quantity = Long.parseLong(param[1]);
-										// 创建一个商品的已选项存储赠品，其价格为0
-										TdCartGoods gift = new TdCartGoods();
-										// 查找到指定的商品
-										TdGoods goods = tdGoodsService.findOne(id);
-										gift.setGoodsTitle(goods.getTitle());
-										gift.setGoodsId(id);
-										gift.setQuantity(quantity);
-										gift.setPrice(0.00);
-										presented.add(gift);
-									}
-								}
-							}
-							// 如果本次有活动参加，则去除参加活动的已选商品，继续查看是否有其他活动可以参加
-							if (isActivity) {
-								selected = this.getLeftCartGoods(selected, activity);
-								presented = this.getPresent(req, selected, presented);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return presented;
-	}
+	// public List<TdCartGoods> getPresent(HttpServletRequest req,
+	// List<TdCartGoods> selected,
+	// List<TdCartGoods> presented) {
+	// // 获取当前已选能够参加的活动
+	// List<TdActivity> activities = this.getActivityBySelected(req);
+	// // 创建一个布尔类型变量表示能否是否还能参加活动（用于跳出递归）
+	// Boolean isActivity = false;
+	// // 遍历活动集合，按照活动执行顺序判断所获取的赠品
+	// for (TdActivity activity : activities) {
+	// if (null != activity) {
+	// // 创建一个布尔变量表示已选商品能否参加指定的活动
+	// Boolean isJoin = true;
+	// // 获取该活动所需要的商品及其数量的列表
+	// String goodsAndNumber = activity.getGoodsNumber();
+	// if (null != goodsAndNumber) {
+	// // 拆分列表，使其成为【商品id_数量】的个体
+	// String[] item = goodsAndNumber.split(",");
+	// if (null != item) {
+	// for (String each_item : item) {
+	// if (null != each_item) {
+	// // 拆分个体以获取id和数量的属性
+	// String[] param = each_item.split("_");
+	// // 当个体不为空且长度为2的时候才是正确的数据
+	// if (null != param && param.length == 2) {
+	// Long id = Long.parseLong(param[0]);
+	// Long quantity = Long.parseLong(param[1]);
+	// // 遍历selected（已选商品）
+	// for (int i = 0; i < selected.size(); i++) {
+	// TdCartGoods cartGoods = selected.get(i);
+	// if (cartGoods.getGoodsId() == id && cartGoods.getQuantity() < quantity) {
+	// isJoin = false;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// // 如果循环结束，isJoin的值还是true，则代表该活动可以参加
+	// if (isJoin) {
+	// isActivity = true;
+	// // 获取活动的赠品
+	// String giftAndNumber = activity.getGiftNumber();
+	// // 拆分得到赠品的【id_数量】个体
+	// if (null != giftAndNumber) {
+	// String[] singles = giftAndNumber.split(",");
+	// for (String single : singles) {
+	// // 拆分个体，获取赠品的id和数量属性
+	// if (null != single) {
+	// String[] param = single.split("_");
+	// Long id = Long.parseLong(param[0]);
+	// Long quantity = Long.parseLong(param[1]);
+	// // 创建一个商品的已选项存储赠品，其价格为0
+	// TdCartGoods gift = new TdCartGoods();
+	// // 查找到指定的商品
+	// TdGoods goods = tdGoodsService.findOne(id);
+	// gift.setGoodsTitle(goods.getTitle());
+	// gift.setGoodsId(id);
+	// gift.setQuantity(quantity);
+	// gift.setPrice(0.00);
+	// presented.add(gift);
+	// }
+	// }
+	// }
+	// // 如果本次有活动参加，则去除参加活动的已选商品，继续查看是否有其他活动可以参加
+	// if (isActivity) {
+	// selected = this.getLeftCartGoods(selected, activity);
+	// presented = this.getPresent(req, selected, presented);
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
+	//
+	// return presented;
+	// }
 
 	/**
 	 * 获取已选商品能够得到的小辅料
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdActivityGiftList> getGift(HttpServletRequest req, Map<Long, Long> group,
-			List<TdActivityGiftList> sendGift) {
-		// 获取当前所有能够参加的小辅料赠送活动
-		List<TdActivityGift> avtivities = this.getActivityGiftBySelected(req);
-
-		// 创建一个布尔变量判断是否能够继续参加活动
-		Boolean isJoin = false;
-
-		// 遍历活动
-		for (TdActivityGift gift : avtivities) {
-			if (null != gift) {
-				if (null == gift.getCategoryId()) {
-					gift.setCategoryId(0L);
-				}
-				if (null != group.get(gift.getCategoryId())) {
-					if (null != gift.getBuyNumber() && gift.getBuyNumber() <= group.get(gift.getCategoryId())) {
-						isJoin = true;
-						// 获取当前活动赠送的小辅料
-						List<TdActivityGiftList> giftList = gift.getGiftList();
-						if (null != giftList) {
-							for (int i = 0; i < giftList.size(); i++) {
-								TdActivityGiftList item = giftList.get(i);
-								// 创建一个布尔变量表示当前赠送的商品是否已经存在
-								if (null != item) {
-									Boolean isExist = false;
-									for (int j = 0; j < sendGift.size(); j++) {
-										TdActivityGiftList havedGift = sendGift.get(j);
-										if (null != havedGift && null != havedGift.getGoodsId()
-												&& item.getGoodsId() == havedGift.getGoodsId()) {
-											havedGift.setNumber(havedGift.getNumber() + item.getNumber());
-											isExist = true;
-											break;
-										}
-									}
-									if (!isExist) {
-										sendGift.add(item);
-									}
-								}
+	public TdOrder getGift(HttpServletRequest req, TdOrder order) {
+		// 获取已选【分类：数量】组
+		Map<Long, Long> group = this.getGroup(req);
+		List<TdOrderGoods> giftGoodsList = order.getGiftGoodsList();
+		// 获取已选能够参加的活动
+		List<TdActivityGift> activities = this.getActivityGiftBySelected(req);
+		for (TdActivityGift activity : activities) {
+			Long categoryId = activity.getCategoryId();
+			Long quantity = activity.getBuyNumber();
+			// 判断是否满足条件
+			if (null != group.get(categoryId) && group.get(categoryId) >= quantity) {
+				// 添加小辅料赠品
+				List<TdActivityGiftList> giftList = activity.getGiftList();
+				if (null != giftList) {
+					for (int i = 0; i < giftList.size(); i++) {
+						TdActivityGiftList gift = giftList.get(i);
+						TdOrderGoods goods = new TdOrderGoods();
+						goods.setBrandId(gift.getBrandId());
+						goods.setBrandTitle(gift.getBrandTitle());
+						goods.setPrice(0.00);
+						goods.setQuantity(gift.getNumber());
+						goods.setGoodsTitle(gift.getGoodsTitle());
+						goods.setGoodsId(gift.getGoodsId());
+						goods.setGoodsCoverImageUri(gift.getCoverImageUri());
+						goods.setSku(gift.getCode());
+						// 创建一个布尔变量用于判断此件商品是否已经加入了小辅料
+						Boolean isHave = false;
+						for (TdOrderGoods orderGoods : giftGoodsList) {
+							if (null != orderGoods && null != orderGoods.getGoodsId()
+									&& orderGoods.getGoodsId() == gift.getGoodsId()) {
+								isHave = true;
+								orderGoods.setQuantity(orderGoods.getQuantity() + gift.getNumber());
 							}
 						}
-						// 获取参加完毕之后减去参加活动的数量
-						group.put(gift.getCategoryId(), (group.get(gift.getCategoryId()) - gift.getBuyNumber()));
-						break;
+						if (!isHave) {
+							giftGoodsList.add(goods);
+						}
 					}
 				}
 			}
 		}
-
-		if (isJoin) {
-			sendGift = this.getGift(req, group, sendGift);
-		}
-
-		return sendGift;
+		order = tdOrderService.save(order);
+		return order;
 	}
 
 	/**
@@ -603,71 +598,15 @@ public class TdCommonService {
 	}
 
 	/**
-	 * 获取参加活动后剩余未参加活动已选商品的方法
-	 * 
-	 * @author dengxiao
-	 */
-	public List<TdCartGoods> getLeftCartGoods(List<TdCartGoods> selected, TdActivity activity) {
-		String goodsAndNumber = activity.getGoodsNumber();
-		// 拆分参加活动的商品信息
-		if (null != goodsAndNumber) {
-			String[] singles = goodsAndNumber.split(",");
-			for (String single : singles) {
-				if (null != single) {
-					String[] param = single.split("_");
-					Long id = Long.parseLong(param[0]);
-					Long quantity = Long.parseLong(param[1]);
-					// 遍历已选，去除参与活动的商品
-					for (int i = 0; i < selected.size(); i++) {
-						TdCartGoods cartGoods = selected.get(i);
-						if (null != cartGoods && null != cartGoods.getGoodsId() && cartGoods.getGoodsId() == id) {
-							cartGoods.setQuantity(cartGoods.getQuantity() - quantity);
-						}
-					}
-				}
-			}
-		}
-		return selected;
-	}
-
-	/**
-	 * 将已选调色包整合到已选商品的方法（结算时调用）
-	 * 
-	 * @author dengxiao
-	 */
-	public List<TdCartGoods> getAllContainsColorPackage(HttpServletRequest req) {
-		// 获取已选商品
-		List<TdCartGoods> selected = this.getSelectedGoods(req);
-		// 获取已选调色包
-		List<TdCartColorPackage> all_color = this.getSelectedColorPackage(req);
-
-		// 遍历已选调色包，获取调色包对应的商品
-		for (TdCartColorPackage colorPackage : all_color) {
-			if (null != colorPackage) {
-				// 创建一个新的cartGoods用于存储
-				TdCartGoods cartGoods = new TdCartGoods();
-				cartGoods.setGoodsCoverImageUri(colorPackage.getImageUri());
-				cartGoods.setGoodsId(colorPackage.getGoodsId());
-				cartGoods.setGoodsTitle(colorPackage.getNumber());
-				cartGoods.setPrice(colorPackage.getSalePrice());
-				cartGoods.setRealPrice(colorPackage.getRealPrice());
-				cartGoods.setQuantity(colorPackage.getQuantity());
-				// 将其添加到selected中
-				selected.add(cartGoods);
-			}
-		}
-		return selected;
-	}
-
-	/**
 	 * 根据已选获取【类别id：数量】组
 	 * 
 	 * @author dengxiao
 	 */
 	public Map<Long, Long> getGroup(HttpServletRequest req) {
 		Map<Long, Long> group = new HashMap<>();
+		String username = (String) req.getSession().getAttribute("username");
 		// 获取已选商品（整合后）
-		List<TdCartGoods> all_selected = this.getAllContainsColorPackage(req);
+		List<TdCartGoods> all_selected = tdCartGoodsService.findByUsername(username);
 		for (TdCartGoods cartGoods : all_selected) {
 			// 获取已选的商品
 			if (null != cartGoods) {
@@ -686,53 +625,42 @@ public class TdCommonService {
 	}
 
 	/**
-	 * 清空所有购物信息的方法
+	 * 清空已选的方法
 	 * 
 	 * @author dengxiao
 	 */
 	public void clear(HttpServletRequest req) {
-		// 获取当前登陆用户的用户名
 		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			user = new TdUser();
+		}
 
-		req.getSession().setAttribute("order_payTypeId", null);
-		req.getSession().setAttribute("order_remark", null);
-		req.getSession().setAttribute("order_diySiteId", null);
-		req.getSession().setAttribute("order_deliveryId", null);
-		req.getSession().setAttribute("order_deliveryDate", null);
-		req.getSession().setAttribute("order_deliveryDetailId", null);
-		req.getSession().setAttribute("order_noProductCouponUsed", null);
-		req.getSession().setAttribute("order_productCouponUsed", null);
-		req.getSession().setAttribute("all_selected", null);
-		req.getSession().setAttribute("all_color", null);
-		// 在数据库中，删除当前用户所有的已选
-		List<TdCartGoods> list = tdCartGoodsService.findByUsername(username);
+		// 删除用户的已选
+		List<TdCartGoods> list = tdCartGoodsService.findByUserId(user.getId());
 		tdCartGoodsService.deleteAll(list);
 	}
 
 	/**
-	 * 通过登陆用户的已选生成订单并拆单的方法
+	 * 根据已选生成虚拟订单
 	 * 
 	 * @author dengxiao
 	 */
-	public TdOrder createOrder(HttpServletRequest req) {
+	public TdOrder createVirtual(HttpServletRequest req) {
+		// 获取登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsername(username);
 		if (null == user) {
-			return null;
+			user = new TdUser();
 		}
 
-		// 生成一个虚拟订单用于存储默认收货地址、默认支付方式、默认配送方式、默认配送日期、默认配送时间段、默认门店
-		TdOrder order_temp = new TdOrder();
-		order_temp.setOrderGoodsList(new ArrayList<TdOrderGoods>());
-		order_temp.setTotalGoodsPrice(0.00);
-		order_temp.setTotalPrice(0.00);
+		// 生成一个订单表示虚拟订单
+		TdOrder virtual = new TdOrder();
 
-		Map<Long, TdOrder> order_map = new HashMap<>();
+		// 获取当前用户所有的已选
+		List<TdCartGoods> select_goods = tdCartGoodsService.findByUsername(username);
 
-		// 获取所有的品牌，根据品牌数量生成相同数量的订单
-		List<TdBrand> all_brand = tdBrandService.findAll();
-
-		TdShippingAddress defaultAddress = null;
+		TdShippingAddress defaultAddress = new TdShippingAddress();
 		// 获取默认的收货地址
 		List<TdShippingAddress> addressList = user.getShippingAddressList();
 		if (null != addressList) {
@@ -742,13 +670,9 @@ public class TdCommonService {
 				}
 			}
 		}
-		if (null == defaultAddress) {
-			defaultAddress = new TdShippingAddress();
-		}
 
 		// 默认的配送方式1（1代表送货上门，2代表门店自提）
 		String delivery = "送货上门";
-
 		// 默认门店为用户的归属门店
 		TdDiySite defaultDiy = this.getDiySite(req);
 
@@ -759,6 +683,15 @@ public class TdCommonService {
 		SimpleDateFormat sdf_ymd = new SimpleDateFormat("yyyy-MM-dd");
 		String order_deliveryDate = sdf_ymd.format(date);
 		Long order_deliveryDeatilId = 11L;
+
+		// 以下代码用于生成订单编号
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		Date now = new Date();
+		String sDate = sdf.format(now);
+		Random random = new Random();
+		Integer suiji = random.nextInt(900) + 100;
+		String orderNum = sDate + suiji;
+		// 订单编号生成结束
 
 		// 获取默认的支付方式
 		TdPayType defaultType = new TdPayType();
@@ -772,118 +705,176 @@ public class TdCommonService {
 			}
 		}
 
-		// 以下代码用于生成订单编号
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		Date now = new Date();
-		String sDate = sdf.format(now);
-		Random random = new Random();
-		Integer suiji = random.nextInt(900) + 100;
-		String orderNum = sDate + suiji;
-		// 订单编号生成结束
-
-		if (null != all_brand) {
-			for (TdBrand brand : all_brand) {
-				if (null != brand && null != brand.getId()) {
-					TdOrder order = new TdOrder();
-					String shortName = brand.getShortName();
-					if (null == shortName) {
-						shortName = "";
-					}
-					order.setBrandId(brand.getId());
-					order.setBrandTitle(brand.getTitle());
-					order.setOrderNumber(shortName + orderNum);
-					order.setOrderGoodsList(new ArrayList<TdOrderGoods>());
-					order.setTotalGoodsPrice(0.00);
-					order.setProductCoupon("");
-					order.setCashCoupon(0.00);
-					order.setCashCouponId("");
-					order.setStatusId(2L);
-
-					// 开始设置默认属性
-					order.setShippingAddress(defaultAddress.getCity() + defaultAddress.getDisctrict()
-							+ defaultAddress.getSubdistrict() + defaultAddress.getDetailAddress());
-					order.setShippingName(defaultAddress.getReceiverName());
-					order.setShippingPhone(defaultAddress.getReceiverMobile());
-
-					order.setDeliverTypeTitle(delivery);
-
-					order.setDeliveryDate(order_deliveryDate);
-					order.setDeliveryDetailId(order_deliveryDeatilId);
-
-					order.setPayTypeId(defaultType.getId());
-					order.setPayTypeTitle(defaultType.getTitle());
-
-					order.setDiySiteId(defaultDiy.getId());
-					order.setDiySiteName(defaultDiy.getTitle());
-					order.setDiySitePhone(defaultDiy.getServiceTele());
-					// 默认属性设置结束
-
-					order_map.put(brand.getId(), order);
-				}
-			}
+		// 获取运费
+		Double fee = 0.00;
+		TdSubdistrict subdistrict = tdSubdistrictService.findOne(defaultAddress.getSubdistrictId());
+		if (null == subdistrict) {
+			subdistrict = new TdSubdistrict();
 		}
+		fee = subdistrict.getDeliveryFee();
 
-		// 获取当前用户所有的已选
-		List<TdCartGoods> select_goods = tdCartGoodsService.findByUserId(user.getId());
-		if (null != select_goods) {
-			for (TdCartGoods cartGoods : select_goods) {
-				if (null != cartGoods) {
-					// 以下代码用于设置属性
-					TdOrderGoods orderGoods = new TdOrderGoods();
-					orderGoods.setGoodsId(cartGoods.getGoodsId());
-					orderGoods.setGoodsTitle(cartGoods.getGoodsTitle());
-					orderGoods.setGoodsCoverImageUri(cartGoods.getGoodsCoverImageUri());
-					orderGoods.setSku(cartGoods.getSku());
-					orderGoods.setPrice(cartGoods.getPrice());
-					orderGoods.setQuantity(cartGoods.getQuantity());
-					// 设置属性结束
-					Long brandId = cartGoods.getBrandId();
-					TdOrder order = order_map.get(brandId);
-					if (null != order && null != order.getOrderGoodsList()) {
-						List<TdOrderGoods> order_goods_list = order.getOrderGoodsList();
-						List<TdOrderGoods> order_temp_goods_list = order_temp.getOrderGoodsList();
-						order_temp.getOrderGoodsList().add(orderGoods);
-						order_goods_list.add(orderGoods);
-						order_temp_goods_list.add(orderGoods);
-						order.setOrderGoodsList(order_goods_list);
-						order.setOrderGoodsList(order_temp_goods_list);
-						order.setTotalGoodsPrice(
-								order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
-						order.setTotalPrice(
-								order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
-						order_temp.setTotalGoodsPrice(
-								order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
-						order_temp.setTotalPrice(
-								order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
-						order = tdOrderService.save(order);
-						order_map.put(brandId, order);
-					}
-				}
-			}
-		}
+		virtual.setUsername(user.getUsername());
+		virtual.setUserId(user.getId());
 
-		// 设置临时订单的默认属性
-		order_temp.setShippingAddress(defaultAddress.getCity() + defaultAddress.getDisctrict()
+		virtual.setOrderNumber("XN" + orderNum);
+		virtual.setOrderTime(new Date());
+		virtual.setShippingAddress(defaultAddress.getCity() + defaultAddress.getDisctrict()
 				+ defaultAddress.getSubdistrict() + defaultAddress.getDetailAddress());
-		order_temp.setShippingName(defaultAddress.getReceiverName());
-		order_temp.setShippingPhone(defaultAddress.getReceiverMobile());
+		virtual.setShippingName(defaultAddress.getReceiverName());
+		virtual.setShippingPhone(defaultAddress.getReceiverMobile());
+		virtual.setOrderGoodsList(new ArrayList<TdOrderGoods>());
+		virtual.setTotalGoodsPrice(0.00);
+		virtual.setTotalPrice(0.00);
+		virtual.setProductCouponId("");
+		virtual.setProductCoupon("");
+		virtual.setCashCoupon(0.00);
+		virtual.setLimitCash(0.00);
+		virtual.setCashCouponId("");
+		virtual.setStatusId(2L);
+		virtual.setDeliverTypeTitle(delivery);
+		virtual.setDiySiteId(defaultDiy.getId());
+		virtual.setDiySiteName(defaultDiy.getTitle());
+		virtual.setDiySitePhone(defaultDiy.getServiceTele());
 
-		order_temp.setDeliverTypeTitle(delivery);
+		virtual.setPayTypeId(defaultType.getId());
+		virtual.setPayTypeTitle(defaultType.getTitle());
+		virtual.setDeliveryDate(order_deliveryDate);
+		virtual.setDeliveryDetailId(order_deliveryDeatilId);
+		virtual.setDeliverFee(fee);
 
-		order_temp.setDeliveryDate(order_deliveryDate);
-		order_temp.setDeliveryDetailId(order_deliveryDeatilId);
+		// 遍历所有的已选商品，生成虚拟订单
+		for (TdCartGoods cart : select_goods) {
+			TdOrderGoods goods = new TdOrderGoods();
+			goods.setGoodsId(cart.getGoodsId());
+			goods.setGoodsTitle(cart.getGoodsTitle());
+			goods.setGoodsCoverImageUri(cart.getGoodsCoverImageUri());
+			goods.setSku(cart.getSku());
+			goods.setPrice(cart.getPrice());
+			goods.setQuantity(cart.getQuantity());
+			goods.setBrandId(cart.getBrandId());
+			goods.setBrandTitle(cart.getBrandTitle());
+			virtual.setTotalGoodsPrice(virtual.getTotalGoodsPrice() + (cart.getPrice() * cart.getQuantity()));
+			virtual.setTotalPrice(virtual.getTotalPrice() + (cart.getPrice() * cart.getQuantity()));
+			virtual.setLimitCash(
+					virtual.getLimitCash() + ((cart.getPrice() - cart.getRealPrice()) * cart.getQuantity()));
+			List<TdOrderGoods> goodsList = virtual.getOrderGoodsList();
+			goodsList.add(goods);
+			tdOrderGoodsService.save(goods);
+			tdOrderService.save(virtual);
+		}
+		virtual = this.getPresent(req, virtual);
+		return virtual;
+	}
 
-		order_temp.setPayTypeId(defaultType.getId());
-		order_temp.setPayTypeTitle(defaultType.getTitle());
+	/**
+	 * 查找用户已选获得的赠品
+	 */
+	public TdOrder getPresent(HttpServletRequest req, TdOrder order) {
+		String username = (String) req.getSession().getAttribute("username");
+		// 获取用户的已选
+		List<TdCartGoods> all_selected = tdCartGoodsService.findByUsername(username);
 
-		order_temp.setDiySiteId(defaultDiy.getId());
-		order_temp.setDiySiteName(defaultDiy.getTitle());
-		// 临时订单默认属性设置结束
+		// 获取赠品列表
+		List<TdOrderGoods> presentedList = order.getPresentedList();
 
-		// 返回之前将整个map存储到session中
-		req.getSession().setAttribute("all_order", order_map);
-		req.getSession().setAttribute("order_temp", order_temp);
-		return order_temp;
+		// 为了避免脏数据刷新，创建一个map用于存储已选【id：数量】
+		Map<Long, Long> selected_map = new HashMap<>();
+
+		for (TdCartGoods cartGoods : all_selected) {
+			Long id = cartGoods.getGoodsId();
+			Long quantity = cartGoods.getQuantity();
+
+			selected_map.put(id, quantity);
+		}
+
+		// 获取用户的门店
+		TdDiySite diySite = this.getDiySite(req);
+		List<TdActivity> activity_list = tdActivityService
+				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySite.getId() + "",
+						new Date());
+		for (TdActivity activity : activity_list) {
+			// 创建一个布尔变量表示已选商品能否参加指定的活动
+			Boolean isJoin = true;
+			// 获取该活动所需要的商品及其数量的列表
+			Map<Long, Long> cost = new HashMap<>();
+			String goodsAndNumber = activity.getGoodsNumber();
+			if (null != goodsAndNumber) {
+				// 拆分列表，使其成为【商品id_数量】的个体
+				String[] item = goodsAndNumber.split(",");
+				if (null != item) {
+					for (String each_item : item) {
+						if (null != each_item) {
+							// 拆分个体以获取id和数量的属性
+							String[] param = each_item.split("_");
+							// 当个体不为空且长度为2的时候才是正确的数据
+							if (null != param && param.length == 2) {
+								Long id = Long.parseLong(param[0]);
+								Long quantity = Long.parseLong(param[1]);
+								cost.put(id, quantity);
+								if (null == selected_map.get(id) || selected_map.get(id) < quantity) {
+									isJoin = false;
+									break;
+								}
+							}
+						}
+					}
+
+					if (isJoin) {
+						// 改变剩下的商品的数量
+						for (Long goodsId : cost.keySet()) {
+							Long quantity = cost.get(goodsId);
+							Long leftNum = selected_map.get(goodsId) - quantity;
+							selected_map.put(goodsId, leftNum);
+						}
+
+						// 获取赠品队列
+						String giftNumber = activity.getGiftNumber();
+						if (null != giftNumber) {
+							String[] group = giftNumber.split(",");
+							if (null != group) {
+								for (String each_item : group) {
+									if (null != each_item) {
+										// 拆分个体以获取id和数量的属性
+										String[] param = each_item.split("_");
+										// 当个体不为空且长度为2的时候才是正确的数据
+										if (null != param && param.length == 2) {
+											Long id = Long.parseLong(param[0]);
+											Long quantity = Long.parseLong(param[1]);
+											// 查找到指定id的商品
+											TdGoods goods = tdGoodsService.findOne(id);
+											TdOrderGoods orderGoods = new TdOrderGoods();
+											orderGoods.setBrandId(goods.getBrandId());
+											orderGoods.setBrandTitle(goods.getBrandTitle());
+											orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
+											orderGoods.setGoodsId(goods.getId());
+											orderGoods.setGoodsSubTitle(goods.getSubTitle());
+											orderGoods.setPrice(0.00);
+											orderGoods.setQuantity(quantity);
+											orderGoods.setSku(goods.getCode());
+											// 创建一个布尔变量用于表示赠品是否已经在队列中
+											Boolean isHave = false;
+											for (TdOrderGoods single : presentedList) {
+												if (null != single && null != single.getGoodsId()
+														&& single.getGoodsId() == orderGoods.getGoodsId()) {
+													isHave = true;
+													single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
+												}
+											}
+
+											if (!isHave) {
+												presentedList.add(orderGoods);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		order = tdOrderService.save(order);
+		return order;
 	}
 
 	public static String getIp(HttpServletRequest request) {

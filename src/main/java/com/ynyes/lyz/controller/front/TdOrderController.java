@@ -1,12 +1,12 @@
 package com.ynyes.lyz.controller.front;
 
+import java.awt.event.FocusEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ynyes.lyz.entity.TdActivityGiftList;
+import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
@@ -27,10 +27,10 @@ import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPayType;
-import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
@@ -84,13 +84,10 @@ public class TdOrderController {
 	private TdGoodsService tdGoodsService;
 
 	@Autowired
-	private TdOrderGoodsService tdOrderGoodsService;
-
-	@Autowired
-	private TdPriceListItemService tdPriceListItemService;
-
-	@Autowired
 	private TdOrderService tdOrderService;
+
+	@Autowired
+	private TdBrandService tdBrandService;
 
 	/**
 	 * 跳转到填写订单的页面
@@ -105,24 +102,20 @@ public class TdOrderController {
 			return "redirect:/login";
 		}
 
+		map.addAttribute("user", user);
+
 		// 创建一个布尔值用于判断能否使用优惠券
 		Boolean isCoupon = true;
 
-		TdOrder order = new TdOrder();
-		if (null == id) {
-			// 从session获取临时订单
-			order = (TdOrder) req.getSession().getAttribute("order_temp");
-			if (null == order) {
-				// 获取临时订单，拆单
-				order = tdCommonService.createOrder(req);
-			}
-		} else {
-			order = tdOrderService.findOne(id);
-			if (null == order) {
-				order = new TdOrder();
-				req.getSession().setAttribute("order_temp", order);
-			}
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		if (null == order) {
+			order = tdCommonService.createVirtual(req);
+			// 将其放入session中
+			req.getSession().setAttribute("order_temp", order);
 		}
+
+		// 清空已选
+		tdCommonService.clear(req);
 
 		String deliverTypeTitle = order.getDeliverTypeTitle();
 		// 如果配送方式是到店自提，則不能使用任何优惠券
@@ -148,72 +141,17 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		if (null != order) {
+			if (null == order.getPresentedList()) {
+				order.setPresentedList(new ArrayList<TdOrderGoods>());
+			}
 
-		// 从数据库中获取所有的已选商品
-		List<TdCartGoods> all_selected = tdCartGoodsService.findByUsername(username);
-		// 创建一个集合用于存储所有的赠品
-		List<TdCartGoods> presented = new ArrayList<>();
-		// 获取当前所有的赠品
-		presented = tdCommonService.getPresent(req, all_selected, presented);
-
-		// 以下操作是为了避免脏数据刷新影响到了数据库中的数据
-		for (TdCartGoods tdCartGoods : all_selected) {
-			tdCartGoodsService.delete(tdCartGoods.getId());
-		}
-
-		all_selected = tdCommonService.getAllContainsColorPackage(req);
-		tdCartGoodsService.save(all_selected);
-
-		all_selected = tdCartGoodsService.findByUsername(username);
-		// 创建一个集合用于存储所有的小辅料
-		List<TdActivityGiftList> gift_list = new ArrayList<>();
-		// 获取已选【id：数量】对
-		Map<Long, Long> group = tdCommonService.getGroup(req);
-		gift_list = tdCommonService.getGift(req, group, gift_list);
-
-		// 以下操作是为了避免脏数据刷新影响到了数据库中的数据
-		for (TdCartGoods tdCartGoods : all_selected) {
-			tdCartGoodsService.delete(tdCartGoods.getId());
-		}
-
-		all_selected = tdCommonService.getAllContainsColorPackage(req);
-		tdCartGoodsService.save(all_selected);
-
-		// 获取所有商品的总量和总价
-		Long totalNumber = 0L;
-		Double totalPrice = 0.00;
-		if (null != all_selected) {
-			for (TdCartGoods cartGoods : all_selected) {
-				if (null != cartGoods) {
-					Double unit_price = cartGoods.getPrice();
-					Long quantity = cartGoods.getQuantity();
-					if (null != quantity) {
-						totalNumber += quantity;
-						if (null != unit_price) {
-							totalPrice += (unit_price * quantity);
-						}
-					}
-				}
+			if (null == order.getGiftGoodsList()) {
+				order.setGiftGoodsList(new ArrayList<TdOrderGoods>());
 			}
 		}
-
-		// 还需遍历赠品已得到正确的商品总量
-		if (null != presented) {
-			for (TdCartGoods cartGoods : presented) {
-				if (null != cartGoods) {
-					Long quantity = cartGoods.getQuantity();
-					if (null != quantity) {
-						totalNumber += quantity;
-					}
-				}
-			}
-		}
-
-		map.addAttribute("totalNumber", totalNumber);
-		map.addAttribute("totalPrice", totalPrice);
-
-		map.addAttribute("all_selected", all_selected);
-		map.addAttribute("presented", presented);
+		map.addAttribute("order", order);
 		return "/client/order_list";
 	}
 
@@ -230,6 +168,7 @@ public class TdOrderController {
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		order.setRemark(remark);
 		req.getSession().setAttribute("order_temp", order);
+		tdOrderService.save(order);
 		res.put("status", 0);
 		return res;
 	}
@@ -357,6 +296,7 @@ public class TdOrderController {
 		order.setDiySitePhone(tdDiySite.getServiceTele());
 
 		req.getSession().setAttribute("order_temp", order);
+		tdOrderService.save(order);
 
 		return "redirect:/order";
 	}
@@ -419,7 +359,7 @@ public class TdOrderController {
 		}
 
 		// 获取所有已选的商品
-		List<TdCartGoods> selected_list = tdCommonService.getAllContainsColorPackage(req);
+		List<TdCartGoods> selected_list = tdCartGoodsService.findByUsername(username);
 
 		// 获取用户所有未使用的现金券（同时，这个集合也可以存储此单能够使用的指定产品现金券）
 		List<TdCoupon> no_product_coupon_list = tdCouponService
@@ -547,6 +487,7 @@ public class TdOrderController {
 			order.setPayTypeTitle(payType.getTitle());
 			order.setPayTypeId(payType.getId());
 			req.getSession().setAttribute("order_temp", order);
+			tdOrderService.save(order);
 		}
 		return "redirect:/order";
 	}
@@ -640,6 +581,8 @@ public class TdOrderController {
 				address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
 		order.setShippingName(address.getReceiverName());
 		order.setShippingPhone(address.getReceiverMobile());
+		req.getSession().setAttribute("order_temp", order);
+		tdOrderService.save(order);
 
 		return "redirect:/order";
 	}
@@ -674,7 +617,14 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-		req.getSession().setAttribute("order_addressId", id);
+		TdShippingAddress address = tdShippingAddressService.findOne(id);
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		order.setShippingAddress(
+				address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
+		order.setShippingName(address.getReceiverName());
+		order.setShippingPhone(address.getReceiverMobile());
+		tdOrderService.save(order);
+		req.getSession().setAttribute("order_temp", order);
 		return "redirect:/order";
 	}
 
@@ -683,352 +633,207 @@ public class TdOrderController {
 	 * 
 	 * @author dengxiao
 	 */
-	@RequestMapping(value = "/check")
-	@ResponseBody
-	public Map<String, Object> orderPay(HttpServletRequest req) {
-		Map<String, Object> res = new HashMap<>();
-		res.put("status", -1);
-
-		// 获取收货地址id
-		Long addressId = (Long) req.getSession().getAttribute("order_addressId");
-		// 获取支付方式id
-		Long payTypeId = (Long) req.getSession().getAttribute("order_payTypeId");
-		// 获取备注信息
-		String remark = (String) req.getSession().getAttribute("order_remark");
-		// 获取配送门店id
-		Long diySiteId = (Long) req.getSession().getAttribute("order_diySiteId");
-		// 获取配送方式id（0代表送货上门，1代表门店自提）
-		Long deliveryId = (Long) req.getSession().getAttribute("order_deliveryId");
-		// 获取配送日期
-		String deliveryDate = (String) req.getSession().getAttribute("order_deliveryDate");
-		// 获取配送时间点
-		Long deliveryDetailId = (Long) req.getSession().getAttribute("order_deliveryDetailId");
-
-		if (null == addressId) {
-			res.put("message", "请选择/添加收货地址");
-			return res;
-		}
-
-		if (null == payTypeId) {
-			res.put("message", "请选择支付方式");
-			return res;
-		}
-
-		// 创建一个订单用于存储华润订单信息
-		TdOrder order_hr = new TdOrder();
-		// 创建一个订单用于存储乐易装订单信息
-		TdOrder order_lyz = new TdOrder();
+	@RequestMapping(value = "/pay")
+	public String orderPay(HttpServletRequest req) {
 
 		String username = (String) req.getSession().getAttribute("username");
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-
-		Double hr_total = 0.0;
-		Double lyz_total = 0.0;
-		Double total_price = 0.0;
-		Double max_privilege = 0.0;
-		Double total_privilege = 0.0;
-
-		TdDiySite site = tdCommonService.getDiySite(req);
-
-		/* 以下代码用于生成订单号 */
-		Date date = new Date();
-		String sDate = sdf.format(date);
-		Random random = new Random();
-		Integer suiji = random.nextInt(900) + 100;
-		String orderNum = sDate + suiji;
-		/* 生成订单号结束 */
-		order_hr.setOrderNumber("HR" + orderNum);
-		order_lyz.setOrderNumber("LYZ" + orderNum);
-
-		order_hr.setRemark(remark);
-		order_lyz.setRemark(remark);
-
-		order_hr.setUsername(username);
-		order_lyz.setUsername(username);
-
-		// 获取指定id的收货地址
-		TdShippingAddress address = tdShippingAddressService.findOne(addressId);
-		if (null != address) {
-			order_hr.setShippingAddress(address.getDetailAddress());
-			order_lyz.setShippingAddress(address.getDetailAddress());
-
-			order_hr.setShippingName(address.getReceiverName());
-			order_lyz.setShippingName(address.getReceiverName());
-
-			order_hr.setShippingPhone(address.getReceiverMobile());
-			order_lyz.setShippingPhone(address.getReceiverMobile());
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
 		}
 
-		order_hr.setPayTypeId(payTypeId);
-		order_lyz.setPayTypeId(payTypeId);
-
-		// 获取指定的支付方式
-		TdPayType payType = tdPayTypeService.findOne(payTypeId);
-		if (null != payType) {
-			order_hr.setPayTypeTitle(payType.getTitle());
-			order_lyz.setPayTypeTitle(payType.getTitle());
+		// 获取虚拟订单
+		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
+		if (null == order_temp) {
+			order_temp = new TdOrder();
 		}
 
-		if (null != deliveryId && 0L == deliveryId) {
-			order_hr.setDeliverTypeTitle("送货上门");
-			order_lyz.setDeliverTypeTitle("送货上门");
-		}
+		// 创建一个map用于存储拆单后的所有订单
+		Map<Long, TdOrder> order_map = new HashMap<>();
 
-		if (null != deliveryId && 1L == deliveryId) {
-			order_hr.setDeliverTypeTitle("门店自提");
-			order_lyz.setDeliverTypeTitle("门店自提");
-
-			order_hr.setDiySiteId(diySiteId);
-			order_lyz.setDiySiteId(diySiteId);
-
-			TdDiySite diySite = tdDiySiteService.findOne(diySiteId);
-			if (null != diySite) {
-				order_hr.setDiySiteName(diySite.getTitle());
-				order_lyz.setDiySiteName(diySite.getTitle());
+		// 获取所有的品牌
+		List<TdBrand> brand_list = tdBrandService.findAll();
+		if (null != brand_list) {
+			for (TdBrand brand : brand_list) {
+				TdOrder order = new TdOrder();
+				order.setOrderNumber(order_temp.getOrderNumber().replace("XN", brand.getShortName()));
+				order.setShippingAddress(order_temp.getShippingAddress());
+				order.setShippingName(order_temp.getShippingName());
+				order.setShippingPhone(order_temp.getShippingPhone());
+				order.setDeliverFee(0.00);
+				order.setDeliverTypeTitle(order_temp.getDeliverTypeTitle());
+				order.setDeliveryDate(order_temp.getDeliveryDate());
+				order.setDeliveryDetailId(order_temp.getDeliveryDetailId());
+				order.setOrderGoodsList(new ArrayList<TdOrderGoods>());
+				order.setTotalGoodsPrice(0.00);
+				order.setTotalPrice(0.00);
+				order.setLimitCash(0.00);
+				order.setCashCoupon(0.00);
+				order.setLimitCash(0.00);
+				order.setProductCoupon("");
+				order.setCashCouponId("");
+				order.setUsername(username);
 			}
 		}
 
-		order_hr.setDeliveryDate(deliveryDate);
-		order_lyz.setDeliveryDate(deliveryDate);
-
-		order_hr.setDeliveryDetailId(deliveryDetailId);
-		order_lyz.setDeliveryDetailId(deliveryDetailId);
-
-		// 获取所有的已选商品，整合后
-		List<TdCartGoods> selected_all = tdCommonService.getAllContainsColorPackage(req);
-
-		List<TdOrderGoods> hr_order_goods_list = new ArrayList<>();
-		List<TdOrderGoods> lyz_order_goods_list = new ArrayList<>();
-
-		// 开始拆单
-		if (null != selected_all) {
-			for (TdCartGoods cartGoods : selected_all) {
-				if (null != cartGoods) {
-					TdGoods goods = tdGoodsService.findOne(cartGoods.getGoodsId());
-					if (null != goods) {
-						TdOrderGoods orderGoods = new TdOrderGoods();
-						orderGoods.setGoodsId(cartGoods.getGoodsId());
-						orderGoods.setGoodsTitle(goods.getTitle());
-						orderGoods.setGoodsSubTitle(goods.getSubTitle());
-						orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
-						orderGoods.setPrice(cartGoods.getPrice());
-						orderGoods.setQuantity(cartGoods.getQuantity());
-						orderGoods = tdOrderGoodsService.save(orderGoods);
-						if (null != goods.getBelongTo() && 1L == goods.getBelongTo()) {
-							hr_order_goods_list.add(orderGoods);
-							hr_total += (cartGoods.getPrice() * cartGoods.getQuantity());
-						}
-						if (null != goods.getBelongTo() && 2L == goods.getBelongTo()) {
-							lyz_order_goods_list.add(orderGoods);
-							lyz_total += (cartGoods.getPrice() * cartGoods.getQuantity());
-						}
-						total_price += (cartGoods.getPrice() * cartGoods.getQuantity());
-						max_privilege += ((cartGoods.getPrice() - cartGoods.getRealPrice()) * cartGoods.getQuantity());
-					}
+		List<TdOrderGoods> goodsList = order_temp.getOrderGoodsList();
+		// 对已选商品进行拆单
+		for (TdOrderGoods orderGoods : goodsList) {
+			if (null != orderGoods) {
+				Long brandId = orderGoods.getBrandId();
+				TdOrder order = order_map.get(brandId);
+				List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+				if (null == orderGoodsList) {
+					orderGoodsList = new ArrayList<>();
 				}
-			}
-			hr_order_goods_list = tdOrderGoodsService.save(hr_order_goods_list);
-			lyz_order_goods_list = tdOrderGoodsService.save(lyz_order_goods_list);
-			order_hr.setOrderGoodsList(hr_order_goods_list);
-			order_lyz.setOrderGoodsList(lyz_order_goods_list);
-		}
-
-		List<TdCartGoods> presented = new ArrayList<>();
-		// 获取当前所有的已选
-		List<TdCartGoods> selected = tdCartGoodsService.findByUsername(username);
-
-		List<TdOrderGoods> hr_present = new ArrayList<>();
-		List<TdOrderGoods> lyz_present = new ArrayList<>();
-
-		// 获取所有的赠品
-		presented = tdCommonService.getPresent(req, selected, presented);
-		// 进行赠品拆单
-		for (TdCartGoods present : presented) {
-			if (null != present) {
-				Long goodsId = present.getGoodsId();
-				TdGoods goods = tdGoodsService.findOne(goodsId);
-				if (null != goods) {
-					TdOrderGoods orderGoods = new TdOrderGoods();
-					orderGoods.setGoodsId(present.getGoodsId());
-					orderGoods.setGoodsTitle(goods.getTitle());
-					orderGoods.setGoodsSubTitle(goods.getSubTitle());
-					orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
-					orderGoods.setPrice(0.0);
-					orderGoods.setQuantity(present.getQuantity());
-					orderGoods = tdOrderGoodsService.save(orderGoods);
-					if (null != goods.getBelongTo() && 1L == goods.getBelongTo()) {
-						hr_present.add(orderGoods);
-					}
-					if (null != goods.getBelongTo() && 2L == goods.getBelongTo()) {
-						lyz_present.add(orderGoods);
-					}
-				}
+				orderGoodsList.add(orderGoods);
+				order.setTotalGoodsPrice(
+						order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
+				order.setTotalPrice(order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
 			}
 		}
-		hr_present = tdOrderGoodsService.save(hr_present);
-		lyz_present = tdOrderGoodsService.save(lyz_present);
-		order_hr.setPresentedList(hr_present);
-		if (hr_present.size() > 0) {
-			order_hr.setIsPromotion(true);
-		}
-		order_lyz.setPresentedList(lyz_present);
-		if (lyz_present.size() > 0) {
-			order_lyz.setIsPromotion(true);
-		}
 
-		// 获取所有的小辅料
-		List<TdActivityGiftList> sendGift = new ArrayList<>();
-		Map<Long, Long> group = tdCommonService.getGroup(req);
-		sendGift = tdCommonService.getGift(req, group, sendGift);
-
-		List<TdOrderGoods> hr_gift = new ArrayList<>();
-		List<TdOrderGoods> lyz_gift = new ArrayList<>();
-
-		// 进行小辅料拆单
-		for (TdActivityGiftList gift : sendGift) {
-			Long goodsId = gift.getGoodsId();
-			TdGoods goods = tdGoodsService.findOne(goodsId);
-			if (null != goods) {
-				TdOrderGoods orderGoods = new TdOrderGoods();
-				orderGoods.setGoodsId(gift.getGoodsId());
-				orderGoods.setGoodsTitle(goods.getTitle());
-				orderGoods.setGoodsSubTitle(goods.getSubTitle());
-				orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
-				orderGoods.setPrice(0.0);
-				orderGoods.setQuantity(gift.getNumber());
-				orderGoods.setSku(goods.getCode());
-				orderGoods = tdOrderGoodsService.save(orderGoods);
-				if (null != goods.getBelongTo() && 1L == goods.getBelongTo()) {
-					hr_gift.add(orderGoods);
+		List<TdOrderGoods> presentedList = order_temp.getPresentedList();
+		// 对赠品进行拆单
+		for (TdOrderGoods orderGoods : presentedList) {
+			if (null != orderGoods) {
+				Long brandId = orderGoods.getBrandId();
+				TdOrder order = order_map.get(brandId);
+				List<TdOrderGoods> orderGoodsList = order.getPresentedList();
+				if (null == orderGoodsList) {
+					orderGoodsList = new ArrayList<>();
 				}
-				if (null != goods.getBelongTo() && 2L == goods.getBelongTo()) {
-					lyz_gift.add(orderGoods);
-				}
+				orderGoodsList.add(orderGoods);
 			}
 		}
-		hr_gift = tdOrderGoodsService.save(hr_gift);
-		lyz_gift = tdOrderGoodsService.save(lyz_gift);
-		order_hr.setGiftGoodsList(hr_gift);
-		order_lyz.setGiftGoodsList(lyz_gift);
 
-		order_hr.setProductCoupon("");
-		order_lyz.setProductCoupon("");
+		List<TdOrderGoods> giftGoodsList = order_temp.getGiftGoodsList();
+		// 对赠送的小辅料进行拆单
+		for (TdOrderGoods orderGoods : giftGoodsList) {
+			if (null != orderGoods) {
+				Long brandId = orderGoods.getBrandId();
+				TdOrder order = order_map.get(brandId);
+				List<TdOrderGoods> orderGoodsList = order.getGiftGoodsList();
+				if (null == orderGoodsList) {
+					orderGoodsList = new ArrayList<>();
+				}
+				orderGoodsList.add(orderGoods);
+			}
+		}
 
-		// 获取确定使用的产品券
-		@SuppressWarnings("unchecked")
-		List<TdCoupon> product_used = (List<TdCoupon>) req.getSession().getAttribute("order_productCouponUsed");
-
-		if (null != product_used) {
-			for (TdCoupon tdCoupon : product_used) {
-				if (null != tdCoupon) {
-					Long goodsId = tdCoupon.getGoodsId();
-					TdGoods goods = tdGoodsService.findOne(goodsId);
-					TdPriceListItem priceListItem = tdPriceListItemService
-							.findByPriceListIdAndGoodsId(site.getPriceListId(), goodsId);
-					if (null != goods) {
-						if (null != goods.getBelongTo() && 1L == goods.getBelongTo()) {
-							order_hr.setProductCoupon(order_hr.getProductCoupon() + "," + goods.getCode() + "* 1");
-							hr_total -= priceListItem.getSalePrice();
-						}
-						if (null != goods.getBelongTo() && 2L == goods.getBelongTo()) {
-							order_lyz.setProductCoupon(order_lyz.getProductCoupon() + "," + goods.getCode() + "* 1");
-							lyz_total -= priceListItem.getSalePrice();
+		// 获取使用现金券的金额
+		Double cashCoupon = order_temp.getCashCoupon();
+		if (null == cashCoupon) {
+			cashCoupon = 0.00;
+		}
+		// 拆分已使用的现金券
+		String cashCouponId = order_temp.getCashCouponId();
+		// 分解cashCouponId
+		if (null != cashCouponId) {
+			String[] cashIds = cashCouponId.split(",");
+			for (String id : cashIds) {
+				if (null != id) {
+					Long couponId = Long.parseLong(id);
+					// 根据优惠券的id查找优惠券
+					TdCoupon coupon = tdCouponService.findOne(couponId);
+					if (null != coupon) {
+						Long goodsId = coupon.getGoodsId();
+						// 如果goodsId存在，则表示这张优惠券是指定产品现金券
+						if (null != goodsId) {
+							TdGoods goods = tdGoodsService.findOne(goodsId);
+							Long brandId = goods.getBrandId();
+							TdOrder order = order_map.get(brandId);
+							order.setCashCoupon(order.getCashBalanceUsed() + coupon.getPrice());
+							// 余下的金额暂不统计，在后面按照比例拆分
+							cashCoupon -= coupon.getPrice();
+							order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
 						}
 					}
-					total_price -= priceListItem.getSalePrice();
-					max_privilege -= (priceListItem.getSalePrice() - priceListItem.getRealSalePrice());
 				}
 			}
 		}
 
-		// 获取确定使用的现金券
-		@SuppressWarnings("unchecked")
-		List<TdCoupon> no_product_used = (List<TdCoupon>) req.getSession().getAttribute("order_noProductCouponUsed");
-		// 统计现金券使用总额
-		if (null != no_product_used) {
-			for (TdCoupon coupon : no_product_used) {
+		// 拆分使用的产品券
+		String productCouponId = order_temp.getProductCouponId();
+		// 分解
+		String[] productIds = productCouponId.split(",");
+		for (String id : productIds) {
+			if (null != id) {
+				Long couponId = Long.parseLong(id);
+				TdCoupon coupon = tdCouponService.findOne(couponId);
 				if (null != coupon) {
-					Double price = coupon.getPrice();
-					total_privilege += price;
+					Long goodsId = coupon.getGoodsId();
+					if (null != goodsId) {
+						TdGoods goods = tdGoodsService.findOne(goodsId);
+						Long brandId = goods.getBrandId();
+						TdOrder order = order_map.get(brandId);
+						order.setProductCouponId(coupon.getId() + ",");
+						order.setProductCoupon(goods.getTitle() + "【" + goods.getCode() + "】*1,");
+						List<TdOrderGoods> list = order.getOrderGoodsList();
+						for (TdOrderGoods orderGoods : list) {
+							if (null != orderGoods && null != orderGoods.getGoodsId()
+									&& coupon.getGoodsId() == orderGoods.getGoodsId()) {
+								order.setTotalPrice(order.getTotalPrice() - orderGoods.getPrice());
+							}
+						}
+					}
 				}
 			}
 		}
 
-		if (total_privilege > max_privilege) {
-			total_privilege = max_privilege;
+		// 开始进行剩余优惠券（即是通用现金券）的拆分，同时也可以进行可提现余额，不可提现余额的拆分
+
+		Double total = 0.00;
+		Double cashBalanceUsed = order_temp.getCashBalanceUsed();
+		if (null == cashBalanceUsed) {
+			cashBalanceUsed = 0.00;
+		}
+		Double unCashBalanceUsed = order_temp.getUnCashBalanceUsed();
+		if (null == unCashBalanceUsed) {
+			unCashBalanceUsed = 0.00;
 		}
 
-		// 计算华润商品所占比例
-		Double hr_ponit = hr_total / total_price;
-		Double lyz_point = lyz_total / total_price;
-
-		order_hr.setTotalPrice(hr_total);
-		order_lyz.setTotalPrice(lyz_total);
-
-		// 获取华润订单所使用现金券额度
-		order_hr.setCashCoupon(total_privilege * hr_ponit);
-		order_lyz.setCashCoupon(total_privilege * lyz_point);
-
-		// 判断当前支付方式是否是预存款支付
-		String title = payType.getTitle();
-		if (title.equals("预存款")) {
-			TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
-			Double balance = user.getBalance();
-			Double cashBalance = user.getCashBalance();
-			Double unCashBalance = user.getUnCashBalance();
-			if (null == balance) {
-				balance = 0.0;
+		// 获取目前的总金额
+		for (TdOrder order : order_map.values()) {
+			if (null != order && null != order.getTotalPrice()) {
+				total += order.getTotalPrice();
 			}
-			if (null == cashBalance) {
-				cashBalance = 0.0;
-			}
-			if (null == unCashBalance) {
-				unCashBalance = 0.0;
-			}
-			if (total_price > balance) {
-				order_hr.setStatusId(2L);
-				order_lyz.setStatusId(2L);
-				if (order_hr.getOrderGoodsList().size() > 0) {
-					tdOrderService.save(order_hr);
+		}
+
+		// 在此循环，拆分通用现金券额度，可提现余额，不可提现余额
+		for (TdOrder order : order_map.values()) {
+			if (null != order && null != order.getTotalPrice()) {
+				if (total != 0) {
+					Double point = order.getTotalPrice() / total;
+					order.setCashCoupon(order.getCashCoupon() + (cashCoupon * point));
+					order.setCashBalanceUsed(cashBalanceUsed * point);
+					order.setUnCashBalanceUsed(unCashBalanceUsed * point);
 				}
-				if (order_lyz.getOrderGoodsList().size() > 0) {
-					tdOrderService.save(order_lyz);
-				}
-
-				tdCommonService.clear(req);
-				res.put("status", -2);
-				res.put("message", "您的余额不足");
-				return res;
-			} else {
-				order_hr.setStatusId(3L);
-				order_lyz.setStatusId(3L);
-				if (unCashBalance > total_price) {
-					user.setUnCashBalance(unCashBalance - total_price);
-
-				} else {
-					user.setUnCashBalance(0.0);
-					user.setCashBalance(cashBalance + unCashBalance - total_price);
-				}
-				user.setBalance(balance - total_price);
-				tdUserService.save(user);
 			}
-		} else {
-			order_hr.setStatusId(2L);
-			order_lyz.setStatusId(2L);
+		}
 
+		// 查询是否存在乐易装的品牌
+		TdBrand brand = tdBrandService.findByTitle("华润");
+		if (null != brand) {
+			Long brandId = brand.getId();
+			TdOrder order = order_map.get(brandId);
+			// 运费放置在乐易装的订单上
+			order.setDeliverFee(order_temp.getDeliverFee());
+			order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
+			order.setTotalGoodsPrice(order.getTotalGoodsPrice() + order.getDeliverFee());
 		}
-		if (order_hr.getOrderGoodsList().size() > 0) {
-			order_hr.setTotalPrice(hr_total);
-			tdOrderService.save(order_hr);
+
+		// 遍历存储
+		for (TdOrder order : order_map.values()) {
+			if (null != order && null != order.getTotalGoodsPrice() && order.getTotalGoodsPrice() > 0) {
+				tdOrderService.save(order);
+			}
 		}
-		if (order_lyz.getOrderGoodsList().size() > 0) {
-			order_lyz.setTotalPrice(lyz_total);
-			tdOrderService.save(order_lyz);
-		}
-		res.put("message", "操作成功");
-		// 清空购物信息
-		tdCommonService.clear(req);
-		return res;
+
+		// 删除虚拟订单
+		tdOrderService.delete(order_temp);
+
+		return "redirect:/order";
 	}
 
 }

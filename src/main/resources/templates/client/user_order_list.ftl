@@ -146,7 +146,7 @@
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <#if item.isRefund?? && !item.isRefund>
+                                                    <#if !item.isRefund?? || !item.isRefund>
                                                     <a href="javascript:;" onclick="win_yes(${item.id?c})">申请退货</a>
                                                     <a href="">立即评价</a>
                                                     </#if>
@@ -216,7 +216,7 @@
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <#if item.isRefund?? && !item.isRefund>
+                                                    <#if !item.isRefund?? || !item.isRefund>
                                                     <a href="javascript:;" onclick="win_yes(${item.id?c})">申请退货</a>
                                                     <a href="">立即评价</a>
                                                     </#if>
@@ -238,7 +238,7 @@
                     </#if>
                     
                     <#if unsignin_order_list??>
-                        <div class="unsignin_orders"  class="some_orders">
+                        <div id="unsignin_orders"  class="some_orders">
                             <#list unsignin_order_list as item>
                                 <ol class="order-list">
                                     <li class="li1">
@@ -286,7 +286,7 @@
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <#if item.isRefund?? && !item.isRefund>
+                                                    <#if !item.isRefund?? || !item.isRefund>
                                                     <a href="javascript:;" onclick="win_yes(${item.id?c})">申请退货</a>
                                                     <a href="">立即评价</a>
                                                     </#if>

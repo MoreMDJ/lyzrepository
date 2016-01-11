@@ -11,6 +11,15 @@
         <link rel="stylesheet" type="text/css" href="/client/css/my_base.css"/>
         <link rel="stylesheet" type="text/css" href="/client/css/x_common.css"/>
         <link rel="stylesheet" type="text/css" href="/client/css/x_order_manage.css"/>
+        <style>
+            .checked{
+                float: right;
+                margin: 6px 0 6px 5px;
+                width: 21px;
+                height: 21px;
+                border: 1px solid #ddd;
+            }
+        </style>
     </head>
     <body class="bgc-f3f4f6">
             <!-- 头部 -->
@@ -22,9 +31,9 @@
             
         <!-- 商品清单 -->
         <article class="pro-listing">
-            <#if all_selected??>
+            <#if order??&&order.orderGoodsList??>
                 <!-- 商品列表 -->
-                <#list all_selected as item>
+                <#list order.orderGoodsList as item>
                     <section class="sec1">
                         <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                         <div class="product-info">
@@ -45,17 +54,55 @@
                 </#list>
             </#if>
             <!-- 赠品 -->
-            <#if presented??>
-                <section class="premiums">
-                    <#list presented as item>
-                        <div class="div1">【赠品】${item.goodsTitle!''}x${item.quantity}</div>
-                    </#list>
-                </section>
+            <#if order??&&order.presentedList??&&order.presentedList?size gt 0>
+                <!-- 商品列表 -->
+                <#list order.order.presentedList as item>
+                    <section class="sec1">
+                        <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
+                        <div class="product-info">
+                            <div class="descript">${item.goodsTitle!''}</div>
+                            <div class="choose-num">
+                                <!-- 数量选择 -->
+                                <div class="numbers">数量：<span><#if item.quantity??>${item.quantity}<#else>0</#if></span></div>
+                                <div class="checked"></div>
+                            </div>
+                        </div>
+                    </section>
+                </#list>
             </#if>
+            <!-- 小辅料 -->
+            <#if order??&&order.giftGoodsList??&&order.giftGoodsList?size gt 0>
+                <#list order.order.giftGoodsList as item>
+                    <section class="sec1">
+                        <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
+                        <div class="product-info">
+                            <div class="descript">${item.goodsTitle!''}</div>
+                            <div class="choose-num">
+                                <!-- 数量选择 -->
+                                <div class="numbers">数量：<span><#if item.quantity??>${item.quantity}<#else>0</#if></span></div>
+                                <div class="checked"></div>
+                            </div>
+                        </div>
+                    </section>
+                </#list>
+            </#if>
+            <script type="text/javascript">
+                $(function(){
+                    var onOff = true;
+                    $(".checked").click(function(){
+                        if(onOff){
+                            $(this).addClass("active");
+                        }else{
+                            $(this).removeClass("active");
+                        }
+                        onOff = !onOff;
+                    });
+                });
+            </script>
             <!-- 总计 -->
             <section class="zonge">
-                                        总计：<span><#if totalNumber??>${totalNumber?c}<#else>0</#if></span>件&nbsp;&nbsp;
-                                        总额：<span><#if totalPrice??>${totalPrice?string("0.00")}<#else>0.00</#if></span>元
+                                        总计：<span><#if order??&&order.orderGoodsList??&&order.presentedList??&&order.giftGoodsList??>${(order.orderGoodsList?size+order.presentedList?size+order.giftGoodsList?size)?eval}<#else>0</#if></span>件&nbsp;&nbsp;
+                                        总额：<span><#if order??&&order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span>元
             </section>
         </article>
         <!-- 商品清单 END -->

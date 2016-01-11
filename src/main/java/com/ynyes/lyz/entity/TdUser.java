@@ -93,7 +93,7 @@ public class TdUser {
 	@Column
 	private Double balance;
 
-	// 用户类型(0代表会员，1代表销售顾问，2代表店长，3代表店主，4代表区域经理)
+	// 用户类型(0代表会员，1代表销售顾问，2代表店长，3代表店主，4代表区域经理,5代表配送员)
 	@Column
 	private Long userType;
 

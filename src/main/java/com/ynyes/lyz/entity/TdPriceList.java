@@ -84,7 +84,7 @@ public class TdPriceList {
 	@Column
 	private String description;
 	
-	//价目表类型
+	//价目表类型（1. 经销JX【进货价】；2. 零售LS（华润的产品）【虚拟价】3. 乐易装LYZ（包括乐易装和莹润）【会员价】）
 	@Column
 	private String priceType;
 	

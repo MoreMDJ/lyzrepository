@@ -24,11 +24,9 @@ import javax.jws.WebService;
 // START SNIPPET: service
 
 @WebService
-public interface ICallEBS {
-
-	String GetErpInfo(@WebParam(name = "STRTABLE") String STRTABLE,
+public interface ICallWMS {
+	String GetWMSInfo(@WebParam(name = "STRTABLE") String STRTABLE,
 			@WebParam(name = "STRTYPE") String STRTYPE,
 			@WebParam(name = "XML") String XML);
-	
 }
 // END SNIPPET: service
