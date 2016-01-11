@@ -417,4 +417,7 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 			+ "c.title like %?1 and g.categoryId = c.id "
 			+"order by g.soldNumber desc")
 	List<TdGoods> searchGoodsOrderBySoldNumberDesc(String keywords);
+	
+	// Max 
+	List<TdGoods> findByTitleContainingOrSubTitleContainingOrCodeContainingOrderBySortIdDesc(String keywords1,String keywords2,String Keywords3);
 }
