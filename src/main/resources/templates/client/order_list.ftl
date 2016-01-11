@@ -11,6 +11,15 @@
         <link rel="stylesheet" type="text/css" href="/client/css/my_base.css"/>
         <link rel="stylesheet" type="text/css" href="/client/css/x_common.css"/>
         <link rel="stylesheet" type="text/css" href="/client/css/x_order_manage.css"/>
+        <style>
+            .checked{
+                float: right;
+                margin: 6px 0 6px 5px;
+                width: 21px;
+                height: 21px;
+                border: 1px solid #ddd;
+            }
+        </style>
     </head>
     <body class="bgc-f3f4f6">
             <!-- 头部 -->
@@ -32,7 +41,13 @@
                             <div class="choose-num">
                                 <!-- 数量选择 -->
                                 <div class="numbers">数量：<span><#if item.quantity??>${item.quantity}<#else>0</#if></span></div>
-                                <div class="checked" style="height:40px;width:40px;float:left   "></div>
+                                <div class="price">￥
+                                    <#if item.price??&&item.quantity??>
+                                        <span>${(item.price * item.quantity)?string("0.00")}</span>
+                                    <#else>
+                                        <span>0.00</span>
+                                    </#if>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -49,13 +64,7 @@
                             <div class="choose-num">
                                 <!-- 数量选择 -->
                                 <div class="numbers">数量：<span><#if item.quantity??>${item.quantity}<#else>0</#if></span></div>
-                                <div class="price">￥
-                                    <#if item.price??&&item.quantity??>
-                                        <span>${(item.price * item.quantity)?string("0.00")}</span>
-                                    <#else>
-                                        <span>0.00</span>
-                                    </#if>
-                                </div>
+                                <div class="checked"></div>
                             </div>
                         </div>
                     </section>
@@ -71,18 +80,25 @@
                             <div class="choose-num">
                                 <!-- 数量选择 -->
                                 <div class="numbers">数量：<span><#if item.quantity??>${item.quantity}<#else>0</#if></span></div>
-                                <div class="price">￥
-                                    <#if item.price??&&item.quantity??>
-                                        <span>${(item.price * item.quantity)?string("0.00")}</span>
-                                    <#else>
-                                        <span>0.00</span>
-                                    </#if>
-                                </div>
+                                <div class="checked"></div>
                             </div>
                         </div>
                     </section>
                 </#list>
             </#if>
+            <script type="text/javascript">
+                $(function(){
+                    var onOff = true;
+                    $(".checked").click(function(){
+                        if(onOff){
+                            $(this).addClass("active");
+                        }else{
+                            $(this).removeClass("active");
+                        }
+                        onOff = !onOff;
+                    });
+                });
+            </script>
             <!-- 总计 -->
             <section class="zonge">
                                         总计：<span><#if order??&&order.orderGoodsList??&&order.presentedList??&&order.giftGoodsList??>${(order.orderGoodsList?size+order.presentedList?size+order.giftGoodsList?size)?eval}<#else>0</#if></span>件&nbsp;&nbsp;

@@ -129,13 +129,12 @@
                         <label>钱包余额</label>
                         <div class="wallet-balance">
                             <div class="first">共￥<span><#if user??&&user.balance??>${user.balance?string("0.00")}<#else>0.00</#if></span>，本单可用<strong>￥<span><#if order??&&order.limitCash??>${order.limitCash?string("0.00")}<#else>0.00</#if></span></strong></div>
-                            <div class="checked"></div>
                         </div>
                     </div>
                     <div class="div2">
                         <label>本次使用</label>
                         <div class="wallet-balance">
-                            <input id="amount" style="border-radius: 3px;" class="usebalance" type="text">
+                            <input id="amount" style="border-radius: 3px;" class="usebalance" type="number">
                         </div>
                     </div>
                 </section>
