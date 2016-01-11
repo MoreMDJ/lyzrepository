@@ -15,7 +15,7 @@ import com.ynyes.lyz.service.TdUserService;
 
 @Controller
 @RequestMapping(value = "/delivery")
-public class TdIndexController {
+public class TdDeliveryIndexController {
 
 	@Autowired
 	private TdUserService tdUserService;

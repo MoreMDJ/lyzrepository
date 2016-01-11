@@ -613,7 +613,7 @@ public class CallEBSImpl implements ICallEBS {
 				Integer inventory_item_status = null;//物料状态 0 失效，1 有效
 				String product_flag = null;//产品标识 LYZ乐易装,HR华润，YR银润
 				Double attribute1 = null;//采购价
-				
+				String unit_name = null;//单位名称
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -637,6 +637,13 @@ public class CallEBSImpl implements ICallEBS {
 							if (null != childNode.getChildNodes().item(0))
 							{
 								item_code = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("unit_name"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								unit_name = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
 						else if (childNode.getNodeName().equalsIgnoreCase("item_description"))
@@ -731,6 +738,7 @@ public class CallEBSImpl implements ICallEBS {
 				tdGoods.setProductCategoryId(product_category_id);
 				tdGoods.setItemTypeName(item_type_name);
 				tdGoods.setItemTypeCode(item_type_code);
+				tdGoods.setUnitName(unit_name);
 				if (inventory_item_status == 0)
 				{
 					tdGoods.setIsOnSale(false);

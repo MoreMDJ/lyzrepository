@@ -419,6 +419,18 @@ public class TdGoods {
 	// 团购价格
 	@Column(scale = 2)
 	private Double attribute1;
+	
+	// 单位名称
+	@Column
+	private String unitName;
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
 
 	public Long getInventoryItemId() {
 		return inventoryItemId;
