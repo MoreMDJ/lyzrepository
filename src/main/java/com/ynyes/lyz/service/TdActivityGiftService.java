@@ -12,12 +12,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
-import com.ynyes.lyz.entity.TdDiySiteList;
-import com.ynyes.lyz.entity.TdGoodsCombination;
-import com.ynyes.lyz.entity.TdGoodsGift;
 import com.ynyes.lyz.repository.TdActivityGiftRepo;
 
 @Service

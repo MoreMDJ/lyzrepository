@@ -93,12 +93,13 @@ $(function () {
             <div class="content-tab-ul-wrap">
                 <ul>
                     <li><a href="javascript:;" onclick="tabs(this);" class="selected">基本信息</a></li>
-                    <li><a href="javascript:;" onclick="tabs(this);" class="">SEO选项</a></li>
+                    <#--<li><a href="javascript:;" onclick="tabs(this);" class="">SEO选项</a></li>-->
                 </ul>
             </div>
         </div>
     </div>
     <div class="tab-content" style="display: block;">
+        <#--
         <dl>
             <dt>所属商品类别</dt>
             <dd>
@@ -127,14 +128,15 @@ $(function () {
                 </div>
             </dd>
         </dl>
+        -->
         <dl>
             <dt>品牌名称</dt>
             <dd>
-                <input id="idBrandTitle" name="title" type="text" datatype="*" value="<#if brand??>${brand.title!''}</#if>" ajaxurl="/Verwalter/brand/check<#if brand??>?id=${brand.id?c}</#if>" class="input normal" sucmsg=" " />
+                <input id="idBrandTitle" name="title" type="text" datatype="*" value="<#if brand??>${brand.title!''}</#if>" ajaxurl="/Verwalter/brand/check/0<#if brand??>?id=${brand.id?c}</#if>" class="input normal" sucmsg=" " />
                 <span class="Validform_checktip">*标题最多100个字符</span>
             </dd>
         </dl>
-        
+        <#--
         <dl>
             <dt>品牌图片</dt>
             <dd>
@@ -149,13 +151,15 @@ $(function () {
                 </div>
             </dd>
         </dl>
+        -->
         <dl>
             <dt>排序数字</dt>
             <dd>
-                <input name="sortId" type="text" value="<#if brand??>${brand.sortId!""}<#else>99</#if>" class="input txt100" datatype="n" sucmsg=" ">
+                <input name="sortId" type="text" value="<#if brand??>${brand.sortId!""}<#else>99</#if>" class="input txt100" datatype="/^(([1-9]\d{0,1})|0)((\.\d{2})|(\.\d{1}))?$/" sucmsg=" ">
                 <span class="Validform_checktip">*数字，越小越向前</span>
             </dd>
         </dl>
+        <#--
         <dl>
             <dt>浏览次数</dt>
             <dd>
@@ -173,13 +177,15 @@ $(function () {
                 <span class="Validform_checktip">不选择默认当前发布时间</span>
             </dd>
         </dl>
+        -->
         <dl>
-            <dt>调用别名</dt>
+            <dt>别名</dt>
             <dd>
-                <input name="callIndex" type="text" value="<#if brand??>${brand.callIndex!""}</#if>" class="input normal" datatype="/^\s*$|^[a-zA-Z0-9\-\_]{2,50}$/" sucmsg=" ">
+                <input name="shortName" type="text" value="<#if brand??>${brand.shortName!""}</#if>" class="input normal" datatype="*" ajaxurl="/Verwalter/brand/check/1<#if brand??>?id=${brand.id?c}</#if>" sucmsg=" ">
                 <span class="Validform_checktip">*别名访问，非必填，不可重复</span>
             </dd>
         </dl>
+        <#--
         <dl>
             <dt>URL链接</dt>
             <dd>
@@ -210,6 +216,7 @@ $(function () {
                 <span class="Validform_checktip">255个字符以内</span>
             </dd>
         </dl>
+        -->
     </div>
     
     <!--/内容-->

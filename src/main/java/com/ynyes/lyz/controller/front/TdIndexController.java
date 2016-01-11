@@ -137,6 +137,9 @@ public class TdIndexController {
 
 		List<Map<TdGoods, Double>> promotion_list = tdCommonService.getPromotionGoodsAndPrice(req, index_activities);
 		// 将存储促销信息的集合放入到ModelMap中
+
+		// 清楚session中的订单信息
+		req.getSession().setAttribute("order_temp", null);
 		map.addAttribute("promotion_list", promotion_list);
 		return "/client/index";
 	}

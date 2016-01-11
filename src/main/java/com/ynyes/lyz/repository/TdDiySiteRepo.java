@@ -42,4 +42,11 @@ public interface TdDiySiteRepo
 	Page<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId, Pageable page);
 
 	TdDiySite findByTitleAndIsEnableTrue(String title);
+
+	/**
+	 * 根据sobId查找指定城市下的所有门店
+	 * 
+	 * @author dengxiao
+	 */
+	List<TdDiySite> findBySobIdOrderBySortIdAsc(Long sobId);
 }

@@ -227,6 +227,8 @@ public class TdGoodsController {
 		cartGoods.setIsColor(true);
 		cartGoods.setUserId(user.getId());
 		cartGoods.setUsername(username);
+		cartGoods.setBrandId(goods.getBrandId());
+		cartGoods.setBrandTitle(goods.getBrandTitle());
 		// ********************************设置属性结束*******************************************
 
 		// 查找到所有的已选商品
@@ -335,6 +337,8 @@ public class TdGoodsController {
 				cartGoods.setSku(goods.getCode());
 				cartGoods.setUserId(user.getId());
 				cartGoods.setUsername(username);
+				cartGoods.setBrandId(goods.getBrandId());
+				cartGoods.setBrandTitle(goods.getBrandTitle());
 			}
 			if (null != goods.getIsColorPackage() && goods.getIsColorPackage()) {
 				cartGoods.setIsColor(true);
@@ -350,7 +354,7 @@ public class TdGoodsController {
 					tdCartGoods.setQuantity(tdCartGoods.getQuantity() + Long.parseLong(goodsId_quantity[1]));
 					isHave = true;
 					tdCartGoods.setTotalPrice(tdCartGoods.getPrice() * tdCartGoods.getQuantity());
-					tdCartGoods.setRealPrice(cartGoods.getPrice());
+					tdCartGoods.setRealPrice(cartGoods.getRealPrice());
 					tdCartGoods.setRealTotalPrice(tdCartGoods.getRealPrice() * tdCartGoods.getQuantity());
 					tdCartGoods.setIsColor(cartGoods.getIsColor());
 					tdCartGoodsService.save(tdCartGoods);
@@ -359,7 +363,7 @@ public class TdGoodsController {
 			// 新的商品没有在已选中找到，则将其添加进入已选
 			if (!isHave) {
 				cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
-				cartGoods.setRealPrice(cartGoods.getRealPrice() * cartGoods.getQuantity());
+				cartGoods.setRealTotalPrice(cartGoods.getRealPrice() * cartGoods.getQuantity());
 				tdCartGoodsService.save(cartGoods);
 			}
 		}
@@ -598,57 +602,57 @@ public class TdGoodsController {
 	 * 
 	 * @author dengxiao
 	 */
-	@RequestMapping(value = "/buy/now")
-	public String buyNow(HttpServletRequest req, ModelMap map, Long goodsId) {
-		String username = (String) req.getSession().getAttribute("username");
-		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
-		if (null == user) {
-			return "redirect:/login";
-		}
-		// 查找到指定的商品
-		TdGoods goods = tdGoodsService.findOne(goodsId);
-
-		// 获取用于的指定门店
-		TdDiySite diySite = tdCommonService.getDiySite(req);
-
-		// 获取指定商品的价目表项
-		TdPriceListItem priceListItem = tdPriceListItemService.findByPriceListIdAndGoodsId(diySite.getPriceListId(),
-				goodsId);
-
-		// 判断将其加入到已选商品中还是已选调色包中
-		if (null != goods && null != goods.getIsColorPackage() && goods.getIsColorPackage()) {
-			TdCartColorPackage colorPackage = new TdCartColorPackage();
-			colorPackage.setGoodsId(goodsId);
-			colorPackage.setNumber(goods.getCode());
-			colorPackage.setImageUri(goods.getCoverImageUri());
-			colorPackage.setUsername(username);
-			colorPackage.setSalePrice(priceListItem.getSalePrice());
-			colorPackage.setRealPrice(priceListItem.getRealSalePrice());
-			colorPackage.setNumber(goods.getCode());
-			// 获取已选调色包
-			List<TdCartColorPackage> selected_color = tdCommonService.getSelectedColorPackage(req);
-			selected_color.add(colorPackage);
-			req.getSession().setAttribute("all_color", selected_color);
-		}
-
-		else {
-			TdCartGoods cartGoods = new TdCartGoods();
-			cartGoods.setGoodsId(goodsId);
-			cartGoods.setGoodsTitle(goods.getTitle());
-			cartGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
-			cartGoods.setPrice(priceListItem.getSalePrice());
-			cartGoods.setRealPrice(priceListItem.getRealSalePrice());
-			cartGoods.setQuantity(1L);
-			cartGoods.setSku(goods.getCode());
-			// 获取已选商品
-			List<TdCartGoods> selected_goods = tdCommonService.getSelectedGoods(req);
-			selected_goods.add(cartGoods);
-			req.getSession().setAttribute("all_selected", selected_goods);
-		}
-
-		return "redirect:/user/selected";
-	}
-
+//	@RequestMapping(value = "/buy/now")
+//	public String buyNow(HttpServletRequest req, ModelMap map, Long goodsId) {
+//		String username = (String) req.getSession().getAttribute("username");
+//		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+//		if (null == user) {
+//			return "redirect:/login";
+//		}
+//		// 查找到指定的商品
+//		TdGoods goods = tdGoodsService.findOne(goodsId);
+//
+//		// 获取用于的指定门店
+//		TdDiySite diySite = tdCommonService.getDiySite(req);
+//
+//		// 获取指定商品的价目表项
+//		TdPriceListItem priceListItem = tdPriceListItemService.findByPriceListIdAndGoodsId(diySite.getPriceListId(),
+//				goodsId);
+//
+//		// 判断将其加入到已选商品中还是已选调色包中
+//		if (null != goods && null != goods.getIsColorPackage() && goods.getIsColorPackage()) {
+//			TdCartColorPackage colorPackage = new TdCartColorPackage();
+//			colorPackage.setGoodsId(goodsId);
+//			colorPackage.setNumber(goods.getCode());
+//			colorPackage.setImageUri(goods.getCoverImageUri());
+//			colorPackage.setUsername(username);
+//			colorPackage.setSalePrice(priceListItem.getSalePrice());
+//			colorPackage.setRealPrice(priceListItem.getRealSalePrice());
+//			colorPackage.setNumber(goods.getCode());
+//			// 获取已选调色包
+//			List<TdCartColorPackage> selected_color = tdCommonService.getSelectedColorPackage(req);
+//			selected_color.add(colorPackage);
+//			req.getSession().setAttribute("all_color", selected_color);
+//		}
+//
+//		else {
+//			TdCartGoods cartGoods = new TdCartGoods();
+//			cartGoods.setGoodsId(goodsId);
+//			cartGoods.setGoodsTitle(goods.getTitle());
+//			cartGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
+//			cartGoods.setPrice(priceListItem.getSalePrice());
+//			cartGoods.setRealPrice(priceListItem.getRealSalePrice());
+//			cartGoods.setQuantity(1L);
+//			cartGoods.setSku(goods.getCode());
+//			// 获取已选商品
+//			List<TdCartGoods> selected_goods = tdCommonService.getSelectedGoods(req);
+//			selected_goods.add(cartGoods);
+//			req.getSession().setAttribute("all_selected", selected_goods);
+//		}
+//
+//		return "redirect:/user/selected";
+//	}
+	
 	/*
 	 *********************************** 公共结束************************************************************
 	 */

@@ -159,4 +159,11 @@ public class TdDiySiteService {
 		}
 		return repository.findByTitleAndIsEnableTrue(title);
 	}
+
+	public List<TdDiySite> findBySobIdOrderBySortIdAsc(Long sobId) {
+		if (null == sobId) {
+			return null;
+		}
+		return repository.findBySobIdOrderBySortIdAsc(sobId);
+	}
 }

@@ -27,6 +27,11 @@ public interface TdActivityRepo
 	List<TdActivity> findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(String diySiteId,
 			Date date1, Date date2);
 
+	/**
+	 * 按照活动名查找活动
+	 * 
+	 * @author dengxiao
+	 */
 	TdActivity findByName(String name);
 
 	/**
