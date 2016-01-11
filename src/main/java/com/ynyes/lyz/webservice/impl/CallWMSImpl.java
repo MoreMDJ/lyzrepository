@@ -41,6 +41,7 @@ import org.apache.geronimo.mail.util.Base64;
 import org.apache.neethi.util.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.mapping.ClassNameAlias;
+import org.springframework.instrument.classloading.ShadowingClassLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -391,19 +392,19 @@ public class CallWMSImpl implements ICallWMS {
 //		String ClassName = d.getName();
 //		System.out.println("return result: " + impl.GetErpInfo("tbw_send_task_m", "*", "?"));
 		
-		String en = System.getenv("java_home");
-		
-		String en1 = System.getenv("Path");
-		System.err.println(en1);
+		String JAVA_PATH = System.getenv("JAVA_HOME");
+		System.err.println("JAVA_PATH:"+JAVA_PATH);
+		String PATH = System.getenv("Path");
+		System.err.println("PATH:" + PATH);
 		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();  
 		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
 		//url为调用webService的wsdl地址
-		QName name = new QName("http://tempuri.org/","getErpInfo");
+		QName name = new QName("http://tempuri.org/","GetErpInfo");
 		String xmlStr = "<ERP>"
 				+"<TABLE>"
 				+"<LIST_HEADER_ID>157265</LIST_HEADER_ID>"
 				+"<SOB_ID>2033</SOB_ID>"
-				+"<NAME>郑州乐易装价目表（LYZ1）</NAME>"
+				+"<NAME>电商测试价目表（LYZ1）</NAME>"
 				+"<ACTIVE_FLAG>Y</ACTIVE_FLAG>"
 				+"<DESCRIPTION>LYZ1产品</DESCRIPTION>"
 				+"<CURRENCY_CODE>CNY</CURRENCY_CODE>"
@@ -419,18 +420,33 @@ public class CallWMSImpl implements ICallWMS {
 				+"<ATTRIBUTE5></ATTRIBUTE5>"
 				+"</TABLE>"
 				+"</ERP>";
-		//paramvalue为参数值 
+		String encodeXML = null;
+		byte[] bs = xmlStr.getBytes();
+		byte[] encodeByte = Base64.encode(bs);
 		try {
-        	Object[] objects=client.invoke(name,"CUXAPP_OM_PRICE_LIST_H_OUT","1",xmlStr);
+			encodeXML = new String(encodeByte, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+		
+		//paramvalue为参数值 
+		Object[] objects = null;
+		try {
+        	objects = client.invoke(name,"CUXAPP_OM_PRICE_LIST_H_OUT","1",encodeXML);
         } catch (Exception e) {
         	// TODO Auto-generated catch block
         	e.printStackTrace();
         	return "发送异常";
         }
-		
+		if (objects != null)
+		{
+			for (Object object : objects) 
+			{
+				System.out.println(object);
+			}
+		}
 		return "发送成功";
 	}
 
-	
 }
 // END SNIPPET: service

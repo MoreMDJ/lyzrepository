@@ -13,6 +13,8 @@ import javax.persistence.OneToMany;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.mysql.fabric.xmlrpc.base.Data;
+
 
 //要货单
 
@@ -23,10 +25,31 @@ public class TdRequisition {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-    // 单号
-    @Column(unique=true)
-    private String requisitionNumber;
-    
+	// 门店名称
+	@Column
+	private String diySiteTitle;
+	
+	// 客户姓名(用户名)
+	@Column
+	private String customerName;
+	
+	// 客户编码(用户id)
+	@Column
+	private Long customerId;
+	
+	// 原单号（订单号）
+	@Column
+	private String orderNumber;
+	
+	// 总金额
+	@Column
+	private Double totalPrice;
+	
+	// 送货时间
+	@Column
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	private Data deliveryTime;
+	
     // 订单商品
     @OneToMany
     @JoinColumn(name="TdRequisitionId")
@@ -35,14 +58,6 @@ public class TdRequisition {
     // 门店id
     @Column
     private Long diySiteId;
-    
-    // 门店名称
-    @Column
-    private String diySiteTitle;
-    
-    // 门店地址
-    @Column
-    private String diySiteAddress;
     
     // 门店电话
     @Column
@@ -85,14 +100,6 @@ public class TdRequisition {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getRequisitionNumber() {
-		return requisitionNumber;
-	}
-
-	public void setRequisitionNumber(String requisitionNumber) {
-		this.requisitionNumber = requisitionNumber;
 	}
 
 	public List<TdOrderGoods> getRequisiteGoodsList() {
@@ -165,14 +172,6 @@ public class TdRequisition {
 
 	public void setCancelTime(Date cancelTime) {
 		this.cancelTime = cancelTime;
-	}
-
-	public String getDiySiteAddress() {
-		return diySiteAddress;
-	}
-
-	public void setDiySiteAddress(String diySiteAddress) {
-		this.diySiteAddress = diySiteAddress;
 	}
 
 	public String getDiySiteTel() {
