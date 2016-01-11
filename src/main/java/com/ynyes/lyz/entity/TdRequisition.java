@@ -13,7 +13,6 @@ import javax.persistence.OneToMany;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.mysql.fabric.xmlrpc.base.Data;
 
 
 //要货单
@@ -28,6 +27,10 @@ public class TdRequisition {
 	// 门店名称
 	@Column
 	private String diySiteTitle;
+	
+	// 门店编码
+	@Column
+	private Long diySiteId;
 	
 	// 客户姓名(用户名)
 	@Column
@@ -47,75 +50,41 @@ public class TdRequisition {
 	
 	// 送货时间
 	@Column
-	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-	private Data deliveryTime;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date deliveryTime;
+	
+	// 收货人(姓名)
+	@Column
+	private String receiveName;
+	
+	// 收货人地址
+	@Column
+	private String receiveAddress;
+	
+	// 收货人电话
+	@Column
+	private String receivePhone;
 	
     // 订单商品
     @OneToMany
     @JoinColumn(name="TdRequisitionId")
-    private List<TdOrderGoods> requisiteGoodsList;
-    
-    // 门店id
-    @Column
-    private Long diySiteId;
-    
-    // 门店电话
-    @Column
-    private String diySiteTel;
-    
-    // 商户备注
-    @Column
-    private String remarkInfo;
-    
-    // 后台备注
-    @Column
-    private String managerRemarkInfo;
+    private List<TdRequisitionGoods> requisiteGoodsList;
     
     // 下单时间
     @Column
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date orderTime;
-    
-    // 确认时间
-    @Column
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date checkTime;
-    
-    // 取消时间
-    @Column
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date cancelTime;
-    
-    // 要货单状态  1:待审核 2:已完成 3:已取消  
-    @Column
-    private Long statusId;
 
     // 要货单类型 1： 要货单  2：要货单退单 3： 要货单订单
     @Column
     private Long typeId;
-    
+
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public List<TdOrderGoods> getRequisiteGoodsList() {
-		return requisiteGoodsList;
-	}
-
-	public void setRequisiteGoodsList(List<TdOrderGoods> requisiteGoodsList) {
-		this.requisiteGoodsList = requisiteGoodsList;
-	}
-
-	public Long getDiySiteId() {
-		return diySiteId;
-	}
-
-	public void setDiySiteId(Long diySiteId) {
-		this.diySiteId = diySiteId;
 	}
 
 	public String getDiySiteTitle() {
@@ -126,20 +95,84 @@ public class TdRequisition {
 		this.diySiteTitle = diySiteTitle;
 	}
 
-	public String getRemarkInfo() {
-		return remarkInfo;
+	public Long getDiySiteId() {
+		return diySiteId;
 	}
 
-	public void setRemarkInfo(String remarkInfo) {
-		this.remarkInfo = remarkInfo;
+	public void setDiySiteId(Long diySiteId) {
+		this.diySiteId = diySiteId;
 	}
 
-	public String getManagerRemarkInfo() {
-		return managerRemarkInfo;
+	public String getCustomerName() {
+		return customerName;
 	}
 
-	public void setManagerRemarkInfo(String managerRemarkInfo) {
-		this.managerRemarkInfo = managerRemarkInfo;
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public Long getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+
+	public Double getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(Double totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public Date getDeliveryTime() {
+		return deliveryTime;
+	}
+
+	public void setDeliveryTime(Date deliveryTime) {
+		this.deliveryTime = deliveryTime;
+	}
+
+	public String getReceiveName() {
+		return receiveName;
+	}
+
+	public void setReceiveName(String receiveName) {
+		this.receiveName = receiveName;
+	}
+
+	public String getReceiveAddress() {
+		return receiveAddress;
+	}
+
+	public void setReceiveAddress(String receiveAddress) {
+		this.receiveAddress = receiveAddress;
+	}
+
+	public String getReceivePhone() {
+		return receivePhone;
+	}
+
+	public void setReceivePhone(String receivePhone) {
+		this.receivePhone = receivePhone;
+	}
+
+	public List<TdRequisitionGoods> getRequisiteGoodsList() {
+		return requisiteGoodsList;
+	}
+
+	public void setRequisiteGoodsList(List<TdRequisitionGoods> requisiteGoodsList) {
+		this.requisiteGoodsList = requisiteGoodsList;
 	}
 
 	public Date getOrderTime() {
@@ -150,38 +183,6 @@ public class TdRequisition {
 		this.orderTime = orderTime;
 	}
 
-	public Date getCheckTime() {
-		return checkTime;
-	}
-
-	public void setCheckTime(Date checkTime) {
-		this.checkTime = checkTime;
-	}
-
-	public Long getStatusId() {
-		return statusId;
-	}
-
-	public void setStatusId(Long statusId) {
-		this.statusId = statusId;
-	}
-
-	public Date getCancelTime() {
-		return cancelTime;
-	}
-
-	public void setCancelTime(Date cancelTime) {
-		this.cancelTime = cancelTime;
-	}
-
-	public String getDiySiteTel() {
-		return diySiteTel;
-	}
-
-	public void setDiySiteTel(String diySiteTel) {
-		this.diySiteTel = diySiteTel;
-	}
-
 	public Long getTypeId() {
 		return typeId;
 	}
@@ -189,6 +190,5 @@ public class TdRequisition {
 	public void setTypeId(Long typeId) {
 		this.typeId = typeId;
 	}
-   
     
 }

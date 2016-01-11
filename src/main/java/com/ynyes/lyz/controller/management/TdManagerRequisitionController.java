@@ -116,8 +116,8 @@ public class TdManagerRequisitionController {
                 }
                 else
                 {
-                    map.addAttribute("requisition_page", 
-                    		tdRequisitionService.searchByTypeId(keywords, 1L, page, size));
+//                    map.addAttribute("requisition_page", 
+//                    		tdRequisitionService.searchByTypeId(keywords, 1L, page, size));
                 }
                 
                 return "/site_mag/requisition_list";
@@ -129,11 +129,11 @@ public class TdManagerRequisitionController {
                     map.addAttribute("requisition_page", 
                             tdRequisitionService.findByTypeId(2L, page, size));
                 }
-                else
-                {
-                    map.addAttribute("requisition_page", 
-                    		tdRequisitionService.searchByTypeId(keywords, 2L, page, size));
-                }
+//                else
+//                {
+//                    map.addAttribute("requisition_page", 
+//                    		tdRequisitionService.searchByTypeId(keywords, 2L, page, size));
+//                }
                 
                 return "/site_mag/requisition_list";
             }
@@ -144,11 +144,11 @@ public class TdManagerRequisitionController {
                     map.addAttribute("requisition_page", 
                             tdRequisitionService.findByTypeId(3L, page, size));
                 }
-                else
-                {
-                    map.addAttribute("requisition_page", 
-                    		tdRequisitionService.searchByTypeId(keywords, 3L, page, size));
-                }
+//                else
+//                {
+//                    map.addAttribute("requisition_page", 
+//                    		tdRequisitionService.searchByTypeId(keywords, 3L, page, size));
+//                }
                 
                 return "/site_mag/requisition_list";
             }

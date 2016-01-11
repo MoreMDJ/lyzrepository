@@ -22,7 +22,6 @@ package com.ynyes.lyz.webservice.impl;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,15 +32,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.httpclient.ProxyClient;
-import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.apache.cassandra.thrift.cassandraConstants;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
-import org.apache.cxf.transports.http.configuration.ProxyServerType;
 import org.apache.geronimo.mail.util.Base64;
-import org.apache.neethi.util.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.support.mapping.ClassNameAlias;
-import org.springframework.instrument.classloading.ShadowingClassLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -49,9 +43,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.ynyes.lyz.entity.TdDeliveryInfo;
+import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdRequisition;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdOrderService;
-import com.ynyes.lyz.webservice.ICallEBS;
+import com.ynyes.lyz.service.TdRequisitionService;
 import com.ynyes.lyz.webservice.ICallWMS;
 
 @WebService
@@ -62,6 +58,9 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdOrderService tdOrderService;
+	
+	@Autowired
+	private TdRequisitionService tdRequisitionService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -355,42 +354,15 @@ public class CallWMSImpl implements ICallWMS {
 		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";
 	}
 	
-	
+	// TODO Client
 	public String sendMsgToWMS(String orderNumber)
 	{
-//		TdOrder tdOrder = tdOrderService.findByOrderNumber(orderNumber);
+		TdOrder tdOrder = tdOrderService.findByOrderNumber(orderNumber);
 		
-//		if (tdOrder == null)
-//		{
-//			return "订单不存在";
-//		}
-//		Service service = new Service();
-//		Call call = (Call) service.createCall();  
-//		call.setTargetEndpointAddress("http://localhost:8080/facelook/services/facelookWebService?wsdl");  
-//		QName qName = new QName("http://server.webservice.facelook.com/", "getAlbumList");  
-//		call.setOperationName(qName);  
-//		call.setUseSOAPAction(true);  
-//		//这下面两行一定要加上，否则接收在服务器端收不到。  
-//		call.addParameter("xmlStr", XMLType.XSD_STRING, ParameterMode.IN);  
-//		call.setReturnType(XMLType.XSD_STRING);  
-//		String result = (String) call.invoke(new Object[] { xmlStr });  
-//		System.out.println(result);
-		
-		
-		
-//		JaxWsProxyFactoryBean  factoryBean=new JaxWsProxyFactoryBean(); 
-//		//      factoryBean.getInInterceptors().add(new LoggingInInterceptor()); 
-//		//      factoryBean.getOutInterceptors().add(new LoggingOutInterceptor()); 
-//		factoryBean.setServiceClass(ICallEBS.class); 
-//		QName name1 = new QName("http://tempuri.org/","getErpInfo");
-//		factoryBean.setServiceName(name1);
-//		factoryBean.setAddress("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
-//		ICallEBS impl=(ICallEBS) factoryBean.create(); 
-//		ProxyClient type = new ProxyClient();
-//		Object eObject = factoryBean.create();
-//		Class d = eObject.getClass();
-//		String ClassName = d.getName();
-//		System.out.println("return result: " + impl.GetErpInfo("tbw_send_task_m", "*", "?"));
+		if (tdOrder == null)
+		{
+			return "订单不存在";
+		}
 		
 		String JAVA_PATH = System.getenv("JAVA_HOME");
 		System.err.println("JAVA_PATH:"+JAVA_PATH);
@@ -400,7 +372,7 @@ public class CallWMSImpl implements ICallWMS {
 		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
 		//url为调用webService的wsdl地址
 		QName name = new QName("http://tempuri.org/","GetErpInfo");
-		String xmlStr = "<ERP>"
+		String xmlStr = "<DLAPP>"
 				+"<TABLE>"
 				+"<LIST_HEADER_ID>157265</LIST_HEADER_ID>"
 				+"<SOB_ID>2033</SOB_ID>"
@@ -419,8 +391,8 @@ public class CallWMSImpl implements ICallWMS {
 				+"<ATTRIBUTE4></ATTRIBUTE4>"
 				+"<ATTRIBUTE5></ATTRIBUTE5>"
 				+"</TABLE>"
-				+"</ERP>";
-		String encodeXML = null;
+				+"</DLAPP>";
+		String encodeXML = XMLHelper(tdOrder, 1);
 		byte[] bs = xmlStr.getBytes();
 		byte[] encodeByte = Base64.encode(bs);
 		try {
@@ -434,7 +406,6 @@ public class CallWMSImpl implements ICallWMS {
 		try {
         	objects = client.invoke(name,"CUXAPP_OM_PRICE_LIST_H_OUT","1",encodeXML);
         } catch (Exception e) {
-        	// TODO Auto-generated catch block
         	e.printStackTrace();
         	return "发送异常";
         }
@@ -446,6 +417,17 @@ public class CallWMSImpl implements ICallWMS {
 			}
 		}
 		return "发送成功";
+	}
+	
+	private String XMLHelper(TdOrder order,Integer type)
+	{
+		TdRequisition requisition = tdRequisitionService.findByOrderNumber(order.getOrderNumber());
+		if (requisition == null)
+		{
+			
+		}
+		
+		return "";
 	}
 
 }
