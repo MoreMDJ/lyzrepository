@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sound.midi.SysexMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -819,6 +820,9 @@ public class TdManagerCouponController {
             String __VIEWSTATE,
     		Integer page,
     		Integer size,
+    		Integer[] listChkId,
+    		Long[] listId,
+    		Long[] quantity,
     		HttpServletRequest req,
     		ModelMap map)
     {
@@ -831,10 +835,11 @@ public class TdManagerCouponController {
                     page = Integer.parseInt(__EVENTARGUMENT);
                 } 
             }
-            else if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+            else if (__EVENTTARGET.equalsIgnoreCase("grantMore"))
             {
-//                btnDelete(listId, listChkId);
-//                tdManagerLogService.addLog("delete", "删除优惠券", req);
+                grantMoreCoupon(listId, listChkId, quantity,couponId);
+//            	btnDelete(listId, listChkId);
+              tdManagerLogService.addLog("add", "发放优惠券", req);
             }
             else if (__EVENTTARGET.equalsIgnoreCase("btnSave"))
             {
@@ -946,6 +951,68 @@ public class TdManagerCouponController {
     	res.put("message", "参数错误");
     	return res;
     }
+    
+    private void grantMoreCoupon(Long[] ids,Integer[] chkIds,Long[] numbers,Long couponId)
+    {
+    	if (null == ids || null == chkIds || null == numbers
+                || ids.length < 1 || chkIds.length < 1 || numbers.length < 1)
+        {
+            return;
+        }
+        
+        for (int chkId : chkIds)
+        {
+            if (chkId >=0 && ids.length > chkId && numbers.length > chkId)
+            {
+                Long id = ids[chkId];
+                Long number = numbers[chkId];
+               
+                TdCoupon coupon = tdCouponService.findOne(couponId);
+        		if(number > coupon.getLeftNumber())
+        		{
+        			return ;
+        		}
+        		
+        		TdUser user = tdUseService.findOne(id);
+        		
+        		// 新创建会员领用券
+        		TdCoupon tdCoupon = new TdCoupon();
+        		// 会员领取信息
+        		tdCoupon.setUsername(user.getUsername());
+        		tdCoupon.setMobile(user.getNickname());
+        		tdCoupon.setGetNumber(number);
+        		tdCoupon.setIsOutDate(false);
+        		tdCoupon.setIsUsed(false);
+        		tdCoupon.setGetTime(new Date());
+        		// 优惠券基本信息
+        		tdCoupon.setIsDistributted(true);
+        		tdCoupon.setPrice(coupon.getPrice());
+        		tdCoupon.setAddTime(coupon.getAddTime());
+        		tdCoupon.setTypePicUri(coupon.getTypePicUri());
+        		
+        		tdCoupon.setBrandId(coupon.getBrandId());
+        		tdCoupon.setBrandTitle(coupon.getBrandTitle());
+        		tdCoupon.setTypeDescription(coupon.getTypeDescription());
+        		tdCoupon.setGoodsId(coupon.getGoodsId());
+        		tdCoupon.setGoodsName(coupon.getGoodsName());
+        		tdCoupon.setPicUri(coupon.getPicUri());
+        		tdCoupon.setTypeId(coupon.getTypeId());
+        		tdCoupon.setTypeTitle(coupon.getTypeTitle());
+        		tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
+        		
+        		// 保存领取
+        		tdCouponService.save(tdCoupon);
+        		
+        		// 更新剩余量
+        		coupon.setLeftNumber(coupon.getLeftNumber()-number);
+        		tdCouponService.save(coupon);
+                
+                
+//                tdCouponTypeService.delete(id);
+            }
+        }
+    }
+    
     
     private void btnTypeSave(Long[] ids, Long[] sortIds)
     {

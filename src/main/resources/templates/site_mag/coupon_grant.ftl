@@ -148,6 +148,7 @@ function __doPostBack(eventTarget, eventArgument) {
     <div class="r-list">
       <input name="keywords" type="text" class="keyword" value="${keywords!''}">
       <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
+      <a id="" class="" href="javascript:__doPostBack('grantMore','')">一键派发</a>
     </div>
       <table width="60%" border="0" cellspacing="0" cellpadding="0" class="ltable">
           <tbody>
