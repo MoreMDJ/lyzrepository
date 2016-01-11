@@ -85,17 +85,27 @@ public class TdRequisitionService {
 	        return (List<TdRequisition>) repository.findAll();
 	    }
 	    
+	    public TdRequisition findByOrderNumber(String orderNumber)
+	    {
+	    	if (orderNumber == null)
+	    	{
+				return null;
+			}
+	    	return repository.findByOrderNumber(orderNumber);
+	    }
+	 
+	    
 	    public Page<TdRequisition> findAll(int page, int size){
 	    	PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
 	    	
 	    	return repository.findAll(pageRequest);
 	    }
 	    
-	    public Page<TdRequisition> searchAll(String keywords, int page, int size){
-	    	PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
-	    	
-	    	return repository.findByDiySiteTitleContainingOrRemarkInfoContainingOrManagerRemarkInfoContainingOrRequisitionNumberContaining(keywords, keywords, keywords, keywords, pageRequest);
-	    }
+//	    public Page<TdRequisition> searchAll(String keywords, int page, int size){
+//	    	PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+//	    	
+//	    	return repository.findByDiySiteTitleContainingOrRemarkInfoContainingOrManagerRemarkInfoContainingOrRequisitionNumberContaining(keywords, keywords, keywords, keywords, pageRequest);
+//	    }
 	    
 	    // 通过typeid查询不同类别的要货单
 	    public Page<TdRequisition> findByTypeId(Long typeId, int page, int size){
@@ -104,11 +114,11 @@ public class TdRequisitionService {
 	    	return repository.findByTypeId(typeId, pageRequest);
 	    }
 	    
-	    public Page<TdRequisition> searchByTypeId(String keywords, Long typeId, int page, int size){
-	    	PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
-	    	
-	    	return repository.findByDiySiteTitleContainingAndTypeIdOrRemarkInfoContainingAndTypeIdOrManagerRemarkInfoContainingAndTypeIdOrRequisitionNumberContainingAndTypeId(keywords, typeId, keywords, typeId, keywords, typeId, keywords, typeId, pageRequest);
-	    }
+//	    public Page<TdRequisition> searchByTypeId(String keywords, Long typeId, int page, int size){
+//	    	PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+//	    	
+//	    	return repository.findByDiySiteTitleContainingAndTypeIdOrRemarkInfoContainingAndTypeIdOrManagerRemarkInfoContainingAndTypeIdOrRequisitionNumberContainingAndTypeId(keywords, typeId, keywords, typeId, keywords, typeId, keywords, typeId, pageRequest);
+//	    }
 	    
 	    /**
 	     * 保存
