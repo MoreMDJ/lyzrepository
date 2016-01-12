@@ -26,7 +26,7 @@ public interface TdPriceListRepo
 	 * 
 	 * @author dengxiao
 	 */
-	List<TdPriceList> findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue(
-			String priceType, Long cityId, Date begin, Date finish);
-	
+	List<TdPriceList> findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlag(
+			String priceType, Long cityId, Date begin, Date finish, String flag);
+
 }

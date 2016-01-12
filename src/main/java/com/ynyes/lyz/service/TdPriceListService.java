@@ -113,8 +113,8 @@ public class TdPriceListService {
 			return null;
 		}
 		List<TdPriceList> list = repository
-				.findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue(priceType,
-						cityId, new Date(), new Date());
+				.findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlag(priceType,
+						cityId, new Date(), new Date(),"Y");
 		if (null == list || list.size() == 0) {
 			return null;
 		} else {
