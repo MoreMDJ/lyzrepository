@@ -10,8 +10,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.webservice.impl.CallWMSImpl;
@@ -25,6 +27,9 @@ public class TdDiySiteController {
 
 	@Autowired
 	private TdDiySiteService tdDiySiteService;
+	
+	@Autowired
+	private TdCityService tdCityService;
 
 	/**
 	 * 跳转到附近门店的方法
@@ -41,8 +46,9 @@ public class TdDiySiteController {
 
 		// 获取用户的城市id
 		Long cityId = user.getCityId();
+		TdCity city = tdCityService.findOne(cityId);
+		List<TdDiySite> diysite_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(city.getSobIdCity());
 		// 查找到附近所有的门店
-		List<TdDiySite> diysite_list = tdDiySiteService.findByRegionIdAndIsEnableOrderBySortIdAsc(cityId);
 		map.addAttribute("diysite_list", diysite_list);
 		return "/client/diy_site_list";
 	}

@@ -259,17 +259,15 @@ public class TdManagerUserController {
 		}
 
 		TdUser user = tdUserService.findOne(id);
-		// 获取用户所在城市
 		Long cityId = user.getCityId();
 		TdCity city = tdCityService.findOne(cityId);
-		// 获取指定id城市下的所有门店
-		List<TdDiySite> site_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(city.getSobIdCity());
+		List<TdDiySite> diysite_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(city.getSobIdCity());
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("roleId", roleId);
 		if (null != id) {
 			map.addAttribute("user", user);
 		}
-		map.addAttribute("site_list", site_list);
+		map.addAttribute("site_list", diysite_list);
 
 		return "/site_mag/user_edit";
 	}

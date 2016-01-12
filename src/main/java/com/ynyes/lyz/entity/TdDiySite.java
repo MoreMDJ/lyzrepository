@@ -98,6 +98,10 @@ public class TdDiySite {
 	// 门店所使用的价目表编号
 	@Column
 	private Long priceListId;
+	
+	//门店使用的进货表编号
+	@Column
+	private Long stockListId;
 
 	// 是否是直营门店
 	@Column

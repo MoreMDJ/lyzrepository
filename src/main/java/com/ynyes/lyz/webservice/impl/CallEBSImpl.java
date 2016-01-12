@@ -408,7 +408,7 @@ public class CallEBSImpl implements ICallEBS {
 					tdPriceList = new TdPriceList();
 					tdPriceList.setListHeaderId(list_header_id);
 				}
-				tdPriceList.setCityId(sob_id);;
+				tdPriceList.setCityId(sob_id);
 				tdPriceList.setName(name);
 				tdPriceList.setActiveFlag(active_flag);
 				tdPriceList.setDescription(description);
