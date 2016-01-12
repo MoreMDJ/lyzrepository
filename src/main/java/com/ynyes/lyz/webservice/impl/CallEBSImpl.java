@@ -270,7 +270,8 @@ public class CallEBSImpl implements ICallEBS {
 				}
 				
 				//保存 修改
-				TdDiySite diySite = tdDiySiteService.findByCustomerIdAndSobId(customer_id, sob_id);
+//				TdDiySite diySite = tdDiySiteService.findByCustomerIdAndregionId(customer_id, sob_id);
+				TdDiySite diySite = tdDiySiteService.findByRegionIdAndCustomerId(sob_id, customer_id);
 
 				if (diySite == null)
 				{
@@ -299,7 +300,6 @@ public class CallEBSImpl implements ICallEBS {
 				}
 				diySite.setTitle(customer_name);
 				diySite.setAddress(address);
-				diySite.setSobId(sob_id);
 				diySite.setCustomerNumber(customer_number);
 				diySite.setCustTypeName(cust_type_name);
 				diySite.setStoreCode(store_code);
@@ -1006,7 +1006,8 @@ public class CallEBSImpl implements ICallEBS {
 					}
 				}
 				//保存
-				TdDiySite tdDiySite = tdDiySiteService.findByCustomerIdAndSobId(customer_id, sob_id);
+//				TdDiySite tdDiySite = tdDiySiteService.findByCustomerIdAndSobId(customer_id, sob_id);
+				TdDiySite tdDiySite = tdDiySiteService.findByRegionIdAndCustomerId(sob_id, customer_id);
 				if (tdDiySite == null)
 				{
 					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>该门店不存在，无法添加价目表</MESSAGE></STATUS></RESULTS>";

@@ -262,7 +262,7 @@ public class TdManagerUserController {
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
-		
+
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("roleId", roleId);
 
@@ -280,14 +280,12 @@ public class TdManagerUserController {
 				if (null != city) {
 					// 获取指定id城市下的所有门店
 					List<TdDiySite> site_list = tdDiySiteService
-							.findBySobIdOrderBySortIdAsc(city.getSobIdCity());
+							.findByRegionIdOrderBySortIdAsc(city.getSobIdCity());
 					
 					map.addAttribute("site_list", site_list);
 				}
 			}
 		}
-		// map.addAttribute("user_level_list",
-		// tdUserLevelService.findIsEnableTrue());
 
 		return "/site_mag/user_edit";
 	}
