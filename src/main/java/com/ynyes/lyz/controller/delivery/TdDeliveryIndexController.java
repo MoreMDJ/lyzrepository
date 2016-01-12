@@ -166,7 +166,7 @@ public class TdDeliveryIndexController {
 	}
 	
 	@RequestMapping(value="/detail/{id}", method=RequestMethod.GET)
-	public String detail(@PathVariable Integer id,
+	public String detail(@PathVariable Long id,
 			HttpServletRequest req, ModelMap map) {
 		String username = (String) req.getSession().getAttribute("username");
 
@@ -178,6 +178,11 @@ public class TdDeliveryIndexController {
 
 		if (null == user) {
 			return "redirect:/login";
+		}
+		
+		if (null != id)
+		{
+			map.addAttribute("td_order", tdOrderService.findOne(id));
 		}
 		
 		return "/client/delivery_detail";
