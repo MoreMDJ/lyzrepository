@@ -13,8 +13,77 @@
 <link rel="stylesheet" type="text/css" href="/client/css/x_gu_sales.css"/>
 <!-- js -->
 <script type="text/javascript" src="/client/js/jquery-1.11.0.js"></script>
+<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=bdd6b0736678f88ed49be498bff86754"></script>
+<script type="text/javascript">
+
+var map, geolocation;
+
+//加载地图，调用浏览器定位服务
+map = new AMap.Map('container');
+
+setInterval("timer()", 1000 * 60 * 60);
+    
+function timer() {
+    map.plugin('AMap.Geolocation', function() {
+        geolocation = new AMap.Geolocation({
+            enableHighAccuracy: true,//是否使用高精度定位，默认:true
+            timeout: 2000          //超过10秒后停止定位，默认：无穷大
+        });
+        map.addControl(geolocation);
+        geolocation.getCurrentPosition();
+        AMap.event.addListener(geolocation, 'complete', onComplete);//返回定位信息
+    });
+    
+    var geocoder;
+    
+    //解析定位结果
+    function onComplete(data) {
+    	AMap.service('AMap.Geocoder',function(){//回调函数
+	        //实例化Geocoder
+	        geocoder = new AMap.Geocoder({
+	            city: "010" //城市，默认：“全国”
+	        });
+	        
+			var lnglatXY=[data.position.getLng(), data.position.getLat()];//地图上所标点的坐标
+			
+	        geocoder.getAddress(lnglatXY, function(status, result) {
+	            if (status === 'complete' && result.info === 'OK') {
+	               //获得了有效的地址信息:
+	               warning(result.regeocode.formattedAddress);
+	               
+	               $.ajax({ 
+						url: "/delivery/geo/submit", 
+						type: "post",
+						dataType: "json",
+						data: 
+						{
+							"longitude": data.position.getLng(), 
+							"latitude": data.position.getLat(),
+							"accuracy": data.accuracy,
+							"isConverted": data.isConverted,
+							"formattedAddress" : result.regeocode.formattedAddress
+						},
+						success: function(data)
+						{
+				        	if (data.code != 0)
+				        	{
+				        		warning(data.message);
+				        	}
+				  		}
+					});
+	            }else{
+	               //获取地址失败
+	            }
+	        });
+	    })
+    }
+}
+</script>
 </head>
 <body class="bgc-f3f4f6">
+<#include "/client/common_warn.ftl" />
+<div id='container'></div>
+<div id="tip"></div>
   <!--弹窗-->
   <div id="bg"></div>
   <div id="popbox">

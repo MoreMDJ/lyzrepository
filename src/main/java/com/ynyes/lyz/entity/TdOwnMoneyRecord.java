@@ -53,6 +53,10 @@ public class TdOwnMoneyRecord {
     // 是否审批通过
     @Column
     private Boolean isEnable;
+    
+    // 是否还清
+    @Column
+    private Boolean isPayed;
 
 	public Long getId() {
 		return id;
@@ -117,4 +121,13 @@ public class TdOwnMoneyRecord {
 	public void setIsEnable(Boolean isEnable) {
 		this.isEnable = isEnable;
 	}
+
+	public Boolean getIsPayed() {
+		return isPayed;
+	}
+
+	public void setIsPayed(Boolean isPayed) {
+		this.isPayed = isPayed;
+	}
+	
 }

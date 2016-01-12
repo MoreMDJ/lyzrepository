@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdGeoInfo;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
 import com.ynyes.lyz.service.TdUserService;
@@ -37,6 +39,9 @@ public class TdDeliveryIndexController {
 	
 	@Autowired
 	private TdOwnMoneyRecordService tdOwnMoneyRecordService;
+	
+	@Autowired
+	private TdGeoInfoService tdGeoInfoService;
 
 	/**
 	 * 获取配送列表
@@ -244,6 +249,9 @@ public class TdDeliveryIndexController {
 			return res;
 		}
 		
+		order.setActualPay(payed);
+		order = tdOrderService.save(order);
+		
 		TdOwnMoneyRecord rec = new TdOwnMoneyRecord();
 		rec.setCreateTime(new Date());
 		rec.setOrderNumber(order.getOrderNumber());
@@ -251,9 +259,40 @@ public class TdDeliveryIndexController {
 		rec.setPayed(payed);
 		rec.setUsername(order.getUsername());
 		rec.setIsEnable(false);
+		rec.setIsPayed(false);
 		rec.setSortId(99L);
 		
 		tdOwnMoneyRecordService.save(rec);
+		
+		res.put("code", 0);
+		
+		return res;
+	}
+	
+	@RequestMapping(value="/geo/submit", method=RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> submitMoney(TdGeoInfo geoInfo,
+			HttpServletRequest req, ModelMap map) {
+		Map<String, Object> res = new HashMap<String, Object>();
+		res.put("code", 1);
+		
+		String username = (String) req.getSession().getAttribute("username");
+
+		if (null == username) {
+			res.put("message", "请重新登录");
+			return res;
+		}
+		
+		if (null == geoInfo.getLongitude() || null == geoInfo.getLatitude())
+		{
+			res.put("message", "定位信息有误");
+			return res;
+		}
+		
+		geoInfo.setUsername(username);
+		geoInfo.setTime(new Date());
+		
+		tdGeoInfoService.save(geoInfo);
 		
 		res.put("code", 0);
 		
