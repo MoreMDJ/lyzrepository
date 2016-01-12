@@ -81,13 +81,6 @@ public class TdDiySiteService {
 		return (List<TdDiySite>) repository.findAll(ids);
 	}
 
-	public TdDiySite findByCustomerIdAndSobId(Long customerId, Long sobId) {
-		if (customerId == null || sobId == null) {
-			return null;
-		}
-		return repository.findByCustomerIdAndSobId(customerId, sobId);
-	}
-
 	public List<TdDiySite> findAll(Sort sort) {
 
 		return (List<TdDiySite>) repository.findAll(sort);
@@ -160,10 +153,39 @@ public class TdDiySiteService {
 		return repository.findByTitleAndIsEnableTrue(title);
 	}
 
-	public List<TdDiySite> findBySobIdOrderBySortIdAsc(Long sobId) {
-		if (null == sobId) {
+	/**
+	 * 根据regionId（对应城市的subIdCity字段，是城市的唯一标识）和门店名称查找门店
+	 * 
+	 * @author dengxiao
+	 */
+	public TdDiySite findByRegionIdAndTitleAndIsEnableTrue(Long regionId, String title) {
+		if (null == regionId || null == title) {
 			return null;
 		}
-		return repository.findBySobIdOrderBySortIdAsc(sobId);
+		return repository.findByRegionIdAndTitleAndIsEnableTrue(regionId, title);
+	}
+
+	/**
+	 * 根据regionId和customerId查找门店
+	 * 
+	 * @author dengxiao
+	 */
+	public TdDiySite findByRegionIdAndCustomerId(Long regionId, Long customerId) {
+		if (null == regionId || null == customerId) {
+			return null;
+		}
+		return repository.findByRegionIdAndCustomerId(regionId, customerId);
+	}
+
+	/**
+	 * 根据regionId查找指定城市下的所有门店
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdDiySite> findByRegionIdOrderBySortIdAsc(Long regionId) {
+		if (null == regionId) {
+			return null;
+		}
+		return repository.findByRegionIdOrderBySortIdAsc(regionId);
 	}
 }

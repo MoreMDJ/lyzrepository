@@ -150,8 +150,9 @@ $(function () {
             <input type="radio" name="userType" value="0" datatype="n" <#if user?? && user.userType?? && user.userType==0>checked="checked"</#if>><label>普通会员</label>
             <input type="radio" name="userType" value="1" datatype="n" <#if user?? && user.userType?? && user.userType==1>checked="checked"</#if>><label>销售顾问</label>
             <input type="radio" name="userType" value="2" datatype="n" <#if user?? && user.userType?? && user.userType==2>checked="checked"</#if>><label>店长</label>
-            <input type="radio" name="userType" value="3" datatype="n" <#if user?? && user.userType?? && user.userType==2>checked="checked"</#if>><label>店主</label>
-            <input type="radio" name="userType" value="4" datatype="n" <#if user?? && user.userType?? && user.userType==2>checked="checked"</#if>><label>区域经理</label>
+            <input type="radio" name="userType" value="3" datatype="n" <#if user?? && user.userType?? && user.userType==3>checked="checked"</#if>><label>店主</label>
+            <input type="radio" name="userType" value="4" datatype="n" <#if user?? && user.userType?? && user.userType==4>checked="checked"</#if>><label>区域经理</label>
+        	<input type="radio" name="userType" value="5" datatype="n" <#if user?? && user.userType?? && user.userType==5>checked="checked"</#if>><label>配送员</label>
         </span>
       </div>
       <span class="Validform_checktip"></span>

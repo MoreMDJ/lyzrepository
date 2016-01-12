@@ -20,6 +20,7 @@ import org.springframework.ui.ModelMap;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
+import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCoupon;
@@ -28,6 +29,7 @@ import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPayType;
+import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.entity.TdShippingAddress;
@@ -82,6 +84,12 @@ public class TdCommonService {
 	@Autowired
 	private TdSubdistrictService tdSubdistrictService;
 
+	@Autowired
+	private TdBrandService tdBrandService;
+
+	@Autowired
+	private TdPriceListService tdPriceListService;
+
 	/**
 	 * 获取登陆用户信息的方法
 	 * 
@@ -107,11 +115,45 @@ public class TdCommonService {
 		// 通过用户名查找到用户资料
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		// 获取登陆用户的门店信息
-		TdDiySite diySite = tdDiySiteService.findOne(user.getUpperDiySiteId());
+		TdDiySite diySite = tdDiySiteService.findByRegionIdAndCustomerId(user.getCityId(), user.getCustomerId());
 		if (null == diySite) {
 			diySite = new TdDiySite();
 		}
 		return diySite;
+	}
+
+	/**
+	 * 查找一个商品价目表项的方法
+	 * 
+	 * @author dengxiao
+	 */
+	public TdPriceListItem getGoodsPrice(HttpServletRequest req, TdGoods goods) {
+		// 获取登陆用户门店
+		TdDiySite diySite = this.getDiySite(req);
+		// 获取分公司的sobId（即是门店的regionId）
+		Long regionId = diySite.getRegionId();
+		// 获取指定商品的品牌
+		Long brandId = goods.getBrandId();
+		TdBrand brand = tdBrandService.findOne(brandId);
+		// 获取品牌简称
+		String shortName = brand.getShortName();
+
+		Long headerLineId = null;
+		if (null != shortName && shortName.equals("HR")) {
+			TdPriceList priceList = tdPriceListService
+					.findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue("LS",
+							regionId);
+			headerLineId = priceList.getListHeaderId();
+		}
+
+		if (null != shortName && !shortName.equals("HR")) {
+			TdPriceList priceList = tdPriceListService
+					.findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue("LYZ",
+							regionId);
+			headerLineId = priceList.getListHeaderId();
+		}
+		return tdPriceListItemService.findByListHeaderIdAndItemNumAndStartDateActiveBeforeAndEndDateActiveAfter(
+				headerLineId, goods.getCode());
 	}
 
 	/**

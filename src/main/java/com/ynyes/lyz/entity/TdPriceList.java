@@ -57,7 +57,7 @@ public class TdPriceList {
 	@Column
 	private Double sortId;
 
-//接口新增数据------------------------------《
+//接口新增数据------------------------------
 	//价目表ID
 	@Column
 	private Long listHeaderId;
@@ -66,12 +66,12 @@ public class TdPriceList {
 	@Column
 	private Long sobId;
 	
-	// 活动开始时间
+	// 价格生效开始时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date startDateActive;
 	
-	// 活动开始时间
+	// 价格生效开始时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date endDateActive;

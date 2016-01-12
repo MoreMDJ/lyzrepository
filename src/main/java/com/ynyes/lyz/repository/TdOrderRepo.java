@@ -21,6 +21,14 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	Page<TdOrder> findByStatusIdOrderByIdDesc(Long statusId, Pageable page);
 
 	Page<TdOrder> findByUsernameOrderByIdDesc(String username, Pageable page);
+	
+	List<TdOrder> findByStatusIdAndOrderTimeAfter(Long statusId, Date time);
+	
+	List<TdOrder> findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Date time, Long statusId2, Date time2);
+	
+	List<TdOrder> findByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end);
+	
+	List<TdOrder> findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end, Long statusId2, Date start2, Date end2);
 
 	Page<TdOrder> findByUsernameAndStatusIdNotOrderByIdDesc(String username, Long statusId, Pageable page);
 

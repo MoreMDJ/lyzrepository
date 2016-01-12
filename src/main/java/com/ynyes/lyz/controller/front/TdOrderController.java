@@ -1,6 +1,5 @@
 package com.ynyes.lyz.controller.front;
 
-import java.awt.event.FocusEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,10 +37,8 @@ import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
-import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
-import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
 import com.ynyes.lyz.service.TdUserService;
@@ -246,7 +243,7 @@ public class TdOrderController {
 		String earlyDate = yyyyMMdd.format(limitDate) + " " + tempHour + ":30-" + (tempHour + 1) + ":30";
 
 		// 获取指定城市下所有的门店
-		List<TdDiySite> diy_list = tdDiySiteService.findByRegionIdAndIsEnableOrderBySortIdAsc(city.getId());
+		List<TdDiySite> diy_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(city.getSobIdCity());
 		// 获取默认门店
 		TdDiySite diySite = tdDiySiteService.findOne(diySiteId);
 

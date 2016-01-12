@@ -76,71 +76,79 @@ public class TdIndexController {
 			return "redirect:/login";
 		}
 
-		tdCommonService.setHeader(req, map);
+		if (null != user.getUserType() && user.getUserType().equals(0L)) {
+			tdCommonService.setHeader(req, map);
 
-		// 查找指定用户所属的门店
-		TdDiySite diySite = tdCommonService.getDiySite(req);
+			// 查找指定用户所属的门店
+			TdDiySite diySite = tdCommonService.getDiySite(req);
 
-		// 查找首页轮播广告
-		TdAdType adType = tdAdTypeService.findByTitle("首页轮播广告");
-		if (null != adType) {
-			List<TdAd> circle_ad_list = tdAdService.findByTypeId(adType.getId());
-			map.addAttribute("circle_ad_list", circle_ad_list);
-		}
-
-		// 查找首页中部广告
-		TdAdType index_center_adType = tdAdTypeService.findByTitle("首页中部广告");
-		if (null != index_center_adType) {
-			List<TdAd> index_center_list = tdAdService.findByTypeId(index_center_adType.getId());
-			if (null != index_center_adType && index_center_list.size() > 0) {
-				map.addAttribute("index_center", index_center_list.get(0));
+			// 查找首页轮播广告
+			TdAdType adType = tdAdTypeService.findByTitle("首页轮播广告");
+			if (null != adType) {
+				List<TdAd> circle_ad_list = tdAdService.findByTypeId(adType.getId());
+				map.addAttribute("circle_ad_list", circle_ad_list);
 			}
-		}
 
-		// 查找头条信息
-		TdArticleCategory articleCategory = tdArticleCategoryService.findByTitle("头条消息");
-		if (null != articleCategory) {
-			List<TdArticle> headline_list = tdArticleService.findByCategoryId(articleCategory.getId());
-			map.addAttribute("headline_list", headline_list);
-		}
+			// 查找首页中部广告
+			TdAdType index_center_adType = tdAdTypeService.findByTitle("首页中部广告");
+			if (null != index_center_adType) {
+				List<TdAd> index_center_list = tdAdService.findByTypeId(index_center_adType.getId());
+				if (null != index_center_adType && index_center_list.size() > 0) {
+					map.addAttribute("index_center", index_center_list.get(0));
+				}
+			}
 
-		// 查找导航栏
-		List<TdNaviBarItem> navi_bar_list = tdNaviBarItemService.findByIsEnableTrueOrderBySortIdAsc();
-		map.addAttribute("navi_bar_list", navi_bar_list);
+			// 查找头条信息
+			TdArticleCategory articleCategory = tdArticleCategoryService.findByTitle("头条消息");
+			if (null != articleCategory) {
+				List<TdArticle> headline_list = tdArticleService.findByCategoryId(articleCategory.getId());
+				map.addAttribute("headline_list", headline_list);
+			}
 
-		// 查找首页推荐商品
-		if (null != diySite) {
-			Page<TdPriceListItem> commend_page = tdPriceListService
-					.findByPriceListIdAndIsCommendIndexTrueOrderBySortIdAsc(diySite.getPriceListId(),
-							ClientConstant.pageSize, 0);
-			map.addAttribute("commend_page", commend_page);
-			if (null != commend_page) {
-				List<TdPriceListItem> content = commend_page.getContent();
-				if (null != content) {
-					for (int i = 0; i < content.size(); i++) {
-						TdPriceListItem priceListItem = content.get(i);
-						if (null != priceListItem) {
-							TdGoods goods = tdGoodsService.findOne(priceListItem.getGoodsId());
-							if (null != goods) {
-								map.addAttribute("goods" + i, goods);
+			// 查找导航栏
+			List<TdNaviBarItem> navi_bar_list = tdNaviBarItemService.findByIsEnableTrueOrderBySortIdAsc();
+			map.addAttribute("navi_bar_list", navi_bar_list);
+
+			// 查找首页推荐商品
+			if (null != diySite) {
+				Page<TdPriceListItem> commend_page = tdPriceListService
+						.findByPriceListIdAndIsCommendIndexTrueOrderBySortIdAsc(diySite.getPriceListId(),
+								ClientConstant.pageSize, 0);
+				map.addAttribute("commend_page", commend_page);
+				if (null != commend_page) {
+					List<TdPriceListItem> content = commend_page.getContent();
+					if (null != content) {
+						for (int i = 0; i < content.size(); i++) {
+							TdPriceListItem priceListItem = content.get(i);
+							if (null != priceListItem) {
+								TdGoods goods = tdGoodsService.findOne(priceListItem.getGoodsId());
+								if (null != goods) {
+									map.addAttribute("goods" + i, goods);
+								}
 							}
 						}
 					}
 				}
 			}
+
+			// 查找所有首页推荐的未过期的活动
+			List<TdActivity> index_activities = tdActivityService
+					.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndIsCommendIndexTrueOrderBySortIdAsc(
+							diySite.getId() + "", new Date());
+
+			List<Map<TdGoods, Double>> promotion_list = tdCommonService.getPromotionGoodsAndPrice(req,
+					index_activities);
+					// 将存储促销信息的集合放入到ModelMap中
+
+			// 清楚session中的订单信息
+			req.getSession().setAttribute("order_temp", null);
+			map.addAttribute("promotion_list", promotion_list);
 		}
 
-		// 查找所有首页推荐的未过期的活动
-		List<TdActivity> index_activities = tdActivityService
-				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndIsCommendIndexTrueOrderBySortIdAsc(
-						diySite.getId() + "", new Date());
+		if (null != user.getUserType() && user.getUserType().equals(5L)) {
+			return "redirect:/delivery";
+		}
 
-		List<Map<TdGoods, Double>> promotion_list = tdCommonService.getPromotionGoodsAndPrice(req, index_activities);
-		// 将存储促销信息的集合放入到ModelMap中
-
-		// 清楚session中的订单信息
-		req.getSession().setAttribute("order_temp", null);
-		map.addAttribute("promotion_list", promotion_list);
 		return "/client/index";
 	}
 }

@@ -29,8 +29,6 @@ public interface TdDiySiteRepo
 	 */
 	List<TdDiySite> findByDisctrictIdOrderBySortIdAsc(Long districtId);
 
-	TdDiySite findByCustomerIdAndSobId(Long customerId, Long sobId);
-
 	/**
 	 * 根据城市id 找下属门店
 	 * 
@@ -44,9 +42,30 @@ public interface TdDiySiteRepo
 	TdDiySite findByTitleAndIsEnableTrue(String title);
 
 	/**
-	 * 根据sobId查找指定城市下的所有门店
+	 * 根据客户id查找用户的归属门店
 	 * 
 	 * @author dengxiao
 	 */
-	List<TdDiySite> findBySobIdOrderBySortIdAsc(Long sobId);
+	TdDiySite findByCustomerId(Long customerId);
+
+	/**
+	 * 根据regionId（对应城市的subIdCity字段，是城市的唯一标识）和门店名称查找门店
+	 * 
+	 * @author dengxiao
+	 */
+	TdDiySite findByRegionIdAndTitleAndIsEnableTrue(Long regionId, String title);
+
+	/**
+	 * 根据regionId和customerId查找门店
+	 * 
+	 * @author dengxiao
+	 */
+	TdDiySite findByRegionIdAndCustomerId(Long regionId, Long customerId);
+
+	/**
+	 * 根据regionId查找指定城市下的所有门店
+	 * 
+	 * @author dengxiao
+	 */
+	List<TdDiySite> findByRegionIdOrderBySortIdAsc(Long regionId);
 }

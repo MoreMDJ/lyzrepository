@@ -143,9 +143,7 @@ public class TdUserController {
 
 	@Autowired
 	private TdCartGoodsService tdCartGoodsService;
-	
 	//  退货单Service       Max
-	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
 	
 	@Autowired
@@ -952,6 +950,15 @@ public class TdUserController {
 		}
 		map.addAttribute("user", user);
 
+		// 虚拟门店的用户不能够更改门店
+		Long customerId = user.getCustomerId();
+		Long cityId = user.getCityId();
+
+		TdDiySite site = tdDiySiteService.findByRegionIdAndCustomerId(cityId, customerId);
+		if (null != site && (site.getStatus() == 2)) {
+			map.addAttribute("isSelected", false);
+		}
+
 		// 获取用户所在城市的所有行政区划
 		List<TdDistrict> district_list = tdDistrictService.findByCityIdOrderBySortIdAsc(user.getCityId());
 		// 遍历集合，获取第一项行政区划下的所有行政街道
@@ -1043,12 +1050,11 @@ public class TdUserController {
 				no_product_total += coupon.getPrice();
 			}
 		}
-		
+
 		// 产品全张数
-		Long totalNummber=0L;
+		Long totalNummber = 0L;
 		for (TdCoupon tdCoupon : product_coupon_list) {
-			if(null != tdCoupon && null != tdCoupon.getGetNumber())
-			{
+			if (null != tdCoupon && null != tdCoupon.getGetNumber()) {
 				totalNummber += tdCoupon.getGetNumber();
 			}
 		}
@@ -1380,60 +1386,54 @@ public class TdUserController {
 		res.put("status", 0);
 		return res;
 	}
-	
+
 	/**
 	 * 申请退货
 	 * 
 	 * @author Max
 	 */
-	@RequestMapping(value="/order/return",method=RequestMethod.POST)
+	@RequestMapping(value = "/order/return", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> orderReturn(Long id,String remark,Long turnType, HttpServletRequest req)
 	{
 		Map<String,Object> res = new HashMap<>();
 		res.put("code", 1);
-		
-		String username = (String)req.getSession().getAttribute("username");
-		
-		if(null == username)
-		{
+
+		String username = (String) req.getSession().getAttribute("username");
+
+		if (null == username) {
 			res.put("message", "请重新登录");
 			return res;
 		}
-		
-		if(null != id)
-		{
+
+		if (null != id) {
 			TdOrder order = tdOrderService.findOne(id);
-			
-			if(null != order)
-			{
-				
+
+			if (null != order) {
 				TdReturnNote returnNote = new TdReturnNote();
-				
+
 				// 退货单编号
 				Date current = new Date();
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-		        String curStr = sdf.format(current);
-		        Random random = new Random();
-		        
-		        returnNote.setReturnNumber("T" + curStr
-		                + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
-				
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+				String curStr = sdf.format(current);
+				Random random = new Random();
+
+				returnNote.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+
 				// 添加订单信息
 				returnNote.setOrderNumber(order.getOrderNumber());
 				// 支付方式
 				returnNote.setPayTypeId(order.getPayTypeId());
 				returnNote.setPayTypeTitle(order.getPayTypeTitle());
 				// 门店信息
-				if(null != order.getDiySiteId())
-				{
+				if (null != order.getDiySiteId()) {
 					TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
 					returnNote.setDiySiteId(order.getDiySiteId());
 					returnNote.setDiySiteTel(diySite.getServiceTele());
 					returnNote.setDiySiteTitle(diySite.getTitle());
 					returnNote.setDiySiteAddress(diySite.getAddress());
 				}
-				
+
 				// 退货信息
 				returnNote.setUsername(username);
 				returnNote.setRemarkInfo(remark);
@@ -1460,6 +1460,7 @@ public class TdUserController {
 				
 				returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
 				returnNote.setOrderTime(new Date());
+				
 				returnNote.setTurnPrice(order.getTotalGoodsPrice());
 				
 				List<TdOrderGoods> orderGoodsList = new ArrayList<>();
@@ -1501,34 +1502,20 @@ public class TdUserController {
 				
 				// 保存退货单
 				tdReturnNoteService.save(returnNote);
-				
+
 				order.setIsRefund(true);
 				tdOrderService.save(order);
-				
-				
+
 				res.put("code", 0);
 				res.put("message", "提交退货成功");
 				return res;
 			}
 		}
-		
+
 		res.put("message", "参数错误");
-		
+
 		return res;
-		
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }
