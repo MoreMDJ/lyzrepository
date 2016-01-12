@@ -118,4 +118,15 @@ public class TdReturnNoteService {
         
         return (List<TdReturnNote>) repository.save(entities);
     }
+    
+    public TdReturnNote findByReturnNumber(String returnNumber)
+    {
+    	if(null == returnNumber)
+    	{
+    		return null;
+    	}
+    	return repository.findByReturnNumber(returnNumber);
+    	
+    }
+    
 }
