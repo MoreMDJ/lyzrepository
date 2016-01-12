@@ -8,23 +8,85 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 <title>乐易装</title>
 <!-- css -->
-<link rel="stylesheet" type="text/css" href="css/my_base.css"/>
-<link rel="stylesheet" type="text/css" href="css/x_common.css"/>
-<link rel="stylesheet" type="text/css" href="css/x_gu_sales.css"/>
+<link rel="stylesheet" type="text/css" href="/client/css/my_base.css"/>
+<link rel="stylesheet" type="text/css" href="/client/css/x_common.css"/>
+<link rel="stylesheet" type="text/css" href="/client/css/x_gu_sales.css"/>
 <!-- js -->
-<!-- <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script> -->
+<script type="text/javascript" src="/client/js/jquery-1.11.0.js"></script>
+<script>
+// 确认送达
+function submitDelivery(id)
+{
+	if (null == id)
+	{
+		warning("ID不能为空");
+		return;
+	}
+	
+	$.ajax({ 
+		url: "/delivery/submitDelivery", 
+		type: "post",
+		dataType: "json",
+		data: {"id": id},
+		success: function(data)
+		{
+        	if (data.code == 0)
+        	{
+        		warning("确认成功");
+        		window.location.reload();
+        	}
+        	else
+        	{
+        		warning(data.message);
+        	}
+  		}
+	});
+}
+
+function submitOwnMoney()
+{
+	var payed = document.getElementById("payed").value;
+	var owned = document.getElementById("owned").value;
+	
+	if (null == payed || null == owned || "" == payed || "" == owned)
+	{
+		warning("请输入正确的金额");
+		return;
+	}
+	
+	$.ajax({ 
+		url: "/delivery/submitOwnMoney/1", 
+		type: "post",
+		dataType: "json",
+		data: {"payed": payed, "owned": owned},
+		success: function(data)
+		{
+        	if (data.code == 0)
+        	{
+        		warning("申请成功");
+        		window.location.reload();
+        	}
+        	else
+        	{
+        		warning(data.message);
+        	}
+  		}
+	});
+}
+</script>
 </head>
 <body class="bgc-f3f4f6">
+<#include "/client/common_warn.ftl" />
   <!--弹窗-->
   <div id="bg"></div>
   <div id="arreabox">
     <form>
       <div class="title">申请欠款</div>   
-      <div class="text1">已交款<input type="text">元</div>
-      <div class="text1">欠款&nbsp;&nbsp;<input type="text">元</div>
+      <div class="text1">已交款<input type="text" id="payed" value="0">元</div>
+      <div class="text1">欠款&nbsp;&nbsp;<input type="text" id="owned" value="0">元</div>
       <div class="button-group">
         <a class="sure" href="#" onclick="pupclose()">关闭</a>
-        <a class="cancle" href="#" onclick="pupclose()">提交</a>
+        <a class="cancle" href="#" onclick="submitOwnMoney()">提交</a>
       </div> 
     </form>
   </div>
@@ -81,46 +143,12 @@
         <div class="mesg">欠款：200元</div>
       </div>
     </section>
-    <a class="btn-submit-save bgc-ccc" href="#">确认送达</a>
-    <a class="btn-submit-save bgc-ff8e08" href="#" onclick="pupopen()">申请欠款</a>
+    <a class="btn-submit-save bgc-ccc" href="javascript:;" onclick="submitDelivery(1)">确认送达</a>
+    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="pupopen()">申请欠款</a>
   </article>
   <!-- 详情查看 END -->
 
   <div class="clear h66"></div>
-
-  <!-- 底部 -->
-  <div class="index_footer">
-    <ul>
-    <li>
-    <a href="#">
-      <div></div>
-      <span>首页</span>
-    </a>
-    </li>
-    <li>
-    <a href="#">
-      <div></div>
-      <span>下单</span>
-    </a>
-    </li>
-    <li>
-    <a href="#">
-      <div></div>
-      <span>我的</span>
-    </a>
-    </li>
-    <li>
-    <a href="#">
-      <div></div>
-      <span>已选</span>
-    </a>
-    </li>
-  </ul>
-  <div class="footer_act">
-    <a href="#"></a>
-  </div>
-  </div>
-  <!-- 底部 END -->
 
 </body>
 </html>
