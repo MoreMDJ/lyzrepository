@@ -98,6 +98,10 @@ public class TdDiySite {
 	// 门店所使用的价目表编号
 	@Column
 	private Long priceListId;
+	
+	//门店使用的进货表编号
+	@Column
+	private Long stockListId;
 
 	// 是否是直营门店
 	@Column
@@ -117,9 +121,6 @@ public class TdDiySite {
 	
 	// 接口新加数据    <--------------
 	
-	//分公司ID
-	@Column
-	private Long sobId;
 	//客户id
 	@Column
 	private Long customerId;
@@ -212,14 +213,6 @@ public class TdDiySite {
 
 	public void setCustomerId(Long customerId) {
 		this.customerId = customerId;
-	}
-
-	public Long getSobId() {
-		return sobId;
-	}
-
-	public void setSobId(Long sobId) {
-		this.sobId = sobId;
 	}
 
 	public Long getRegionId() {

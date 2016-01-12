@@ -1,5 +1,6 @@
 package com.ynyes.lyz.service;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -28,28 +29,25 @@ public class TdPriceListItemService {
 		}
 		return repository.save(e);
 	}
+
 	/*
 	 * 接口 数据查询
 	 */
-	public TdPriceListItem findByListHeaderId(Long listHeaderId)
-	{
-		if (listHeaderId == null)
-		{
+	public TdPriceListItem findByListHeaderId(Long listHeaderId) {
+		if (listHeaderId == null) {
 			return null;
 		}
 		return repository.findByListHeaderId(listHeaderId);
 	}
-	
-	public TdPriceListItem findByListLineId(Long listLineId)
-	{
-		if (listLineId == null)
-		{
+
+	public TdPriceListItem findByListLineId(Long listLineId) {
+		if (listLineId == null) {
 			return null;
 		}
 		return repository.findByListLineId(listLineId);
 	}
-	
-	//zhangji
+
+	// zhangji
 	public List<TdPriceListItem> save(List<TdPriceListItem> e) {
 		if (null == e) {
 			return null;
@@ -62,8 +60,8 @@ public class TdPriceListItemService {
 			repository.delete(id);
 		}
 	}
-	
-	//zhangji
+
+	// zhangji
 	public void delete(List<TdPriceListItem> e) {
 		if (null != e) {
 			repository.delete(e);
@@ -80,18 +78,19 @@ public class TdPriceListItemService {
 	public List<TdPriceListItem> findAll() {
 		return (List<TdPriceListItem>) repository.findAll();
 	}
-	
-	public Page<TdPriceListItem> findAll(int page, int size){
+
+	public Page<TdPriceListItem> findAll(int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
 		return repository.findAll(pageRequest);
 	}
-	
-	public Page<TdPriceListItem> searchAll(String keywords, int page, int size){		
+
+	public Page<TdPriceListItem> searchAll(String keywords, int page, int size) {
 		if (null == keywords) {
 			return null;
 		}
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
-		return repository.findByPriceListNameContainingOrCityNameContainingOrCompanyNameContaining(keywords, keywords, keywords, pageRequest);
+		return repository.findByPriceListNameContainingOrCityNameContainingOrCompanyNameContaining(keywords, keywords,
+				keywords, pageRequest);
 	}
 
 	/**
@@ -99,8 +98,8 @@ public class TdPriceListItemService {
 	 * 
 	 * @author dengxiao
 	 */
-	public Page<TdPriceListItem> findByPriceListIdAndIsCommendIndexTrueOrderBySortIdAsc(Long PriceListId,
-			int size, int page) {
+	public Page<TdPriceListItem> findByPriceListIdAndIsCommendIndexTrueOrderBySortIdAsc(Long PriceListId, int size,
+			int page) {
 		if (null == PriceListId) {
 			return null;
 		}
@@ -120,22 +119,23 @@ public class TdPriceListItemService {
 		return repository.findByPriceListIdAndIsPromotionTrueOrderBySortIdAsc(PriceListId);
 	};
 
-	//zhangji
+	// zhangji
 	public List<TdPriceListItem> findByPriceListIdOrderBySortIdAsc(Long PriceListId) {
 		if (null == PriceListId) {
 			return null;
 		}
 		return repository.findByPriceListIdOrderBySortIdAsc(PriceListId);
 	};
-//	public Page<TdPriceList> searchAll(String keywords, int page, int size) {
-//		if (null == keywords) {
-//			return null;
-//		}
-//		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
-//		return repository
-//				.findByPriceListIdContainingOrpriceListNameContainingOrcityNameContainingOrCompanyNameContaining(
-//						keywords, keywords, keywords, keywords, pageRequest);
-//	}
+	// public Page<TdPriceList> searchAll(String keywords, int page, int size) {
+	// if (null == keywords) {
+	// return null;
+	// }
+	// PageRequest pageRequest = new PageRequest(page, size, new
+	// Sort(Direction.ASC, "sortId"));
+	// return repository
+	// .findByPriceListIdContainingOrpriceListNameContainingOrcityNameContainingOrCompanyNameContaining(
+	// keywords, keywords, keywords, keywords, pageRequest);
+	// }
 
 	/**
 	 * 根据价目表名称和商品id查找价目表项
@@ -147,5 +147,25 @@ public class TdPriceListItemService {
 			return null;
 		}
 		return repository.findByPriceListIdAndGoodsId(priceListId, goodsId);
+	}
+
+	/**
+	 * 根据headLineId和商品的SKU查找启用的未过期的价目表项
+	 * 
+	 * @author dengxiao
+	 */
+	public TdPriceListItem findByListHeaderIdAndItemNumAndStartDateActiveBeforeAndEndDateActiveAfter(Long headerId,
+			String SKU) {
+		if (null == headerId || null == SKU) {
+			return null;
+		}
+		List<TdPriceListItem> list = repository
+				.findByListHeaderIdAndItemNumAndStartDateActiveBeforeAndEndDateActiveAfter(headerId, SKU, new Date(),
+						new Date());
+		if (null == list && list.size() == 0) {
+			return null;
+		} else {
+			return list.get(0);
+		}
 	}
 }

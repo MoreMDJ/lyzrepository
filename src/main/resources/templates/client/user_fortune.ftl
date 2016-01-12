@@ -52,7 +52,7 @@
             <section class="coupon">
                 <a href="/user/coupon/1">
                     <div class="div1">我的产品劵</div>
-                    <div class="div2"><#if no_product_coupon_list??>${no_product_coupon_list?size}<#else>0</#if></div>
+                    <div class="div2"><#if totalNumber??>${totalNumber!'0'}</#if>张</div>
                 </a>
             </section>
             <section class="coupon cash-coupon">

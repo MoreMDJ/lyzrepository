@@ -1,5 +1,6 @@
 package com.ynyes.lyz.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ynyes.lyz.entity.TdPriceList;
-import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.repository.TdPriceListRepo;
 
 @Service
@@ -21,7 +21,7 @@ public class TdPriceListService {
 	@Autowired
 	private TdPriceListRepo repository;
 
-	/*zhangji */
+	/* zhangji */
 	/*-----------------------------------------------------------------------------------------------*/
 	public TdPriceList save(TdPriceList e) {
 		if (null == e) {
@@ -29,60 +29,58 @@ public class TdPriceListService {
 		}
 		return repository.save(e);
 	}
-	
-	
-//	public TdPriceList save(TdPriceList e) {
-//		if (null == e) {
-//			return null;
-//		}
-//		// 当修改时，赠品数量减少时，需删除多余的赠品
-//		if (null != e.getId()  && null != e.getTotalItem() ) {
-//			int count = 0;
-//			if(null != e.getPriceItemList() && null != repository.findOne(e.getId()).getPriceItemList())
-//			{
-//			  count = e.getTotalItem();
-//			  
-//				int size = repository.findOne(e.getId()).getPriceItemList().size();
-//	
-//				if (size > count) {
-//					List<TdPriceListItem> subList = repository.findOne(e.getId()).getPriceItemList().subList(count, size);
-//					tdPriceListItemService.delete(subList);
-//					repository.findOne(e.getId()).getPriceItemList().removeAll(subList);
-//				}
-//			}
-//		}
-//
-//		// 保存赠品
-//		tdPriceListItemService.save(e.getPriceItemList());
-//
-//		e = repository.save(e);
-//
-//		return e;
-//	}
-/*-------------------------------------------------------------------------------------------------------*/
+
+	// public TdPriceList save(TdPriceList e) {
+	// if (null == e) {
+	// return null;
+	// }
+	// // 当修改时，赠品数量减少时，需删除多余的赠品
+	// if (null != e.getId() && null != e.getTotalItem() ) {
+	// int count = 0;
+	// if(null != e.getPriceItemList() && null !=
+	// repository.findOne(e.getId()).getPriceItemList())
+	// {
+	// count = e.getTotalItem();
+	//
+	// int size = repository.findOne(e.getId()).getPriceItemList().size();
+	//
+	// if (size > count) {
+	// List<TdPriceListItem> subList =
+	// repository.findOne(e.getId()).getPriceItemList().subList(count, size);
+	// tdPriceListItemService.delete(subList);
+	// repository.findOne(e.getId()).getPriceItemList().removeAll(subList);
+	// }
+	// }
+	// }
+	//
+	// // 保存赠品
+	// tdPriceListItemService.save(e.getPriceItemList());
+	//
+	// e = repository.save(e);
+	//
+	// return e;
+	// }
+	/*-------------------------------------------------------------------------------------------------------*/
 	public void delete(Long id) {
 		if (null != id) {
 			repository.delete(id);
 		}
 	}
 
-	public List<TdPriceList> findBySobId(Long sobId)
-	{
-		if (sobId == null)
-		{
+	public List<TdPriceList> findBySobId(Long sobId) {
+		if (sobId == null) {
 			return null;
 		}
 		return repository.findBySobId(sobId);
 	}
-	public TdPriceList findByListHeaderId(Long listHeaderId)
-	{
-		if (listHeaderId == null)
-		{
+
+	public TdPriceList findByListHeaderId(Long listHeaderId) {
+		if (listHeaderId == null) {
 			return null;
 		}
 		return repository.findByListHeaderId(listHeaderId);
 	}
-	
+
 	public TdPriceList findOne(Long id) {
 		if (null == id) {
 			return null;
@@ -93,16 +91,36 @@ public class TdPriceListService {
 	public List<TdPriceList> findAll() {
 		return (List<TdPriceList>) repository.findAll();
 	}
-	
-	public Page<TdPriceList> searchAll(String keywords, int page , int size) {
-		PageRequest pageRequest = new PageRequest(page , size , new Sort(Direction.ASC,"sortId"));
-		return (Page<TdPriceList>) repository.findByNameContaining(keywords , pageRequest);
+
+	public Page<TdPriceList> searchAll(String keywords, int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
+		return (Page<TdPriceList>) repository.findByNameContaining(keywords, pageRequest);
 	}
 
-
-	public Page<TdPriceList> findAll(int page, int size){
+	public Page<TdPriceList> findAll(int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
 		return repository.findAll(pageRequest);
+	}
+
+	/**
+	 * 根据priceType（价目表类型）和cityId查找未过期且可用的价目表
+	 * 
+	 * @author dengxiao
+	 */
+	public TdPriceList findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue(String priceType,
+			Long cityId) {
+		if (null == priceType || null == cityId) {
+			return null;
+		}
+		List<TdPriceList> list = repository
+				.findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue(priceType,
+						cityId, new Date(), new Date());
+		if (null == list || list.size() == 0) {
+			return null;
+		} else {
+			return list.get(0);
+		}
+
 	}
 
 }

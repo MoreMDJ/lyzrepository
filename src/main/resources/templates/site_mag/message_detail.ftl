@@ -47,11 +47,11 @@
 <div class="tab-content">
   <dl>
     <dt>消息类别</dt>
-    <dd><#if messageType??>${messageType!""}</#if></dd>
+    <dd><input type="text" value="<#if messageType??>${messageType!""}</#if>" class="input normal"></dd>
   </dl>
   <dl>
     <dt>用户名</dt>
-    <dd><#if user??>${user.username!""}</#if></dd>
+    <dd><input type="text" value="<#if user??>${user.username!""}</#if>" class="input normal"></dd>
   </dl>
   <dl>
     <dt>内容</dt>

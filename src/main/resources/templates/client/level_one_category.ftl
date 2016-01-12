@@ -2,7 +2,7 @@
     <div class="fen_testleft">
         <ul>
             <#list level_one_categories as item>
-                <li><a href="#">${item.title!''}</a></li>
+                <li><a href="javascript:change(${item.id?c});">${item.title!''}</a></li>
             </#list>
         </ul>
     </div>

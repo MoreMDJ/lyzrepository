@@ -115,16 +115,8 @@ public class TdRegistController {
 		}
 
 		// 获取门店名称
-		TdDiySite diySite = tdDiySiteService.findByTitleAndIsEnableTrue("默认门店");
-		if (null == diySite) {
-			diySite = new TdDiySite();
-			diySite.setCity(cityInfo);
-			diySite.setRegionId(city.getId());
-			diySite.setTitle("默认门店");
-			diySite.setStatus(2L);
-			diySite = tdDiySiteService.save(diySite);
-		}
-
+		TdDiySite diySite = tdDiySiteService.findByRegionIdAndTitleAndIsEnableTrue(city.getSobIdCity(),
+				cityInfo + "默认门店");
 		TdUser new_user = new TdUser();
 		new_user.setUsername(phone);
 		new_user.setPassword(MD5.md5(password, 32));
@@ -135,7 +127,7 @@ public class TdRegistController {
 		new_user.setAllPayed(0.00);
 		new_user.setUserType(0L);
 		new_user.setCityName(cityInfo);
-		new_user.setCityId(city.getId());
+		new_user.setCityId(city.getSobIdCity());
 		new_user.setFirstOrder(true);
 		new_user.setIsOld(false);
 		new_user.setLastLoginTime(new Date());
@@ -145,6 +137,7 @@ public class TdRegistController {
 		new_user.setCashBalance(0.0);
 		new_user.setUnCashBalance(0.0);
 		new_user.setIsEnable(true);
+		new_user.setCustomerId(diySite.getCustomerId());
 
 		TdUser refer_user = tdUserService.findByUsernameAndCityNameAndIsEnableTrue(referPhone, cityInfo);
 		if (null != refer_user) {
