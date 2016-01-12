@@ -33,7 +33,7 @@ public class TdReturnNote {
 	@Column
 	private String orderNumber;
 
-	// 退货单状态 1:待审核 2: 已完成 3: 已取消
+	// 退货单状态 1:生成单据 2: 待取货     3: 待验货确认    4 待退款（物流确认） 5 已完成
 	@Column
 	private Long statusId;
 
@@ -96,6 +96,18 @@ public class TdReturnNote {
 	// 排序号
 	@Column
 	private Double sortId;
+	
+	// 退货方式 1 到店退货， 2 物流取货
+	@Column
+	private Long turnType;
+	
+	// 原订单配送方式
+	@Column
+	private String deliverTypeTitle;
+	
+	// 退货金额
+	@Column(scale=2)
+	private Double turnPrice;
 
 	public Long getId() {
 		return id;
@@ -249,4 +261,30 @@ public class TdReturnNote {
 		this.sortId = sortId;
 	}
 
+	public Long getTurnType() {
+		return turnType;
+	}
+
+	public void setTurnType(Long turnType) {
+		this.turnType = turnType;
+	}
+
+	public String getDeliverTypeTitle() {
+		return deliverTypeTitle;
+	}
+
+	public void setDeliverTypeTitle(String deliverTypeTitle) {
+		this.deliverTypeTitle = deliverTypeTitle;
+	}
+
+	public Double getTurnPrice() {
+		return turnPrice;
+	}
+
+	public void setTurnPrice(Double turnPrice) {
+		this.turnPrice = turnPrice;
+	}
+
+	
+	
 }
