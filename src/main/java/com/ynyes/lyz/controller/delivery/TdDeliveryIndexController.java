@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
+import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
 import com.ynyes.lyz.service.TdUserService;
@@ -50,18 +51,17 @@ public class TdDeliveryIndexController {
 	@RequestMapping
 	public String deliveryIndex(String start, String end, Integer days, Integer type,
 			HttpServletRequest req, ModelMap map) {
-		// String username = (String) req.getSession().getAttribute("username");
-		//
-		// if (null == username)
-		// {
-		// return "redirect:/login";
-		// }
-		//
-		// TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
-		//
-		// if (null == user) {
-		// return "redirect:/login";
-		// }
+		String username = (String) req.getSession().getAttribute("username");
+
+		if (null == username) {
+			return "redirect:/login";
+		}
+
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (null == user) {
+			return "redirect:/login";
+		}
 		
 		if (null == type)
 		{
@@ -163,7 +163,17 @@ public class TdDeliveryIndexController {
 	@RequestMapping(value="/detail/{id}", method=RequestMethod.GET)
 	public String detail(@PathVariable Integer id,
 			HttpServletRequest req, ModelMap map) {
-		
+		String username = (String) req.getSession().getAttribute("username");
+
+		if (null == username) {
+			return "redirect:/login";
+		}
+
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (null == user) {
+			return "redirect:/login";
+		}
 		
 		return "/client/delivery_detail";
 	}
