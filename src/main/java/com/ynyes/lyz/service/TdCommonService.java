@@ -107,7 +107,7 @@ public class TdCommonService {
 		// 通过用户名查找到用户资料
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		// 获取登陆用户的门店信息
-		TdDiySite diySite = tdDiySiteService.findOne(user.getUpperDiySiteId());
+		TdDiySite diySite = tdDiySiteService.findByRegionIdAndCustomerId(user.getCityId(), user.getCustomerId());
 		if (null == diySite) {
 			diySite = new TdDiySite();
 		}

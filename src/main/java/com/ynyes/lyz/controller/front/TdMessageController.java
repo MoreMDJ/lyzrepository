@@ -61,6 +61,7 @@ public class TdMessageController {
 			}
 		}
 		map.addAttribute("all_type", message_type_list);
+		
 		return "/client/message_type";
 	}
 

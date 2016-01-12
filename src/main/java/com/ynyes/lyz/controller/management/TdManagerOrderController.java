@@ -267,7 +267,7 @@ public class TdManagerOrderController {
 				map.addAttribute("price_list", tdPriceListService.findAll());
 				if (null != id) {
 					TdDiySite tdDiySite = tdDiySiteService.findOne(id);
-					List<TdPriceList> price_list = tdPriceListService.findBySobId(tdDiySite.getSobId());
+					List<TdPriceList> price_list = tdPriceListService.findBySobId(tdDiySite.getRegionId());
 					if (null != price_list) {
 						for (int i = 0; i < price_list.size(); i++) {
 							TdPriceList priceList = price_list.get(i);
@@ -287,7 +287,7 @@ public class TdManagerOrderController {
 							}
 						}
 					}
-					map.addAttribute("choose_price_list", tdPriceListService.findBySobId(tdDiySite.getSobId()));
+					map.addAttribute("choose_price_list", tdPriceListService.findBySobId(tdDiySite.getRegionId()));
 
 					map.addAttribute("diy_site", tdDiySiteService.findOne(id));
 				}

@@ -117,9 +117,6 @@ public class TdDiySite {
 	
 	// 接口新加数据    <--------------
 	
-	//分公司ID
-	@Column
-	private Long sobId;
 	//客户id
 	@Column
 	private Long customerId;
@@ -212,14 +209,6 @@ public class TdDiySite {
 
 	public void setCustomerId(Long customerId) {
 		this.customerId = customerId;
-	}
-
-	public Long getSobId() {
-		return sobId;
-	}
-
-	public void setSobId(Long sobId) {
-		this.sobId = sobId;
 	}
 
 	public Long getRegionId() {

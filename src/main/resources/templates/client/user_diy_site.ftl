@@ -58,18 +58,20 @@
             <#if user??>
                 <div>当前所属门店：<span id="now_diy">${user.diyName!''}</span></div>
             </#if>
-            <div>
-                <select id="site_district" onchange="changeDistrict();" style="width:98%;height:35px;font-size:0.9em;color:#666;margin:0 1%;border:none;background:url('/client/images/icon_bottom.png') no-repeat right;">
-                    <#if district_list??>
-                        <#list district_list as item>
-                            <option value="${item.id?c}">${item.name!''}</option>
-                        </#list>
-                    </#if>
-                </select>
-            </div>
-            <span id="site_by_district" style="margin-top:10px;display:block;">
-                <#include "/client/site_in_district.ftl">
-            </span>
+            <#if !(isSelected??&&isSelected==false)>
+                <div>
+                    <select id="site_district" onchange="changeDistrict();" style="width:98%;height:35px;font-size:0.9em;color:#666;margin:0 1%;border:none;background:url('/client/images/icon_bottom.png') no-repeat right;">
+                        <#if district_list??>
+                            <#list district_list as item>
+                                <option value="${item.id?c}">${item.name!''}</option>
+                            </#list>
+                        </#if>
+                    </select>
+                </div>
+                <span id="site_by_district" style="margin-top:10px;display:block;">
+                    <#include "/client/site_in_district.ftl">
+                </span>
+            </#if>
         </article>
         <!-- 门店归属 END -->
         

@@ -58,11 +58,11 @@ public class TdUser {
 	@Column
 	private String sex;
 
-	//生日
+	// 生日
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date birthday;
-	
+
 	// 注册时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -133,10 +133,14 @@ public class TdUser {
 	@Column
 	private Boolean isEnable;
 
-	 // 排序号
-    @Column
-    private Double sortId;
-    
+	// 从EBS下来的customerId
+	@Column
+	private Long customerId;
+
+	// 排序号
+	@Column
+	private Double sortId;
+
 	public Double getSortId() {
 		return sortId;
 	}
@@ -367,6 +371,14 @@ public class TdUser {
 
 	public void setUserType(Long userType) {
 		this.userType = userType;
+	}
+
+	public Long getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
 	}
 
 }

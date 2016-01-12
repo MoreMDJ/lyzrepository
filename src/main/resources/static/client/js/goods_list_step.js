@@ -14,3 +14,10 @@ function clickLevelTwo(elementId) {
 	$(".ctrlGoods").css("display", "none");
 	$("#goods" + elementId).css("display", "block");
 }
+
+function change(level_one_id) {
+	var level_two = document.getElementById("level_two" + level_one_id);
+	var li_arry = level_two.getElementsByTagName("li");
+	var li = li_arry[0].getElementsByTagName("a")[0];
+	li.click();
+}
