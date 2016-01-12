@@ -154,9 +154,10 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/list")
-	public String setting(Integer page, Integer size, String keywords, Long roleId, Long userLevelId,
-			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
-			ModelMap map, HttpServletRequest req) {
+	public String setting(Integer page, Integer size, String keywords,
+			Long roleId, Long userLevelId, String __EVENTTARGET,
+			String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId,
+			Integer[] listChkId, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -205,13 +206,17 @@ public class TdManagerUserController {
 				if (null == userLevelId) {
 					userPage = tdUserService.findAllOrderByIdDesc(page, size);
 				} else {
-					userPage = tdUserService.findByUserLevelIdOrderByIdDesc(userLevelId, page, size);
+					userPage = tdUserService.findByUserLevelIdOrderByIdDesc(
+							userLevelId, page, size);
 				}
 			} else {
 				if (null == userLevelId) {
-					userPage = tdUserService.searchAndOrderByIdDesc(keywords, page, size);
+					userPage = tdUserService.searchAndOrderByIdDesc(keywords,
+							page, size);
 				} else {
-					userPage = tdUserService.searchAndfindByUserLevelIdOrderByIdDesc(keywords, userLevelId, page, size);
+					userPage = tdUserService
+							.searchAndfindByUserLevelIdOrderByIdDesc(keywords,
+									userLevelId, page, size);
 				}
 			}
 		}
@@ -251,30 +256,44 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/edit")
-	public String userEdit(Long id, Long roleId, String action, String __VIEWSTATE, ModelMap map,
-			HttpServletRequest req) {
+	public String userEdit(Long id, Long roleId, String action,
+			String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
 
-		TdUser user = tdUserService.findOne(id);
-		Long cityId = user.getCityId();
-		TdCity city = tdCityService.findOne(cityId);
-		List<TdDiySite> diysite_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(city.getSobIdCity());
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("roleId", roleId);
-		if (null != id) {
+
+		TdUser user = tdUserService.findOne(id);
+
+		if (null != user) {
 			map.addAttribute("user", user);
+			
+			// 获取用户所在城市
+			Long cityId = user.getCityId();
+
+			if (null != cityId) {
+				TdCity city = tdCityService.findOne(cityId);
+
+				if (null != city) {
+					// 获取指定id城市下的所有门店
+					List<TdDiySite> site_list = tdDiySiteService
+							.findByRegionIdOrderBySortIdAsc(city.getSobIdCity());
+					
+					map.addAttribute("site_list", site_list);
+				}
+			}
 		}
-		map.addAttribute("site_list", diysite_list);
 
 		return "/site_mag/user_edit";
 	}
 
 	@RequestMapping(value = "/save")
-	public String orderEdit(TdUser tdUser, /* String oldUsername, */ String oldPassword, String __VIEWSTATE,
-			ModelMap map, String birthdate, HttpServletRequest req) {
+	public String orderEdit(TdUser tdUser, /* String oldUsername, */
+			String oldPassword, String __VIEWSTATE, ModelMap map,
+			String birthdate, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -391,7 +410,8 @@ public class TdManagerUserController {
 	 * @author Zhangji
 	 */
 	@RequestMapping(value = "/setUsername")
-	public String setUsername(Long id, Long roleId, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+	public String setUsername(Long id, Long roleId, String __VIEWSTATE,
+			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -408,8 +428,9 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/username", method = RequestMethod.POST)
-	public String username(Long id, String oldUsername, String newUsername, String __VIEWSTATE, ModelMap map,
-			String birthdate, HttpServletRequest req) {
+	public String username(Long id, String oldUsername, String newUsername,
+			String __VIEWSTATE, ModelMap map, String birthdate,
+			HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -418,25 +439,29 @@ public class TdManagerUserController {
 		TdUser tdUser = tdUserService.findOne(id);
 		// 修改用户名 zhangji 2016-1-8 10:30:38
 		if (null != oldUsername && !oldUsername.equals(newUsername)) {
-			List<TdCartColorPackage> tdCartColorPackage = TdCartColorPackageService.findByUsername(oldUsername);
+			List<TdCartColorPackage> tdCartColorPackage = TdCartColorPackageService
+					.findByUsername(oldUsername);
 			for (TdCartColorPackage item : tdCartColorPackage) {
 				item.setUsername(newUsername);
 				TdCartColorPackageService.save(item);
 			}
 
-			List<TdCartGoods> tdCartGoods = tdCartGoodsService.findByUsername(oldUsername);
+			List<TdCartGoods> tdCartGoods = tdCartGoodsService
+					.findByUsername(oldUsername);
 			for (TdCartGoods item : tdCartGoods) {
 				item.setUsername(newUsername);
 				tdCartGoodsService.save(item);
 			}
 
-			List<TdCoupon> tdCoupon = tdCouponService.findByUsername(oldUsername);
+			List<TdCoupon> tdCoupon = tdCouponService
+					.findByUsername(oldUsername);
 			for (TdCoupon item : tdCoupon) {
 				item.setUsername(newUsername);
 				tdCouponService.save(item);
 			}
 
-			List<TdReturnNote> tdReturnNote = tdReturnNoteService.findByUsername(oldUsername);
+			List<TdReturnNote> tdReturnNote = tdReturnNoteService
+					.findByUsername(oldUsername);
 			for (TdReturnNote item : tdReturnNote) {
 				item.setUsername(newUsername);
 				tdReturnNoteService.save(item);
@@ -448,19 +473,22 @@ public class TdManagerUserController {
 				tdOrderService.save(item);
 			}
 
-			List<TdUserCollect> tdUserCollect = tdUserCollectService.findByUsername(oldUsername);
+			List<TdUserCollect> tdUserCollect = tdUserCollectService
+					.findByUsername(oldUsername);
 			for (TdUserCollect item : tdUserCollect) {
 				item.setUsername(newUsername);
 				tdUserCollectService.save(item);
 			}
 
-			List<TdUserComment> tdUserComment = tdUserCommentService.findByUsername(oldUsername);
+			List<TdUserComment> tdUserComment = tdUserCommentService
+					.findByUsername(oldUsername);
 			for (TdUserComment item : tdUserComment) {
 				item.setUsername(newUsername);
 				tdUserCommentService.save(item);
 			}
 
-			List<TdUserRecentVisit> tdUserRecentVisit = tdUserRecentVisitService.findByUsername(oldUsername);
+			List<TdUserRecentVisit> tdUserRecentVisit = tdUserRecentVisitService
+					.findByUsername(oldUsername);
 			for (TdUserRecentVisit item : tdUserRecentVisit) {
 				item.setUsername(newUsername);
 				tdUserRecentVisitService.save(item);
@@ -483,7 +511,8 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/level/edit")
-	public String edit(Long id, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+	public String edit(Long id, String __VIEWSTATE, ModelMap map,
+			HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -500,7 +529,8 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/level/save")
-	public String levelSave(TdUserLevel tdUserLevel, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+	public String levelSave(TdUserLevel tdUserLevel, String __VIEWSTATE,
+			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -520,7 +550,8 @@ public class TdManagerUserController {
 
 	@RequestMapping(value = "/level/check/{type}", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, String> validateForm(@PathVariable String type, String param, Long id) {
+	public Map<String, String> validateForm(@PathVariable String type,
+			String param, Long id) {
 		Map<String, String> res = new HashMap<String, String>();
 
 		res.put("status", "n");
@@ -534,12 +565,14 @@ public class TdManagerUserController {
 				}
 
 				if (null == id) {
-					if (null != tdUserLevelService.findByLevelId(Long.parseLong(param))) {
+					if (null != tdUserLevelService.findByLevelId(Long
+							.parseLong(param))) {
 						res.put("info", "该用户等级已存在");
 						return res;
 					}
 				} else {
-					if (null != tdUserLevelService.findByLevelIdAndIdNot(Long.parseLong(param), id)) {
+					if (null != tdUserLevelService.findByLevelIdAndIdNot(
+							Long.parseLong(param), id)) {
 						res.put("info", "该用户等级已存在");
 						return res;
 					}
@@ -558,7 +591,8 @@ public class TdManagerUserController {
 						return res;
 					}
 				} else {
-					if (null != tdUserLevelService.findByTitleAndIdNot(param, id)) {
+					if (null != tdUserLevelService.findByTitleAndIdNot(param,
+							id)) {
 						res.put("info", "该等级用户名称已存在");
 						return res;
 					}
@@ -572,7 +606,8 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/comment/edit")
-	public String commentEdit(Long id, Long statusId, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+	public String commentEdit(Long id, Long statusId, String __VIEWSTATE,
+			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -590,7 +625,8 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/comment/save")
-	public String commentSave(TdUserComment tdUserComment, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+	public String commentSave(TdUserComment tdUserComment, String __VIEWSTATE,
+			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -598,7 +634,8 @@ public class TdManagerUserController {
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
-		if (null == tdUserComment.getIsReplied() || !tdUserComment.getIsReplied()) {
+		if (null == tdUserComment.getIsReplied()
+				|| !tdUserComment.getIsReplied()) {
 			tdUserComment.setIsReplied(true);
 			tdUserComment.setReplyTime(new Date());
 		}
@@ -616,7 +653,8 @@ public class TdManagerUserController {
 
 	// zhangji
 	@RequestMapping(value = "/cancel/edit")
-	public String cancelEdit(Long id, Long statusId, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+	public String cancelEdit(Long id, Long statusId, String __VIEWSTATE,
+			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -634,8 +672,8 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/cancel/save")
-	public String cancelSave(Long id, Boolean isRefund, Double refund, String __VIEWSTATE, ModelMap map,
-			HttpServletRequest req) {
+	public String cancelSave(Long id, Boolean isRefund, Double refund,
+			String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -661,9 +699,12 @@ public class TdManagerUserController {
 
 	/*----------------用户投诉咨询 begin ------------------*/
 	@RequestMapping(value = "/{type}/list")
-	public String list(@PathVariable String type, Integer page, Integer size, String __EVENTTARGET, String date_1,
-			String date_2, String keywords, Long categoryId, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId,
-			Integer[] listChkId, Long[] listSortId, ModelMap map, HttpServletRequest req) throws ParseException {
+	public String list(@PathVariable String type, Integer page, Integer size,
+			String __EVENTTARGET, String date_1, String date_2,
+			String keywords, Long categoryId, String __EVENTARGUMENT,
+			String __VIEWSTATE, Long[] listId, Integer[] listChkId,
+			Long[] listSortId, ModelMap map, HttpServletRequest req)
+			throws ParseException {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -720,35 +761,46 @@ public class TdManagerUserController {
 					if (null == date1) {
 						if (null == date2) {
 							if (null == categoryId) {
-								suggestionPage = tdUserSuggestionService.findAll(page, size);
+								suggestionPage = tdUserSuggestionService
+										.findAll(page, size);
 							} else {
-								suggestionPage = tdUserSuggestionService.findByCategoryId(categoryId, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCategoryId(categoryId, page,
+												size);
 							}
 						} else {
 							if (null == categoryId) {
-								suggestionPage = tdUserSuggestionService.findByCreateTimeBefore(date2, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeBefore(date2, page,
+												size);
 							} else {
-								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndCategoryId(date2,
-										categoryId, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeBeforeAndCategoryId(
+												date2, categoryId, page, size);
 							}
 						}
 
 					} else {
 						if (null == date2) {
 							if (null == categoryId) {
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfter(date1, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeAfter(date1, page,
+												size);
 							} else {
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCategoryId(date1,
-										categoryId, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeAfterAndCategoryId(
+												date1, categoryId, page, size);
 							}
 						} else {
 							if (null == categoryId) {
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCreateTimeBefore(date1,
-										date2, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeAfterAndCreateTimeBefore(
+												date1, date2, page, size);
 							} else {
 								suggestionPage = tdUserSuggestionService
-										.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryId(date1, date2, categoryId,
-												page, size);
+										.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryId(
+												date1, date2, categoryId, page,
+												size);
 							}
 						}
 					}
@@ -756,44 +808,56 @@ public class TdManagerUserController {
 					if (null == date1) {
 						if (null == date2) {
 							if (null == categoryId) {
-								suggestionPage = tdUserSuggestionService.findBySearch(keywords, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findBySearch(keywords, page, size);
 							} else {
-								suggestionPage = tdUserSuggestionService.findByCategoryIdAndSearch(categoryId, keywords,
-										page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCategoryIdAndSearch(categoryId,
+												keywords, page, size);
 							}
 						} else {
 							if (null == categoryId) {
-								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndSearch(date2,
-										keywords, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeBeforeAndSearch(date2,
+												keywords, page, size);
 							} else {
-								suggestionPage = tdUserSuggestionService.findByCreateTimeBeforeAndCategoryIdAndSearch(
-										date2, categoryId, keywords, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeBeforeAndCategoryIdAndSearch(
+												date2, categoryId, keywords,
+												page, size);
 							}
 						}
 					} else {
 						if (null == date2) {
 							if (null == categoryId) {
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndSearch(date1, keywords,
-										page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeAfterAndSearch(date1,
+												keywords, page, size);
 							} else {
-								suggestionPage = tdUserSuggestionService.findByCreateTimeAfterAndCategoryIdAndSearch(
-										date1, categoryId, keywords, page, size);
+								suggestionPage = tdUserSuggestionService
+										.findByCreateTimeAfterAndCategoryIdAndSearch(
+												date1, categoryId, keywords,
+												page, size);
 							}
 						} else {
 							if (null == categoryId) {
 								suggestionPage = tdUserSuggestionService
-										.findByCreateTimeAfterAndCreateTimeBeforeAndSearch(date1, date2, keywords, page,
+										.findByCreateTimeAfterAndCreateTimeBeforeAndSearch(
+												date1, date2, keywords, page,
 												size);
 							} else {
 								suggestionPage = tdUserSuggestionService
-										.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryIdAndSearch(date1, date2,
-												categoryId, keywords, page, size);
+										.findByCreateTimeAfterAndCreateTimeBeforeAndCategoryIdAndSearch(
+												date1, date2, categoryId,
+												keywords, page, size);
 							}
 						}
 					}
 				}
 
-				map.addAttribute("category_list", tdUserSuggestionCategoryService.findByIsEnableTrueOrderBySortIdAsc());
+				map.addAttribute("category_list",
+						tdUserSuggestionCategoryService
+								.findByIsEnableTrueOrderBySortIdAsc());
 				map.addAttribute("date_1", date_1);
 				map.addAttribute("date_2", date_2);
 				map.addAttribute("keywords", keywords);
@@ -803,22 +867,27 @@ public class TdManagerUserController {
 				for (TdUserSuggestion item : suggestionPage.getContent()) {
 					TdUser user = tdUserService.findOne(item.getUserId());
 					if (null != user) {
-						map.addAttribute("username_" + user.getId(), user.getUsername());
+						map.addAttribute("username_" + user.getId(),
+								user.getUsername());
 					}
 				}
 				return "/site_mag/user_suggestion_list";
 			} else if (type.equalsIgnoreCase("message")) // 信息
 			{
-				Page<TdMessage> messagePage = tdMessageService.findAll(page, size);
+				Page<TdMessage> messagePage = tdMessageService.findAll(page,
+						size);
 				map.addAttribute("message_page", messagePage);
 				for (TdMessage item : messagePage.getContent()) {
 					TdUser user = tdUserService.findOne(item.getUserId());
 					if (null != user) {
-						map.addAttribute("username_" + user.getId(), user.getUsername());
+						map.addAttribute("username_" + user.getId(),
+								user.getUsername());
 					}
-					TdMessageType messageType = tdMessageTypeService.findOne(item.getTypeId());
+					TdMessageType messageType = tdMessageTypeService
+							.findOne(item.getTypeId());
 					if (null != messageType) {
-						map.addAttribute("messageType_" + messageType.getId(), messageType.getName());
+						map.addAttribute("messageType_" + messageType.getId(),
+								messageType.getName());
 					}
 				}
 				return "/site_mag/message_list";
@@ -829,7 +898,8 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/suggestion/edit")
-	public String suggestionEdit(Long id, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+	public String suggestionEdit(Long id, String __VIEWSTATE, ModelMap map,
+			HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -839,7 +909,8 @@ public class TdManagerUserController {
 			TdUserSuggestion suggestion = tdUserSuggestionService.findOne(id);
 			map.addAttribute("userSuggestionId", id);
 			map.addAttribute("user_suggestion", suggestion);
-			map.addAttribute("user", tdUserService.findOne(suggestion.getUserId()));
+			map.addAttribute("user",
+					tdUserService.findOne(suggestion.getUserId()));
 		}
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
@@ -848,7 +919,8 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/message/detail")
-	public String messageDetail(Long id, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+	public String messageDetail(Long id, String __VIEWSTATE, ModelMap map,
+			HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -856,7 +928,8 @@ public class TdManagerUserController {
 
 		if (null != id) {
 			TdMessage message = tdMessageService.findOne(id);
-			if (null != message.getIsRead() && !message.getIsRead() || null == message.getIsRead()) {
+			if (null != message.getIsRead() && !message.getIsRead()
+					|| null == message.getIsRead()) {
 				message.setIsRead(true);
 				message.setReadTime(new Date());
 				tdMessageService.save(message);
@@ -865,8 +938,11 @@ public class TdManagerUserController {
 			map.addAttribute("messageId", message.getId());
 			map.addAttribute("message", message);
 			map.addAttribute("user", tdUserService.findOne(message.getUserId()));
-			map.addAttribute("messageType", tdMessageTypeService.findOne(message.getTypeId()).getName());
-			map.addAttribute("imgUri", tdMessageTypeService.findOne(message.getTypeId()).getImgUrl());
+			map.addAttribute("messageType",
+					tdMessageTypeService.findOne(message.getTypeId()).getName());
+			map.addAttribute("imgUri",
+					tdMessageTypeService.findOne(message.getTypeId())
+							.getImgUrl());
 		}
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
@@ -875,8 +951,8 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/suggestion/save", method = RequestMethod.POST)
-	public String suggestionSave(Long userSuggestionId, String answerContent, String __VIEWSTATE, ModelMap map,
-			HttpServletRequest req) {
+	public String suggestionSave(Long userSuggestionId, String answerContent,
+			String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -884,7 +960,8 @@ public class TdManagerUserController {
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
-		TdUserSuggestion suggestion = tdUserSuggestionService.findOne(userSuggestionId);
+		TdUserSuggestion suggestion = tdUserSuggestionService
+				.findOne(userSuggestionId);
 
 		if (null == suggestion.getIsAnswered() || !suggestion.getIsAnswered()) {
 			suggestion.setIsAnswered(true);
@@ -898,6 +975,7 @@ public class TdManagerUserController {
 
 		return "redirect:/Verwalter/user/suggestion/list";
 	}
+
 	/*----------------用户投诉咨询 end  ---------------------*/
 
 	// @RequestMapping(value="/{type}/list")
@@ -1087,20 +1165,23 @@ public class TdManagerUserController {
 	// }
 
 	@ModelAttribute
-	public void getModel(@RequestParam(value = "userId", required = false) Long userId,
+	public void getModel(
+			@RequestParam(value = "userId", required = false) Long userId,
 			@RequestParam(value = "userLevelId", required = false) Long userLevelId,
 			@RequestParam(value = "userConsultId", required = false) Long userConsultId,
 			@RequestParam(value = "userCommentId", required = false) Long userCommentId,
 			@RequestParam(value = "userReturnId", required = false) Long userReturnId,
 			@RequestParam(value = "userComplainId", required = false) Long userComplainId,
-			@RequestParam(value = "userWithdrawId", required = false) Long userWithdrawId, Model model) {
+			@RequestParam(value = "userWithdrawId", required = false) Long userWithdrawId,
+			Model model) {
 		if (null != userId) {
 			TdUser tdUser = tdUserService.findOne(userId);
 			model.addAttribute("tdUser", tdUser);
 		}
 
 		if (null != userLevelId) {
-			model.addAttribute("tdUserLevel", tdUserLevelService.findOne(userLevelId));
+			model.addAttribute("tdUserLevel",
+					tdUserLevelService.findOne(userLevelId));
 		}
 
 		// if (null != userConsultId) {
@@ -1109,7 +1190,8 @@ public class TdManagerUserController {
 		// }
 
 		if (null != userCommentId) {
-			model.addAttribute("tdUserComment", tdUserCommentService.findOne(userCommentId));
+			model.addAttribute("tdUserComment",
+					tdUserCommentService.findOne(userCommentId));
 		}
 
 		// if (null != userReturnId) {
@@ -1162,20 +1244,26 @@ public class TdManagerUserController {
 	// return dataPage;
 	// }
 
-	private Page<TdUserComment> findTdUserComment(Long statusId, String keywords, int page, int size) {
+	private Page<TdUserComment> findTdUserComment(Long statusId,
+			String keywords, int page, int size) {
 		Page<TdUserComment> dataPage = null;
 
 		if (null == statusId) {
 			if (null == keywords || "".equalsIgnoreCase(keywords)) {
-				dataPage = tdUserCommentService.findAllOrderByIdDesc(page, size);
+				dataPage = tdUserCommentService
+						.findAllOrderByIdDesc(page, size);
 			} else {
-				dataPage = tdUserCommentService.searchAndOrderByIdDesc(keywords, page, size);
+				dataPage = tdUserCommentService.searchAndOrderByIdDesc(
+						keywords, page, size);
 			}
 		} else {
 			if (null == keywords || "".equalsIgnoreCase(keywords)) {
-				dataPage = tdUserCommentService.findByStatusIdOrderByIdDesc(statusId, page, size);
+				dataPage = tdUserCommentService.findByStatusIdOrderByIdDesc(
+						statusId, page, size);
 			} else {
-				dataPage = tdUserCommentService.searchAndFindByStatusIdOrderByIdDesc(keywords, statusId, page, size);
+				dataPage = tdUserCommentService
+						.searchAndFindByStatusIdOrderByIdDesc(keywords,
+								statusId, page, size);
 			}
 		}
 
@@ -1264,16 +1352,19 @@ public class TdManagerUserController {
 		if (null == isRefund) {
 			dataPage = tdOrderService.findByIsCancelTrue(page, size);
 		} else if (true == isRefund) {
-			dataPage = tdOrderService.findByIsCancelTrueAndIsRefundTrue(page, size);
+			dataPage = tdOrderService.findByIsCancelTrueAndIsRefundTrue(page,
+					size);
 		} else if (false == isRefund) {
-			dataPage = tdOrderService.findByIsCancelTrueAndIsRefundFalse(page, size);
+			dataPage = tdOrderService.findByIsCancelTrueAndIsRefundFalse(page,
+					size);
 		}
 
 		return dataPage;
 	}
 
 	private void btnSave(String type, Long[] ids, Double[] sortIds) {
-		if (null == ids || null == sortIds || ids.length < 1 || sortIds.length < 1 || null == type || "".equals(type)) {
+		if (null == ids || null == sortIds || ids.length < 1
+				|| sortIds.length < 1 || null == type || "".equals(type)) {
 			return;
 		}
 
@@ -1355,7 +1446,8 @@ public class TdManagerUserController {
 	}
 
 	private void btnDelete(String type, Long[] ids, Integer[] chkIds) {
-		if (null == ids || null == chkIds || ids.length < 1 || chkIds.length < 1 || null == type || "".equals(type)) {
+		if (null == ids || null == chkIds || ids.length < 1
+				|| chkIds.length < 1 || null == type || "".equals(type)) {
 			return;
 		}
 
@@ -1401,7 +1493,8 @@ public class TdManagerUserController {
 	}
 
 	private void btnVerify(String type, Long[] ids, Integer[] chkIds) {
-		if (null == ids || null == chkIds || ids.length < 1 || chkIds.length < 1 || null == type || "".equals(type)) {
+		if (null == ids || null == chkIds || ids.length < 1
+				|| chkIds.length < 1 || null == type || "".equals(type)) {
 			return;
 		}
 
