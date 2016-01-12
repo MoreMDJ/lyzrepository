@@ -193,7 +193,7 @@ function confirmCopy(id)
             </div>
             <i class="absbg"></i>
             </#if>
-            <h1><span><a href="/Verwalter/goods/edit?cid=${cid!""}&mid=${mid!""}&id=${content.id!""}&__VIEWSTATE=${__VIEWSTATE!""}">${content.title!""}</a></span></h1>
+            <h1><span><a href="/Verwalter/goods/edit?cid=${cid!""}&mid=${mid!""}&id=<#if content.id??>${content.id?c}</#if>&__VIEWSTATE=${__VIEWSTATE!""}">${content.title!""}</a></span></h1>
             <div class="remark">${content.subTitle!""}</div>
             <div class="tools">
                 
@@ -213,7 +213,7 @@ function confirmCopy(id)
             </div>
             <div class="foot">
               <p class="time"><#if content.onSaleTime??>${content.onSaleTime?string("yyyy-MM-dd HH:mm:ss")}</#if></p>
-              <a href="/Verwalter/goods/edit?cid=${cid!""}&mid=${mid!""}&id=${content.id!""}&__VIEWSTATE=${__VIEWSTATE!""}" title="编辑" class="edit">编辑</a>
+              <a href="/Verwalter/goods/edit?cid=${cid!""}&mid=${mid!""}&id=<#if content.id??>${content.id?c}</#if>&__VIEWSTATE=${__VIEWSTATE!""}" title="编辑" class="edit">编辑</a>
               <a href="javascript:confirmCopy(${content.id?c});" title="复制商品" class="show">复制</a>
             </div>
         </div>

@@ -143,14 +143,21 @@ public class TdCommonService {
 			TdPriceList priceList = tdPriceListService
 					.findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue("LS",
 							regionId);
-			headerLineId = priceList.getListHeaderId();
+			if (null != priceList) {
+				headerLineId = priceList.getListHeaderId();
+			}
 		}
 
 		if (null != shortName && !shortName.equals("HR")) {
 			TdPriceList priceList = tdPriceListService
 					.findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue("LYZ",
 							regionId);
-			headerLineId = priceList.getListHeaderId();
+			if (null != priceList) {
+				headerLineId = priceList.getListHeaderId();
+			}
+		}
+		if (null != goods && null != goods.getCode()) {
+			goods.setCode(goods.getCode().trim());
 		}
 		return tdPriceListItemService.findByListHeaderIdAndItemNumAndStartDateActiveBeforeAndEndDateActiveAfter(
 				headerLineId, goods.getCode());
@@ -162,13 +169,6 @@ public class TdCommonService {
 	 * @author dengxiao
 	 */
 	public void getCategory(HttpServletRequest req, ModelMap map) {
-		TdDiySite diySite = getDiySite(req);
-		// 根据门店信息获取到用户当前的价目表
-		Long priceListId = null;
-		if (null != diySite) {
-			priceListId = diySite.getPriceListId();
-		}
-
 		// 查找到所有的一级分类
 		List<TdProductCategory> level_one_categories = tdProductCategoryService.findByParentIdIsNullOrderBySortIdAsc();
 		map.addAttribute("level_one_categories", level_one_categories);
@@ -190,9 +190,7 @@ public class TdCommonService {
 				for (int k = 0; k < goods_list.size(); k++) {
 					TdGoods goods = goods_list.get(k);
 					if (null != goods) {
-
-						TdPriceListItem priceListItem = tdPriceListItemService.findByPriceListIdAndGoodsId(priceListId,
-								goods.getId());
+						TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
 						map.addAttribute("priceListItem" + i + "_" + j + "_" + k, priceListItem);
 					}
 				}
