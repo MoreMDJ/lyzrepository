@@ -13,5 +13,5 @@ public interface TdRequisitionRepo extends PagingAndSortingRepository<TdRequisit
 //	Page<TdRequisition> findByDiySiteTitleContainingAndTypeIdOrRemarkInfoContainingAndTypeIdOrManagerRemarkInfoContainingAndTypeIdOrRequisitionNumberContainingAndTypeId(String keyword, Long typeId, String keyword1, Long typeId1, String keyword2, Long typeId2, String keyword3, Long typeId3, Pageable page );
 	Page<TdRequisition> findByTypeId(Long typeId, Pageable page);
 	TdRequisition findByOrderNumber(String orderNumber);
-	TdRequisition findBySubOrderNumber(String subOrderNumber);
+//	TdRequisition findBySubOrderNumber(String subOrderNumber);
 }

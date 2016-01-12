@@ -32,6 +32,7 @@ public class TdDeliveryInfoDetail {
 	// 仓库编号
 	@Column
 	private String whNo;
+	
 
 	// 开始时间
 	@Column
@@ -61,6 +62,34 @@ public class TdDeliveryInfoDetail {
 	@Column
 	private String ownerNo;
 
+	// 商品编号
+	@Column
+	private String gCode;
+	
+	//实回数量
+	@Column
+	private Integer backNumber;
+	
+	//请求数量 
+	@Column
+	private Integer requstNumber;
+	
+	public Integer getBackNumber() {
+		return backNumber;
+	}
+
+	public void setBackNumber(Integer backNumber) {
+		this.backNumber = backNumber;
+	}
+
+	public Integer getRequstNumber() {
+		return requstNumber;
+	}
+
+	public void setRequstNumber(Integer requstNumber) {
+		this.requstNumber = requstNumber;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -75,6 +104,14 @@ public class TdDeliveryInfoDetail {
 
 	public void setTaskNo(String taskNo) {
 		this.taskNo = taskNo;
+	}
+
+	public String getgCode() {
+		return gCode;
+	}
+
+	public void setgCode(String gCode) {
+		this.gCode = gCode;
 	}
 
 	public String getWhNo() {

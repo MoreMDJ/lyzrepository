@@ -31,7 +31,7 @@ public class TdInterfaceErrorLog {
 
 	// 分单号
 	@Column
-	private Boolean isCommendIndex;
+	private String subOrderNumber;
 
 	// 时间
 	@Column
@@ -59,12 +59,12 @@ public class TdInterfaceErrorLog {
 		this.orderNumber = orderNumber;
 	}
 
-	public Boolean getIsCommendIndex() {
-		return isCommendIndex;
+	public String getSubOrderNumber() {
+		return subOrderNumber;
 	}
 
-	public void setIsCommendIndex(Boolean isCommendIndex) {
-		this.isCommendIndex = isCommendIndex;
+	public void setSubOrderNumber(String subOrderNumber) {
+		this.subOrderNumber = subOrderNumber;
 	}
 
 	public Date getTime() {
@@ -82,4 +82,6 @@ public class TdInterfaceErrorLog {
 	public void setErrorMsg(String errorMsg) {
 		this.errorMsg = errorMsg;
 	}
+	
+
 }

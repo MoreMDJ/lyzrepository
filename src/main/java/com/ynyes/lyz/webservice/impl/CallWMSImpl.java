@@ -48,11 +48,15 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.ynyes.lyz.entity.TdDeliveryInfo;
+import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
+import com.ynyes.lyz.entity.TdInterfaceErrorLog;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdRequisition;
 import com.ynyes.lyz.entity.TdRequisitionGoods;
+import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
+import com.ynyes.lyz.service.TdInterfaceErrorLogService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdRequisitionGoodsService;
 import com.ynyes.lyz.service.TdRequisitionService;
@@ -72,6 +76,12 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdRequisitionGoodsService tdRequisitionGoodsService;
+	
+	@Autowired
+	private TdInterfaceErrorLogService tdInterfaceErrorLogService;
+	
+	@Autowired
+	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -283,6 +293,10 @@ public class CallWMSImpl implements ICallWMS {
 				String c_op_user = null;//作业人员
 				String c_modified_userno = null;//修改人员
 				String c_owner_no = null;//委托业主
+				String c_gcode = null;//商品编号
+				Integer c_d_ack_qty = null; //实回数量
+				Integer c_d_request_qty = null;//请求数量
+				
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -356,10 +370,68 @@ public class CallWMSImpl implements ICallWMS {
 								c_owner_no = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_gcode"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_gcode = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_d_ack_qty"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_d_ack_qty = Integer.parseInt(childNode.getChildNodes().item(0).getNodeValue());
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_d_request_qty"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_d_request_qty = Integer.parseInt(childNode.getChildNodes().item(0).getNodeValue());
+							}
+						}
+						
 					}
 				}
 				
 				//保存 修改
+				TdDeliveryInfoDetail infoDetail = new TdDeliveryInfoDetail();
+				infoDetail.setTaskNo(c_task_no);
+				infoDetail.setWhNo(c_wh_no);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+				if (c_begin_dt != null)
+				{
+					try 
+					{
+						Date startdate = sdf.parse(c_begin_dt);
+						infoDetail.setBeginDt(startdate);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				if (c_end_dt != null)
+				{
+					try 
+					{
+						Date enddate = sdf.parse(c_end_dt);
+						infoDetail.setEndDt(enddate);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				infoDetail.setOpStatus(c_op_status);
+				infoDetail.setOpUser(c_op_user);
+				infoDetail.setModifiedUserno(c_modified_userno);
+				infoDetail.setOwnerNo(c_owner_no);
+				infoDetail.setgCode(c_gcode);
+				infoDetail.setRequstNumber(c_d_request_qty);
+				infoDetail.setBackNumber(c_d_ack_qty);
+				tdDeliveryInfoDetailService.save(infoDetail);
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
@@ -367,15 +439,15 @@ public class CallWMSImpl implements ICallWMS {
 	}
 	
 	// TODO Client
-	public String sendMsgToWMS(List<TdOrder> orderList,String mainOrderNumber)
+	public void sendMsgToWMS(List<TdOrder> orderList,String mainOrderNumber)
 	{
 		if (orderList.size() <= 0)
 		{
-			return "订单表为空";
+			return ;
 		}
 		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase(""))
 		{
-			return "原单号不能为空";
+			return ;
 		}
 		TdRequisition requisition = SaveRequisiton(orderList, mainOrderNumber);
 		
@@ -401,7 +473,24 @@ public class CallWMSImpl implements ICallWMS {
 				catch (Exception e)
 				{
 					e.printStackTrace();
-					return "发送异常";
+					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
+//					return "发送异常";	
+				}
+				String result = null;
+				if (objects != null)
+				{
+					for (Object object : objects) 
+					{
+						result += object;
+					}
+				}
+				Map<String, String> resultMap = chectResult(result);
+				if (resultMap.get("status").equalsIgnoreCase("Y"))
+				{
+				}
+				else
+				{
+					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), resultMap.get("msg"));
 				}
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
@@ -412,28 +501,35 @@ public class CallWMSImpl implements ICallWMS {
 			catch (Exception e)
 			{
 	        	e.printStackTrace();
-	        	return "发送异常";
+	        	writeErrorLog(mainOrderNumber, "无", e.getMessage());
+//	        	return "发送异常";
 	        }
-		}
-		String result = null;
-		if (objects != null)
-		{
-			for (Object object : objects) 
+			String result = null;
+			if (objects != null)
 			{
-				result += object;
+				for (Object object : objects) 
+				{
+					result += object;
+				}
 			}
-		}
-		Map<String, String> resultMap = chectResult(result);
-		if (resultMap.get("status").equalsIgnoreCase("Y"))
-		{
-			return "发送成功";
-		}
-		else 
-		{
-			return resultMap.get("msg");
+			Map<String, String> resultMap = chectResult(result);
+			if (resultMap.get("status").equalsIgnoreCase("Y"))
+			{
+			}
+			else
+			{
+				writeErrorLog(mainOrderNumber, "无", resultMap.get("msg"));
+			}
 		}
 	}
 	
+	
+	/**
+	 * 保存要货单
+	 * @param orderList
+	 * @param mainOrderNumber
+	 * @return
+	 */
 	private TdRequisition SaveRequisiton(List<TdOrder> orderList,String mainOrderNumber)
 	{
 		if (orderList.size() <= 0)
@@ -442,7 +538,7 @@ public class CallWMSImpl implements ICallWMS {
 		}
 		TdOrder order = orderList.get(0);
 		
-		TdRequisition requisition = tdRequisitionService.findBySubOrderNumber(order.getOrderNumber());
+		TdRequisition requisition = tdRequisitionService.findByOrderNumber(mainOrderNumber);
 		if (requisition == null)
 		{
 			requisition = new TdRequisition();
@@ -578,6 +674,7 @@ public class CallWMSImpl implements ICallWMS {
 		}
 		return "";
 	}
+	
 	/**
 	 * 判断接口返回状态
 	 * @param resultStr
@@ -642,5 +739,14 @@ public class CallWMSImpl implements ICallWMS {
 //		tdRequisitionGoodsService.save(requisitionGoods);
 //	}
 
+	
+	private void writeErrorLog(String orderNumber,String subOrderNumber,String errorMsg)
+	{
+		TdInterfaceErrorLog errorLog = new TdInterfaceErrorLog();
+		errorLog.setErrorMsg(errorMsg);
+		errorLog.setOrderNumber(orderNumber);
+		errorLog.setSubOrderNumber(subOrderNumber);
+		tdInterfaceErrorLogService.save(errorLog);
+	}
 }
 // END SNIPPET: service
