@@ -51,7 +51,7 @@ public class TdDiySiteController {
 	public String testWMS()
 	{
 		CallWMSImpl iml = new CallWMSImpl();
-		String result = iml.sendMsgToWMS("test");
-		return result;
+//		String result = iml.sendMsgToWMS("test","order");
+		return "";
 	}
 }

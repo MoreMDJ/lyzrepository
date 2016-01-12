@@ -40,7 +40,7 @@ public class TdRequisition {
 	@Column
 	private Long customerId;
 	
-	// 原单号（订单号）
+	// 原单号（主订单号）
 	@Column
 	private String orderNumber;
 	
@@ -50,8 +50,7 @@ public class TdRequisition {
 	
 	// 送货时间
 	@Column
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date deliveryTime;
+    private String deliveryTime;
 	
 	// 收货人(姓名)
 	@Column
@@ -135,11 +134,11 @@ public class TdRequisition {
 		this.totalPrice = totalPrice;
 	}
 
-	public Date getDeliveryTime() {
+	public String getDeliveryTime() {
 		return deliveryTime;
 	}
 
-	public void setDeliveryTime(Date deliveryTime) {
+	public void setDeliveryTime(String deliveryTime) {
 		this.deliveryTime = deliveryTime;
 	}
 

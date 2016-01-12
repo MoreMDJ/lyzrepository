@@ -24,7 +24,7 @@ public class TdRequisitionGoods {
     
     // 商品编码
     @Column
-    private Long goodsCode;
+    private String goodsCode;
     
     // 商品名称
     @Column
@@ -37,6 +37,14 @@ public class TdRequisitionGoods {
     // 商品数量
     @Column
     private Long quantity;
+    
+    // 原单号
+    @Column
+    private String orderNumber;
+    
+    // 分单号
+    @Column
+    private String subOrderNumber;
 
 	public Long getId() {
 		return id;
@@ -46,11 +54,11 @@ public class TdRequisitionGoods {
 		this.id = id;
 	}
 
-	public Long getGoodsCode() {
+	public String getGoodsCode() {
 		return goodsCode;
 	}
 
-	public void setGoodsCode(Long goodsCode) {
+	public void setGoodsCode(String goodsCode) {
 		this.goodsCode = goodsCode;
 	}
 
@@ -76,6 +84,22 @@ public class TdRequisitionGoods {
 
 	public void setQuantity(Long quantity) {
 		this.quantity = quantity;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+
+	public String getSubOrderNumber() {
+		return subOrderNumber;
+	}
+
+	public void setSubOrderNumber(String subOrderNumber) {
+		this.subOrderNumber = subOrderNumber;
 	}
     
 }

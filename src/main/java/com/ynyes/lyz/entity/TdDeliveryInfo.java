@@ -60,6 +60,18 @@ public class TdDeliveryInfo {
 	// 委托业主
 	@Column
 	private String ownerNo;
+	
+	// 分单号（订单号）
+	@Column
+	private String orderNumber;
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
 
 	public Long getId() {
 		return id;

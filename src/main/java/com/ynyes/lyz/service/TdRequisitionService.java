@@ -93,6 +93,14 @@ public class TdRequisitionService {
 			}
 	    	return repository.findByOrderNumber(orderNumber);
 	    }
+	    public TdRequisition findBySubOrderNumber(String subOrderNumber)
+	    {
+	    	if (subOrderNumber == null)
+	    	{
+				return null;
+			}
+	    	return repository.findBySubOrderNumber(subOrderNumber);
+	    }
 	 
 	    
 	    public Page<TdRequisition> findAll(int page, int size){

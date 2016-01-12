@@ -24,7 +24,11 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
@@ -33,8 +37,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
+import org.apache.cxf.wsdl.TParam;
 import org.apache.geronimo.mail.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,9 +49,12 @@ import org.xml.sax.SAXException;
 
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdRequisition;
+import com.ynyes.lyz.entity.TdRequisitionGoods;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdOrderService;
+import com.ynyes.lyz.service.TdRequisitionGoodsService;
 import com.ynyes.lyz.service.TdRequisitionService;
 import com.ynyes.lyz.webservice.ICallWMS;
 
@@ -60,6 +69,9 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdRequisitionService tdRequisitionService;
+	
+	@Autowired
+	private TdRequisitionGoodsService tdRequisitionGoodsService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -140,6 +152,7 @@ public class CallWMSImpl implements ICallWMS {
 				String c_op_user = null;//作业人员
 				String c_modified_userno = null;//修改人员
 				String c_owner_no = null;//委托业主
+				String c_reserved1 = null;//主单号
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -354,80 +367,280 @@ public class CallWMSImpl implements ICallWMS {
 	}
 	
 	// TODO Client
-	public String sendMsgToWMS(String orderNumber)
+	public String sendMsgToWMS(List<TdOrder> orderList,String mainOrderNumber)
 	{
-		TdOrder tdOrder = tdOrderService.findByOrderNumber(orderNumber);
-		
-		if (tdOrder == null)
+		if (orderList.size() <= 0)
 		{
-			return "订单不存在";
+			return "订单表为空";
 		}
+		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase(""))
+		{
+			return "原单号不能为空";
+		}
+		TdRequisition requisition = SaveRequisiton(orderList, mainOrderNumber);
 		
-		String JAVA_PATH = System.getenv("JAVA_HOME");
-		System.err.println("JAVA_PATH:"+JAVA_PATH);
-		String PATH = System.getenv("Path");
-		System.err.println("PATH:" + PATH);
+//		String JAVA_PATH = System.getenv("JAVA_HOME");
+//		System.err.println("JAVA_PATH:"+JAVA_PATH);
+//		String PATH = System.getenv("Path");
+//		System.err.println("PATH:" + PATH);
 		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();  
 		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
 		//url为调用webService的wsdl地址
 		QName name = new QName("http://tempuri.org/","GetErpInfo");
-		String xmlStr = "<DLAPP>"
-				+"<TABLE>"
-				+"<LIST_HEADER_ID>157265</LIST_HEADER_ID>"
-				+"<SOB_ID>2033</SOB_ID>"
-				+"<NAME>电商测试价目表（LYZ1）</NAME>"
-				+"<ACTIVE_FLAG>Y</ACTIVE_FLAG>"
-				+"<DESCRIPTION>LYZ1产品</DESCRIPTION>"
-				+"<CURRENCY_CODE>CNY</CURRENCY_CODE>"
-				+"<START_DATE_ACTIVE>2015-12-01 00:00:00</START_DATE_ACTIVE>"
-				+"<END_DATE_ACTIVE></END_DATE_ACTIVE>"
-				+"<ORG_ID>95</ORG_ID>"
-				+"<PRICE_TYPE>LYZ</PRICE_TYPE>"
-				+"<PRICE_TYPE_DESC>乐易装产品价格</PRICE_TYPE_DESC>"
-				+"<ATTRIBUTE1></ATTRIBUTE1>"
-				+"<ATTRIBUTE2></ATTRIBUTE2>"
-				+"<ATTRIBUTE3></ATTRIBUTE3>"
-				+"<ATTRIBUTE4></ATTRIBUTE4>"
-				+"<ATTRIBUTE5></ATTRIBUTE5>"
-				+"</TABLE>"
-				+"</DLAPP>";
-		String encodeXML = XMLHelper(tdOrder, 1);
-		byte[] bs = xmlStr.getBytes();
-		byte[] encodeByte = Base64.encode(bs);
-		try {
-			encodeXML = new String(encodeByte, "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-		}
-		
 		//paramvalue为参数值 
 		Object[] objects = null;
-		try {
-        	objects = client.invoke(name,"CUXAPP_OM_PRICE_LIST_H_OUT","1",encodeXML);
-        } catch (Exception e) {
-        	e.printStackTrace();
-        	return "发送异常";
-        }
+		if (requisition != null)
+		{
+			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList())
+			{
+				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
+				try
+				{
+					objects = client.invoke(name,"td_requisition_goods","1",xmlGoodsEncode);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					return "发送异常";
+				}
+			}
+			String xmlEncode = XMLMakeAndEncode(requisition, 1);
+			try
+			{
+	        	objects = client.invoke(name,"td_requisition","1",xmlEncode);
+	        }
+			catch (Exception e)
+			{
+	        	e.printStackTrace();
+	        	return "发送异常";
+	        }
+		}
+		String result = null;
 		if (objects != null)
 		{
 			for (Object object : objects) 
 			{
-				System.out.println(object);
+				result += object;
 			}
 		}
-		return "发送成功";
+		Map<String, String> resultMap = chectResult(result);
+		if (resultMap.get("status").equalsIgnoreCase("Y"))
+		{
+			return "发送成功";
+		}
+		else 
+		{
+			return resultMap.get("msg");
+		}
 	}
 	
-	private String XMLHelper(TdOrder order,Integer type)
+	private TdRequisition SaveRequisiton(List<TdOrder> orderList,String mainOrderNumber)
 	{
-		TdRequisition requisition = tdRequisitionService.findByOrderNumber(order.getOrderNumber());
+		if (orderList.size() <= 0)
+		{
+			return null;
+		}
+		TdOrder order = orderList.get(0);
+		
+		TdRequisition requisition = tdRequisitionService.findBySubOrderNumber(order.getOrderNumber());
 		if (requisition == null)
 		{
+			requisition = new TdRequisition();
+			requisition.setDiySiteId(order.getDiySiteId());
+			requisition.setDiySiteTitle(order.getDiySiteName());
+			requisition.setCustomerName(order.getUsername());
+			requisition.setCustomerId(order.getUserId());
+			requisition.setOrderNumber(mainOrderNumber);
+			requisition.setReceiveName(order.getShippingName());
+			requisition.setReceiveAddress(order.getShippingAddress());
+			requisition.setReceivePhone(order.getShippingPhone());
+			requisition.setTotalPrice(order.getTotalPrice());
+			requisition.setTypeId(1L);
+			String dayTime = order.getDeliveryDate();
+			dayTime = dayTime + " " + order.getDeliveryDetailId() + ":30";
+			requisition.setDeliveryTime(dayTime);
 			
+			List<TdRequisitionGoods> requisitionGoodsList = new ArrayList<>();
+			for (TdOrder tdOrder : orderList) 
+			{
+				for (TdOrderGoods orderGoods : tdOrder.getOrderGoodsList())
+				{
+					TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+					requisitionGoods.setGoodsCode(orderGoods.getSku());
+					requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+					requisitionGoods.setPrice(orderGoods.getPrice());
+					requisitionGoods.setQuantity(orderGoods.getQuantity());
+					requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+					requisitionGoods.setOrderNumber(mainOrderNumber);
+					tdRequisitionGoodsService.save(requisitionGoods);
+					requisitionGoodsList.add(requisitionGoods);
+				}
+				for (TdOrderGoods orderGoods : tdOrder.getGiftGoodsList())
+				{
+					TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+					requisitionGoods.setGoodsCode(orderGoods.getSku());
+					requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+					requisitionGoods.setPrice(orderGoods.getPrice());
+					requisitionGoods.setQuantity(orderGoods.getQuantity());
+					requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+					requisitionGoods.setOrderNumber(mainOrderNumber);
+					tdRequisitionGoodsService.save(requisitionGoods);
+					requisitionGoodsList.add(requisitionGoods);
+				}
+				for (TdOrderGoods orderGoods : tdOrder.getPresentedList())
+				{
+					TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+					requisitionGoods.setGoodsCode(orderGoods.getSku());
+					requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+					requisitionGoods.setPrice(orderGoods.getPrice());
+					requisitionGoods.setQuantity(orderGoods.getQuantity());
+					requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+					requisitionGoods.setOrderNumber(mainOrderNumber);
+					tdRequisitionGoodsService.save(requisitionGoods);
+					requisitionGoodsList.add(requisitionGoods);
+				}
+			}
+			requisition.setRequisiteGoodsList(requisitionGoodsList);
+			requisition = tdRequisitionService.save(requisition);
 		}
-		
+		return requisition;
+	}
+	
+	/**
+	 * 根据传进来的类型返回相应的XML
+	 * @param object
+	 * @param type  1：tdRequisition  2：tdRequisitionGoods
+	 * @return
+	 */
+	private String XMLMakeAndEncode(Object object,Integer type)
+	{
+		if (type == 1)
+		{
+			TdRequisition requisition = (TdRequisition)object;
+			String xmlStr = "<DLAPP>"
+					+"<TABLE>"
+					+"<ID>"+ requisition.getId() +"</ID>"
+					+"<diySiteTitle>"+ requisition.getDiySiteTitle() +"</diySiteTitle>"
+					+"<diySiteId>"+ requisition.getDiySiteId() +"</diySiteId>"
+					+"<customerName>"+ requisition.getCustomerName() +"</customerName>"
+					+"<customerId>"+ requisition.getCustomerId() +"</customerId>"
+					+"<orderNumber>"+ requisition.getOrderNumber() +"</orderNumber>"
+					+"<totalPrice>"+ requisition.getTotalPrice() +"</totalPrice>"
+					+"<deliveryTime>"+ requisition.getDeliveryTime() +"</deliveryTime>"
+					+"<receiveName>"+ requisition.getReceiveName() +"</receiveName>"
+					+"<receiveAddress>"+ requisition.getReceiveAddress() +"</receiveAddress>"
+					+"<receivePhone>"+ requisition.getReceivePhone() +"</receivePhone>"
+					+"<orderTime>"+ requisition.getOrderTime() +"</orderTime>"
+					+"<typeId>"+ requisition +"</typeId>"
+					+"</TABLE>"
+					+"</DLAPP>";
+			
+			String encodeXML = null;
+			byte[] bs = xmlStr.getBytes();
+			byte[] encodeByte = Base64.encode(bs);
+			try 
+			{
+				encodeXML = new String(encodeByte, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e1)
+			{
+				System.err.println("MDJ_WMS:XML 编码出错!");
+				return "FAILED";
+			}
+		}
+		if (type == 2)
+		{
+			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods)object;
+			String xmlStr = "<DLAPP>"
+							+"<TABLE>"
+							+"<ID>"+ requisitionGoods.getId() +"</ID>"
+							+"<goodsCode>"+ requisitionGoods.getGoodsCode() +"</goodsCode>"
+							+"<goodsTitle>"+ requisitionGoods.getGoodsTitle() +"</goodsTitle>"
+							+"<price>"+ requisitionGoods.getPrice() +"</price>"
+							+"<quantity>"+ requisitionGoods.getQuantity() +"</quantity>"
+							+"<orderNumber>"+ requisitionGoods.getOrderNumber() +"</orderNumber>"
+							+"<subOrderNumber>"+ requisitionGoods.getSubOrderNumber() +"</subOrderNumber>"
+							+"</TABLE>"
+							+"</DLAPP>";
+			
+			String encodeXML = null;
+			byte[] bs = xmlStr.getBytes();
+			byte[] encodeByte = Base64.encode(bs);
+			try 
+			{
+				encodeXML = new String(encodeByte, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e1)
+			{
+				System.err.println("MDJ_WMS:XML 编码出错!");
+				return "FAILED";
+			}
+		}
 		return "";
 	}
+	/**
+	 * 判断接口返回状态
+	 * @param resultStr
+	 * @return
+	 */
+	private Map<String, String> chectResult(String resultStr)
+	{
+		Map<String , String> map = new HashMap<String,String>();
+		map.put("status", "n");
+		// 解析XML
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = null;
+		try
+		{
+			builder = factory.newDocumentBuilder();
+		}
+		catch (ParserConfigurationException e) 
+		{
+			e.printStackTrace();
+			map.put("msg", "返回参数错误 -1");
+			return map;
+		}
+
+		Document document = null;
+
+		InputSource is = new InputSource(new StringReader(resultStr));
+
+		try
+		{
+			document = builder.parse(is);
+		} 
+		catch (SAXException | IOException e)
+		{
+			e.printStackTrace();
+			map.put("msg", "返回参数错误 -2");
+		}
+//		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
+		NodeList nodeList = document.getElementsByTagName("STATUS");
+		Node node = nodeList.item(0);
+		NodeList childNodeList = node.getChildNodes();
+		Node nodeCode = childNodeList.item(0);
+		Integer code = Integer.parseInt(nodeCode.getNodeValue());
+		if (code == 1)
+		{
+			String messageStr = childNodeList.item(1).getNodeValue();
+			map.put("msg", messageStr);
+			return map;
+		}
+		map.put("status", "y");
+		return map;
+	}
+	
+//	private TdRequisitionGoods saveRequisitionGoodsFromOrderGoods(TdOrderGoods orderGoods)
+//	{
+//		TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+//		requisitionGoods.setGoodsCode(orderGoods.getSku());
+//		requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+//		requisitionGoods.setPrice(orderGoods.getPrice());
+//		requisitionGoods.setQuantity(orderGoods.getQuantity());
+//		requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+//		requisitionGoods.setOrderNumber(mainOrderNumber);
+//		tdRequisitionGoodsService.save(requisitionGoods);
+//	}
 
 }
 // END SNIPPET: service

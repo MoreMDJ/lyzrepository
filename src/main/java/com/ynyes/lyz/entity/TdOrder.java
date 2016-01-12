@@ -28,7 +28,7 @@ public class TdOrder {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	// 订单号
+	// 订单号(分单号)
 	@Column(unique = true)
 	private String orderNumber;
 
@@ -212,7 +212,7 @@ public class TdOrder {
 	@Column
 	private Boolean isOnlinePay;
 
-	// 配送日期
+	// 配送日期(yyyy-MM-dd)
 	@Column
 	private String deliveryDate;
 
