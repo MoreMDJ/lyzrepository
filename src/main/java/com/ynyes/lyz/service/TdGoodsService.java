@@ -480,6 +480,24 @@ public class TdGoodsService {
 		return repository.findByinventoryItemId(inventoryItemId);
 	}
 	
+	/**
+	 * @author MDJ 接口查询
+	 */
+	//通过物料id查询
+	public List<TdGoods> findByInvCategoryId(Long invCategoryId)
+	{
+		if (invCategoryId == null)
+		{
+			return null;
+		}
+		return repository.findByInvCategoryId(invCategoryId);
+	}
+	
+	//查找空的category
+	public List<TdGoods> findByCategoryIdIsNull()
+	{
+		return repository.findByCategoryIdIsNull();
+	}
 	
 	/**
 	 * 搜索商品

@@ -310,11 +310,12 @@ function del_goods_comb(obj) {
                         <#if !goods??>
                         <option value="">请选择类别...</option>
                         </#if>
-                        <#if category_list??>
-                            <#list category_list as c>
-                                <option value="${c.id!""}" <#if goods?? && goods.categoryId==c.id>selected="selected"</#if>><#if c.layerCount?? && c.layerCount gt 1><#list 1..(c.layerCount-1) as a>　</#list>├ </#if>${c.title!""}</option>
-                            </#list>
-                        </#if>
+                            <#if category_list??>
+                                <#list category_list as c>
+                                    <option value="${c.id!""}" <#if goods?? && goods.categoryId?? && goods.categoryId==c.id>selected="selected"</#if>><#if c.layerCount?? && c.layerCount gt 1><#list 1..(c.layerCount-1) as a>　</#list>├ </#if>${c.title!""}</option>
+                                </#list>
+                            </#if>
+                        <#if goods.bradCategoryId??><option value="${goods.bradCategoryId?c}" name="bradCategoryId"></option></#if>
                     </select>
                 </div>
             </dd>

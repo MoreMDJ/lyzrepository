@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.management;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -75,6 +76,29 @@ public class TdManagerGoodsController {
 	@Autowired // zhangji 2015-12-30 16:26:29
 	TdPriceListService tdPriceListService;
 
+	
+	
+	@RequestMapping(value = "/refresh")
+	public String refreshCategorg()
+	{
+		List<TdProductCategory> parentIdIsNullCategory = tdProductCategoryService.findByParentIdNotNullOrderBySortIdAsc();
+		for (TdProductCategory tdProductCategory : parentIdIsNullCategory) 
+		{
+			List<TdGoods> tdGood_list = tdGoodsService.findByInvCategoryId(tdProductCategory.getInvCategoryId());
+			if (tdGood_list == null || tdGood_list.size() <= 0)
+			{
+				continue;
+			}
+			for (int i = 0; i < tdGood_list.size(); i++) 
+			{
+				TdGoods tdGoods = tdGood_list.get(i);
+				tdGoods.setCategoryId(tdProductCategory.getId());
+				tdGoodsService.save(tdGoods, "1");
+			}
+		}
+		return "redirect:/Verwalter/goods/list";
+	}
+	
 	@RequestMapping(value = "/edit/parameter/{categoryId}", method = RequestMethod.POST)
 	public String parameter(@PathVariable Long categoryId, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -297,6 +321,8 @@ public class TdManagerGoodsController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("categoryId", categoryId);
 		map.addAttribute("property", property);
+		List<TdGoods> findByCategoryIdIsNull = tdGoodsService.findByCategoryIdIsNull();
+		map.addAttribute("left_goods",findByCategoryIdIsNull.size());
 
 		// 文字列表模式
 		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewTxt")) {
