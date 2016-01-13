@@ -367,9 +367,10 @@ public class TdGoodsController {
 			return "redirect:/login";
 		}
 
-		tdCommonService.addUserRecentVisit(req, map, goodsId);
-
 		TdGoods goods = tdGoodsService.findOne(goodsId);
+		
+		tdCommonService.addUserRecentVisit(req, map, goodsId);
+		
 		// 根据门店信息获取用户的价目表
 		TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
 		map.addAttribute("priceListItem", priceListItem);

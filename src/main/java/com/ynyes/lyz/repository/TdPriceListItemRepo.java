@@ -55,5 +55,9 @@ public interface TdPriceListItemRepo
 	 */
 	List<TdPriceListItem> findByListHeaderIdAndItemNumAndStartDateActiveBeforeAndEndDateActiveAfter(Long headerId, String SKU,
 			Date begin, Date finish);
-
+	
+	List<TdPriceListItem> findByPriceListIdAndGoodsIdAndStartDateActiveBeforeAndEndDateActiveIsNullOrPriceListIdAndGoodsIdAndStartDateActiveBeforeAndEndDateActiveAfterOrPriceListIdAndGoodsIdAndStartDateActiveIsNull(
+																		Long listHeaderId1,Long inventoryItemId1,Date start,
+																		Long listHeaderId2,Long inventoryItemId2,Date start2,Date end,
+																		Long listHeaderId3,Long inventoryItemId3);
 }

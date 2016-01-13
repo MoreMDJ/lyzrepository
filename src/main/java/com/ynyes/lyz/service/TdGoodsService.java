@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import com.ynyes.lyz.entity.TdGoods;
+import com.ynyes.lyz.entity.TdPriceList;
+import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.repository.TdGoodsRepo;
 import com.ynyes.lyz.util.SiteMagConstant;
@@ -44,6 +46,9 @@ public class TdGoodsService {
 
 	@Autowired
 	TdPriceListService tdPriceListService;
+	
+	@Autowired
+	TdPriceListItemService tdPriceListItemService;
 
 	// @Autowired
 	// TdGoodsParameterService tdGoodsParameterService;
@@ -1360,7 +1365,7 @@ public class TdGoodsService {
 			return null;
 		}
 		
-		String productFlag = goods.getProductFlag();
+		String productFlag = goods.getBrandTitle();
 		
 		if (null == productFlag)
 		{
@@ -1370,17 +1375,17 @@ public class TdGoodsService {
 		String priceType = null;
 		
 		// 零售价
-		if (productFlag.equalsIgnoreCase("HR"))
+		if (productFlag.equalsIgnoreCase("华润"))
 		{
 			priceType = "LS";
 		}
 		// 乐意装价
-		else if (productFlag.equalsIgnoreCase("LYZ"))
+		else if (productFlag.equalsIgnoreCase("乐易装"))
 		{
 			priceType = "LYZ";
 		}
 		// 莹润价
-		else if (productFlag.equalsIgnoreCase("YR"))
+		else if (productFlag.equalsIgnoreCase("莹润"))
 		{
 			priceType = "YR";
 		}
@@ -1390,9 +1395,25 @@ public class TdGoodsService {
 			return null;
 		}
 		
-		tdPriceListService
+		List<TdPriceList> priceList_list = tdPriceListService.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
 		
-		return 0.0;
+		if(null == priceList_list || priceList_list.size()==0 || priceList_list.size() >1)
+		{
+			return null;
+		}
+		
+		// 价目表ID
+		Long list_header_id =0L; 
+		list_header_id = priceList_list.get(0).getListHeaderId();
+		
+		List<TdPriceListItem> priceItemList = tdPriceListItemService.findByListHeaderIdAndInventoryItemIdAndStartDateActiveAndEndDateActive(list_header_id, inventoryItemId, new Date(), new Date());
+		
+		if(null == priceItemList || priceItemList.size() ==0 || priceItemList.size() >1)
+		{
+			return null;
+		}
+		
+		return priceItemList.get(0).getSalePrice();
 	}
 	
 	

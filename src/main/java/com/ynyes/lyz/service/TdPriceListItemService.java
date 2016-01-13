@@ -168,4 +168,17 @@ public class TdPriceListItemService {
 			return list.get(0);
 		}
 	}
+	
+	List<TdPriceListItem> findByListHeaderIdAndInventoryItemIdAndStartDateActiveAndEndDateActive(Long lIstHearderId,Long inventoryItemId,Date start,Date end)
+	{
+		if(null == lIstHearderId || null == inventoryItemId || null == start)
+		{
+			return null;
+		}
+		
+		return repository.findByPriceListIdAndGoodsIdAndStartDateActiveBeforeAndEndDateActiveIsNullOrPriceListIdAndGoodsIdAndStartDateActiveBeforeAndEndDateActiveAfterOrPriceListIdAndGoodsIdAndStartDateActiveIsNull(
+										lIstHearderId, inventoryItemId, start,
+										lIstHearderId, inventoryItemId, start, end,
+										lIstHearderId,inventoryItemId);
+	}
 }

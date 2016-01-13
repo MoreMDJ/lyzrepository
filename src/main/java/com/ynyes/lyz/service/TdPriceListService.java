@@ -122,5 +122,17 @@ public class TdPriceListService {
 		}
 
 	}
+	
+	public List<TdPriceList> findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(Long sobId,String priceType,Date start,Date end)
+	{
+		if(null == sobId || null == priceType || null == start)
+		{
+			return null;
+		}
+		return repository.findByCityIdAndPriceTypeAndStartDateActiveBeforeAndEndDateActiveIsNullOrCityIdAndPriceTypeAndStartDateActiveBeforeAndEndDateActiveAfterOrCityIdAndPriceTypeAndStartDateActiveIsNull(
+																					sobId, priceType, start,
+																					sobId, priceType, start, end,
+																					sobId,priceType);
+	}
 
 }

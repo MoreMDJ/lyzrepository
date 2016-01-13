@@ -22,8 +22,8 @@ public interface TdPriceListRepo extends
 
 	List<TdPriceList> findBySobId(Long sobId);
 
-	List<TdPriceList> findBySobIdAndPriceTypeAndStartDateActiveBeforeAndEndDateActiveIsNullOrSobIdAndPriceTypeAndStartDateActiveBeforeAndEndDateActiveAfter(
-			Long sobId, String priceType, Date start, Long sobId2, String priceType2, Date start2, Date end2);
+	List<TdPriceList> findByCityIdAndPriceTypeAndStartDateActiveBeforeAndEndDateActiveIsNullOrCityIdAndPriceTypeAndStartDateActiveBeforeAndEndDateActiveAfterOrCityIdAndPriceTypeAndStartDateActiveIsNull(
+			Long sobId, String priceType, Date start, Long sobId2, String priceType2, Date start2, Date end2,Long sobId3,String priceType3);
 
 	/**
 	 * 根据priceType（价目表类型）和cityId查找未过期且可用的价目表
