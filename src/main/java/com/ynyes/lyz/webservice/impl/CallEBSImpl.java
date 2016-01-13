@@ -770,6 +770,8 @@ public class CallEBSImpl implements ICallEBS {
 				Long category_id = null; //类别ID
 				String concatenated_segments = null;//物料类别组合
 				String category_set_name = null;//类别集名称
+				String segment1 = null;//一级分类
+				String segment2 = null;//二级分类
 
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -802,6 +804,20 @@ public class CallEBSImpl implements ICallEBS {
 								category_set_name = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
+						else if (childNode.getNodeName().equalsIgnoreCase("segment1"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								segment1 = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("segment2"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								segment2 = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
 
 					}
 				}
@@ -813,6 +829,8 @@ public class CallEBSImpl implements ICallEBS {
 				}
 				tdLyzParameter.setConcatenatedSegments(concatenated_segments);
 				tdLyzParameter.setCategorySetName(category_set_name);
+				tdLyzParameter.setSegment1(segment1);
+				tdLyzParameter.setSegment2(segment2);
 				tdLyzParameterService.save(tdLyzParameter);
 				
 			}

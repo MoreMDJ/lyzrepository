@@ -33,6 +33,30 @@ public class TdLyzParameter {
     @Column
     private Long categoryId;
     
+    // 一级分类
+    @Column
+    private String segment1;
+    
+    // 一级分类
+    @Column
+    private String segment2;
+    
+	public String getSegment1() {
+		return segment1;
+	}
+
+	public void setSegment1(String segment1) {
+		this.segment1 = segment1;
+	}
+
+	public String getSegment2() {
+		return segment2;
+	}
+
+	public void setSegment2(String segment2) {
+		this.segment2 = segment2;
+	}
+
 	public Long getCategoryId() {
 		return categoryId;
 	}
