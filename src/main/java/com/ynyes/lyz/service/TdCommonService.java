@@ -20,7 +20,6 @@ import org.springframework.ui.ModelMap;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
-import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCoupon;
@@ -85,9 +84,6 @@ public class TdCommonService {
 	private TdSubdistrictService tdSubdistrictService;
 
 	@Autowired
-	private TdBrandService tdBrandService;
-
-	@Autowired
 	private TdPriceListService tdPriceListService;
 
 	/**
@@ -128,39 +124,64 @@ public class TdCommonService {
 	 * @author dengxiao
 	 */
 	public TdPriceListItem getGoodsPrice(HttpServletRequest req, TdGoods goods) {
-		// 获取登陆用户门店
+		// 获取登陆用户的门店
 		TdDiySite diySite = this.getDiySite(req);
-		// 获取分公司的sobId（即是门店的regionId）
-		Long regionId = diySite.getRegionId();
-		// 获取指定商品的品牌
-		Long brandId = goods.getBrandId();
-		TdBrand brand = tdBrandService.findOne(brandId);
-		// 获取品牌简称
-		String shortName = brand.getShortName();
+		// 获取sobId
+		Long sobId = diySite.getRegionId();
 
-		Long headerLineId = null;
-		if (null != shortName && shortName.equals("HR")) {
-			TdPriceList priceList = tdPriceListService
-					.findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue("LS",
-							regionId);
-			if (null != priceList) {
-				headerLineId = priceList.getListHeaderId();
-			}
+		if (null == goods) {
+			return null;
 		}
 
-		if (null != shortName && !shortName.equals("HR")) {
-			TdPriceList priceList = tdPriceListService
-					.findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlagTrue("LYZ",
-							regionId);
-			if (null != priceList) {
-				headerLineId = priceList.getListHeaderId();
-			}
+		if (null == goods.getInventoryItemId()) {
+			return null;
 		}
-		if (null != goods && null != goods.getCode()) {
-			goods.setCode(goods.getCode().trim());
+
+		String productFlag = goods.getBrandTitle();
+
+		if (null == productFlag) {
+			return null;
 		}
-		return tdPriceListItemService.findByListHeaderIdAndItemNumAndStartDateActiveBeforeAndEndDateActiveAfter(
-				headerLineId, goods.getCode());
+
+		String priceType = null;
+
+		// 零售价
+		if (productFlag.equalsIgnoreCase("华润")) {
+			priceType = "LS";
+		}
+		// 乐意装价
+		else if (productFlag.equalsIgnoreCase("乐易装")) {
+			priceType = "LYZ";
+		}
+		// 莹润价
+		else if (productFlag.equalsIgnoreCase("莹润")) {
+			priceType = "YR";
+		}
+		// 不支持的价格
+		else {
+			return null;
+		}
+
+		List<TdPriceList> priceList_list = tdPriceListService
+				.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
+
+		if (null == priceList_list || priceList_list.size() == 0 || priceList_list.size() > 1) {
+			return null;
+		}
+
+		// 价目表ID
+		Long list_header_id = 0L;
+		list_header_id = priceList_list.get(0).getListHeaderId();
+
+		List<TdPriceListItem> priceItemList = tdPriceListItemService
+				.findByListHeaderIdAndInventoryItemIdAndStartDateActiveAndEndDateActive(list_header_id,
+						goods.getInventoryItemId(), new Date(), new Date());
+
+		if (null == priceItemList || priceItemList.size() == 0 || priceItemList.size() > 1) {
+			return null;
+		}
+
+		return priceItemList.get(0);
 	}
 
 	/**
@@ -185,15 +206,19 @@ public class TdCommonService {
 				TdProductCategory two_category = level_two_categories.get(j);
 				List<TdGoods> goods_list = tdGoodsService
 						.findByCategoryIdAndIsOnSaleTrueOrderBySortIdAsc(two_category.getId());
-				map.addAttribute("goods_list" + i + "_" + j, goods_list);
+				List<TdGoods> putaway = new ArrayList<>();
 				// 遍历所有的商品，查询在指定城市的商品的价格
 				for (int k = 0; k < goods_list.size(); k++) {
 					TdGoods goods = goods_list.get(k);
 					if (null != goods) {
 						TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
-						map.addAttribute("priceListItem" + i + "_" + j + "_" + k, priceListItem);
+						if (null != priceListItem) {
+							putaway.add(goods);
+							map.addAttribute("priceListItem" + i + "_" + j + "_" + k, priceListItem);
+						}
 					}
 				}
+				map.addAttribute("goods_list" + i + "_" + j, putaway);
 			}
 		}
 	}

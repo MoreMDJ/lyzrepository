@@ -22,6 +22,34 @@
             <#-- win_cla();//分类弹窗-->        
             footer();//底部居中
             var aBox = $('.lei_box01');
+            var aBtn = $('.lei_box');
+            for(var i=0;i<aBtn.length;i++){
+                go(aBtn[i]);
+            };
+            function go(obj){
+                var oBtn = obj.children[0];
+                var aShow = obj.getElementsByTagName('div'); 
+                var onOff = true;
+                for(var i=0;i<aShow.length;i++){
+                    aShow[i].style.display = 'none';
+                };
+                oBtn.onclick = function(){
+                    if(onOff){
+                        for(var i=0;i<aShow.length;i++){
+//                          richMove(aShow[i],{height:61},10)
+                        aShow[i].style.display = 'block';
+                            console.log(0)
+                        };
+                    }else{
+                        for(var i=0;i<aShow.length;i++){
+//                          richMove(aShow[i],{height:0},10)
+                            aShow[i].style.display = 'none';
+                        };  
+                    };
+                    onOff=!onOff;
+                };
+            };
+            
             for(var i=0;i<aBox.length;i++){
                 go_go(aBox[i]);
             };

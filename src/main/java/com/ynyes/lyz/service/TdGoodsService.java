@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -1341,80 +1343,4 @@ public class TdGoodsService {
 		}
 		return repository.findByTitleContainingOrSubTitleContainingOrCodeContainingOrderBySortIdDesc(keywords,keywords,keywords);
 	}
-	
-	
-	/**
-	 * 获取价格
-	 * 
-	 * @param sobId 分公司ID
-	 * @param inventoryItemId 物料ID
-	 * @return
-	 */
-	public Double getPrice(Long sobId, Long inventoryItemId)
-	{
-		if (null == sobId || null == inventoryItemId)
-		{
-			return null;
-		}
-		
-		// 查找物料
-		TdGoods goods = repository.findByinventoryItemId(inventoryItemId);
-		
-		if (null == goods)
-		{
-			return null;
-		}
-		
-		String productFlag = goods.getBrandTitle();
-		
-		if (null == productFlag)
-		{
-			return null;
-		}
-		
-		String priceType = null;
-		
-		// 零售价
-		if (productFlag.equalsIgnoreCase("华润"))
-		{
-			priceType = "LS";
-		}
-		// 乐意装价
-		else if (productFlag.equalsIgnoreCase("乐易装"))
-		{
-			priceType = "LYZ";
-		}
-		// 莹润价
-		else if (productFlag.equalsIgnoreCase("莹润"))
-		{
-			priceType = "YR";
-		}
-		// 不支持的价格
-		else
-		{
-			return null;
-		}
-		
-		List<TdPriceList> priceList_list = tdPriceListService.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
-		
-		if(null == priceList_list || priceList_list.size()==0 || priceList_list.size() >1)
-		{
-			return null;
-		}
-		
-		// 价目表ID
-		Long list_header_id =0L; 
-		list_header_id = priceList_list.get(0).getListHeaderId();
-		
-		List<TdPriceListItem> priceItemList = tdPriceListItemService.findByListHeaderIdAndInventoryItemIdAndStartDateActiveAndEndDateActive(list_header_id, inventoryItemId, new Date(), new Date());
-		
-		if(null == priceItemList || priceItemList.size() ==0 || priceItemList.size() >1)
-		{
-			return null;
-		}
-		
-		return priceItemList.get(0).getSalePrice();
-	}
-	
-	
 }

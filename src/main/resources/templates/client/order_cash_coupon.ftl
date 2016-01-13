@@ -36,7 +36,7 @@
                         <#if no_product_used??>
                             <#assign isUsed=false>
                             <#list no_product_used as used>
-                                <#if used.id?c==item.id?c>
+                                <#if used?c==item.id?c>
                                     <#assign isUsed=true>
                                 </#if>
                             </#list>

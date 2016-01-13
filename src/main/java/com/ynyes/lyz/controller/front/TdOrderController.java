@@ -355,6 +355,9 @@ public class TdOrderController {
 			return "redirect:/login";
 		}
 
+		// 获取虚拟订单
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+
 		// 获取所有已选的商品
 		List<TdCartGoods> selected_list = tdCartGoodsService.findByUsername(username);
 
@@ -386,12 +389,31 @@ public class TdOrderController {
 			}
 		}
 
-		// 获取确定使用的现金券
-		@SuppressWarnings("unchecked")
-		List<TdCoupon> no_product_used = (List<TdCoupon>) req.getSession().getAttribute("order_noProductCouponUsed");
-		// 获取确定使用的产品券
-		@SuppressWarnings("unchecked")
-		List<TdCoupon> product_used = (List<TdCoupon>) req.getSession().getAttribute("order_productCouponUsed");
+		// 使用的现金券的id
+		String cashCouponId = order.getCashCouponId();
+		// 拆分现金券id
+		String[] cash_ids = cashCouponId.split(",");
+		List<Long> no_product_used = new ArrayList<>();
+		if (null != cash_ids) {
+			for (String id : cash_ids) {
+				if (null != id) {
+					no_product_used.add(Long.parseLong(id));
+				}
+			}
+		}
+
+		// 使用产品券的id
+		String productCouponId = order.getProductCouponId();
+		// 拆分产品券id
+		String[] product_ids = productCouponId.split(",");
+		List<Long> product_used = new ArrayList<>();
+		if (null != product_ids) {
+			for (String id : product_ids) {
+				if (null != id) {
+					product_used.add(Long.parseLong(id));
+				}
+			}
+		}
 
 		// 跳转到选择现金券的页面
 		if (0L == type) {
