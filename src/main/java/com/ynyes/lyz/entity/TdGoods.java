@@ -325,6 +325,10 @@ public class TdGoods {
 	// 品牌ID
 	@Column
 	private Long brandId;
+	
+	// 品牌Flag
+	@Column
+	private String productFlag;
 
 	// 商品返现金额
 	@Column(scale = 2)
@@ -1182,5 +1186,13 @@ public class TdGoods {
 
 	public void setBelongTo(Long belongTo) {
 		this.belongTo = belongTo;
+	}
+
+	public String getProductFlag() {
+		return productFlag;
+	}
+
+	public void setProductFlag(String productFlag) {
+		this.productFlag = productFlag;
 	}
 }

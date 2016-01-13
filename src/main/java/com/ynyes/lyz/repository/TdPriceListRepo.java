@@ -10,8 +10,9 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.ynyes.lyz.entity.TdPriceList;
 
-public interface TdPriceListRepo
-		extends PagingAndSortingRepository<TdPriceList, Long>, JpaSpecificationExecutor<TdPriceList> {
+public interface TdPriceListRepo extends
+		PagingAndSortingRepository<TdPriceList, Long>,
+		JpaSpecificationExecutor<TdPriceList> {
 
 	Page<TdPriceList> findByNameContaining(String keywords, Pageable page);
 
@@ -20,6 +21,9 @@ public interface TdPriceListRepo
 	TdPriceList findBysobIdAndPriceType(Long sobId, String priceType);
 
 	List<TdPriceList> findBySobId(Long sobId);
+
+	List<TdPriceList> findBySobIdAndPriceTypeAndStartDateActiveBeforeAndEndDateActiveIsNullOrSobIdAndPriceTypeAndStartDateActiveBeforeAndEndDateActiveAfter(
+			Long sobId, String priceType, Date start, Long sobId2, String priceType2, Date start2, Date end2);
 
 	/**
 	 * 根据priceType（价目表类型）和cityId查找未过期且可用的价目表

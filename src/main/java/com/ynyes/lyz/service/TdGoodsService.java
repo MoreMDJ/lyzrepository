@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.xerces.impl.xpath.regex.REUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import com.ynyes.lyz.entity.TdGoods;
-import com.ynyes.lyz.entity.TdGoodsCombination;
-import com.ynyes.lyz.entity.TdGoodsGift;
-import com.ynyes.lyz.entity.TdPriceChangeLog;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.repository.TdGoodsRepo;
 import com.ynyes.lyz.util.SiteMagConstant;
@@ -46,8 +42,8 @@ public class TdGoodsService {
 	@Autowired
 	TdArticleService tdArticleService;
 
-	// @Autowired
-	// TdParameterService tdParameterService;
+	@Autowired
+	TdPriceListService tdPriceListService;
 
 	// @Autowired
 	// TdGoodsParameterService tdGoodsParameterService;
@@ -1342,7 +1338,62 @@ public class TdGoodsService {
 	}
 	
 	
-	
+	/**
+	 * 获取价格
+	 * 
+	 * @param sobId 分公司ID
+	 * @param inventoryItemId 物料ID
+	 * @return
+	 */
+	public Double getPrice(Long sobId, Long inventoryItemId)
+	{
+		if (null == sobId || null == inventoryItemId)
+		{
+			return null;
+		}
+		
+		// 查找物料
+		TdGoods goods = repository.findByinventoryItemId(inventoryItemId);
+		
+		if (null == goods)
+		{
+			return null;
+		}
+		
+		String productFlag = goods.getProductFlag();
+		
+		if (null == productFlag)
+		{
+			return null;
+		}
+		
+		String priceType = null;
+		
+		// 零售价
+		if (productFlag.equalsIgnoreCase("HR"))
+		{
+			priceType = "LS";
+		}
+		// 乐意装价
+		else if (productFlag.equalsIgnoreCase("LYZ"))
+		{
+			priceType = "LYZ";
+		}
+		// 莹润价
+		else if (productFlag.equalsIgnoreCase("YR"))
+		{
+			priceType = "YR";
+		}
+		// 不支持的价格
+		else
+		{
+			return null;
+		}
+		
+		tdPriceListService
+		
+		return 0.0;
+	}
 	
 	
 }

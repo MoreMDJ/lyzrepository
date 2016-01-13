@@ -739,6 +739,8 @@ public class CallEBSImpl implements ICallEBS {
 				tdGoods.setItemTypeName(item_type_name);
 				tdGoods.setItemTypeCode(item_type_code);
 				tdGoods.setUnitName(unit_name);
+				tdGoods.setProductFlag(product_flag);
+				
 				if (inventory_item_status == 0)
 				{
 					tdGoods.setIsOnSale(false);
