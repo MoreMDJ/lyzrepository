@@ -720,7 +720,7 @@ public class CallEBSImpl implements ICallEBS {
 				}
 				//保存 修改
 				TdGoods tdGoods = null;
-				if (inv_category_id != null)
+				if (inventory_item_id != null)
 				{
 				 tdGoods = tdGoodsService.findByinventoryItemId(inventory_item_id);
 				}
@@ -740,6 +740,7 @@ public class CallEBSImpl implements ICallEBS {
 				tdGoods.setItemTypeCode(item_type_code);
 				tdGoods.setUnitName(unit_name);
 				tdGoods.setProductFlag(product_flag);
+				tdGoods.setInvCategoryId(inv_category_id);
 				
 				if (inventory_item_status == 0)
 				{
@@ -757,7 +758,7 @@ public class CallEBSImpl implements ICallEBS {
 				{
 					tdGoods.setBrandId(tdBrand.getId());
 					tdGoods.setBrandTitle(tdBrand.getTitle());
-				}				
+				}			
 				tdGoods.setAttribute1(attribute1);
 				tdGoodsService.save(tdGoods, "数据导入");
 			}

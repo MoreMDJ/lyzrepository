@@ -24,6 +24,11 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	//接口 - 物料id
 	TdGoods findByinventoryItemId(Long inventoryItemId);
 	
+	//接口 - 物料类别
+	List<TdGoods> findByInvCategoryId(Long invCategoryId);
+	
+	List<TdGoods> findByCategoryIdIsNull();
+	
 	Page<TdGoods> findByCategoryIdTreeContainingAndIsOnSaleTrue(String categoryId, Pageable page);
 
 	Page<TdGoods> findByCategoryIdTreeContainingAndIsRecommendTypeTrueAndIsOnSaleTrueOrderByIdDesc(String categoryId,

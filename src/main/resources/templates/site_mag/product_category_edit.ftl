@@ -121,6 +121,13 @@
     </dd>
   </dl>
   <dl>
+    <dt>EBS物料类别ID</dt>
+    <dd>
+      <input style="width:300px;" name="invCategoryId" type="text" value="<#if cat?? && cat.invCategoryId??>${cat.invCategoryId?c}</#if>" class="input small" datatype="n" sucmsg=" " errormsg="请输入数字">
+      <span class="Validform_checktip">*请一定参考EBS传下来的分类id，只有第二级才填</span>
+    </dd>
+  </dl>
+  <dl>
     <dt>关联参数</dt>
     <dd>
       <div class="rule-single-select">

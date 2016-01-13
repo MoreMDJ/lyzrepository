@@ -12,9 +12,16 @@
 <script type="text/javascript">
     $(function () {
         imgLayout();
+        <#if left_goods??>
+        showLeftGoods(${left_goods?c});
+        </#if>
         $(window).resize(function () {
             imgLayout();
         });
+        
+        //显示为绑定的类别商品的数量
+        
+        
         //图片延迟加载
         $(".pic img").lazyload({ load: AutoResizeImage, effect: "fadeIn" });
         //点击图片链接
@@ -26,6 +33,10 @@
             }
         });
     });
+    
+    function showLeftGoods(number) {
+    alert("还有"+ number + "没有绑定类别");
+    }
     //排列图文列表
     function imgLayout() {
         var imgWidth = $(".imglist").width();
@@ -129,6 +140,7 @@ function confirmCopy(id)
         <li><a class="add" href="/Verwalter/goods/edit?__VIEWSTATE=${__VIEWSTATE!""}"><i></i><span>导入</span></a></li>
         <li><a id="btnSave" class="save" href="javascript:__doPostBack('btnSave','')"><i></i><span>保存</span></a></li>
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
+        <li><a class="all" href="/Verwalter/goods/refresh" ><i></i><span>刷新关联分类</span></a></li>
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除</span></a></li>
       </ul>
       <div class="menu-list">

@@ -68,6 +68,10 @@ public class TdProductCategoryService {
     {
         return repository.findByParentIdIsNullOrderBySortIdAsc();
     }
+    public List<TdProductCategory> findByParentIdNotNullOrderBySortIdAsc()
+    {
+        return repository.findByParentIdNotNullOrderBySortIdAsc();
+    }
     
     
     /**

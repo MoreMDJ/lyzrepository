@@ -21,6 +21,7 @@ public interface TdProductCategoryRepo extends
 		JpaSpecificationExecutor<TdProductCategory> 
 {
     List<TdProductCategory> findByParentIdIsNullOrderBySortIdAsc();
+    List<TdProductCategory> findByParentIdNotNullOrderBySortIdAsc();
     List<TdProductCategory> findByParentIdOrderBySortIdAsc(Long parentId);
     TdProductCategory findByTitle(String title);
     TdProductCategory findTopByTitleContaining(String title);

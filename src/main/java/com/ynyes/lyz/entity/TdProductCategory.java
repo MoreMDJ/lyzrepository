@@ -79,6 +79,20 @@ public class TdProductCategory {
     @Column
     private String seoDescription;
     
+    // ebs接口 新增字段
+    
+    // EBS物料类别id
+    @Column
+    private Long invCategoryId;
+    
+	public Long getInvCategoryId() {
+		return invCategoryId;
+	}
+
+	public void setInvCategoryId(Long invCategoryId) {
+		this.invCategoryId = invCategoryId;
+	}
+
 	public Long getId() {
         return id;
     }
