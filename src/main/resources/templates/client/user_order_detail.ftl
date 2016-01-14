@@ -72,7 +72,7 @@
                         </#list>
                     </#if>
                     <li class="li5">支付方式：${order.payTypeTitle!''}<div class="div1">实付款：<p>￥<span><#if order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span></p></div></li>
-                    <li class="li5">使用现金券：<div class="div1">总额：<p>￥<span><#if order.cashCoupon??>${order.cashCoupon?string("0.00")}<#else>0.00</#if></span></p></div></li>
+                    <li class="li5">使用现金券：<div class="div1">券金额：<p>￥<span><#if order.cashCoupon??>${order.cashCoupon?string("0.00")}<#else>0.00</#if></span></p></div></li>
                     <li class="li5">使用产品券：<div class="div1"><p>${order.productCoupon!''}</p></div></li>
                 </ol>   
             </article>

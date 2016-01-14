@@ -169,6 +169,8 @@
                                             </#switch>
                                         </#if>
                                     </div>
+                                    <div>订单总额：￥<#if item.totalPrice??>${item.totalPrice?string("0.00")}</#if></div>
+                                    <div>下单时间：<#if item.orderTime??>${item.orderTime?string("yyyy-MM-dd HH:mm:ss")}</#if></div>
                                 </ol>
                             </#list>
                         </div>
@@ -239,6 +241,8 @@
                                             </#switch>
                                         </#if>
                                     </div>
+                                    <div><#if order.totalPrice??>${order.totalPrice?string("0.00")}</#if></div>
+                                    <div><#if order.orderTime??>${order.orderTime?string("yyyy-MM-dd HH:mm:ss")}</#if></div>
                                 </ol>
                             </#list>
                         </div>
@@ -309,6 +313,8 @@
                                             </#switch>
                                         </#if>
                                     </div>
+                                    <div><#if order.totalPrice??>${order.totalPrice?string("0.00")}</#if></div>
+                                    <div><#if order.orderTime??>${order.orderTime?string("yyyy-MM-dd HH:mm:ss")}</#if></div>
                                 </ol>
                             </#list>
                         </div>
@@ -377,6 +383,8 @@
                                             </#switch>
                                         </#if>
                                     </div>
+                                    <div><#if order.totalPrice??>${order.totalPrice?string("0.00")}</#if></div>
+                                    <div><#if order.orderTime??>${order.orderTime?string("yyyy-MM-dd HH:mm:ss")}</#if></div>
                                 </ol>
                             </#list>
                         </div>

@@ -992,6 +992,9 @@ public class TdCommonService {
 				order.setCashCouponId("");
 				order.setStatusId(3L);
 				order.setUsername(username);
+				order.setPayTypeId(order_temp.getPayTypeId());
+				order.setPayTypeTitle(order_temp.getPayTypeTitle());
+				order.setOrderTime(order_temp.getOrderTime());
 				order_map.put(brand.getId(), order);
 			}
 		}
