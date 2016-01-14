@@ -83,7 +83,7 @@ public class TdCommonService {
 
 	@Autowired
 	private TdSubdistrictService tdSubdistrictService;
-	
+
 	@Autowired
 	private TdBrandService tdBrandService;
 
@@ -783,6 +783,9 @@ public class TdCommonService {
 			subdistrict = new TdSubdistrict();
 		}
 		fee = subdistrict.getDeliveryFee();
+		if (null == fee) {
+			fee = 0.00;
+		}
 
 		virtual.setUsername(user.getUsername());
 		virtual.setUserId(user.getId());
@@ -955,7 +958,7 @@ public class TdCommonService {
 	 * 
 	 * @author dengxiao
 	 */
-	public void dismantleOrder(HttpServletRequest req,String username){
+	public void dismantleOrder(HttpServletRequest req, String username) {
 
 		// 获取虚拟订单
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
@@ -1163,6 +1166,35 @@ public class TdCommonService {
 		order_temp.setOrderGoodsList(null);
 
 		tdOrderService.delete(order_temp);
+
+		// 清空session中的虚拟订单
+		req.getSession().setAttribute("order_temp", null);
+	}
+
+	/**
+	 * 计算能够使用的最大额度的预存款的方法
+	 * 
+	 * @author dengxiao
+	 */
+	public Double getMaxCash(HttpServletRequest req, ModelMap map, TdOrder order) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return 0.0;
+		}
+		Double max = 0.00;
+		// 获取用户的预存款
+		Double balance = user.getBalance();
+
+		if (null != balance && null != order.getTotalPrice() && null != order.getDeliverFee()) {
+			if (balance > (order.getTotalPrice() + order.getDeliverFee())) {
+				max = (order.getTotalPrice() + order.getDeliverFee());
+			} else {
+				max = balance;
+			}
+		}
+		map.addAttribute("max", max);
+		return max;
 	}
 
 	public static String getIp(HttpServletRequest request) {
