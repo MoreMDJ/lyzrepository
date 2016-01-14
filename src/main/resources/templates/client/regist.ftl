@@ -27,6 +27,7 @@
             
             function changeCity(){
                 var optionvalue = $('.reg_content dt select').find('option:selected').text();
+                console.debug(optionvalue);
                 $('#my_box').text(optionvalue);
             }
             //创建一个包含所有城市信息的数组
@@ -183,7 +184,7 @@
                 <dl>
                     <dt>
                         <div class="my_sele" id="my_box">定位中...</div>
-                        <select onChange="changeCity();" calss="my_box" id="my_city">
+                        <select onchange="changeCity();" calss="my_box" id="my_city">
                             <#if regions??>
                                 <#list regions as item>
                                     <option value="${item.cityName!''}">${item.cityName!''}</option>

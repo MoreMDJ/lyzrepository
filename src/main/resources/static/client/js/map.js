@@ -9,9 +9,9 @@ var map = new AMap.Map("mapContainer", {
 });
 // 获取用户所在城市信息
 function showCityInfo() {
-	//调用等待方法
+	// 调用等待方法
 	wait();
-	
+
 	// 加载城市查询插件
 	AMap.service([ "AMap.CitySearch" ], function() {
 		// 实例化城市查询类
@@ -22,10 +22,25 @@ function showCityInfo() {
 				if (result && result.city && result.bounds) {
 					var cityinfo = result.city;
 					$("#my_box").html(cityinfo);
-					//等待方法结束
+					var city_arry = $("#my_city option");
+					var isHave = false;
+					city_arry.each(function(i) {
+						var option = city_arry.eq(i);
+						var option_city_info = option.html();
+						if (cityinfo == option_city_info) {
+							isHave = true;
+							option.attr("selected", "selected");
+						}
+					});
+					if (!isHave) {
+						$("#my_city").append(
+								"<option selected='selected' value=" + cityinfo
+										+ ">" + cityinfo + "</option>");
+					}
+					// 等待方法结束
 					close(1);
 				}
-			}else{
+			} else {
 				close(1);
 				warning("定位失败");
 			}

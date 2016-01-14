@@ -65,7 +65,7 @@ public class TdRegistController {
 		res.put("status", -1);
 		TdUser user = tdUserService.findByUsernameAndCityNameAndIsEnableTrue(referPhone, cityInfo);
 		if (null == user) {
-			res.put("message", "默认门店");
+			res.put("message", cityInfo + "默认门店");
 			return res;
 		}
 		res.put("message", user.getDiyName());
@@ -115,7 +115,8 @@ public class TdRegistController {
 		}
 
 		// 获取门店名称
-		TdDiySite diySite = tdDiySiteService.findByRegionIdAndTitleAndIsEnableTrue(city.getSobIdCity(), cityInfo + "默认门店");
+		TdDiySite diySite = tdDiySiteService.findByRegionIdAndTitleAndIsEnableTrue(city.getSobIdCity(),
+				(cityInfo + "默认门店").trim());
 		TdUser new_user = new TdUser();
 		new_user.setUsername(phone);
 		new_user.setPassword(MD5.md5(password, 32));
