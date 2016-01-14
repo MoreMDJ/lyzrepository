@@ -9,4 +9,7 @@ public interface TdCityRepo extends PagingAndSortingRepository<TdCity, Long>, Jp
 
 	// 根据城市名称查询城市实体
 	TdCity findByCityName(String cityName);
+
+	// 根据用户的cityId查找城市实体
+	TdCity findBySobIdCity(Long sobIdCity);
 }

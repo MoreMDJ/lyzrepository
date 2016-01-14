@@ -20,6 +20,7 @@ import org.springframework.ui.ModelMap;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
+import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCoupon;
@@ -82,6 +83,9 @@ public class TdCommonService {
 
 	@Autowired
 	private TdSubdistrictService tdSubdistrictService;
+	
+	@Autowired
+	private TdBrandService tdBrandService;
 
 	@Autowired
 	private TdPriceListService tdPriceListService;
@@ -944,6 +948,221 @@ public class TdCommonService {
 		}
 		order = tdOrderService.save(order);
 		return order;
+	}
+
+	/**
+	 * 支付结束拆单的方法
+	 * 
+	 * @author dengxiao
+	 */
+	public void dismantleOrder(HttpServletRequest req,String username){
+
+		// 获取虚拟订单
+		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
+		if (null == order_temp) {
+			order_temp = new TdOrder();
+		}
+
+		// 创建一个map用于存储拆单后的所有订单
+		Map<Long, TdOrder> order_map = new HashMap<>();
+
+		// 获取所有的品牌
+		List<TdBrand> brand_list = tdBrandService.findAll();
+		if (null != brand_list) {
+			for (TdBrand brand : brand_list) {
+				TdOrder order = new TdOrder();
+				order.setOrderNumber(order_temp.getOrderNumber().replace("XN", brand.getShortName()));
+				order.setShippingAddress(order_temp.getShippingAddress());
+				order.setShippingName(order_temp.getShippingName());
+				order.setShippingPhone(order_temp.getShippingPhone());
+				order.setDeliverFee(0.00);
+				order.setDeliverTypeTitle(order_temp.getDeliverTypeTitle());
+				order.setDeliveryDate(order_temp.getDeliveryDate());
+				order.setDeliveryDetailId(order_temp.getDeliveryDetailId());
+				order.setOrderGoodsList(new ArrayList<TdOrderGoods>());
+				order.setTotalGoodsPrice(0.00);
+				order.setTotalPrice(0.00);
+				order.setLimitCash(0.00);
+				order.setCashCoupon(0.00);
+				order.setLimitCash(0.00);
+				order.setProductCoupon("");
+				order.setCashCouponId("");
+				order.setStatusId(3L);
+				order.setUsername(username);
+				order_map.put(brand.getId(), order);
+			}
+		}
+
+		List<TdOrderGoods> goodsList = order_temp.getOrderGoodsList();
+		// 对已选商品进行拆单
+		for (TdOrderGoods orderGoods : goodsList) {
+			if (null != orderGoods) {
+				Long brandId = orderGoods.getBrandId();
+				TdOrder order = order_map.get(brandId);
+				List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+				if (null == orderGoodsList) {
+					orderGoodsList = new ArrayList<>();
+				}
+				orderGoodsList.add(orderGoods);
+				order.setOrderGoodsList(orderGoodsList);
+				order.setTotalGoodsPrice(
+						order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
+				order.setTotalPrice(order.getTotalPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
+			}
+		}
+
+		List<TdOrderGoods> presentedList = order_temp.getPresentedList();
+		if (null == presentedList) {
+			presentedList = new ArrayList<>();
+		}
+		// 对赠品进行拆单
+		for (TdOrderGoods orderGoods : presentedList) {
+			if (null != orderGoods) {
+				Long brandId = orderGoods.getBrandId();
+				TdOrder order = order_map.get(brandId);
+				List<TdOrderGoods> orderGoodsList = order.getPresentedList();
+				if (null == orderGoodsList) {
+					orderGoodsList = new ArrayList<>();
+				}
+				orderGoodsList.add(orderGoods);
+			}
+		}
+
+		List<TdOrderGoods> giftGoodsList = order_temp.getGiftGoodsList();
+		if (null == giftGoodsList) {
+			giftGoodsList = new ArrayList<>();
+		}
+		// 对赠送的小辅料进行拆单
+		for (TdOrderGoods orderGoods : giftGoodsList) {
+			if (null != orderGoods) {
+				Long brandId = orderGoods.getBrandId();
+				TdOrder order = order_map.get(brandId);
+				List<TdOrderGoods> orderGoodsList = order.getGiftGoodsList();
+				if (null == orderGoodsList) {
+					orderGoodsList = new ArrayList<>();
+				}
+				orderGoodsList.add(orderGoods);
+			}
+		}
+
+		// 获取使用现金券的金额
+		Double cashCoupon = order_temp.getCashCoupon();
+		if (null == cashCoupon) {
+			cashCoupon = 0.00;
+		}
+		// 拆分已使用的现金券
+		String cashCouponId = order_temp.getCashCouponId();
+		// 分解cashCouponId
+		if (null != cashCouponId) {
+			String[] cashIds = cashCouponId.split(",");
+			for (String id : cashIds) {
+				if (null != id && !"".equals(id.trim())) {
+					Long couponId = Long.parseLong(id);
+					// 根据优惠券的id查找优惠券
+					TdCoupon coupon = tdCouponService.findOne(couponId);
+					if (null != coupon) {
+						Long goodsId = coupon.getGoodsId();
+						// 如果goodsId存在，则表示这张优惠券是指定产品现金券
+						if (null != goodsId) {
+							TdGoods goods = tdGoodsService.findOne(goodsId);
+							Long brandId = goods.getBrandId();
+							TdOrder order = order_map.get(brandId);
+							order.setCashCoupon(order.getCashBalanceUsed() + coupon.getPrice());
+							// 余下的金额暂不统计，在后面按照比例拆分
+							cashCoupon -= coupon.getPrice();
+							order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
+						}
+					}
+				}
+			}
+		}
+
+		// 拆分使用的产品券
+		String productCouponId = order_temp.getProductCouponId();
+		// 分解
+		String[] productIds = productCouponId.split(",");
+		for (String id : productIds) {
+			if (null != id && !"".equals(id.trim())) {
+				Long couponId = Long.parseLong(id);
+				TdCoupon coupon = tdCouponService.findOne(couponId);
+				if (null != coupon) {
+					Long goodsId = coupon.getGoodsId();
+					if (null != goodsId) {
+						TdGoods goods = tdGoodsService.findOne(goodsId);
+						Long brandId = goods.getBrandId();
+						TdOrder order = order_map.get(brandId);
+						order.setProductCouponId(coupon.getId() + ",");
+						order.setProductCoupon(goods.getTitle() + "【" + goods.getCode() + "】*1,");
+						List<TdOrderGoods> list = order.getOrderGoodsList();
+						for (TdOrderGoods orderGoods : list) {
+							if (null != orderGoods && null != orderGoods.getGoodsId()
+									&& coupon.getGoodsId() == orderGoods.getGoodsId()) {
+								order.setTotalPrice(order.getTotalPrice() - orderGoods.getPrice());
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// 开始进行剩余优惠券（即是通用现金券）的拆分，同时也可以进行可提现余额，不可提现余额的拆分
+
+		Double total = 0.00;
+		Double cashBalanceUsed = order_temp.getCashBalanceUsed();
+		if (null == cashBalanceUsed) {
+			cashBalanceUsed = 0.00;
+		}
+		Double unCashBalanceUsed = order_temp.getUnCashBalanceUsed();
+		if (null == unCashBalanceUsed) {
+			unCashBalanceUsed = 0.00;
+		}
+
+		// 获取目前的总金额
+		for (TdOrder order : order_map.values()) {
+			if (null != order && null != order.getTotalPrice()) {
+				total += order.getTotalPrice();
+			}
+		}
+
+		// 在此循环，拆分通用现金券额度，可提现余额，不可提现余额
+		for (TdOrder order : order_map.values()) {
+			if (null != order && null != order.getTotalPrice()) {
+				if (total != 0) {
+					Double point = order.getTotalPrice() / total;
+					order.setCashCoupon(order.getCashCoupon() + (cashCoupon * point));
+					order.setCashBalanceUsed(cashBalanceUsed * point);
+					order.setUnCashBalanceUsed(unCashBalanceUsed * point);
+				}
+			}
+		}
+
+		// 查询是否存在乐易装的品牌
+		TdBrand brand = tdBrandService.findByTitle("乐易装");
+		if (null != brand) {
+			Long brandId = brand.getId();
+			TdOrder order = order_map.get(brandId);
+			// 运费放置在乐易装的订单上
+			order.setDeliverFee(order_temp.getDeliverFee());
+			order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
+			order.setTotalGoodsPrice(order.getTotalGoodsPrice() + order.getDeliverFee());
+		}
+
+		// 遍历存储
+		for (TdOrder order : order_map.values()) {
+			for (TdOrderGoods string : order.getOrderGoodsList()) {
+				System.err.println(string);
+			}
+			if (null != order && null != order.getTotalGoodsPrice() && order.getTotalGoodsPrice() > 0) {
+				tdOrderService.save(order);
+			}
+		}
+
+		// 删除虚拟订单
+		order_temp.setGiftGoodsList(null);
+		order_temp.setPresentedList(null);
+		order_temp.setOrderGoodsList(null);
+
+		tdOrderService.delete(order_temp);
 	}
 
 	public static String getIp(HttpServletRequest request) {
