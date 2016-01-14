@@ -145,11 +145,11 @@ public class TdUserController {
 
 	@Autowired
 	private TdCartGoodsService tdCartGoodsService;
-	
-	//  退货单Service       Max
+
+	// 退货单Service Max
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
-	
+
 	@Autowired
 	private TdOrderGoodsService tdOrderGoodsService;
 
@@ -741,9 +741,10 @@ public class TdUserController {
 			TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 			if (null != user) {
 				// 获取用户城市下的所有行政区划
-				List<TdDistrict> region_list = tdDistrictService.findByCityIdOrderBySortIdAsc(user.getCityId());
+				TdCity city = tdCityService.findBySobIdCity(user.getCityId());
+				List<TdDistrict> region_list = tdDistrictService.findByCityIdOrderBySortIdAsc(city.getId());
 				map.addAttribute("region_list", region_list);
-				// status的值为1表示下一步是选择行政区划
+				// status的值为1表示下一步是选择行政区划】
 				map.addAttribute("status", 1);
 			}
 		}
@@ -1398,9 +1399,8 @@ public class TdUserController {
 	 */
 	@RequestMapping(value = "/order/return", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String,Object> orderReturn(Long id,String remark,Long turnType, HttpServletRequest req)
-	{
-		Map<String,Object> res = new HashMap<>();
+	public Map<String, Object> orderReturn(Long id, String remark, Long turnType, HttpServletRequest req) {
+		Map<String, Object> res = new HashMap<>();
 		res.put("code", 1);
 
 		String username = (String) req.getSession().getAttribute("username");
@@ -1441,37 +1441,33 @@ public class TdUserController {
 				// 退货信息
 				returnNote.setUsername(username);
 				returnNote.setRemarkInfo(remark);
-				
+
 				// 退货方式
 				returnNote.setTurnType(turnType);
 				// 原订单配送方式
-				if("门店自提".equals(order.getDeliverTypeTitle()))
-				{
-					if(turnType==1)
-					{
+				if ("门店自提".equals(order.getDeliverTypeTitle())) {
+					if (turnType == 1) {
 						returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
-					}else{
-						returnNote.setStatusId(2L); // 门店自提单-物流取货  待取货
+					} else {
+						returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
 					}
-				}else{
-					if(turnType==1)
-					{
-						returnNote.setStatusId(3L); // 送货上门单  门店到店退货   待验货
-					}else{
-						returnNote.setStatusId(2L); // 送货上门单  物流取货   待取货
+				} else {
+					if (turnType == 1) {
+						returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
+					} else {
+						returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
 					}
 				}
-				
+
 				returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
 				returnNote.setOrderTime(new Date());
-				
+
 				returnNote.setTurnPrice(order.getTotalGoodsPrice());
 				List<TdOrderGoods> orderGoodsList = new ArrayList<>();
-				if(null != order.getOrderGoodsList())
-				{
+				if (null != order.getOrderGoodsList()) {
 					for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
 						TdOrderGoods orderGoods = new TdOrderGoods();
-						
+
 						orderGoods.setBrandId(oGoods.getBrandId());
 						orderGoods.setBrandTitle(oGoods.getBrandTitle());
 						orderGoods.setGoodsId(oGoods.getGoodsId());
@@ -1483,23 +1479,23 @@ public class TdUserController {
 						orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
 						orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
 						orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
-						
+
 						orderGoods.setPrice(oGoods.getPrice());
 						orderGoods.setQuantity(oGoods.getQuantity());
-						
+
 						orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
 						orderGoods.setPoints(oGoods.getPoints());
-//						tdOrderGoodsService.save(orderGoods);
+						// tdOrderGoodsService.save(orderGoods);
 						// 添加商品信息
 						orderGoodsList.add(orderGoods);
-						
+
 						// 订单商品设置退货为True
 						oGoods.setIsReturnApplied(true);
 						// 更新订单商品信息是否退货状态
 						tdOrderGoodsService.save(oGoods);
 					}
 				}
-				
+
 				returnNote.setReturnGoodsList(orderGoodsList);
 				tdOrderGoodsService.save(orderGoodsList);
 				// 保存退货单

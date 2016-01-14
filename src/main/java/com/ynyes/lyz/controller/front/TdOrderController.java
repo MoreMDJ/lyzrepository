@@ -16,13 +16,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDistrict;
 import com.ynyes.lyz.entity.TdDiySite;
-import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPayType;
@@ -37,7 +35,6 @@ import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
-import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdShippingAddressService;
@@ -546,9 +543,10 @@ public class TdOrderController {
 		}
 		// 获取用户的城市
 		Long cityId = user.getCityId();
+		TdCity city = tdCityService.findBySobIdCity(cityId);
 		if (null != cityId) {
 			// 查找指定城市下的所有行政区划
-			List<TdDistrict> district_list = tdDistrictService.findByCityIdOrderBySortIdAsc(cityId);
+			List<TdDistrict> district_list = tdDistrictService.findByCityIdOrderBySortIdAsc(city.getId());
 			map.addAttribute("district_list", district_list);
 			if (null != district_list && district_list.size() > 0) {
 				// 默认行政区划为集合的第一个
