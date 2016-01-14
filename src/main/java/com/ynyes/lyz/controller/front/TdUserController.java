@@ -1498,6 +1498,7 @@ public class TdUserController {
 				// 保存退货单
 				tdReturnNoteService.save(returnNote);
 
+				order.setStatusId(7L);
 				order.setIsRefund(true);
 				tdOrderService.save(order);
 

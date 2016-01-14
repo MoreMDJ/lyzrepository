@@ -48,7 +48,6 @@
             }
         </style>
 	</style>
-	<script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	    
 		function win_yes(text,func){
