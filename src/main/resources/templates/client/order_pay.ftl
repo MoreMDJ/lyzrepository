@@ -171,7 +171,8 @@
         <!-- 底部 -->
         <footer class="fill-order-foot">
             <div class="disbur">实付款：￥<span><#if order??&&order.totalPrice??&&order.deliverFee??>${(order.totalPrice+order.deliverFee)?string("0.00")}<#else>0.00</#if></span></div>
-            <a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>
+            <#--<a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>-->
+            <a class="btn-clearing" id="buyNow" href="/order/pay">去支付</a>
         </footer>
         <!-- 底部 END -->
         

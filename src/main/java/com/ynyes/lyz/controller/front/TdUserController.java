@@ -1462,7 +1462,6 @@ public class TdUserController {
 				returnNote.setOrderTime(new Date());
 				
 				returnNote.setTurnPrice(order.getTotalGoodsPrice());
-				
 				List<TdOrderGoods> orderGoodsList = new ArrayList<>();
 				if(null != order.getOrderGoodsList())
 				{
@@ -1486,7 +1485,7 @@ public class TdUserController {
 						
 						orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
 						orderGoods.setPoints(oGoods.getPoints());
-						
+//						tdOrderGoodsService.save(orderGoods);
 						// 添加商品信息
 						orderGoodsList.add(orderGoods);
 						
@@ -1497,9 +1496,10 @@ public class TdUserController {
 					}
 				}
 				
-				tdOrderGoodsService.save(orderGoodsList);
 				returnNote.setReturnGoodsList(orderGoodsList);
-				
+				tdOrderGoodsService.save(orderGoodsList);
+
+				System.err.println(returnNote);
 				// 保存退货单
 				tdReturnNoteService.save(returnNote);
 

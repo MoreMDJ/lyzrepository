@@ -285,6 +285,15 @@ public class TdReturnNote {
 		this.turnPrice = turnPrice;
 	}
 
-	
-	
+	@Override
+	public String toString() {
+		return "TdReturnNote [id=" + id + ", returnNumber=" + returnNumber + ", returnGoodsList=" + returnGoodsList
+				+ ", orderNumber=" + orderNumber + ", statusId=" + statusId + ", payTypeId=" + payTypeId
+				+ ", payTypeTitle=" + payTypeTitle + ", diySiteId=" + diySiteId + ", diySiteTitle=" + diySiteTitle
+				+ ", diySiteAddress=" + diySiteAddress + ", diySiteTel=" + diySiteTel + ", remarkInfo=" + remarkInfo
+				+ ", managerRemarkInfo=" + managerRemarkInfo + ", username=" + username + ", orderTime=" + orderTime
+				+ ", cancelTime=" + cancelTime + ", checkTime=" + checkTime + ", returnTime=" + returnTime + ", sortId="
+				+ sortId + ", turnType=" + turnType + ", deliverTypeTitle=" + deliverTypeTitle + ", turnPrice="
+				+ turnPrice + "]";
+	}
 }

@@ -52,9 +52,6 @@ public class TdGoodsController {
 	private TdUserCommentService tdUserCommentService;
 
 	@Autowired
-	private TdPriceListItemService tdPriceListItemService;
-
-	@Autowired
 	private TdUserCollectService tdUserCollectService;
 
 	@Autowired

@@ -215,6 +215,8 @@ public class TdCommonService {
 						if (null != priceListItem) {
 							putaway.add(goods);
 							map.addAttribute("priceListItem" + i + "_" + j + "_" + k, priceListItem);
+						} else {
+							putaway.add(null);
 						}
 					}
 				}
@@ -833,6 +835,8 @@ public class TdCommonService {
 
 	/**
 	 * 查找用户已选获得的赠品
+	 * 
+	 * @author dengxiao
 	 */
 	public TdOrder getPresent(HttpServletRequest req, TdOrder order) {
 		String username = (String) req.getSession().getAttribute("username");
