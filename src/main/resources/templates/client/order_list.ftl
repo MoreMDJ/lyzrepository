@@ -56,7 +56,7 @@
             <!-- 赠品 -->
             <#if order??&&order.presentedList??&&order.presentedList?size gt 0>
                 <!-- 商品列表 -->
-                <#list order.order.presentedList as item>
+                <#list order.presentedList as item>
                     <section class="sec1">
                         <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                         <div class="product-info">
@@ -64,7 +64,8 @@
                             <div class="choose-num">
                                 <!-- 数量选择 -->
                                 <div class="numbers">数量：<span><#if item.quantity??>${item.quantity}<#else>0</#if></span></div>
-                                <div class="checked"></div>
+                                <div class="price">赠品</div>
+                                <#--<div class="checked"></div>-->
                             </div>
                         </div>
                     </section>
@@ -72,7 +73,7 @@
             </#if>
             <!-- 小辅料 -->
             <#if order??&&order.giftGoodsList??&&order.giftGoodsList?size gt 0>
-                <#list order.order.giftGoodsList as item>
+                <#list order.giftGoodsList as item>
                     <section class="sec1">
                         <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                         <div class="product-info">
@@ -80,7 +81,8 @@
                             <div class="choose-num">
                                 <!-- 数量选择 -->
                                 <div class="numbers">数量：<span><#if item.quantity??>${item.quantity}<#else>0</#if></span></div>
-                                <div class="checked"></div>
+                                <div class="price">小辅料</div>
+                                <#--<div class="checked"></div>-->
                             </div>
                         </div>
                     </section>
@@ -101,7 +103,7 @@
             </script>
             <!-- 总计 -->
             <section class="zonge">
-                                        总计：<span><#if order??&&order.orderGoodsList??&&order.presentedList??&&order.giftGoodsList??>${(order.orderGoodsList?size+order.presentedList?size+order.giftGoodsList?size)?eval}<#else>0</#if></span>件&nbsp;&nbsp;
+                <#--总计：<span><#if order??&&order.orderGoodsList??&&order.presentedList??&&order.giftGoodsList??>${(order.orderGoodsList?size+order.presentedList?size+order.giftGoodsList?size)?eval}<#else>0</#if></span>件&nbsp;&nbsp;-->
                                         总额：<span><#if order??&&order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span>元
             </section>
         </article>

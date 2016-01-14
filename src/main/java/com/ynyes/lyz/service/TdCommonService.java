@@ -572,6 +572,9 @@ public class TdCommonService {
 		// 获取已选【分类：数量】组
 		Map<Long, Long> group = this.getGroup(req);
 		List<TdOrderGoods> giftGoodsList = order.getGiftGoodsList();
+		if(null == giftGoodsList){
+			giftGoodsList = new ArrayList<>();
+		}
 		// 获取已选能够参加的活动
 		List<TdActivityGift> activities = this.getActivityGiftBySelected(req);
 		for (TdActivityGift activity : activities) {
@@ -584,15 +587,17 @@ public class TdCommonService {
 				if (null != giftList) {
 					for (int i = 0; i < giftList.size(); i++) {
 						TdActivityGiftList gift = giftList.get(i);
+						TdGoods tdGoods = tdGoodsService.findOne(gift.getGoodsId());
 						TdOrderGoods goods = new TdOrderGoods();
-						goods.setBrandId(gift.getBrandId());
-						goods.setBrandTitle(gift.getBrandTitle());
+						goods.setBrandId(tdGoods.getBrandId());
+						goods.setBrandTitle(tdGoods.getBrandTitle());
 						goods.setPrice(0.00);
 						goods.setQuantity(gift.getNumber());
-						goods.setGoodsTitle(gift.getGoodsTitle());
-						goods.setGoodsId(gift.getGoodsId());
-						goods.setGoodsCoverImageUri(gift.getCoverImageUri());
-						goods.setSku(gift.getCode());
+						goods.setGoodsTitle(tdGoods.getTitle());
+						goods.setGoodsSubTitle(tdGoods.getSubTitle());
+						goods.setGoodsId(tdGoods.getId());
+						goods.setGoodsCoverImageUri(tdGoods.getCoverImageUri());
+						goods.setSku(tdGoods.getCode());
 						// 创建一个布尔变量用于判断此件商品是否已经加入了小辅料
 						Boolean isHave = false;
 						for (TdOrderGoods orderGoods : giftGoodsList) {
@@ -605,10 +610,12 @@ public class TdCommonService {
 						if (!isHave) {
 							giftGoodsList.add(goods);
 						}
+						tdOrderGoodsService.save(goods);
 					}
 				}
 			}
 		}
+		order.setGiftGoodsList(giftGoodsList);
 		order = tdOrderService.save(order);
 		return order;
 	}
@@ -837,6 +844,7 @@ public class TdCommonService {
 			tdOrderService.save(virtual);
 		}
 		virtual = this.getPresent(req, virtual);
+		virtual = this.getGift(req, virtual);
 		return virtual;
 	}
 
@@ -852,6 +860,10 @@ public class TdCommonService {
 
 		// 获取赠品列表
 		List<TdOrderGoods> presentedList = order.getPresentedList();
+
+		if (null == presentedList) {
+			presentedList = new ArrayList<>();
+		}
 
 		// 为了避免脏数据刷新，创建一个map用于存储已选【id：数量】
 		Map<Long, Long> selected_map = new HashMap<>();
@@ -896,10 +908,23 @@ public class TdCommonService {
 					}
 
 					if (isJoin) {
+						// 判断参与促销的倍数（表示同一个活动可以参加几次）
+						List<Long> mutipuls = new ArrayList<>();
+						// 获取倍数关系
+						for (Long goodsId : cost.keySet()) {
+							Long quantity = cost.get(goodsId);
+							Long goods_quantity = selected_map.get(goodsId);
+							Long mutiplu = goods_quantity / quantity;
+							mutipuls.add(mutiplu);
+						}
+
+						// 集合中最小的数字即为倍数
+						Long min = Collections.min(mutipuls);
+
 						// 改变剩下的商品的数量
 						for (Long goodsId : cost.keySet()) {
 							Long quantity = cost.get(goodsId);
-							Long leftNum = selected_map.get(goodsId) - quantity;
+							Long leftNum = selected_map.get(goodsId) - (quantity * min);
 							selected_map.put(goodsId, leftNum);
 						}
 
@@ -923,9 +948,10 @@ public class TdCommonService {
 											orderGoods.setBrandTitle(goods.getBrandTitle());
 											orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
 											orderGoods.setGoodsId(goods.getId());
+											orderGoods.setGoodsTitle(goods.getTitle());
 											orderGoods.setGoodsSubTitle(goods.getSubTitle());
 											orderGoods.setPrice(0.00);
-											orderGoods.setQuantity(quantity);
+											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
 											Boolean isHave = false;
@@ -940,6 +966,7 @@ public class TdCommonService {
 											if (!isHave) {
 												presentedList.add(orderGoods);
 											}
+											tdOrderGoodsService.save(orderGoods);
 										}
 									}
 								}
@@ -949,6 +976,7 @@ public class TdCommonService {
 				}
 			}
 		}
+		order.setPresentedList(presentedList);
 		order = tdOrderService.save(order);
 		return order;
 	}
@@ -1031,6 +1059,7 @@ public class TdCommonService {
 					orderGoodsList = new ArrayList<>();
 				}
 				orderGoodsList.add(orderGoods);
+				order.setPresentedList(presentedList);
 			}
 		}
 
@@ -1048,6 +1077,7 @@ public class TdCommonService {
 					orderGoodsList = new ArrayList<>();
 				}
 				orderGoodsList.add(orderGoods);
+				order.setGiftGoodsList(giftGoodsList);
 			}
 		}
 
