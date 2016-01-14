@@ -14,6 +14,8 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.crypto.dsig.keyinfo.PGPData;
 
+import org.apache.poi.hssf.record.NoteRecord;
+import org.bouncycastle.jcajce.provider.symmetric.Noekeon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -143,7 +145,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdCartGoodsService tdCartGoodsService;
+	
 	//  退货单Service       Max
+	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
 	
 	@Autowired
@@ -1499,7 +1503,6 @@ public class TdUserController {
 				
 				tdOrderGoodsService.save(orderGoodsList);
 				returnNote.setReturnGoodsList(orderGoodsList);
-				
 				// 保存退货单
 				tdReturnNoteService.save(returnNote);
 
