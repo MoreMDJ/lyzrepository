@@ -173,7 +173,7 @@ function submitOwnMoney()
 
   <!-- 头部 -->
   <header>
-    <a class="back" href="#"></a>
+    <a class="back" href="javascript:history.go(-1);"></a>
     <p>详情产看</p>
   </header>
   <!-- 头部 END -->

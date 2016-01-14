@@ -37,6 +37,7 @@ import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
+import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdShippingAddressService;
@@ -85,6 +86,9 @@ public class TdOrderController {
 
 	@Autowired
 	private TdBrandService tdBrandService;
+
+	@Autowired
+	private TdOrderGoodsService tdOrderGoodsService;
 
 	/**
 	 * 跳转到填写订单的页面
@@ -396,7 +400,7 @@ public class TdOrderController {
 		List<Long> no_product_used = new ArrayList<>();
 		if (null != cash_ids) {
 			for (String id : cash_ids) {
-				if (null != id) {
+				if (null != id && !"".equals(id.trim())) {
 					no_product_used.add(Long.parseLong(id));
 				}
 			}
@@ -409,7 +413,7 @@ public class TdOrderController {
 		List<Long> product_used = new ArrayList<>();
 		if (null != product_ids) {
 			for (String id : product_ids) {
-				if (null != id) {
+				if (null != id && !"".equals(id.trim())) {
 					product_used.add(Long.parseLong(id));
 				}
 			}
@@ -600,6 +604,7 @@ public class TdOrderController {
 				address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
 		order.setShippingName(address.getReceiverName());
 		order.setShippingPhone(address.getReceiverMobile());
+		order.setDeliverFee(tdSubdistrict.getDeliveryFee());
 		req.getSession().setAttribute("order_temp", order);
 		tdOrderService.save(order);
 
@@ -692,6 +697,7 @@ public class TdOrderController {
 				order.setProductCoupon("");
 				order.setCashCouponId("");
 				order.setUsername(username);
+				order_map.put(brand.getId(), order);
 			}
 		}
 
@@ -705,14 +711,28 @@ public class TdOrderController {
 				if (null == orderGoodsList) {
 					orderGoodsList = new ArrayList<>();
 				}
-				orderGoodsList.add(orderGoods);
+				TdOrderGoods goods = new TdOrderGoods();
+				goods.setGoodsId(orderGoods.getGoodsId());
+				goods.setGoodsTitle(orderGoods.getGoodsTitle());
+				goods.setGoodsCoverImageUri(orderGoods.getGoodsCoverImageUri());
+				goods.setSku(orderGoods.getSku());
+				goods.setPrice(orderGoods.getPrice());
+				goods.setQuantity(orderGoods.getQuantity());
+				goods.setBrandId(orderGoods.getBrandId());
+				goods.setBrandTitle(orderGoods.getBrandTitle());
+				goods = tdOrderGoodsService.save(goods);
+				orderGoodsList.add(goods);
+				order.setOrderGoodsList(orderGoodsList);
 				order.setTotalGoodsPrice(
-						order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
-				order.setTotalPrice(order.getTotalGoodsPrice() + (orderGoods.getPrice() * orderGoods.getQuantity()));
+						order.getTotalGoodsPrice() + (goods.getPrice() * goods.getQuantity()));
+				order.setTotalPrice(order.getTotalGoodsPrice() + (goods.getPrice() * goods.getQuantity()));
 			}
 		}
 
 		List<TdOrderGoods> presentedList = order_temp.getPresentedList();
+		if (null == presentedList) {
+			presentedList = new ArrayList<>();
+		}
 		// 对赠品进行拆单
 		for (TdOrderGoods orderGoods : presentedList) {
 			if (null != orderGoods) {
@@ -727,6 +747,9 @@ public class TdOrderController {
 		}
 
 		List<TdOrderGoods> giftGoodsList = order_temp.getGiftGoodsList();
+		if (null == giftGoodsList) {
+			giftGoodsList = new ArrayList<>();
+		}
 		// 对赠送的小辅料进行拆单
 		for (TdOrderGoods orderGoods : giftGoodsList) {
 			if (null != orderGoods) {
@@ -751,7 +774,7 @@ public class TdOrderController {
 		if (null != cashCouponId) {
 			String[] cashIds = cashCouponId.split(",");
 			for (String id : cashIds) {
-				if (null != id) {
+				if (null != id && !"".equals(id.trim())) {
 					Long couponId = Long.parseLong(id);
 					// 根据优惠券的id查找优惠券
 					TdCoupon coupon = tdCouponService.findOne(couponId);
@@ -777,7 +800,7 @@ public class TdOrderController {
 		// 分解
 		String[] productIds = productCouponId.split(",");
 		for (String id : productIds) {
-			if (null != id) {
+			if (null != id && !"".equals(id.trim())) {
 				Long couponId = Long.parseLong(id);
 				TdCoupon coupon = tdCouponService.findOne(couponId);
 				if (null != coupon) {
@@ -844,12 +867,32 @@ public class TdOrderController {
 
 		// 遍历存储
 		for (TdOrder order : order_map.values()) {
+			for (TdOrderGoods string : order.getOrderGoodsList()) {
+				System.err.println(string);
+			}
 			if (null != order && null != order.getTotalGoodsPrice() && order.getTotalGoodsPrice() > 0) {
 				tdOrderService.save(order);
 			}
 		}
 
 		// 删除虚拟订单
+		for (TdOrderGoods item : goodsList) {
+			if (null != item) {
+				tdOrderGoodsService.delete(item.getId());
+			}
+		}
+
+		for (TdOrderGoods item : presentedList) {
+			if (null != item) {
+				tdOrderGoodsService.delete(item.getId());
+			}
+		}
+
+		for (TdOrderGoods item : giftGoodsList) {
+			if (null != item) {
+				tdOrderGoodsService.delete(item.getId());
+			}
+		}
 		tdOrderService.delete(order_temp);
 
 		return "redirect:/order";
