@@ -55,7 +55,7 @@
     
      $("#address").citySelect({
         nodata:"none",
-        <#if diy_site?? && diy_site.regionId??>prov: "${diy_site.regionId?c}",</#if>
+        <#if diy_site?? && diy_site.cityId??>prov: "${diy_site.cityId?c}",</#if>
         <#if diy_site?? && diy_site.disctrictId??>city: "${diy_site.disctrictId?c}",</#if>
         <#if diy_site?? && diy_site.subDisctrictId??>dist: "${diy_site.subDisctrictId?c}",</#if>
         required:false
@@ -176,7 +176,7 @@
        <dt>地区</dt>
        <dd>
              <div id="address">
-             <select id="prov" name="regionId" class="prov" style="width: 100px;"></select>
+             <select id="prov" name="cityId" class="prov" style="width: 100px;"></select>
              <select id="city" name="disctrictId" class="city" style="width: 100px;"></select>
              <select id="dist" name="subDisctrictId" class="dist" style="width: 100px;"></select>
              </div>

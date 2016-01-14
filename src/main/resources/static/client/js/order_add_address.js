@@ -36,27 +36,27 @@ function saveAddress() {
 	var subdistrict = $("#subdistrictId").val();
 	var detail = $("#detail").val();
 
-	if ("" == receiveName) {
+	if (null==receiveName||"" == receiveName) {
 		warning("请填写收货人的姓名");
 		return;
 	}
 
-	if ("" == receiveMobile) {
+	if (null==receiveMobile||"" == receiveMobile) {
 		warning("请填写收货人的联系电话");
 		return;
 	}
 
-	if ("" == district) {
+	if ( null==district||"" == district) {
 		warning("请选择收货人所在的行政区划");
 		return;
 	}
 
-	if ("" == subdistrict) {
+	if (null==subdistrict||"" == subdistrict) {
 		warning("请选择收货人所在的行政街道");
 		return;
 	}
 
-	if ("" == detail) {
+	if (null==detail||"" == detail) {
 		warning("请填写收货人的详细地址");
 		return;
 	}

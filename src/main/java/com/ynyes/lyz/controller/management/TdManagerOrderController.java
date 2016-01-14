@@ -478,10 +478,12 @@ public class TdManagerOrderController {
 			return "redirect:/Verwalter/login";
 		}
 
-		String uris = parsePicUris(hid_photo_name_show360);
-
-		tdDiySite.setShowPictures(uris);
-
+//		if (tdDiySite.getCityId() != null)
+//		{
+//			TdCity tdCity = tdCityService.findOne(tdDiySite.getCityId());
+//			tdDiySite.setRegionId(tdCity.getSobIdCity());
+//		}
+		
 		if (null == tdDiySite.getId()) {
 			tdManagerLogService.addLog("add", "新增门店", req);
 		} else {
@@ -816,30 +818,5 @@ public class TdManagerOrderController {
 				}
 			}
 		}
-	}
-
-	/**
-	 * 图片地址字符串整理，多张图片用,隔开
-	 * 
-	 * @param params
-	 * @return
-	 */
-	private String parsePicUris(String[] uris) {
-		if (null == uris || 0 == uris.length) {
-			return null;
-		}
-
-		String res = "";
-
-		for (String item : uris) {
-			String uri = item.substring(item.indexOf("|") + 1, item.indexOf("|", 2));
-
-			if (null != uri) {
-				res += uri;
-				res += ",";
-			}
-		}
-
-		return res;
 	}
 }

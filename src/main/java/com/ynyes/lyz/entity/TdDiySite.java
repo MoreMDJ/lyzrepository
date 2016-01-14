@@ -54,8 +54,12 @@ public class TdDiySite {
 	// 门店城市名称
 	@Column
 	private String city;
+	
+	// 门店车市id
+	@Column
+	private Long cityId;
 
-	// 门店城市Id
+	// 门店城市Id(sobID)
 	@Column
 	private Long regionId;
 
@@ -142,6 +146,22 @@ public class TdDiySite {
 	//价目表名
 	@Column
 	private String priceListName;
+
+	public Long getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Long cityId) {
+		this.cityId = cityId;
+	}
+
+	public Long getStockListId() {
+		return stockListId;
+	}
+
+	public void setStockListId(Long stockListId) {
+		this.stockListId = stockListId;
+	}
 
 	public String getPriceListName() {
 		return priceListName;

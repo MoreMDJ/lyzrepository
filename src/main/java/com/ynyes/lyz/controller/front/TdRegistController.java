@@ -115,8 +115,7 @@ public class TdRegistController {
 		}
 
 		// 获取门店名称
-		TdDiySite diySite = tdDiySiteService.findByRegionIdAndTitleAndIsEnableTrue(city.getSobIdCity(),
-				cityInfo + "默认门店");
+		TdDiySite diySite = tdDiySiteService.findByRegionIdAndTitleAndIsEnableTrue(city.getSobIdCity(), cityInfo + "默认门店");
 		TdUser new_user = new TdUser();
 		new_user.setUsername(phone);
 		new_user.setPassword(MD5.md5(password, 32));

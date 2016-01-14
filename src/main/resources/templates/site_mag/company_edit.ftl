@@ -77,7 +77,7 @@ $(function () {
   <dl>
     <dt>分公司ID</dt>
     <dd>
-     <input <#if company??>disabled="disabled"<#else>name="sobId"</#if> style="width:300px;" value="<#if company?? && company.sobIdCompany??>${company.sobIdCompany!""}</#if>"  class="input small" datatype="n" sucmsg=" " errormsg="请输入数字">
+     <input <#if company??>disabled="disabled"<#else>name="sobIdCompany"</#if> style="width:300px;" value="<#if company?? && company.sobIdCompany??>${company.sobIdCompany?c}</#if>"  class="input small" datatype="n" sucmsg=" " errormsg="请输入数字">
       <span class="Validform_checktip">*由EBS提供，填写后不可修改</span>
     </dd>
   </dl>
