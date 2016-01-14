@@ -57,7 +57,7 @@
                     <input type="text" id="receiveMobile" value="${user.username!''}">
                 </div>
                 <div class="edit-info">
-                    <label>所在地区：</label>
+                    <label>所在城市：</label>
                     <a class="edit-city">${user.cityName!''}</a>
                 </div>
                 <!-- 1-4修改 -->

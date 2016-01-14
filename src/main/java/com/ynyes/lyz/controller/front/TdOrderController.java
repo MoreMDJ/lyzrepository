@@ -27,14 +27,12 @@ import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUser;
-import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
-import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdShippingAddressService;
@@ -76,13 +74,7 @@ public class TdOrderController {
 	private TdDistrictService tdDistrictService;
 
 	@Autowired
-	private TdGoodsService tdGoodsService;
-
-	@Autowired
 	private TdOrderService tdOrderService;
-
-	@Autowired
-	private TdBrandService tdBrandService;
 
 	/**
 	 * 跳转到填写订单的页面
@@ -117,6 +109,8 @@ public class TdOrderController {
 		if ("门店自提".equals(deliverTypeTitle) && "到店支付".equals(order.getPayTypeTitle())) {
 			isCoupon = false;
 		}
+
+		tdCommonService.getMaxCash(req, map, order);
 
 		map.addAttribute("order", order);
 		map.addAttribute("isCoupon", isCoupon);
@@ -183,7 +177,8 @@ public class TdOrderController {
 		}
 
 		// 获取用户的城市
-		TdCity city = tdCityService.findBySobIdCity(user.getCityId());
+		Long cityId = user.getCityId();
+		TdCity city = tdCityService.findBySobIdCity(cityId);
 
 		SimpleDateFormat hh = new SimpleDateFormat("HH");
 		SimpleDateFormat mm = new SimpleDateFormat("mm");
@@ -337,7 +332,7 @@ public class TdOrderController {
 
 		map.addAttribute("payTypeId", order.getPayTypeId());
 
-		// 获取所有的支付方式
+		// 获取所有的在线支付方式
 		List<TdPayType> pay_type_list = tdPayTypeService.findByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc();
 
 		// 获取配送方式
@@ -352,7 +347,7 @@ public class TdOrderController {
 		if ("门店自提".equals(deliveryType)) {
 			// 查找是否具有到店支付的支付方式
 			TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("到店支付");
-			map.addAttribute("cashOndelivery", payType);
+			pay_type_list.add(payType);
 		}
 
 		map.addAttribute("pay_type_list", pay_type_list);
@@ -674,7 +669,7 @@ public class TdOrderController {
 	 */
 	@RequestMapping(value = "/check")
 	@ResponseBody
-	public Map<String, Object> checkOrder(HttpServletRequest req, Double amount) {
+	public Map<String, Object> checkOrder(HttpServletRequest req, Boolean userCash, ModelMap map) {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 
@@ -692,24 +687,62 @@ public class TdOrderController {
 			unCashBalance = 0.00;
 		}
 
+		// 获取虚拟订单
+		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
+
 		// 获取用户的可提现余额
 		Double cashBalance = user.getCashBalance();
 		if (null == cashBalance) {
 			cashBalance = 0.00;
 		}
 
-		if (unCashBalance < amount) {
-			user.setUnCashBalance(0.00);
-			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - amount);
+		Double maxCash = null;
+		if (userCash) {
+			maxCash = tdCommonService.getMaxCash(req, map, order_temp);
+		}
+		if (null == maxCash) {
+			maxCash = 0.0;
+		}
+
+		if (unCashBalance > maxCash) {
+			user.setUnCashBalance(user.getUnCashBalance() - maxCash);
+			order_temp.setUnCashBalanceUsed(maxCash);
 		} else {
-			user.setUnCashBalance(user.getUnCashBalance() - amount);
+			user.setUnCashBalance(0.0);
+			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - maxCash);
+			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
+			order_temp.setCashBalanceUsed(maxCash - user.getUnCashBalance());
 		}
 		tdUserService.save(user);
 
-		// 获取虚拟订单
-		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
-		order_temp.setStatusId(3L);
-		order_temp.setActualPay(amount);
+		String address = order_temp.getShippingAddress();
+		String shippingName = order_temp.getShippingName();
+		String shippingPhone = order_temp.getShippingPhone();
+
+		if (null == address || null == shippingName || null == shippingPhone) {
+			res.put("message", "请填写收货地址");
+			return res;
+		}
+
+		// 判断用户是否是线下付款
+		Boolean isOnline = false;
+		Long payTypeId = order_temp.getPayTypeId();
+		TdPayType payType = tdPayTypeService.findOne(payTypeId);
+		if (null != payType && payType.getIsOnlinePay()) {
+			isOnline = true;
+		}
+
+		if (isOnline) {
+			// 判断是否还有未支付的金额
+			if (maxCash < (order_temp.getTotalPrice() + order_temp.getDeliverFee())) {
+				// 跳转第三方
+				// res.put("url", payType.get);
+			} else {
+				order_temp.setStatusId(3L);
+			}
+		} else {
+			order_temp.setStatusId(3L);
+		}
 
 		tdOrderService.save(order_temp);
 

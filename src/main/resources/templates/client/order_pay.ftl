@@ -91,7 +91,7 @@
                 <section class="coupon">
                     <div class="div1">
                         <label>产品劵</label>
-                        <a class="target" <#if !(isCoupon??&&isCoupon==false)>href="/order/coupon/1"</#if>>
+                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(product_coupon_list??&&product_coupon_list?size gt 0)>href="/order/coupon/1"</#if>>
                             <#if isCoupon??&&isCoupon==false>
                                                                                 禁止使用
                             <#else>
@@ -109,7 +109,7 @@
                     </div>
                     <div class="div1">
                         <label>现金劵</label>
-                        <a class="target" <#if !(isCoupon??&&isCoupon==false)>href="/order/coupon/0"</#if>>
+                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(no_product_coupon_list??&&no_product_coupon_list?size gt 0)>href="/order/coupon/0"</#if>>
                             <#if isCoupon??&&isCoupon==false>
                                                                                 禁止使用
                             <#else>
@@ -134,11 +134,9 @@
                     <div class="div2">
                         <label>本次使用</label>
                         <div class="wallet-balance">
-                            <#if (isCoupon??&&isCoupon==false)>
-                                <input id="amount" placeholder="不可用" readonly="readonly" style="border-radius: 3px;padding:5px;" class="usebalance" type="text">
-                            <#else>
-                                <input id="amount" style="border-radius: 3px;" class="usebalance" type="text">
-                            </#if>
+                            <div class="first">共￥<span id="all_balance"><#if max??>${max?string("0.00")}<#else>0.00</#if></span></div>
+                            <div id="isUserCash" class="checked <#if !(isCoupon??&&isCoupon==false)>active</#if>"></div>
+                            
                         </div>
                     </div>
                 </section>
@@ -146,12 +144,16 @@
                     $(document).ready(function(){
                         var onOff = true;
                         $(".checked").click(function(){
-                            if(onOff){
-                                $(this).addClass("active");
-                            }else{
-                                $(this).removeClass("active");
-                            }
-                            onOff = !onOff;
+                            <#if !(isCoupon??&&isCoupon==false)>
+                                if(onOff){
+                                    $(this).addClass("active");
+                                }else{
+                                    $(this).removeClass("active");
+                                }
+                                onOff = !onOff;
+                            <#else>
+                                warning("\"到店支付\"不能使用预存款");;
+                            </#if>
                         });
                     });
                 </script>

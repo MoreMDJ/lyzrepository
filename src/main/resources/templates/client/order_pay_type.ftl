@@ -72,7 +72,7 @@
         <!-- 充值 END -->
         <#-- 以局部刷新的方式来获取货到付款 -->
         <#if cashOndelivery??>
-            <a class="next-page" href="javascript:cashOnDelivery();">其他</a>
+            <a class="next-page" href="javascript:cashOnDelivery();">其他支付</a>
         </#if>
     </body>
 </html>

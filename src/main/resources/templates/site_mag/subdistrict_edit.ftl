@@ -84,23 +84,6 @@ $(function () {
             </div>
         </dd>
     </dl>
-   <dl>
-        <dt>所属配送仓库</dt>
-        <dd>
-            <div class="rule-single-select">
-                <select name="storageId" datatype="*" sucmsg=" ">
-                    <#if !subdistrict??>
-                        <option>请选择...</option>
-                    </#if>
-                    <#if district_list??>
-                        <#list district_list as c>
-                            <option value="${c.id!""}" <#if subdistrict?? && subdistrict.districtId==c.id>selected="selected"</#if>>${c.name!""}</option>
-                        </#list>
-                    </#if>
-                </select>
-            </div>
-        </dd>
-    </dl>
   <dl>
     <dt>行政街道名</dt>
     <dd>
