@@ -1,5 +1,8 @@
 package com.ynyes.lyz.service;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,10 +15,21 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
+import org.apache.geronimo.mail.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
@@ -26,12 +40,15 @@ import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
+import com.ynyes.lyz.entity.TdInterfaceErrorLog;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdProductCategory;
+import com.ynyes.lyz.entity.TdRequisition;
+import com.ynyes.lyz.entity.TdRequisitionGoods;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUser;
@@ -89,6 +106,17 @@ public class TdCommonService {
 
 	@Autowired
 	private TdPriceListService tdPriceListService;
+	
+	@Autowired
+	private TdRequisitionService tdRequisitionService;
+	
+	@Autowired
+	private TdRequisitionGoodsService tdRequisitionGoodsService;
+	
+	@Autowired
+	private TdInterfaceErrorLogService tdInterfaceErrorLogService;
+	
+	
 
 	/**
 	 * 获取登陆用户信息的方法
@@ -799,6 +827,14 @@ public class TdCommonService {
 
 		virtual.setOrderNumber("XN" + orderNum);
 		virtual.setOrderTime(new Date());
+		
+		// Add by Shawn
+		virtual.setProvince(defaultAddress.getProvince());
+		virtual.setCity(defaultAddress.getCity());
+		virtual.setDisctrict(defaultAddress.getDisctrict());
+		virtual.setSubdistrict(defaultAddress.getSubdistrict());
+		virtual.setDetailAddress(defaultAddress.getDetailAddress());
+		
 		virtual.setShippingAddress(defaultAddress.getCity() + defaultAddress.getDisctrict()
 				+ defaultAddress.getSubdistrict() + defaultAddress.getDetailAddress());
 		virtual.setShippingName(defaultAddress.getReceiverName());
@@ -1003,6 +1039,14 @@ public class TdCommonService {
 			for (TdBrand brand : brand_list) {
 				TdOrder order = new TdOrder();
 				order.setOrderNumber(order_temp.getOrderNumber().replace("XN", brand.getShortName()));
+				
+				// Add by Shawn
+				order.setProvince(order_temp.getProvince());
+				order.setCity(order_temp.getCity());
+				order.setDisctrict(order_temp.getDisctrict());
+				order.setSubdistrict(order_temp.getSubdistrict());
+				order.setDetailAddress(order_temp.getDetailAddress());
+				
 				order.setShippingAddress(order_temp.getShippingAddress());
 				order.setShippingName(order_temp.getShippingName());
 				order.setShippingPhone(order_temp.getShippingPhone());
@@ -1182,6 +1226,9 @@ public class TdCommonService {
 			order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
 			order.setTotalGoodsPrice(order.getTotalGoodsPrice() + order.getDeliverFee());
 		}
+		
+		// add by Shawn
+		List<TdOrder> orderList = new ArrayList<TdOrder>();
 
 		// 遍历存储
 		for (TdOrder order : order_map.values()) {
@@ -1189,10 +1236,12 @@ public class TdCommonService {
 				System.err.println(string);
 			}
 			if (null != order && null != order.getTotalGoodsPrice() && order.getTotalGoodsPrice() > 0) {
-				tdOrderService.save(order);
+				order = tdOrderService.save(order);
+				
+				orderList.add(order);
 			}
 		}
-
+		
 		// 删除虚拟订单
 		order_temp.setGiftGoodsList(null);
 		order_temp.setPresentedList(null);
@@ -1202,8 +1251,15 @@ public class TdCommonService {
 
 		// 清空session中的虚拟订单
 		req.getSession().setAttribute("order_temp", null);
-	}
+		
 
+		
+//		CallWMSImpl callWMSImpl = new CallWMSImpl();
+		
+		// 抛单给WMS
+		sendMsgToWMS(orderList, order_temp.getOrderNumber());
+	}
+	
 	/**
 	 * 计算能够使用的最大额度的预存款的方法
 	 * 
@@ -1253,5 +1309,328 @@ public class TdCommonService {
 			ip = request.getRemoteAddr();
 		}
 		return ip;
+	}
+	
+	
+	// TODO Client
+	public void sendMsgToWMS(List<TdOrder> orderList,String mainOrderNumber)
+	{
+		if (orderList.size() <= 0)
+		{
+			return ;
+		}
+		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase(""))
+		{
+			return ;
+		}
+		TdRequisition requisition = SaveRequisiton(orderList, mainOrderNumber);
+		
+	//			String JAVA_PATH = System.getenv("JAVA_HOME");
+	//			System.err.println("JAVA_PATH:"+JAVA_PATH);
+	//			String PATH = System.getenv("Path");
+	//			System.err.println("PATH:" + PATH);
+		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();  
+		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
+		//url为调用webService的wsdl地址
+		QName name = new QName("http://tempuri.org/","GetErpInfo");
+		//paramvalue为参数值 
+		Object[] objects = null;
+		if (requisition != null)
+		{
+			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList())
+			{
+				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
+				try
+				{
+					objects = client.invoke(name,"td_requisition_goods","1",xmlGoodsEncode);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
+	//						return "发送异常";	
+				}
+				String result = null;
+				if (objects != null)
+				{
+					for (Object object : objects) 
+					{
+						result += object;
+					}
+				}
+				Map<String, String> resultMap = chectResult(result);
+				if (resultMap.get("status").equalsIgnoreCase("Y"))
+				{
+				}
+				else
+				{
+					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), resultMap.get("msg"));
+				}
+			}
+			String xmlEncode = XMLMakeAndEncode(requisition, 1);
+			try
+			{
+	        	objects = client.invoke(name,"td_requisition","1",xmlEncode);
+	        }
+			catch (Exception e)
+			{
+	        	e.printStackTrace();
+	        	writeErrorLog(mainOrderNumber, "无", e.getMessage());
+	//		        	return "发送异常";
+	        }
+			String result = null;
+			if (objects != null)
+			{
+				for (Object object : objects) 
+				{
+					result += object;
+				}
+			}
+			Map<String, String> resultMap = chectResult(result);
+			if (resultMap.get("status").equalsIgnoreCase("Y"))
+			{
+			}
+			else
+			{
+				writeErrorLog(mainOrderNumber, "无", resultMap.get("msg"));
+			}
+		}
+	}
+		
+		
+	/**
+	 * 保存要货单
+	 * @param orderList
+	 * @param mainOrderNumber
+	 * @return
+	 */
+	private TdRequisition SaveRequisiton(List<TdOrder> orderList,String mainOrderNumber)
+	{
+		if (orderList.size() <= 0)
+		{
+			return null;
+		}
+		TdOrder order = orderList.get(0);
+		
+		TdRequisition requisition = tdRequisitionService.findByOrderNumber(mainOrderNumber);
+		if (requisition == null)
+		{
+			requisition = new TdRequisition();
+			requisition.setDiySiteId(order.getDiySiteId());
+			requisition.setDiySiteTitle(order.getDiySiteName());
+			requisition.setCustomerName(order.getUsername());
+			requisition.setCustomerId(order.getUserId());
+			requisition.setOrderNumber(mainOrderNumber);
+			requisition.setReceiveName(order.getShippingName());
+			requisition.setReceiveAddress(order.getShippingAddress());
+			
+			// Add by Shawn
+			requisition.setProvince(order.getProvince());
+			requisition.setCity(order.getCity());
+			requisition.setDisctrict(order.getDisctrict());
+			requisition.setSubdistrict(order.getSubdistrict());
+			requisition.setDetailAddress(order.getDetailAddress());
+			
+			requisition.setReceivePhone(order.getShippingPhone());
+			requisition.setTotalPrice(order.getTotalPrice());
+			requisition.setTypeId(1L);
+			String dayTime = order.getDeliveryDate();
+			dayTime = dayTime + " " + order.getDeliveryDetailId() + ":30";
+			requisition.setDeliveryTime(dayTime);
+			
+			List<TdRequisitionGoods> requisitionGoodsList = new ArrayList<>();
+			for (TdOrder tdOrder : orderList) 
+			{
+				if (null != tdOrder.getOrderGoodsList())
+				{
+					for (TdOrderGoods orderGoods : tdOrder.getOrderGoodsList())
+					{
+						TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+						requisitionGoods.setGoodsCode(orderGoods.getSku());
+						requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+						requisitionGoods.setPrice(orderGoods.getPrice());
+						requisitionGoods.setQuantity(orderGoods.getQuantity());
+						requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+						requisitionGoods.setOrderNumber(mainOrderNumber);
+						tdRequisitionGoodsService.save(requisitionGoods);
+						requisitionGoodsList.add(requisitionGoods);
+					}
+				}
+				
+				if (null != tdOrder.getGiftGoodsList())
+				{
+					for (TdOrderGoods orderGoods : tdOrder.getGiftGoodsList())
+					{
+						TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+						requisitionGoods.setGoodsCode(orderGoods.getSku());
+						requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+						requisitionGoods.setPrice(orderGoods.getPrice());
+						requisitionGoods.setQuantity(orderGoods.getQuantity());
+						requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+						requisitionGoods.setOrderNumber(mainOrderNumber);
+						tdRequisitionGoodsService.save(requisitionGoods);
+						requisitionGoodsList.add(requisitionGoods);
+					}
+				}
+				
+				if (null != tdOrder.getPresentedList())
+				{
+					for (TdOrderGoods orderGoods : tdOrder.getPresentedList())
+					{
+						TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+						requisitionGoods.setGoodsCode(orderGoods.getSku());
+						requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+						requisitionGoods.setPrice(orderGoods.getPrice());
+						requisitionGoods.setQuantity(orderGoods.getQuantity());
+						requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+						requisitionGoods.setOrderNumber(mainOrderNumber);
+						tdRequisitionGoodsService.save(requisitionGoods);
+						requisitionGoodsList.add(requisitionGoods);
+					}
+				}
+			}
+			requisition.setRequisiteGoodsList(requisitionGoodsList);
+			requisition = tdRequisitionService.save(requisition);
+		}
+		return requisition;
+	}
+	
+	/**
+	 * 根据传进来的类型返回相应的XML
+	 * @param object
+	 * @param type  1：tdRequisition  2：tdRequisitionGoods
+	 * @return
+	 */
+	private String XMLMakeAndEncode(Object object,Integer type)
+	{
+		String encodeXML = null;
+		
+		if (type == 1)
+		{
+			TdRequisition requisition = (TdRequisition)object;
+			String xmlStr = "<ERP>"
+					+"<TABLE>"
+					+"<ID>"+ requisition.getId() +"</ID>"
+					+"<diySiteTitle>"+ requisition.getDiySiteTitle() +"</diySiteTitle>"
+					+"<diySiteId>"+ requisition.getDiySiteId() +"</diySiteId>"
+					+"<customerName>"+ requisition.getCustomerName() +"</customerName>"
+					+"<customerId>"+ requisition.getCustomerId() +"</customerId>"
+					+"<orderNumber>"+ requisition.getOrderNumber() +"</orderNumber>"
+					+"<totalPrice>"+ requisition.getTotalPrice() +"</totalPrice>"
+					+"<deliveryTime>"+ requisition.getDeliveryTime() +"</deliveryTime>"
+					+"<receiveName>"+ requisition.getReceiveName() +"</receiveName>"
+					+"<receiveAddress>"+ requisition.getReceiveAddress() +"</receiveAddress>"
+					+"<province>"+ requisition.getProvince() +"</province>"
+					+"<city>"+ requisition.getCity() +"</city>"
+					+"<district>"+ requisition.getDisctrict() +"</district>"
+					+"<street>"+ requisition.getSubdistrict() +"</street>"
+					+"<detailAddress>"+ requisition.getDetailAddress() +"</detailAddress>"
+					+"<receivePhone>"+ requisition.getReceivePhone() +"</receivePhone>"
+					+"<orderTime>"+ requisition.getOrderTime() +"</orderTime>"
+					+"<typeId>"+ requisition +"</typeId>"
+					+"</TABLE>"
+					+"</ERP>";
+			
+			
+			byte[] bs = xmlStr.getBytes();
+			byte[] encodeByte = Base64.encode(bs);
+			try 
+			{
+				encodeXML = new String(encodeByte, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e1)
+			{
+				System.err.println("MDJ_WMS:XML 编码出错!");
+				return "FAILED";
+			}
+		}
+		if (type == 2)
+		{
+			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods)object;
+			String xmlStr = "<ERP>"
+							+"<TABLE>"
+							+"<ID>"+ requisitionGoods.getId() +"</ID>"
+							+"<goodsCode>"+ requisitionGoods.getGoodsCode() +"</goodsCode>"
+							+"<goodsTitle>"+ requisitionGoods.getGoodsTitle() +"</goodsTitle>"
+							+"<price>"+ requisitionGoods.getPrice() +"</price>"
+							+"<quantity>"+ requisitionGoods.getQuantity() +"</quantity>"
+							+"<orderNumber>"+ requisitionGoods.getOrderNumber() +"</orderNumber>"
+							+"<subOrderNumber>"+ requisitionGoods.getSubOrderNumber() +"</subOrderNumber>"
+							+"</TABLE>"
+							+"</ERP>";
+			
+			byte[] bs = xmlStr.getBytes();
+			byte[] encodeByte = Base64.encode(bs);
+			try 
+			{
+				encodeXML = new String(encodeByte, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e1)
+			{
+				System.err.println("MDJ_WMS:XML 编码出错!");
+				return "FAILED";
+			}
+		}
+		return encodeXML;
+	}
+	
+	private void writeErrorLog(String orderNumber,String subOrderNumber,String errorMsg)
+	{
+		TdInterfaceErrorLog errorLog = new TdInterfaceErrorLog();
+		errorLog.setErrorMsg(errorMsg);
+		errorLog.setOrderNumber(orderNumber);
+		errorLog.setSubOrderNumber(subOrderNumber);
+		tdInterfaceErrorLogService.save(errorLog);
+	}
+	/**
+	 * 判断接口返回状态
+	 * @param resultStr
+	 * @return
+	 */
+	private Map<String, String> chectResult(String resultStr)
+	{
+		Map<String , String> map = new HashMap<String,String>();
+		map.put("status", "n");
+		// 解析XML
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = null;
+		try
+		{
+			builder = factory.newDocumentBuilder();
+		}
+		catch (ParserConfigurationException e) 
+		{
+			e.printStackTrace();
+			map.put("msg", "返回参数错误 -1");
+			return map;
+		}
+
+		Document document = null;
+
+		InputSource is = new InputSource(new StringReader(resultStr));
+
+		try
+		{
+			document = builder.parse(is);
+		} 
+		catch (SAXException | IOException e)
+		{
+			e.printStackTrace();
+			map.put("msg", "返回参数错误 -2");
+		}
+//			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
+		NodeList nodeList = document.getElementsByTagName("STATUS");
+		Node node = nodeList.item(0);
+		NodeList childNodeList = node.getChildNodes();
+		Node nodeCode = childNodeList.item(0);
+		Integer code = Integer.parseInt(nodeCode.getNodeValue());
+		if (code == 1)
+		{
+			String messageStr = childNodeList.item(1).getNodeValue();
+			map.put("msg", messageStr);
+			return map;
+		}
+		map.put("status", "y");
+		return map;
 	}
 }

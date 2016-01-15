@@ -610,6 +610,14 @@ public class TdOrderController {
 
 		// 从session获取临时订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		
+		// Add by Shawn
+		order.setProvince(address.getProvince());
+		order.setCity(address.getCity());
+		order.setDisctrict(address.getDisctrict());
+		order.setSubdistrict(address.getSubdistrict());
+		order.setDetailAddress(address.getDetailAddress());
+				
 		order.setShippingAddress(
 				address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
 		order.setShippingName(address.getReceiverName());
@@ -653,6 +661,14 @@ public class TdOrderController {
 		}
 		TdShippingAddress address = tdShippingAddressService.findOne(id);
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		
+		// Add by Shawn
+		order.setProvince(address.getProvince());
+		order.setCity(address.getCity());
+		order.setDisctrict(address.getDisctrict());
+		order.setSubdistrict(address.getSubdistrict());
+		order.setDetailAddress(address.getDetailAddress());
+		
 		order.setShippingAddress(
 				address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
 		order.setShippingName(address.getReceiverName());
