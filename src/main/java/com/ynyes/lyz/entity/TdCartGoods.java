@@ -102,10 +102,6 @@ public class TdCartGoods {
 	@Column
 	private Long type;
 
-	// 使用产品券的数量，默认为0
-	@Column
-	private Long couponNumber;
-
 	// 是否是调色包
 	@Column
 	private Boolean isColor;
@@ -212,14 +208,6 @@ public class TdCartGoods {
 
 	public void setRealPrice(Double realPrice) {
 		this.realPrice = realPrice;
-	}
-
-	public Long getCouponNumber() {
-		return couponNumber;
-	}
-
-	public void setCouponNumber(Long couponNumber) {
-		this.couponNumber = couponNumber;
 	}
 
 	public String getSku() {

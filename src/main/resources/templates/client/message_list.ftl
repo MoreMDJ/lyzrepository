@@ -53,9 +53,7 @@
                             <dd>
                                 <h3>咨询投诉</h3>
                                 <div>
-                                    <#if item.imgUri??>
-                                        <img src="${item.imgUri!''}"/>
-                                    </#if>
+                                    <img src="/client/images/nwe_centerimg.png"/>
                                 </div>
                                 <p><#if item.content??>${item.content!''}...</#if></p>
                                 <a href="/article/1/${item.id?c}">查看详情 ></a>

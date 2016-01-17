@@ -62,6 +62,10 @@ public class TdOrderGoods {
     @Column(scale=2)
     private Double price;
     
+    //真实价格
+    @Column
+    private Double realPrice;
+    
     // 商品数量
     @Column
     private Long quantity;
@@ -93,6 +97,10 @@ public class TdOrderGoods {
     //商品的品牌id
     @Column
     private Long brandId;
+    
+	// 使用产品券的数量，默认为0
+	@Column
+	private Long couponNumber;
 
     public Boolean getIsCommented() {
 		return isCommented;
@@ -244,6 +252,22 @@ public class TdOrderGoods {
 
 	public void setBrandId(Long brandId) {
 		this.brandId = brandId;
+	}
+
+	public Double getRealPrice() {
+		return realPrice;
+	}
+
+	public void setRealPrice(Double realPrice) {
+		this.realPrice = realPrice;
+	}
+
+	public Long getCouponNumber() {
+		return couponNumber;
+	}
+
+	public void setCouponNumber(Long couponNumber) {
+		this.couponNumber = couponNumber;
 	}
 
 	@Override

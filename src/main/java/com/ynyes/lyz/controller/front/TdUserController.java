@@ -1175,7 +1175,13 @@ public class TdUserController {
 		// 进行资金退还
 		Double totalPrice = order.getTotalPrice();
 		Double unCashBalanceUsed = order.getUnCashBalanceUsed();
+		if (null == unCashBalanceUsed) {
+			unCashBalanceUsed = 0.00;
+		}
 		Double cashBalanceUsed = order.getCashBalanceUsed();
+		if (null == cashBalanceUsed) {
+			cashBalanceUsed = 0.00;
+		}
 		String productCouponId = order.getProductCouponId();
 		String cashCouponId = order.getCashCouponId();
 		Long userId = order.getUserId();
@@ -1222,8 +1228,91 @@ public class TdUserController {
 				}
 			}
 		}
-		order.setStatusId(7L);
+		if (null != order.getStatusId() && 3L == order.getStatusId()) {
+			TdReturnNote note = new TdReturnNote();
+			// 退货单编号
+			Date current = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+			String curStr = sdf.format(current);
+			Random random = new Random();
 
+			List<TdOrderGoods> returnGoodsList = note.getReturnGoodsList();
+			if (null == returnGoodsList) {
+				returnGoodsList = new ArrayList<>();
+			}
+			note.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+			List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+			List<TdOrderGoods> presentedList = order.getPresentedList();
+			if (null != presentedList) {
+				for (TdOrderGoods orderGoods : presentedList) {
+					if (null != orderGoods) {
+						TdOrderGoods goods = new TdOrderGoods();
+						goods.setBrandId(orderGoods.getBrandId());
+						goods.setBrandTitle(orderGoods.getBrandTitle());
+						goods.setGoodsId(orderGoods.getGoodsId());
+						goods.setGoodsSubTitle(orderGoods.getGoodsSubTitle());
+						goods.setSku(orderGoods.getSku());
+						goods.setGoodsCoverImageUri(orderGoods.getGoodsCoverImageUri());
+						goods.setGoodsColor(orderGoods.getGoodsColor());
+						goods.setGoodsCapacity(orderGoods.getGoodsCapacity());
+						goods.setGoodsVersion(orderGoods.getGoodsVersion());
+						goods.setGoodsSaleType(orderGoods.getGoodsSaleType());
+						goods.setGoodsTitle(orderGoods.getGoodsTitle());
+
+						goods.setPrice(orderGoods.getPrice());
+						goods.setQuantity(orderGoods.getQuantity());
+
+						goods.setDeliveredQuantity(orderGoods.getDeliveredQuantity());
+						goods.setPoints(orderGoods.getPoints());
+						// tdOrderGoodsService.save(orderGoods);
+						// 添加商品信息
+						returnGoodsList.add(orderGoods);
+
+						// 订单商品设置退货为True
+						orderGoods.setIsReturnApplied(true);
+						// 更新订单商品信息是否退货状态
+						tdOrderGoodsService.save(orderGoods);
+						tdOrderGoodsService.save(goods);
+					}
+				}
+			}
+			if (null != goodsList) {
+				for (TdOrderGoods orderGoods : goodsList) {
+					if (null != orderGoods) {
+						TdOrderGoods goods = new TdOrderGoods();
+						goods.setBrandId(orderGoods.getBrandId());
+						goods.setBrandTitle(orderGoods.getBrandTitle());
+						goods.setGoodsId(orderGoods.getGoodsId());
+						goods.setGoodsSubTitle(orderGoods.getGoodsSubTitle());
+						goods.setSku(orderGoods.getSku());
+						goods.setGoodsCoverImageUri(orderGoods.getGoodsCoverImageUri());
+						goods.setGoodsColor(orderGoods.getGoodsColor());
+						goods.setGoodsCapacity(orderGoods.getGoodsCapacity());
+						goods.setGoodsVersion(orderGoods.getGoodsVersion());
+						goods.setGoodsSaleType(orderGoods.getGoodsSaleType());
+						goods.setGoodsTitle(orderGoods.getGoodsTitle());
+
+						goods.setPrice(orderGoods.getPrice());
+						goods.setQuantity(orderGoods.getQuantity());
+
+						goods.setDeliveredQuantity(orderGoods.getDeliveredQuantity());
+						goods.setPoints(orderGoods.getPoints());
+						// tdOrderGoodsService.save(orderGoods);
+						// 添加商品信息
+						returnGoodsList.add(orderGoods);
+
+						// 订单商品设置退货为True
+						orderGoods.setIsReturnApplied(true);
+						// 更新订单商品信息是否退货状态
+						tdOrderGoodsService.save(orderGoods);
+						tdOrderGoodsService.save(goods);
+					}
+				}
+			}
+			tdReturnNoteService.save(note);
+			tdCommonService.sendBackMsgToWMS(note);
+		}
+		order.setStatusId(7L);
 		tdOrderService.save(order);
 		res.put("status", 0);
 		return res;

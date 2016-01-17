@@ -94,7 +94,7 @@ function __doPostBack(eventTarget, eventArgument) {
                 	无类别	
                 </#switch>			
                 </td>
-                <td>${item.typeTitle!''}</td>
+                <td><a href="/Verwalter/coupon/edit?id=${item.id?c}">${item.typeTitle!''}</a></td>
                 <td>
                 <#if item.typeId?? && item.typeId==2>用户抢券<#else>手动发券</#if>
                 </td>

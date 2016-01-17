@@ -12,6 +12,11 @@
 <script type="text/javascript" src="/mag/js/swfupload.queue.js"></script>
 <script type="text/javascript" src="/mag/js/swfupload.handlers.js"></script>
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="/mag/js/WdatePicker.js"></script>
+<script type="text/javascript" charset="utf-8" src="/mag/js/kindeditor-min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/mag/js/zh_CN.js"></script>
+<link href="/mag/style/WdatePicker.css" rel="stylesheet" type="text/css">
 <script type="text/javascript">
 $(function () {
     //初始化表单验证
@@ -138,6 +143,16 @@ function changeType(e)
     </dd>
   </dl>
   <dl>
+        <dt>到期时间</dt>
+        <dd>
+            <div class="input-date">
+                <input name="expireTime" type="text" value="<#if coupon??>${coupon.expireTime!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                <i>日期</i>
+            </div>
+            <span class="Validform_checktip"></span>
+        </dd>
+    </dl>
+  <dl>
     <dt>剩余数量</dt>
     <dd>
       <input name="leftNumber" type="text" value="<#if coupon??&&coupon.leftNumber??>${coupon.leftNumber?c!""}<#else>1</#if>" class="input small" datatype="n" sucmsg=" ">
@@ -148,8 +163,8 @@ function changeType(e)
         <dl>
             <dt>指定产品</dt>
             <dd>
-              <input name="goodsId" type="hidden" value="${cou_goods.id!'0'}" >
-              <input  type="text" value="${cou_goods.title!''}" class="input text">
+              <input name="goodsId" type="hidden" value="${cou_goods.id?c}" >
+              <input  type="text" value="${cou_goods.title!''}" name="goodsName" class="input text">
               <span class="Validform_checktip">*仅相对于指定商品券和产品券</span>
             </dd>
          </dl>
