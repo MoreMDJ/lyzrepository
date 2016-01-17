@@ -43,8 +43,10 @@ import org.xml.sax.SAXException;
 
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
+import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
+import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdInterfaceErrorLogService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdRequisitionGoodsService;
@@ -59,6 +61,9 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
+	
+	@Autowired
+	private TdGoodsService tdGoodsService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -410,6 +415,11 @@ public class CallWMSImpl implements ICallWMS {
 				infoDetail.setRequstNumber(c_d_request_qty);
 				infoDetail.setBackNumber(c_d_ack_qty);
 				tdDeliveryInfoDetailService.save(infoDetail);
+				
+				Long backquantity = Math.round(infoDetail.getBackNumber() == null ? 0 : infoDetail.getBackNumber());
+				TdGoods tdGoods = tdGoodsService.findByCode(infoDetail.getgCode());
+				tdGoods.setLeftNumber(tdGoods.getLeftNumber() - backquantity);
+				tdGoodsService.save(tdGoods, "goods");
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}

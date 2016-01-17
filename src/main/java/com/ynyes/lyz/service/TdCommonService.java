@@ -1714,9 +1714,12 @@ public class TdCommonService {
 		Object[] objects = null;
 
 		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);
-		try {
+		try
+		{
 			objects = client.invoke(name, "td_return_note", "1", xmlGoodsEncode);
-		} catch (Exception e) {
+		} 
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 		String result = "";
