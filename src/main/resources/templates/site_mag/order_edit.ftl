@@ -660,6 +660,96 @@
                 </table> 
             </dd> 
         </dl>
+        <#if order.presentedList??>
+             <dl>
+                <dt>赠品列表</dt>
+                <dd>
+                    <table border="0" cellspacing="0" cellpadding="0" class="border-table" width="98%">
+                        <thead>
+                            <tr>
+                                <th width="12%">
+                                    商品ID
+                                </th>
+                                <th>
+                                    商品名称
+                                </th>
+                                <th width="12%">
+                                    价格
+                                </th>
+                                <th width="10%">
+                                    数量
+                                </th>
+                                <th width="12%">
+                                    金额合计
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                <#list order.presentedList as goods>
+                                    <tr class="td_c">
+                                        <td>${goods.goodsId?c!""}</td>
+                                        <td style="text-align: left; white-space: normal;">
+                                            ${goods.goodsTitle!""} 
+                                            ${goods.goodsColor!""}
+                                            ${goods.goodsCapacity!""}
+                                            ${goods.goodsVersion!""}
+                                            ${goods.goodsSaleType!""}
+                                        </td>
+                                        <td>${goods.price?string("0.00")}</td>
+                                        <td>${goods.quantity!""}</td>
+                                        <td>${(goods.price*goods.quantity)?string("0.00")}</td>
+                                    </tr>
+                                </#list>
+                        </tbody> 
+                    </table> 
+                </dd> 
+            </dl>
+        </#if>
+        <#if order.giftGoodsList?? && order.giftGoodsList?size gt 0>
+             <dl>
+                <dt>小辅料列表</dt>
+                <dd>
+                    <table border="0" cellspacing="0" cellpadding="0" class="border-table" width="98%">
+                        <thead>
+                            <tr>
+                                <th width="12%">
+                                    商品ID
+                                </th>
+                                <th>
+                                    商品名称
+                                </th>
+                                <th width="12%">
+                                    价格
+                                </th>
+                                <th width="10%">
+                                    数量
+                                </th>
+                                <th width="12%">
+                                    金额合计
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                <#list order.giftGoodsList as goods>
+                                    <tr class="td_c">
+                                        <td>${goods.goodsId?c!""}</td>
+                                        <td style="text-align: left; white-space: normal;">
+                                            ${goods.goodsTitle!""} 
+                                            ${goods.goodsColor!""}
+                                            ${goods.goodsCapacity!""}
+                                            ${goods.goodsVersion!""}
+                                            ${goods.goodsSaleType!""}
+                                        </td>
+                                        <td>${goods.price?string("0.00")}</td>
+                                        <td>${goods.quantity!""}</td>
+                                        <td>${(goods.price*goods.quantity)?string("0.00")}</td>
+                                    </tr>
+                                </#list>
+                        </tbody> 
+                    </table> 
+                </dd> 
+            </dl>
+        </#if>
         
         <dl>
             <dt>订单统计</dt>
