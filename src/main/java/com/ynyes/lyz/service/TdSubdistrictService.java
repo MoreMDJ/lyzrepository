@@ -30,7 +30,7 @@ public class TdSubdistrictService {
 			return null;
 		}
 		
-		e.setDistrictName(tdDistrictService.findOne(e.getDistrictId()).getCityName());
+		e.setDistrictName(tdDistrictService.findOne(e.getDistrictId()).getName());
 		
 		return repository.save(e);
 	}
