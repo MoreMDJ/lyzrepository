@@ -132,6 +132,7 @@ public class TdRegistController {
 		new_user.setIsOld(false);
 		new_user.setLastLoginTime(new Date());
 		new_user.setDiyName(cityInfo + "默认门店");
+		new_user.setUpperDiySiteId(diySite.getId());
 		// 设置默认头像
 		new_user.setHeadImageUri("/client/images/per_titleimg01.png");
 		new_user.setCashBalance(0.0);

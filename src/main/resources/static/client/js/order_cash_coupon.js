@@ -1,6 +1,3 @@
-window.onload = function(){
-	$(".select-coupons .check").height($(".select-coupons .coupon").height());
-}
 $(function() {
 	$(".select-coupons section").click(
 		function() {
@@ -26,9 +23,11 @@ $(function() {
 						warning("亲，您的网速不给力啊");
 					},
 					success(res){
+						close(100);
 						if(0 == res.status){
-							window.location.reload();
-							
+							$(this).removeClass("checked");
+						}else{
+							warning(res.message);
 						}
 					}
 				});
@@ -48,8 +47,11 @@ $(function() {
 						warning("亲，您的网速不给力啊");
 					},
 					success(res){
+						close(100);
 						if(0 == res.status){
-							window.location.reload();
+							$(this).addClass("checked");
+						}else{
+							warning(res.message);
 						}
 					}
 				});

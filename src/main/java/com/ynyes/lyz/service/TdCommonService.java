@@ -1,6 +1,7 @@
 package com.ynyes.lyz.service;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -794,6 +795,7 @@ public class TdCommonService {
 			goods.setGoodsCoverImageUri(cart.getGoodsCoverImageUri());
 			goods.setSku(cart.getSku());
 			goods.setPrice(cart.getPrice());
+			goods.setRealPrice(cart.getRealPrice());
 			goods.setQuantity(cart.getQuantity());
 			goods.setBrandId(cart.getBrandId());
 			goods.setBrandTitle(cart.getBrandTitle());
@@ -1250,7 +1252,6 @@ public class TdCommonService {
 				}
 			}
 		}
-		map.addAttribute("max", max);
 		return max;
 	}
 
@@ -1271,6 +1272,64 @@ public class TdCommonService {
 		}
 
 		return isJoin;
+	}
+
+	/**
+	 * 计算每种品牌能够使用的现金优惠券的限额
+	 * 
+	 * @author dengxiao
+	 */
+	public Map<Long, Double> getMaxCoupon(TdOrder order, Long userId) {
+		Map<Long, Double> map = new HashMap<>();
+		DecimalFormat df = new DecimalFormat("###.00");
+		if (null == order || null == userId) {
+			return map;
+		}
+		List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+		if (null == order || null == userId) {
+			return map;
+		}
+		List<Long> brandIds = this.getBrandId(userId, order);
+		if (null != brandIds) {
+			for (Long brandId : brandIds) {
+				if (null != brandId) {
+					Double max = 0.00;
+					for (TdOrderGoods goods : orderGoodsList) {
+						if (null != goods && null != goods.getBrandId()
+								&& goods.getBrandId().longValue() == brandId.longValue()) {
+							max = (goods.getPrice() - goods.getRealPrice()) * goods.getQuantity();
+						}
+					}
+					max = new Double(df.format(max));
+					map.put(brandId, max);
+				}
+			}
+		}
+		return map;
+	}
+
+	/**
+	 * 创建当前使用额度
+	 * 
+	 * @author dengxiao
+	 */
+	public Map<Long, Double> getUsedNow(TdOrder order, Long userId) {
+		Map<Long, Double> map = new HashMap<>();
+		if (null == order || null == userId) {
+			return map;
+		}
+		if (null == order || null == userId) {
+			return map;
+		}
+		List<Long> brandIds = this.getBrandId(userId, order);
+		if (null != brandIds) {
+			for (Long brand : brandIds) {
+				if (null != brand) {
+					map.put(brand, 0.00);
+				}
+			}
+		}
+		return map;
 	}
 
 	public static String getIp(HttpServletRequest request) {
@@ -1309,7 +1368,7 @@ public class TdCommonService {
 		TdRequisition requisition = SaveRequisiton(orderList, mainOrderNumber);
 
 		String JAVA_PATH = System.getenv("JAVA_HOME");
-		System.err.println("MDJWS:JAVA_PATH:"+JAVA_PATH);
+		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
 		String PATH = System.getenv("Path");
 		System.err.println("MDJWS:PATH:" + PATH);
 		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
@@ -1619,10 +1678,10 @@ public class TdCommonService {
 			return;
 		}
 
-		 String JAVA_PATH = System.getenv("JAVA_HOME");
-		 System.err.println("MDJWS:JAVA_PATH:"+JAVA_PATH);
-		 String PATH = System.getenv("Path");
-		 System.err.println("MDJWS:PATH:" + PATH);
+		String JAVA_PATH = System.getenv("JAVA_HOME");
+		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
+		String PATH = System.getenv("Path");
+		System.err.println("MDJWS:PATH:" + PATH);
 		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
 		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
 		// url为调用webService的wsdl地址

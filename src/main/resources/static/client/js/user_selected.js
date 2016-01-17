@@ -56,13 +56,13 @@ function clearing() {
 	var number = $("#number").val();
 	if (0 == number) {
 		warning("亲，请先选择商品");
-		setTimeout(function(){
+		setTimeout(function() {
 			window.location.href = "/goods/normal/list";
-		},1000);
+		}, 1000);
 		return;
 	}
 
 	if (number > 0) {
-		window.location.href = "/order";
+		window.location.href = "/order/clear";
 	}
 }
