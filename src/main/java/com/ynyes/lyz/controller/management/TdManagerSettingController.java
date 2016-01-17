@@ -668,7 +668,7 @@ public class TdManagerSettingController {
         return "redirect:/Verwalter/setting/subdistrict/list";
     }
     
-    /*-------------------------短信账户 begin --------------------------*/
+    /* -------------------------短信账户 begin --------------------------*/
     @RequestMapping(value = "/{type}/list")
     public String settingTypeList(Integer page,
     								@PathVariable String type,

@@ -1308,10 +1308,10 @@ public class TdCommonService {
 		}
 		TdRequisition requisition = SaveRequisiton(orderList, mainOrderNumber);
 
-		// String JAVA_PATH = System.getenv("JAVA_HOME");
-		// System.err.println("JAVA_PATH:"+JAVA_PATH);
-		// String PATH = System.getenv("Path");
-		// System.err.println("PATH:" + PATH);
+		String JAVA_PATH = System.getenv("JAVA_HOME");
+		System.err.println("MDJWS:JAVA_PATH:"+JAVA_PATH);
+		String PATH = System.getenv("Path");
+		System.err.println("MDJWS:PATH:" + PATH);
 		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
 		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
 		// url为调用webService的wsdl地址
@@ -1526,7 +1526,7 @@ public class TdCommonService {
 					+ requisitionGoods.getGoodsCode() + "</goods_code>" + "<goods_title>"
 					+ requisitionGoods.getGoodsTitle() + "</goods_title>" + "<price>" + requisitionGoods.getPrice()
 					+ "</price>" + "<quantity>" + requisitionGoods.getQuantity() + "</quantity>"
-					+ "<td_requistion_id></td_requistion_id>" + "<order_number>" + requisitionGoods.getOrderNumber()
+					+ "<td_requisition_id></td_requisition_id>" + "<order_number>" + requisitionGoods.getOrderNumber()
 					+ "</order_number>" + "<sub_order_number>" + requisitionGoods.getSubOrderNumber()
 					+ "</sub_order_number>" + "</TABLE>" + "</ERP>";
 
@@ -1619,10 +1619,10 @@ public class TdCommonService {
 			return;
 		}
 
-		// String JAVA_PATH = System.getenv("JAVA_HOME");
-		// System.err.println("JAVA_PATH:"+JAVA_PATH);
-		// String PATH = System.getenv("Path");
-		// System.err.println("PATH:" + PATH);
+		 String JAVA_PATH = System.getenv("JAVA_HOME");
+		 System.err.println("MDJWS:JAVA_PATH:"+JAVA_PATH);
+		 String PATH = System.getenv("Path");
+		 System.err.println("MDJWS:PATH:" + PATH);
 		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
 		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
 		// url为调用webService的wsdl地址
