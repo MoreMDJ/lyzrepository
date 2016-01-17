@@ -1632,23 +1632,31 @@ public class TdCommonService {
 
 		if (type == 3) {
 			TdReturnNote returnNote = (TdReturnNote) object;
-			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + returnNote.getId() + "</id>" + "<cancel_time>"
-					+ returnNote.getCancelTime() + "</cancel_time>" + "<check_time>" + returnNote.getCheckTime()
-					+ "</check_time>" + "<diy_site_address>" + returnNote.getDiySiteAddress() + "</diy_site_address>"
-					+ "<diy_site_id>" + returnNote.getDiySiteId() + "</diy_site_id>" + "<diy_site_tel>"
-					+ returnNote.getDiySiteTel() + "</diy_site_tel>" + "<diy_site_title>" + returnNote.getDiySiteTitle()
-					+ "</diy_site_title>" + "<manager_remark_info>" + returnNote.getManagerRemarkInfo()
-					+ "</manager_remark_info>" + "<order_number>" + returnNote.getOrderNumber() + "</order_number>"
-					+ "<order_time>" + returnNote.getOrderTime() + "</order_time>" + "<pay_type_id>"
-					+ returnNote.getPayTypeId() + "</pay_type_id>" + "<pay_type_title>" + returnNote.getPayTypeTitle()
-					+ "</pay_type_title>" + "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>"
-					+ "<return_number>" + returnNote.getReturnNumber() + "</return_number>" + "<return_time>"
-					+ returnNote.getReturnTime() + "</return_time>" + "<sort_id>" + returnNote.getSortId()
-					+ "</sort_id>" + "<status_id>" + returnNote.getStatusId() + "</status_id>" + "<username>"
-					+ returnNote.getUsername() + "</username>" + "<deliver_type_title>"
-					+ returnNote.getDeliverTypeTitle() + "</deliver_type_title>" + "<turn_price>"
-					+ returnNote.getTurnPrice() + "</turn_price>" + "<turn_type>" + returnNote.getTurnType()
-					+ "</turn_type>" + "</TABLE>" + "</ERP>";
+			String xmlStr = "<ERP>"
+					+ "<TABLE>" 
+					+ "<id>" + returnNote.getId() + "</id>"
+					+ "<cancel_time>" + returnNote.getCancelTime() + "</cancel_time>" 
+					+ "<check_time>" + returnNote.getCheckTime() + "</check_time>"
+					+ "<diy_site_address>" + returnNote.getDiySiteAddress() + "</diy_site_address>"
+					+ "<diy_site_id>" + returnNote.getDiySiteId() + "</diy_site_id>"
+					+ "<diy_site_tel>" + returnNote.getDiySiteTel() + "</diy_site_tel>" 
+					+ "<diy_site_title>" + returnNote.getDiySiteTitle() + "</diy_site_title>"
+					+ "<manager_remark_info>" + returnNote.getManagerRemarkInfo() + "</manager_remark_info>"
+					+ "<order_number>" + returnNote.getOrderNumber() + "</order_number>"
+					+ "<order_time>" + returnNote.getOrderTime() + "</order_time>" 
+					+ "<pay_type_id>" + returnNote.getPayTypeId() + "</pay_type_id>"
+					+ "<pay_type_title>" + returnNote.getPayTypeTitle() + "</pay_type_title>"
+					+ "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>"
+					+ "<return_number>" + returnNote.getReturnNumber() + "</return_number>"
+					+ "<return_time>" + returnNote.getReturnTime() + "</return_time>"
+					+ "<sort_id>" + returnNote.getSortId() + "</sort_id>"
+					+ "<status_id>" + returnNote.getStatusId() + "</status_id>" 
+					+ "<username>" + returnNote.getUsername() + "</username>" 
+					+ "<deliver_type_title>" + returnNote.getDeliverTypeTitle() + "</deliver_type_title>" 
+					+ "<turn_price>" + returnNote.getTurnPrice() + "</turn_price>" 
+					+ "<turn_type>" + returnNote.getTurnType() + "</turn_type>" 
+					+ "</TABLE>"
+					+ "</ERP>";
 
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
@@ -1721,9 +1729,12 @@ public class TdCommonService {
 		Object[] objects = null;
 
 		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);
-		try {
+		try
+		{
 			objects = client.invoke(name, "td_return_note", "1", xmlGoodsEncode);
-		} catch (Exception e) {
+		} 
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 		String result = "";

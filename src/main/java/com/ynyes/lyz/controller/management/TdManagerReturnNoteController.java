@@ -182,7 +182,7 @@ public class TdManagerReturnNoteController {
 			// 通知物流
 			else if ("informDiy".equalsIgnoreCase(type)) {
 				// 配送单——到店退
-				if (returnNote.getTurnType() == 1) {
+				if (returnNote.getTurnType() == 2) {
 
 					// 生成收货通知
 					tdCommonService.sendBackMsgToWMS(returnNote);
