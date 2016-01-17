@@ -390,20 +390,20 @@ public class TdGoodsController {
 		List<TdActivity> activity_list = new ArrayList<>();
 
 		// 获取该商品参加的所有活动
-		if (null != priceListItem.getActivities()) {
-			String activities = priceListItem.getActivities();
-			if (null != activities) {
-				String[] all_activity = activities.split(",");
-				if (null != all_activity) {
-					for (String sId : all_activity) {
-						if (null != sId) {
-							TdActivity activity = tdActivityService.findOne(Long.parseLong(sId));
-							activity_list.add(activity);
-						}
-					}
-				}
-			}
-		}
+//		if (null != priceListItem.getActivities()) {
+//			String activities = priceListItem.getActivities();
+//			if (null != activities) {
+//				String[] all_activity = activities.split(",");
+//				if (null != all_activity) {
+//					for (String sId : all_activity) {
+//						if (null != sId) {
+//							TdActivity activity = tdActivityService.findOne(Long.parseLong(sId));
+//							activity_list.add(activity);
+//						}
+//					}
+//				}
+//			}
+//		}
 
 		// 获取客服电话
 		List<TdSetting> all = tdSettingService.findAll();
