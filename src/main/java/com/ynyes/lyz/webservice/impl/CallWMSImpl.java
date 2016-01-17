@@ -22,6 +22,7 @@ package com.ynyes.lyz.webservice.impl;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -97,6 +98,20 @@ public class CallWMSImpl implements ICallWMS {
 			System.out.println("UnsupportedEncodingException for decodedXML");
 			e.printStackTrace();
 		}
+		
+//		decodedXML = decodedXML.
+//		StringBuffer sb = new StringBuffer();  
+//	    sb.append(decodedXML);  
+//	    String xmString = "";  
+//	    String xmlUTF8="";  
+//	    try {  
+//	    xmString = new String(sb.toString().getBytes("UTF-8"));  
+//	    xmlUTF8 = URLEncoder.encode(xmString, "UTF-8");  
+//	    System.out.println("utf-8 编码：" + xmlUTF8) ;  
+//	    } catch (UnsupportedEncodingException e) {  
+//	    // TODO Auto-generated catch block  
+//	    e.printStackTrace();  
+//	    }  
 
 		if (null == decodedXML || decodedXML.isEmpty()) 
 		{
@@ -125,7 +140,7 @@ public class CallWMSImpl implements ICallWMS {
 		try
 		{
 			document = builder.parse(is);
-		} 
+		}
 		catch (SAXException | IOException e)
 		{
 			e.printStackTrace();
@@ -382,7 +397,7 @@ public class CallWMSImpl implements ICallWMS {
 				TdDeliveryInfoDetail infoDetail = new TdDeliveryInfoDetail();
 				infoDetail.setTaskNo(c_task_no);
 				infoDetail.setWhNo(c_wh_no);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				if (c_begin_dt != null)
 				{
 					try 
@@ -418,8 +433,11 @@ public class CallWMSImpl implements ICallWMS {
 				
 				Long backquantity = Math.round(infoDetail.getBackNumber() == null ? 0 : infoDetail.getBackNumber());
 				TdGoods tdGoods = tdGoodsService.findByCode(infoDetail.getgCode());
-				tdGoods.setLeftNumber(tdGoods.getLeftNumber() - backquantity);
-				tdGoodsService.save(tdGoods, "goods");
+				if (tdGoods != null && tdGoods.getLeftNumber() != null)
+				{
+					tdGoods.setLeftNumber(tdGoods.getLeftNumber() - backquantity);
+					tdGoodsService.save(tdGoods, "goods");
+				}
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
