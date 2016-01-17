@@ -46,7 +46,6 @@ public class TdManagerPriceListController {
 						            String __EVENTTARGET,
 						            String __EVENTARGUMENT,
 						            String __VIEWSTATE,
-						            String action,
 						            Long[] listId,
 						            Integer[] listChkId,
 						            ModelMap map,
@@ -84,7 +83,6 @@ public class TdManagerPriceListController {
         
         map.addAttribute("page", page);
         map.addAttribute("size", size);
-        map.addAttribute("action", action);
         map.addAttribute("__EVENTTARGET", __EVENTTARGET);
         map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);

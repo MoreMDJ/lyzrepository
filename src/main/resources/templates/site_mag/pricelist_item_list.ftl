@@ -11,11 +11,11 @@
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
 </head>
 <body class="mainbody">
-<form name="form1" method="post" action="/Verwalter/pricelist/list" id="form1">
+<form name="form1" method="post" action="/Verwalter/pricelist/pricelistitem/list" id="form1">
 <div>
-<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
-<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
-<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}" >
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="${__EVENTTARGET!""}" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="${__EVENTARGUMENT!""}" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}" />
 <input type="hidden" name="type" id="type" value="<#if type??>${type}<#else>pricelist</#if>" >
 </div>
 
@@ -28,6 +28,7 @@ function __doPostBack(eventTarget, eventArgument) {
     if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
         theForm.__EVENTTARGET.value = eventTarget;
         theForm.__EVENTARGUMENT.value = eventArgument;
+        console.debug(eventArgument);
         theForm.submit();
     }
 }
