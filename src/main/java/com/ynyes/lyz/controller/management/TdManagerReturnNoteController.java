@@ -211,7 +211,7 @@ public class TdManagerReturnNoteController {
 				// 配送单——到店退
 				if(returnNote.getTurnType()==1)
 				{
-					// 生成收货通知
+					// 生成收货通知WMS
 					
 				}
 				
