@@ -208,10 +208,13 @@ $(function () {
   <dl>
     <dt>归属门店</dt>
     <dd>
-        <select name="upperDiySiteId">
+        <select name="upperDiySiteId" datatype="n">
+            <#if !user??>
+                <option value="">请选择门店</option>
+            </#if>
             <#if site_list??>
                 <#list site_list as item>
-                    <option <#if item.id?c==user.upperDiySiteId?c>selected="selected"</#if> value="${item.id?c}">${item.title!''}</option>
+                    <option <#if user.upperDiySiteId?? && item.id==user.upperDiySiteId>selected="selected"</#if> value="${item.id?c}">${item.title!''}</option>
                 </#list>
             </#if>
         </select>
