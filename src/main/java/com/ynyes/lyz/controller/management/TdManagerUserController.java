@@ -275,7 +275,7 @@ public class TdManagerUserController {
 			Long cityId = user.getCityId();
 
 			if (null != cityId) {
-				TdCity city = tdCityService.findOne(cityId);
+				TdCity city = tdCityService.findBySobIdCity(cityId);
 
 				if (null != city) {
 					// 获取指定id城市下的所有门店
@@ -310,73 +310,6 @@ public class TdManagerUserController {
 				e.printStackTrace();
 			}
 		}
-		// //修改用户名 zhangji 2016-1-8 10:30:38
-		// if(null != oldUsername && !oldUsername.equals(tdUser.getUsername()))
-		// {
-		// List<TdCartColorPackage> tdCartColorPackage =
-		// TdCartColorPackageService.findByUsername(oldUsername);
-		// for(TdCartColorPackage item : tdCartColorPackage)
-		// {
-		// item.setUsername(tdUser.getUsername());
-		// TdCartColorPackageService.save(item);
-		// }
-		//
-		// List<TdCartGoods> tdCartGoods =
-		// tdCartGoodsService.findByUsername(oldUsername);
-		// for(TdCartGoods item : tdCartGoods)
-		// {
-		// item.setUsername(tdUser.getUsername());
-		// tdCartGoodsService.save(item);
-		// }
-		//
-		// List<TdCoupon> tdCoupon =
-		// tdCouponService.findByUsername(oldUsername);
-		// for(TdCoupon item : tdCoupon)
-		// {
-		// item.setUsername(tdUser.getUsername());
-		// tdCouponService.save(item);
-		// }
-		//
-		// List<TdReturnNote> tdReturnNote =
-		// tdReturnNoteService.findByUsername(oldUsername);
-		// for(TdReturnNote item : tdReturnNote)
-		// {
-		// item.setUsername(tdUser.getUsername());
-		// tdReturnNoteService.save(item);
-		// }
-		//
-		// List<TdOrder> tdOrder = tdOrderService.findByUsername(oldUsername);
-		// for(TdOrder item : tdOrder)
-		// {
-		// item.setUsername(tdUser.getUsername());
-		// tdOrderService.save(item);
-		// }
-		//
-		// List<TdUserCollect> tdUserCollect =
-		// tdUserCollectService.findByUsername(oldUsername);
-		// for(TdUserCollect item : tdUserCollect)
-		// {
-		// item.setUsername(tdUser.getUsername());
-		// tdUserCollectService.save(item);
-		// }
-		//
-		// List<TdUserComment> tdUserComment =
-		// tdUserCommentService.findByUsername(oldUsername);
-		// for(TdUserComment item : tdUserComment)
-		// {
-		// item.setUsername(tdUser.getUsername());
-		// tdUserCommentService.save(item);
-		// }
-		//
-		// List<TdUserRecentVisit> tdUserRecentVisit =
-		// tdUserRecentVisitService.findByUsername(oldUsername);
-		// for(TdUserRecentVisit item : tdUserRecentVisit)
-		// {
-		// item.setUsername(tdUser.getUsername());
-		// tdUserRecentVisitService.save(item);
-		// }
-		//
-		// }
 
 		// 设置新密码 zhangji 2016-1-7 22:01:45
 		if (null != tdUser.getId()) {
@@ -398,7 +331,7 @@ public class TdManagerUserController {
 		} else {
 			tdManagerLogService.addLog("edit", "修改用户", req);
 		}
-
+		
 		tdUserService.save(tdUser);
 
 		return "redirect:/Verwalter/user/list/";

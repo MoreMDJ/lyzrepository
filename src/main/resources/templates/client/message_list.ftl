@@ -39,7 +39,26 @@
                                     </#if>
                                 </div>
                                 <p><#if item.content??>${item.content!''}...</#if></p>
-                                <a href="#">查看详情 ></a>
+                                <a href="/article/0/${item.id?c}">查看详情 ></a>
+                            </dd>
+                        </dl>
+                    </#list>
+                </#if>
+                <#if suggestions??>
+                    <#list suggestions as item>
+                        <dl>
+                            <dt>
+                                <span><#if item.createTime??>${item.createTime?string("yyyy-MM-dd")}</#if></span>
+                            </dt>
+                            <dd>
+                                <h3>咨询投诉</h3>
+                                <div>
+                                    <#if item.imgUri??>
+                                        <img src="${item.imgUri!''}"/>
+                                    </#if>
+                                </div>
+                                <p><#if item.content??>${item.content!''}...</#if></p>
+                                <a href="/article/1/${item.id?c}">查看详情 ></a>
                             </dd>
                         </dl>
                     </#list>

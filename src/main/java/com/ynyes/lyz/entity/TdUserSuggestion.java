@@ -25,11 +25,11 @@ public class TdUserSuggestion {
 	// 类别id
 	@Column
 	private Long categoryId;
-	
-	//所属用户id
+
+	// 所属用户id
 	@Column
 	private Long userId;
-	
+
 	// 上级咨询id（针对于回复）
 	@Column
 	private Long parentId;
@@ -43,19 +43,23 @@ public class TdUserSuggestion {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date createTime;
 
-	//是否回复
+	// 是否回复
 	@Column
 	private Boolean isAnswered;
-	
-    // 评论回复 zhangji 2016年1月2日 23:09:43
-    @Column
-    private String answerContent;
-    
+
+	// 评论回复 zhangji 2016年1月2日 23:09:43
+	@Column
+	private String answerContent;
+
 	// 回复时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date answerTime;
-	
+
+	// 是否删除
+	@Column
+	private Boolean isDelete;
+
 	// 排序号
 	@Column
 	private Double sortId;
@@ -139,5 +143,12 @@ public class TdUserSuggestion {
 	public void setAnswerTime(Date answerTime) {
 		this.answerTime = answerTime;
 	}
-	
+
+	public Boolean getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(Boolean isDelete) {
+		this.isDelete = isDelete;
+	}
 }

@@ -165,7 +165,7 @@
                     </div>
                     <div class="div1">
                         <label>运费</label>
-                        <div>￥<#if order??&&order.deliverFee??>${order.deliverFee?string("0.00")}<#else>0.00</#if></div>
+                        <div>￥<#if order??&&order.deliverFee??&&!(isFree??&&isFree)>${order.deliverFee?string("0.00")}<#else>0.00</#if></div>
                     </div>
                 </section>
             </article>
@@ -176,7 +176,19 @@
         
         <!-- 底部 -->
         <footer class="fill-order-foot">
-            <div class="disbur">应支付：￥<span id="order_total_price"><#if order??&&order.totalPrice??&&order.deliverFee??>${(order.totalPrice+order.deliverFee)?string("0.00")}<#else>0.00</#if></span></div>
+            <div class="disbur">应支付：￥
+                <span id="order_total_price">
+                    <#if order??&&order.totalPrice??&&order.deliverFee??>
+                        <#if isFree??&&isFree>
+                            ${order.totalPrice?string("0.00")}
+                        <#else>
+                            ${(order.totalPrice+order.deliverFee)?string("0.00")}
+                        </#if>
+                    <#else>
+                        0.00
+                    </#if>
+                </span>
+            </div>
             <#--<a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>-->
             <a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>
         </footer>

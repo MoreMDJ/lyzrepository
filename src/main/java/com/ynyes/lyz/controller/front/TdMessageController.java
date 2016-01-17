@@ -32,7 +32,7 @@ public class TdMessageController {
 
 	@Autowired
 	private TdUserService tdUserService;
-	
+
 	@Autowired
 	private TdUserSuggestionService tdUserSuggestionService;
 
@@ -82,7 +82,9 @@ public class TdMessageController {
 		// 根据用户id和消息类型查找消息
 		if (0L == id.longValue()) {
 			List<TdUserSuggestion> suggestions = new ArrayList<>();
-//			tdUserSuggestionService
+			suggestions = tdUserSuggestionService
+					.findByUserIdAndParentIdAndIsDeleteFalseOrderByCreateTimeDesc(user.getId(), 0L);
+			map.addAttribute("suggestions", suggestions);
 		} else {
 			List<TdMessage> all_message_list = tdMessageService.findByTypeIdAndUserIdOrderByCreateTimeDesc(id,
 					user.getId());
