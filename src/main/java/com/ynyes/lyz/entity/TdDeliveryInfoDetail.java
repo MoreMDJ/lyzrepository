@@ -68,25 +68,25 @@ public class TdDeliveryInfoDetail {
 	
 	//实回数量
 	@Column
-	private Integer backNumber;
+	private Double backNumber;
 	
 	//请求数量 
 	@Column
-	private Integer requstNumber;
+	private Double requstNumber;
 	
-	public Integer getBackNumber() {
+	public Double getBackNumber() {
 		return backNumber;
 	}
 
-	public void setBackNumber(Integer backNumber) {
+	public void setBackNumber(Double backNumber) {
 		this.backNumber = backNumber;
 	}
 
-	public Integer getRequstNumber() {
+	public Double getRequstNumber() {
 		return requstNumber;
 	}
 
-	public void setRequstNumber(Integer requstNumber) {
+	public void setRequstNumber(Double requstNumber) {
 		this.requstNumber = requstNumber;
 	}
 

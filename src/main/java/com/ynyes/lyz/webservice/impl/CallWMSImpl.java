@@ -271,8 +271,8 @@ public class CallWMSImpl implements ICallWMS {
 				String c_modified_userno = null;//修改人员
 				String c_owner_no = null;//委托业主
 				String c_gcode = null;//商品编号
-				Integer c_d_ack_qty = null; //实回数量
-				Integer c_d_request_qty = null;//请求数量
+				Double c_d_ack_qty = null; //实回数量
+				Double c_d_request_qty = null;//请求数量
 				
 				
 				Node node = nodeList.item(i);
@@ -358,14 +358,15 @@ public class CallWMSImpl implements ICallWMS {
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
-								c_d_ack_qty = Integer.parseInt(childNode.getChildNodes().item(0).getNodeValue());
+								c_d_ack_qty = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
 							}
 						}
 						else if (childNode.getNodeName().equalsIgnoreCase("c_d_request_qty"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
-								c_d_request_qty = Integer.parseInt(childNode.getChildNodes().item(0).getNodeValue());
+								String string =  childNode.getChildNodes().item(0).getNodeValue();
+								c_d_request_qty = Double.parseDouble(string);
 							}
 						}
 						
