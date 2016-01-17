@@ -69,7 +69,7 @@
                             <#if brand.id??&&("coupons"+brand.id?c)?eval??>
                                 <#list ("coupons"+brand.id?c)?eval as item>
                                     <section id="${item.id?c}">
-                                        <div  
+                                        <div id="check${item.id?c}" 
                                             <#if no_product_used??>
                                                 <#assign isUsed=false>
                                                 <#list no_product_used as used>
@@ -84,7 +84,7 @@
                                                 class="check"
                                             </#if>
                                         >
-                                            <img src=<#if isUsed??&&isUsed==true>"/client/images/x_icon_checked_red.png"<#else>"/client/images/x_icon_check.png"</#if> alt="">
+                                            <img id="img${item.id?c}" src=<#if isUsed??&&isUsed==true>"/client/images/x_icon_checked_red.png"<#else>"/client/images/x_icon_check.png"</#if> alt="">
                                         </div>
                                         <div class="coupon">
                                             <img class="bg" src="/client/images/x_bg_select_coupons.png" alt="">

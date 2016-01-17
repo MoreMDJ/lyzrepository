@@ -18,6 +18,7 @@
         <script type="text/javascript">
             $(function(){
                 win_cla();
+                footer();
             });
         </script>
     </head>
@@ -41,7 +42,7 @@
                     <li><a>已过期(<span><#if no_product_out_date_list??>${no_product_out_date_list?size}<#else>0</#if></span>)</a></li>
                     <li><a>已使用(<span><#if no_product_out_date_list??>${no_product_out_date_list?size}<#else>0</#if></span>)</a></li>
                 </ul>
-                <ul class="tab-content">
+                <ul class="tab-content" style="display:block;">
                     <!-- 未使用 -->
                     <#if no_product_unused_list??>
                         <li class="li1">

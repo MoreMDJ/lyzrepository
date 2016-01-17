@@ -12,7 +12,7 @@ $(function() {
 				$.ajax({
 					url : "/order/operate/coupon",
 					type : "post",
-					timeout : 10000,
+					timeout : 15000,
 					data : {
 						id : id,
 						type : 1,
@@ -24,9 +24,11 @@ $(function() {
 						warning("亲，您的网速不给力啊");
 					},
 					success(res){
+						close(100);
 						if(0 == res.status){
-							window.location.reload();
-							
+							history.go(0);
+						}else{
+							warning(res.message);
 						}
 					}
 				});
@@ -34,7 +36,7 @@ $(function() {
 				$.ajax({
 					url : "/order/operate/coupon",
 					type : "post",
-					timeout : 10000,
+					timeout : 15000,
 					data : {
 						id : id,
 						type : 1,
@@ -46,8 +48,11 @@ $(function() {
 						warning("亲，您的网速不给力啊");
 					},
 					success(res){
+						close(100);
 						if(0 == res.status){
-							window.location.reload();
+							history.go(0);
+						}else{
+							warning(res.message);
 						}
 					}
 				});

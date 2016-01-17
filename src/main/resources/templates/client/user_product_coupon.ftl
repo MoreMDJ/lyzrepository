@@ -18,6 +18,7 @@
         <script type="text/javascript">
             $(function(){
                 win_cla();
+                footer();
             });
         </script>
     </head>
@@ -28,20 +29,19 @@
         <!-- 头部 -->
         <header>
             <a class="back" href="javascript:history.go(-1);"></a>
-            <p>我的现金劵</p>
+            <p>我的产品劵</p>
             <a class="save" href="#">使用说明</a>
         </header>
         <!-- 头部 END -->
-        
         <!-- 我的产品劵 -->
         <article class="product-volume">
             <div class="tab-view">
                 <ul class="title-1">
-                    <li class="active"><a>未使用(<span><#if no_product_unused_list??>${no_product_unused_list?size}<#else>0</#if></span>)</a></li>
-                    <li><a>已过期(<span><#if no_product_out_date_list??>${no_product_out_date_list?size}<#else>0</#if></span>)</a></li>
-                    <li><a>已使用(<span><#if no_product_out_date_list??>${no_product_out_date_list?size}<#else>0</#if></span>)</a></li>
+                    <li class="active"><a>未使用(<span><#if product_unused_list??>${product_unused_list?size}<#else>0</#if></span>)</a></li>
+                    <li><a>已过期(<span><#if product_out_date_list??>${product_out_date_list?size}<#else>0</#if></span>)</a></li>
+                    <li><a>已使用(<span><#if product_used_list??>${product_used_list?size}<#else>0</#if></span>)</a></li>
                 </ul>
-                <ul class="tab-content">
+                <ul class="tab-content" style="display:block;">
                     <!-- 未使用 -->
                     <#if product_unused_list??>
                         <li class="li1">
@@ -49,9 +49,9 @@
                                 <section>
                                     <a>
                                         <!-- 图片原始尺寸 992*386 -->
-                                        <img src="/client/images/bg2_cash_volume.png" alt="现金劵">
+                                        <img src="/client/images/bg2_product_volume.png" alt="现金劵">
                                         <div class="div1">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy-MM-dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd")}</#if></span></div>
-                                        <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}</#if></span></div>
+                                        <div class="div2"></div>
                                         <div class="div3">${item.goodsName!''}</div>
                                         <img class="product-pic" src="${item.picUri!''}" alt="产品图片">
                                     </a>

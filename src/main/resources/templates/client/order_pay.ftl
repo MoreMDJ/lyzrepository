@@ -96,8 +96,8 @@
                                                                                 禁止使用
                             <#else>
                                 <#if product_coupon_list??&&product_coupon_list?size gt 0>
-                                    <#if product_used??&&product_used?size gt 0>
-                                        ${product_used?size}张
+                                    <#if product_used??>
+                                        ${product_used}张
                                     <#else>
                                                                                                未使用
                                     </#if>
@@ -114,8 +114,8 @@
                                                                                 禁止使用
                             <#else>
                                 <#if no_product_coupon_list??&&no_product_coupon_list?size gt 0>
-                                    <#if no_product_used??&&no_product_used?size gt 0>
-                                        ${no_product_used?size}张
+                                    <#if no_product_used??>
+                                        ${no_product_used}张
                                     <#else>
                                                                                                未使用
                                     </#if>

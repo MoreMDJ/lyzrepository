@@ -434,7 +434,7 @@ public class TdCouponService {
 		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
 				username, 2L, goodsId);
 	}
-
+	
 	/**
 	 * 根据用户名查找指定品牌下未过期未使用的通用现金券
 	 * 
