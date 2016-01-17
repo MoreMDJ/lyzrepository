@@ -81,9 +81,23 @@ public class CallWMSImpl implements ICallWMS {
 		}
 		
 		
-		String XMLStr = XML.trim();
+//		String XMLStr = XML.trim();
 		
-		XMLStr = XML.replace("\n", "");
+		String XMLStr = XML.replace("\n", "");
+		
+//		decodedXML = decodedXML.
+//		StringBuffer sb = new StringBuffer();  
+//		sb.append(XML);  
+//		String xmString = "";  
+//		String xmlUTF8="";  
+//		try {  
+//			xmString = new String(sb.toString().getBytes("UTF-8"));  
+//			xmlUTF8 = URLEncoder.encode(xmString, "UTF-8");  
+//			System.out.println("utf-8 编码：" + xmlUTF8) ;  
+//		} catch (UnsupportedEncodingException e) {  
+//			// TODO Auto-generated catch block  
+//			e.printStackTrace();  
+//		}  
 		
 		byte[] decoded = Base64.decode(XMLStr);
 
@@ -99,20 +113,6 @@ public class CallWMSImpl implements ICallWMS {
 			e.printStackTrace();
 		}
 		
-//		decodedXML = decodedXML.
-//		StringBuffer sb = new StringBuffer();  
-//	    sb.append(decodedXML);  
-//	    String xmString = "";  
-//	    String xmlUTF8="";  
-//	    try {  
-//	    xmString = new String(sb.toString().getBytes("UTF-8"));  
-//	    xmlUTF8 = URLEncoder.encode(xmString, "UTF-8");  
-//	    System.out.println("utf-8 编码：" + xmlUTF8) ;  
-//	    } catch (UnsupportedEncodingException e) {  
-//	    // TODO Auto-generated catch block  
-//	    e.printStackTrace();  
-//	    }  
-
 		if (null == decodedXML || decodedXML.isEmpty()) 
 		{
 			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后XML数据为空</MESSAGE></STATUS></RESULTS>";
@@ -244,7 +244,7 @@ public class CallWMSImpl implements ICallWMS {
 				}
 				tdDeliveryInfo.setTaskNo(c_task_no);
 				tdDeliveryInfo.setWhNo(c_wh_no);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss SSS");
 				if (c_begin_dt != null)
 				{
 					try 
@@ -397,7 +397,7 @@ public class CallWMSImpl implements ICallWMS {
 				TdDeliveryInfoDetail infoDetail = new TdDeliveryInfoDetail();
 				infoDetail.setTaskNo(c_task_no);
 				infoDetail.setWhNo(c_wh_no);
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				if (c_begin_dt != null)
 				{
 					try 
