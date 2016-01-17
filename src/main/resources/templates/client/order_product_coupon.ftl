@@ -31,7 +31,7 @@
         <article class="select-coupons">
             <#if product_coupon_list??>
                 <#list product_coupon_list as item>
-                    <section id="${item.id?c}">
+                    <section onclick="selectCoupon(${item.id?c});" id="${item.id?c}">
                         <div  
                             <#if product_used??>
                                 <#assign isUsed=false>

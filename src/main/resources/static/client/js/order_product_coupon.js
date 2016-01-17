@@ -1,7 +1,5 @@
-window.onload = function(){
-	$(".select-coupons .check").height($(".select-coupons .coupon").height());
-}
 $(function() {
+	$(".select-coupons .check").height($(".select-coupons .coupon").height());
 	$(".select-coupons section").click(
 		function() {
 			var cssattr = $(this).find("div.check").attr("class");
@@ -57,5 +55,6 @@ $(function() {
 					}
 				});
 			}
-	});
+		}
+	);
 });

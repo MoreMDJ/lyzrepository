@@ -17,6 +17,7 @@
         <script type="text/javascript">
             $(function(){
                 win_cla();//分类弹窗		
+                footer();
                 my_check();//模拟checkbox
                 fen_scroll()
                 win_colo($('.fen_div02 span'));//颜色调理窗口窗口

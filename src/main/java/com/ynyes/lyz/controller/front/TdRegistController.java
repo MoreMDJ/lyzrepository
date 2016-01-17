@@ -75,7 +75,7 @@ public class TdRegistController {
 
 	@RequestMapping(value = "/save")
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest req, String cityInfo, String phone, String code, String password,
+	public Map<String, Object> save(HttpServletRequest req, String cityInfo,String name, String phone, String code, String password,
 			String repassword, String referPhone, String diySiteName) {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
@@ -129,6 +129,7 @@ public class TdRegistController {
 		new_user.setCityName(cityInfo);
 		new_user.setCityId(city.getSobIdCity());
 		new_user.setFirstOrder(true);
+		new_user.setRealName(name);
 		new_user.setIsOld(false);
 		new_user.setLastLoginTime(new Date());
 		new_user.setDiyName(cityInfo + "默认门店");
