@@ -1,5 +1,6 @@
 package com.ynyes.lyz.controller.front;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.ynyes.lyz.entity.TdMessage;
 import com.ynyes.lyz.entity.TdMessageType;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.entity.TdUserSuggestion;
 import com.ynyes.lyz.service.TdMessageService;
 import com.ynyes.lyz.service.TdMessageTypeService;
 import com.ynyes.lyz.service.TdUserService;
+import com.ynyes.lyz.service.TdUserSuggestionService;
 
 @Controller
 @RequestMapping(value = "/message")
@@ -29,9 +32,13 @@ public class TdMessageController {
 
 	@Autowired
 	private TdUserService tdUserService;
+	
+	@Autowired
+	private TdUserSuggestionService tdUserSuggestionService;
 
 	/**
 	 * 跳转到消息分类的方法
+	 * 
 	 * @author dengxiao
 	 */
 	@RequestMapping
@@ -61,7 +68,7 @@ public class TdMessageController {
 			}
 		}
 		map.addAttribute("all_type", message_type_list);
-		
+
 		return "/client/message_type";
 	}
 
@@ -72,9 +79,15 @@ public class TdMessageController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-		//根据用户id和消息类型查找消息
-		List<TdMessage> all_message_list = tdMessageService.findByTypeIdAndUserIdOrderByCreateTimeDesc(id, user.getId());
-		map.addAttribute("all_message_list", all_message_list);
+		// 根据用户id和消息类型查找消息
+		if (0L == id.longValue()) {
+			List<TdUserSuggestion> suggestions = new ArrayList<>();
+//			tdUserSuggestionService
+		} else {
+			List<TdMessage> all_message_list = tdMessageService.findByTypeIdAndUserIdOrderByCreateTimeDesc(id,
+					user.getId());
+			map.addAttribute("all_message_list", all_message_list);
+		}
 		return "/client/message_list";
 	}
 }

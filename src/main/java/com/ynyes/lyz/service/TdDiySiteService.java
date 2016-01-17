@@ -101,6 +101,11 @@ public class TdDiySiteService {
 
 		return repository.findByRegionIdAndIsEnableTrueOrderBySortIdAsc(regionId, pageRequest);
 	}
+	public Page<TdDiySite> findByCityIdAndIsEnableTrueOrderBySortIdAsc(Long cityId, int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+
+		return repository.findByCityIdAndIsEnableTrueOrderBySortIdAsc(cityId,pageRequest);
+	}
 
 	public List<TdDiySite> findByIsEnableTrue() {
 		return repository.findByIsEnableTrue();

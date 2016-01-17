@@ -18,7 +18,7 @@
     <body class="bgc-f3f4f6">
         <!-- 头部 -->
         <header>
-            <a class="back" href="/user"></a>
+            <a class="back" href="javascript:history.go(-1);"></a>
             <p>我的收藏</p>
         </header>
         <!-- 头部 END -->

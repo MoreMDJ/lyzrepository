@@ -60,6 +60,27 @@ public class TdRequisition {
 	@Column
 	private String receiveAddress;
 	
+	// 拆分的收货地址分为：城市 + 区 + 街道 + 详细地址
+	// 省
+	@Column
+	private String province;
+		
+	// 城市
+	@Column
+	private String city;
+	
+	// 区
+	@Column
+	private String disctrict;
+	
+	// 街道
+	@Column
+	private String subdistrict;
+	
+	// 详细地址
+	@Column
+	private String detailAddress;
+	
 	// 收货人电话
 	@Column
 	private String receivePhone;
@@ -188,6 +209,46 @@ public class TdRequisition {
 
 	public void setTypeId(Long typeId) {
 		this.typeId = typeId;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getDisctrict() {
+		return disctrict;
+	}
+
+	public void setDisctrict(String disctrict) {
+		this.disctrict = disctrict;
+	}
+
+	public String getSubdistrict() {
+		return subdistrict;
+	}
+
+	public void setSubdistrict(String subdistrict) {
+		this.subdistrict = subdistrict;
+	}
+
+	public String getDetailAddress() {
+		return detailAddress;
+	}
+
+	public void setDetailAddress(String detailAddress) {
+		this.detailAddress = detailAddress;
 	}
     
 }

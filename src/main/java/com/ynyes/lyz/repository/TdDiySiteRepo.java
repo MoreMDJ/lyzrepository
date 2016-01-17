@@ -38,6 +38,8 @@ public interface TdDiySiteRepo
 	List<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId);
 
 	Page<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId, Pageable page);
+	
+	Page<TdDiySite> findByCityIdAndIsEnableTrueOrderBySortIdAsc(Long cityId,Pageable page);
 
 	TdDiySite findByTitleAndIsEnableTrue(String title);
 

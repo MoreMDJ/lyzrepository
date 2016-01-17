@@ -245,4 +245,15 @@ public class TdOrderGoods {
 	public void setBrandId(Long brandId) {
 		this.brandId = brandId;
 	}
+
+	@Override
+	public String toString() {
+		return "TdOrderGoods [id=" + id + ", goodsId=" + goodsId + ", goodsTitle=" + goodsTitle + ", goodsSubTitle="
+				+ goodsSubTitle + ", goodsCoverImageUri=" + goodsCoverImageUri + ", sku=" + sku + ", goodsColor="
+				+ goodsColor + ", goodsCapacity=" + goodsCapacity + ", goodsVersion=" + goodsVersion
+				+ ", goodsSaleType=" + goodsSaleType + ", price=" + price + ", quantity=" + quantity
+				+ ", deliveredQuantity=" + deliveredQuantity + ", points=" + points + ", isReturnApplied="
+				+ isReturnApplied + ", isCommented=" + isCommented + ", commentId=" + commentId + ", brandTitle="
+				+ brandTitle + ", brandId=" + brandId + "]";
+	}
 }

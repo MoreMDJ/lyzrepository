@@ -27,6 +27,7 @@
             
             function changeCity(){
                 var optionvalue = $('.reg_content dt select').find('option:selected').text();
+                console.debug(optionvalue);
                 $('#my_box').text(optionvalue);
             }
             //创建一个包含所有城市信息的数组
@@ -73,6 +74,9 @@
                 
                 $scope.checkRefer = function(){
                     var check = /^1\d{10}$/;
+                    if(!check.test($scope.infos.referPhone)){
+                        return;
+                    }
                     var cityInfo = $("#my_box").html();
                     var data = {
                         referPhone:$scope.infos.referPhone,
@@ -82,7 +86,7 @@
                     wait();
                     if(check.test($scope.infos.referPhone)){
                         $.post("/regist/refer/check",data,function(res){
-                            close(1);
+                            close(500);
                             $("#diyName").html("归属门店："+res.message);
                         });
                     }
@@ -183,7 +187,7 @@
                 <dl>
                     <dt>
                         <div class="my_sele" id="my_box">定位中...</div>
-                        <select onChange="changeCity();" calss="my_box" id="my_city">
+                        <select onchange="changeCity();" calss="my_box" id="my_city">
                             <#if regions??>
                                 <#list regions as item>
                                     <option value="${item.cityName!''}">${item.cityName!''}</option>

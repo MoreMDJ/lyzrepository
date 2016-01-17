@@ -349,7 +349,7 @@ function del_goods_comb(obj) {
         <dl>
             <dt>库存余量</dt>
             <dd>
-                <input name="leftNumber" type="text" value="<#if goods?? && goods.leftNumber??>${goods.leftNumber?c!"1"}<#else>1</#if>" class="input normal" datatype="n" sucmsg=" ">
+                <input name="leftNumber" type="text" value="<#if goods?? && goods.leftNumber??>${goods.leftNumber?c!"0"}<#else>0</#if>" class="input normal" datatype="n" sucmsg=" ">
                 <span class="Validform_checktip">库存为0时显示为缺货</span>
             </dd>
         </dl>

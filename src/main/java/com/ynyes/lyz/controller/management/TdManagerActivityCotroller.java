@@ -469,7 +469,7 @@ public class TdManagerActivityCotroller
 
 		Page<TdDiySite> diySitePage = null;
 
-		diySitePage = TdDiySiteService.findByRegionIdAndIsEnableTrueOrderBySortIdAsc(regionId, page, size);
+		diySitePage = TdDiySiteService.findByCityIdAndIsEnableTrueOrderBySortIdAsc(regionId, page, size);
 
 		map.addAttribute("diySite_page", diySitePage);
 

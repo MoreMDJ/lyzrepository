@@ -424,6 +424,10 @@ public class TdManagerSettingController {
         {
 			type = "edit";
 		}
+        
+        TdCompany tdCompany = tdCompanyService.findOne(tdCity.getCompanyId());
+        tdCity.setSobIdCity(tdCompany.getSobIdCompany());
+        
         tdCityService.save(tdCity);
         
         tdManagerLogService.addLog(type, "修改子公司", req);

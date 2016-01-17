@@ -91,7 +91,7 @@
                 <section class="coupon">
                     <div class="div1">
                         <label>产品劵</label>
-                        <a class="target" <#if !(isCoupon??&&isCoupon==false)>href="/order/coupon/1"</#if>>
+                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(product_coupon_list??&&product_coupon_list?size gt 0)>href="/order/coupon/1"</#if>>
                             <#if isCoupon??&&isCoupon==false>
                                                                                 禁止使用
                             <#else>
@@ -109,7 +109,7 @@
                     </div>
                     <div class="div1">
                         <label>现金劵</label>
-                        <a class="target" <#if !(isCoupon??&&isCoupon==false)>href="/order/coupon/0"</#if>>
+                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(no_product_coupon_list??&&no_product_coupon_list?size gt 0)>href="/order/coupon/0"</#if>>
                             <#if isCoupon??&&isCoupon==false>
                                                                                 禁止使用
                             <#else>
@@ -126,15 +126,17 @@
                         </a>
                     </div>
                     <div class="div2">
-                        <label>钱包余额</label>
+                        <label>预存余额：</label>
                         <div class="wallet-balance">
-                            <div class="first">共￥<span><#if user??&&user.balance??>${user.balance?string("0.00")}<#else>0.00</#if></span>，本单可用<strong>￥<span><#if order??&&order.limitCash??>${order.limitCash?string("0.00")}<#else>0.00</#if></span></strong></div>
+                            <div class="first">共￥<span id="all_balance"><#if user??&&user.balance??>${user.balance?string("0.00")}<#else>0.00</#if></span></div>
                         </div>
                     </div>
                     <div class="div2">
                         <label>本次使用</label>
                         <div class="wallet-balance">
-                            <input id="amount" style="border-radius: 3px;" class="usebalance" type="number">
+                            <div class="first">共￥<span id="all_balance"><#if max??>${max?string("0.00")}<#else>0.00</#if></span></div>
+                            <div id="isUserCash" class="checked <#if !(isCoupon??&&isCoupon==false)>active</#if>"></div>
+                            
                         </div>
                     </div>
                 </section>
@@ -142,12 +144,16 @@
                     $(document).ready(function(){
                         var onOff = true;
                         $(".checked").click(function(){
-                            if(onOff){
-                                $(this).addClass("active");
-                            }else{
-                                $(this).removeClass("active");
-                            }
-                            onOff = !onOff;
+                            <#if !(isCoupon??&&isCoupon==false)>
+                                if(onOff){
+                                    $(this).addClass("active");
+                                }else{
+                                    $(this).removeClass("active");
+                                }
+                                onOff = !onOff;
+                            <#else>
+                                warning("\"到店支付\"不能使用预存款");;
+                            </#if>
                         });
                     });
                 </script>
@@ -170,7 +176,8 @@
         
         <!-- 底部 -->
         <footer class="fill-order-foot">
-            <div class="disbur">实付款：￥<span><#if order??&&order.totalPrice??&&order.deliverFee??>${(order.totalPrice+order.deliverFee)?string("0.00")}<#else>0.00</#if></span></div>
+            <div class="disbur">应支付：￥<span id="order_total_price"><#if order??&&order.totalPrice??&&order.deliverFee??>${(order.totalPrice+order.deliverFee)?string("0.00")}<#else>0.00</#if></span></div>
+            <#--<a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>-->
             <a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>
         </footer>
         <!-- 底部 END -->

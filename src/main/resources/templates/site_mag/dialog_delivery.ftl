@@ -59,7 +59,7 @@
         <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="">
     </div>
     <div class="div-content">
-        <dl>
+        <#--<dl>
             <dt>更改配送方式</dt>
             <dd>
                 <div class="rule-single-select">
@@ -79,7 +79,7 @@
             <dd>
                 <input name="expressNumber" type="text" id="expressNumber" class="input txt">
             </dd>
-        </dl>
+        </dl>-->
     </div>
     </form>
 </body>

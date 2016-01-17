@@ -145,4 +145,13 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 */
 	List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
 			String username, Long typeCategoryId, Long goodsId);
+
+	/**
+	 * 根据用户名查找指定品牌下未过期未使用的通用现金券
+	 * 
+	 * @author dengxiao
+	 */
+	List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
+			String username, Long typeCategoryId, Long brandId);
+
 }

@@ -98,4 +98,7 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 
 	// 查找用户所有非删除的订单
 	List<TdOrder> findByUsernameAndStatusIdNotOrderByOrderTimeDesc(String username, Long status);
+	
+	//根据订单号查找订单
+	List<TdOrder> findByOrderNumberContaining(String orderNumber);
 }

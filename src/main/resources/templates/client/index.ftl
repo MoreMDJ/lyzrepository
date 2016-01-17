@@ -53,7 +53,7 @@
                         <div class="swiper-wrapper">
                             <#list circle_ad_list as item>
                                 <div class="swiper-slide orange-slide">
-                                    <img src="${item.linkUri!''}"/>
+                                    <img src="${item.fileUri!''}"/>
                                 </div>
                             </#list>
                         </div>

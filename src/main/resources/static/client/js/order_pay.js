@@ -50,6 +50,14 @@ function userRemark(old_remark) {
  * @author dengxiao
  */
 function orderPay() {
+	var userCash = false;
+	var isUserCash = $("#isUserCash");
+	var classes = isUserCash.attr("class");
+	console.debug(classes);
+	if(classes.indexOf("active") != -1){
+		userCash = true;
+	}
+	
 	// 开启等待图标
 	wait();
 
@@ -58,6 +66,9 @@ function orderPay() {
 		url : "/order/check",
 		type : "post",
 		timeout : 10000,
+		data:{
+			userCash:userCash
+		},
 		error : function() {
 			// 关闭等待图标
 			close(1);
@@ -68,7 +79,14 @@ function orderPay() {
 			close(100);
 			$("#buyNow").attr("href", "javascript:void(0);")
 			warning(res.message);
-			window.location.href = "/user/order/0";
+			if(-1 == res.status){
+				$("#buyNow").attr("href", "javascript:orderPay();")
+			}
+			if(0 == res.status){
+				setTimeout(function(){
+					window.location.href = "/order/pay";
+				},1000)
+			}
 		}
 	});
 }

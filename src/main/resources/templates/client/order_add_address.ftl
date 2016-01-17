@@ -17,8 +17,8 @@
         .edit-shipping-address .edit-info select {
             overflow: hidden;
             float: right;
-            padding-right: 15px;
-            width: 38%;
+            text-align:right;
+            width: 60%;
             height: 30px;
             line-height: 30px;
             background: url(/client/images/x_icon_select_bg.png) no-repeat right center;
@@ -30,7 +30,9 @@
             box-sizing: border-box;
             -webkit-appearance:none;
             appearance:none;
+            direction:rtl;
           }
+
         </style>
     </head>
     <body class="bgc-f3f4f6">
@@ -57,14 +59,12 @@
                     <input type="text" id="receiveMobile" value="${user.username!''}">
                 </div>
                 <div class="edit-info">
-                    <label>所在地区：</label>
+                    <label>所在城市：</label>
                     <a class="edit-city">${user.cityName!''}</a>
                 </div>
                 <!-- 1-4修改 -->
                 <div class="edit-info">
-                    <div id="subdistrict">
-                        <#include "/client/order_address_subdistrict.ftl">
-                    </div>
+                    <label>行政区划：</label>
                     <select id="district" onchange="changeDistrict();">
                         <#if district_list??>
                             <#list district_list as item>
@@ -72,6 +72,12 @@
                             </#list>
                         </#if>
                     </select>
+                </div>
+                <div class="edit-info">
+                    <label>行政街道：</label>
+                    <div id="subdistrict">
+                        <#include "/client/order_address_subdistrict.ftl">
+                    </div>
                 </div>
                 <div class="edit-info">
                     <label>详细地址：</label>
