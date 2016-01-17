@@ -1195,14 +1195,14 @@ public class TdCommonService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<Long> getBrandId(Long userId) {
+	public List<Long> getBrandId(Long userId, TdOrder order) {
+		// 创建一个集合用于存储品牌的Id
 		List<Long> brandIds = new ArrayList<>();
 
-		// 创建一个集合用于存储品牌的Id
+		List<TdOrderGoods> selected = order.getOrderGoodsList();
 		// 获取所有的已选
-		List<TdCartGoods> selected = tdCartGoodsService.findByUserId(userId);
 		if (null != selected) {
-			for (TdCartGoods cart : selected) {
+			for (TdOrderGoods cart : selected) {
 				if (null != cart && null != cart.getBrandId()) {
 					Long brandId = cart.getBrandId();
 					if (!brandIds.contains(brandId)) {

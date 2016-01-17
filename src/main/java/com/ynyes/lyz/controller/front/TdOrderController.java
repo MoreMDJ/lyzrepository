@@ -93,7 +93,7 @@ public class TdOrderController {
 
 		// 创建一个布尔值用于判断能否使用优惠券
 		Boolean isCoupon = true;
-		//创建一个布尔值用于判断是否收取运费
+		// 创建一个布尔值用于判断是否收取运费
 		Boolean isFree = false;
 		TdOrder order = null;
 		if (null != id) {
@@ -116,10 +116,9 @@ public class TdOrderController {
 				isCoupon = false;
 			}
 		}
-		
 
 		// 获取已选的所有品牌的id
-		List<Long> brandIds = tdCommonService.getBrandId(user.getId());
+		List<Long> brandIds = tdCommonService.getBrandId(user.getId(), order);
 
 		// 创建一个集合存储用户所能够使用的现金券
 		List<TdCoupon> no_product_coupon_list = new ArrayList<>();
@@ -136,9 +135,9 @@ public class TdOrderController {
 		}
 
 		// 遍历所有已选，查找用户对于当前订单可以使用的指定商品现金券和产品券
-		List<TdCartGoods> selected = tdCartGoodsService.findByUserId(user.getId());
+		List<TdOrderGoods> selected = order.getOrderGoodsList();
 		if (null != selected) {
-			for (TdCartGoods goods : selected) {
+			for (TdOrderGoods goods : selected) {
 				if (null != goods) {
 					// 查找能使用的产品券
 					List<TdCoupon> p_coupon_list = tdCouponService
