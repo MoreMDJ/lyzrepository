@@ -11,7 +11,7 @@ $(function() {
 				$.ajax({
 					url : "/order/operate/coupon",
 					type : "post",
-					timeout : 10000,
+					timeout : 15000,
 					data : {
 						id : id,
 						type : 0,
@@ -25,7 +25,8 @@ $(function() {
 					success(res){
 						close(100);
 						if(0 == res.status){
-							$(this).removeClass("checked");
+							$("#check" + id).removeClass("checked");
+							$("#img"+id).attr("src","/client/images/x_icon_check.png");
 						}else{
 							warning(res.message);
 						}
@@ -35,7 +36,7 @@ $(function() {
 				$.ajax({
 					url : "/order/operate/coupon",
 					type : "post",
-					timeout : 10000,
+					timeout : 15000,
 					data : {
 						id : id,
 						type : 0,
@@ -49,7 +50,8 @@ $(function() {
 					success(res){
 						close(100);
 						if(0 == res.status){
-							$(this).addClass("checked");
+							$("#check" + id).addClass("checked");
+							$("#img"+id).attr("src","/client/images/x_icon_checked_red.png");
 						}else{
 							warning(res.message);
 						}

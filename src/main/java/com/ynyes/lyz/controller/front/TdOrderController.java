@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdBrand;
-import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDistrict;
@@ -168,7 +167,7 @@ public class TdOrderController {
 				if (null != goods) {
 					// 查找能使用的产品券
 					List<TdCoupon> p_coupon_list = tdCouponService
-							.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
+							.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
 									username, goods.getGoodsId());
 					product_coupon_list.addAll(p_coupon_list);
 
@@ -178,6 +177,23 @@ public class TdOrderController {
 									username, goods.getGoodsId());
 					no_product_coupon_list.addAll(c_coupon_list);
 				}
+			}
+		}
+
+		String productCouponId = order.getProductCouponId();
+		String cashCouponId = order.getCashCouponId();
+
+		if (null != productCouponId && !"".equals(productCouponId)) {
+			String[] strings = productCouponId.split(",");
+			if (null != strings) {
+				map.addAttribute("product_used", strings.length);
+			}
+		}
+
+		if (null != cashCouponId && !"".equals(cashCouponId)) {
+			String[] strings = cashCouponId.split(",");
+			if (null != strings) {
+				map.addAttribute("no_product_used", strings.length);
 			}
 		}
 
@@ -192,17 +208,23 @@ public class TdOrderController {
 			tdCommonService.clear(req);
 		}
 
-		Map<Long, Double> maxCoupon = tdCommonService.getMaxCoupon(order, user.getId());
+		Map<Long, Double> maxCoupon = (Map<Long, Double>) req.getSession().getAttribute("maxCoupon");
 		if (null == maxCoupon) {
-			maxCoupon = new HashMap<>();
+			maxCoupon = tdCommonService.getMaxCoupon(order, user.getId());
+			if (null == maxCoupon) {
+				maxCoupon = new HashMap<>();
+			}
+			req.getSession().setAttribute("maxCoupon", maxCoupon);
 		}
-		req.getSession().setAttribute("maxCoupon", maxCoupon);
 
-		Map<Long, Double> usedNow = tdCommonService.getUsedNow(order, user.getId());
+		Map<Long, Double> usedNow = (Map<Long, Double>) req.getSession().getAttribute("usedNow");
 		if (null == usedNow) {
-			usedNow = new HashMap<>();
+			usedNow = tdCommonService.getUsedNow(order, user.getId());
+			if (null == usedNow) {
+				usedNow = new HashMap<>();
+			}
+			req.getSession().setAttribute("usedNow", usedNow);
 		}
-		req.getSession().setAttribute("usedNow", usedNow);
 
 		map.addAttribute("isFree", isFree);
 		map.addAttribute("no_product_coupon_list", no_product_coupon_list);
@@ -469,7 +491,7 @@ public class TdOrderController {
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 
 		// 获取所有已选的商品
-		List<TdCartGoods> selected_list = tdCartGoodsService.findByUsername(username);
+		List<TdOrderGoods> selected_list = order.getOrderGoodsList();
 
 		// 使用一个集合存储所有的品牌
 		List<TdBrand> brand_list = new ArrayList<>();
@@ -500,7 +522,7 @@ public class TdOrderController {
 		// 创建一个集合用于存储当前用户能够在此单使用的产品券
 		List<TdCoupon> product_coupon_list = new ArrayList<>();
 		// 遍历已选，一个一个的查找用户能够使用的产品券或指定产品现金券
-		for (TdCartGoods cartGoods : selected_list) {
+		for (TdOrderGoods cartGoods : selected_list) {
 			if (null != cartGoods) {
 				List<TdCoupon> product_coupon_by_goodsId = tdCouponService
 						.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
@@ -625,38 +647,46 @@ public class TdOrderController {
 				} else {
 					cashCouponId += coupon.getId() + ",";
 					cashCoupon += coupon.getPrice();
-					order.setCashCouponId(productCouponId);
+					order.setCashCouponId(cashCouponId);
 					order.setCashCoupon(cashCoupon);
-					tdOrderService.save(order);
 					req.getSession().setAttribute("order_temp", order);
 					max_cash_can_used -= coupon.getPrice();
 					req.getSession().setAttribute("maxCash", max_cash_can_used);
 					used += coupon.getPrice();
 					usedNow.put(brandId, used);
 					req.getSession().setAttribute("usedNow", usedNow);
+					order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
+					req.getSession().setAttribute("order_temp", order);
+					tdOrderService.save(order);
 				}
 			}
 			if (1L == status) {
 				if (!"".equals(cashCouponId)) {
 					String[] strings = cashCouponId.split(",");
 					Double used = usedNow.get(brandId);
+					String ids = "";
 					if (null != strings) {
-						if (1 == strings.length) {
-							cashCouponId.replaceAll(coupon.getId() + ",", "");
-						}
-						if (strings.length > 1) {
-							cashCouponId.replaceAll("," + coupon.getId() + ",", ",");
+						for (String sCouponId : strings) {
+							if (null != sCouponId) {
+								Long couponId = Long.valueOf(sCouponId);
+								if (null != couponId && couponId.longValue() != coupon.getId().longValue()) {
+									ids += (sCouponId + ",");
+								}
+							}
+							cashCouponId = ids;
 						}
 						cashCoupon -= coupon.getPrice();
 						order.setCashCouponId(cashCouponId);
 						order.setCashCoupon(cashCoupon);
-						tdOrderService.save(order);
 						req.getSession().setAttribute("order_temp", order);
 						max_cash_can_used += coupon.getPrice();
 						req.getSession().setAttribute("maxCash", max_cash_can_used);
 						used -= coupon.getPrice();
 						usedNow.put(brandId, used);
 						req.getSession().setAttribute("usedNow", usedNow);
+						order.setTotalPrice(order.getTotalPrice() + coupon.getPrice());
+						req.getSession().setAttribute("order_temp", order);
+						tdOrderService.save(order);
 					}
 				}
 			}
@@ -668,22 +698,29 @@ public class TdOrderController {
 				if (null != orderGoodsList) {
 					for (TdOrderGoods orderGoods : orderGoodsList) {
 						if (null != orderGoods && null != orderGoods.getGoodsId()
-								&& orderGoods.getGoodsId() == coupon.getGoodsId()) {
+								&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
 							Long couponNumber = orderGoods.getCouponNumber();
 							if (null == couponNumber) {
 								couponNumber = 0L;
 							}
 							if (couponNumber == orderGoods.getQuantity()) {
-								res.put("message", "您不能使用更多的针对该件产品的优惠券了");
+								res.put("message", "您不能使用更多对于<br>该件产品的优惠券了");
 								return res;
 							} else {
-								orderGoods.setCouponNumber(orderGoods.getCouponNumber() + 1L);
+								orderGoods.setCouponNumber(couponNumber + 1L);
 								tdOrderGoodsService.save(orderGoods);
+								productCouponId += coupon.getId() + ",";
+								order.setProductCouponId(productCouponId);
 								max_cash_can_used -= orderGoods.getPrice();
 								Double maxCash = maxCoupon.get(brandId);
-								maxCash -= orderGoods.getPrice();
+								maxCash -= (orderGoods.getPrice() - orderGoods.getRealPrice());
 								maxCoupon.put(brandId, maxCash);
+								max_cash_can_used -= orderGoods.getPrice();
+								req.getSession().setAttribute("maxCash", max_cash_can_used);
 								req.getSession().setAttribute("maxCoupon", maxCoupon);
+								order.setTotalPrice(order.getTotalPrice() - orderGoods.getPrice());
+								req.getSession().setAttribute("order_temp", order);
+								tdOrderService.save(order);
 							}
 						}
 					}
@@ -693,18 +730,37 @@ public class TdOrderController {
 				if (null != orderGoodsList) {
 					for (TdOrderGoods orderGoods : orderGoodsList) {
 						if (null != orderGoods && null != orderGoods.getGoodsId()
-								&& orderGoods.getGoodsId() == coupon.getGoodsId()) {
+								&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
 							Long couponNumber = orderGoods.getCouponNumber();
 							if (null == couponNumber) {
 								couponNumber = 0L;
 							}
 							orderGoods.setCouponNumber(orderGoods.getCouponNumber() - 1L);
 							tdOrderGoodsService.save(orderGoods);
+							if (!"".equals(productCouponId)) {
+								String[] strings = productCouponId.split(",");
+								String ids = "";
+								for (String sCouponId : strings) {
+									if (null != sCouponId) {
+										Long couponId = Long.valueOf(sCouponId);
+										if (null != couponId && couponId.longValue() != coupon.getId().longValue()) {
+											ids += (sCouponId + ",");
+										}
+										productCouponId = ids;
+									}
+								}
+							}
+							order.setProductCouponId(productCouponId);
 							max_cash_can_used += orderGoods.getPrice();
 							Double maxCash = maxCoupon.get(brandId);
 							maxCash += orderGoods.getPrice();
 							maxCoupon.put(brandId, maxCash);
 							req.getSession().setAttribute("maxCoupon", maxCoupon);
+							max_cash_can_used += orderGoods.getPrice();
+							req.getSession().setAttribute("maxCash", max_cash_can_used);
+							order.setTotalPrice(order.getTotalPrice() + orderGoods.getPrice());
+							req.getSession().setAttribute("order_temp", order);
+							tdOrderService.save(order);
 						}
 					}
 

@@ -76,6 +76,7 @@ public class TdCouponController {
 			res.put("msg", "请重新登录");
 			return res;
 		}
+		
 		TdUser user = tdUserService.findByUsername(username);
 		
 		if(null != id)
