@@ -56,7 +56,6 @@ import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
-import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdSettingService;
@@ -518,6 +517,8 @@ public class TdUserController {
 		userSuggestion.setUserId(user.getId());
 		userSuggestion.setIsAnswered(false);
 		userSuggestion.setCreateTime(new Date());
+		userSuggestion.setParentId(0L);
+		userSuggestion.setIsDelete(false);
 		tdUserSuggestionService.save(userSuggestion);
 
 		res.put("status", 0);

@@ -386,20 +386,20 @@ public class TdGoodsController {
 		List<TdActivity> activity_list = new ArrayList<>();
 
 		// 获取该商品参加的所有活动
-//		if (null != priceListItem.getActivities()) {
-//			String activities = priceListItem.getActivities();
-//			if (null != activities) {
-//				String[] all_activity = activities.split(",");
-//				if (null != all_activity) {
-//					for (String sId : all_activity) {
-//						if (null != sId) {
-//							TdActivity activity = tdActivityService.findOne(Long.parseLong(sId));
-//							activity_list.add(activity);
-//						}
-//					}
-//				}
-//			}
-//		}
+		// if (null != priceListItem.getActivities()) {
+		// String activities = priceListItem.getActivities();
+		// if (null != activities) {
+		// String[] all_activity = activities.split(",");
+		// if (null != all_activity) {
+		// for (String sId : all_activity) {
+		// if (null != sId) {
+		// TdActivity activity = tdActivityService.findOne(Long.parseLong(sId));
+		// activity_list.add(activity);
+		// }
+		// }
+		// }
+		// }
+		// }
 
 		// 获取客服电话
 		List<TdSetting> all = tdSettingService.findAll();
@@ -514,6 +514,8 @@ public class TdGoodsController {
 					// 根据商品的id和价目表id获取指定商品的价目表项
 					TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
 					if (null != priceListItem) {
+						// 判断该件商品是否参与促销
+						priceListItem.setIsPromotion(tdCommonService.isJoinActivity(req, goods));
 						map.addAttribute("priceListItem" + goods.getId(), priceListItem);
 						visible_list.add(goods);
 					}

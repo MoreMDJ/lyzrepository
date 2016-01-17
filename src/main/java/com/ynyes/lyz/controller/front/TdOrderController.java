@@ -93,6 +93,8 @@ public class TdOrderController {
 
 		// 创建一个布尔值用于判断能否使用优惠券
 		Boolean isCoupon = true;
+		//创建一个布尔值用于判断是否收取运费
+		Boolean isFree = false;
 		TdOrder order = null;
 		if (null != id) {
 			order = tdOrderService.findOne(id);
@@ -107,10 +109,14 @@ public class TdOrderController {
 		}
 
 		String deliverTypeTitle = order.getDeliverTypeTitle();
-		// 如果配送方式是到店自提，則不能使用任何优惠券
-		if ("门店自提".equals(deliverTypeTitle) && "到店支付".equals(order.getPayTypeTitle())) {
-			isCoupon = false;
+		// 如果配送方式是到店自提，則不能使用任何优惠券，同时不收取运费
+		if ("门店自提".equals(deliverTypeTitle)) {
+			isFree = true;
+			if ("到店支付".equals(order.getPayTypeTitle())) {
+				isCoupon = false;
+			}
 		}
+		
 
 		// 获取已选的所有品牌的id
 		List<Long> brandIds = tdCommonService.getBrandId(user.getId());
@@ -156,6 +162,7 @@ public class TdOrderController {
 			tdCommonService.clear(req);
 		}
 
+		map.addAttribute("isFree", isFree);
 		map.addAttribute("no_product_coupon_list", no_product_coupon_list);
 		map.addAttribute("product_coupon_list", product_coupon_list);
 		map.addAttribute("order", order);
@@ -823,7 +830,7 @@ public class TdOrderController {
 					String[] cashs = cashCouponId.split(",");
 					if (null != cashs) {
 						for (String sId : cashs) {
-							if (null != sId) {
+							if (null != sId && !"".equals(sId)) {
 								Long id = Long.valueOf(sId);
 								TdCoupon coupon = tdCouponService.findOne(id);
 								if (null != coupon) {
@@ -839,7 +846,7 @@ public class TdOrderController {
 					String[] products = productCouponId.split(",");
 					if (null != products) {
 						for (String sId : products) {
-							if (null != sId) {
+							if (null != sId && !"".equals(sId)) {
 								Long id = Long.valueOf(sId);
 								TdCoupon coupon = tdCouponService.findOne(id);
 								if (null != coupon) {
@@ -854,7 +861,7 @@ public class TdOrderController {
 			}
 		} else {
 			// 将选择的现金券和产品券设置为已使用
-			if (null != cashCouponId&&!"".equals(cashCouponId)) {
+			if (null != cashCouponId && !"".equals(cashCouponId)) {
 				String[] cashs = cashCouponId.split(",");
 				if (null != cashs) {
 					for (String sId : cashs) {
@@ -870,7 +877,7 @@ public class TdOrderController {
 				}
 			}
 
-			if (null != productCouponId&&!"".equals(productCouponId)) {
+			if (null != productCouponId && !"".equals(productCouponId)) {
 				String[] products = productCouponId.split(",");
 				if (null != products) {
 					for (String sId : products) {

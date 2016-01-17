@@ -76,13 +76,13 @@
                                     <img src="${item.coverImageUri!''}" />
                                 </a>
                             </dt>
-                            <dd onclick="window.location.href='/goods/detail/${item.id?c}'">
-                                <p>${item.title!''}</p>
+                            <dd>
+                                <p onclick="window.location.href='/goods/detail/${item.id?c}'">${item.title!''}</p>
                                 <div class="fen_div01">
                                     <#-- 用户存储指定商品的库存 -->
                                     <input type="hidden" id="inventory${item.id?c}" value="<#if item.leftNumber??>${item.leftNumber?c}<#else>0</#if>">
-                                    <#if ("priceListItem"+item_index)?eval??>
-                                        <#if ("priceListItem"+item_index)?eval.isPromotion??&&("priceListItem"+item_index)?eval.isPromotion==true>
+                                    <#if ("priceListItem"+item.id?c)?eval??>
+                                        <#if ("priceListItem"+item.id?c)?eval.isPromotion??&&("priceListItem"+item.id?c)?eval.isPromotion==true>
                                             <span>促销</span>
                                         </#if>
                                     </#if>

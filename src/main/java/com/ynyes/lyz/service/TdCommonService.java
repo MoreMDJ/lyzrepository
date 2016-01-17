@@ -1148,16 +1148,17 @@ public class TdCommonService {
 		}
 
 		// 查询是否存在乐易装的品牌
-		TdBrand brand = tdBrandService.findByTitle("乐易装");
-		if (null != brand) {
-			Long brandId = brand.getId();
-			TdOrder order = order_map.get(brandId);
-			// 运费放置在乐易装的订单上
-			order.setDeliverFee(order_temp.getDeliverFee());
-			order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
-			order.setTotalGoodsPrice(order.getTotalGoodsPrice() + order.getDeliverFee());
+		if (null != order_temp.getDeliverTypeTitle() && !"门店自提".equals(order_temp.getDeliverTypeTitle())) {
+			TdBrand brand = tdBrandService.findByTitle("乐易装");
+			if (null != brand) {
+				Long brandId = brand.getId();
+				TdOrder order = order_map.get(brandId);
+				// 运费放置在乐易装的订单上
+				order.setDeliverFee(order_temp.getDeliverFee());
+				order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
+				order.setTotalGoodsPrice(order.getTotalGoodsPrice() + order.getDeliverFee());
+			}
 		}
-
 		// add by Shawn
 		List<TdOrder> orderList = new ArrayList<TdOrder>();
 
@@ -1228,11 +1229,25 @@ public class TdCommonService {
 		// 获取用户的预存款
 		Double balance = user.getBalance();
 
-		if (null != balance && null != order.getTotalPrice() && null != order.getDeliverFee()) {
-			if (balance > (order.getTotalPrice() + order.getDeliverFee())) {
-				max = (order.getTotalPrice() + order.getDeliverFee());
-			} else {
-				max = balance;
+		String title = order.getDeliverTypeTitle();
+
+		if (null != title && "门店自提".equals(title)) {
+			if (null != balance && null != order.getTotalPrice()) {
+				if (balance > order.getTotalPrice()) {
+					max = order.getTotalPrice();
+				} else {
+					max = balance;
+				}
+			}
+		}
+
+		if (null != title && !"门店自提".equals(title)) {
+			if (null != balance && null != order.getTotalPrice() && null != order.getDeliverFee()) {
+				if (balance > (order.getTotalPrice() + order.getDeliverFee())) {
+					max = (order.getTotalPrice() + order.getDeliverFee());
+				} else {
+					max = balance;
+				}
 			}
 		}
 		map.addAttribute("max", max);

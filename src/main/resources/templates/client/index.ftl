@@ -28,8 +28,10 @@
         <div>
             <#-- 引入公共购物方式选择滑动窗口 -->
             <#include "/client/common_shopping_type.ftl">
-            <#-- 引入有奖问答图标 -->
-            <#include "/client/common_award.ftl">
+            <#-- 
+                              引入有奖问答图标
+            <#include "/client/common_award.ftl"> 
+            -->
             
             <header class="index_head">
                 <span><#if user??>${user.cityName!''}</#if></span>
