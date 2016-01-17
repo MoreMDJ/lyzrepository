@@ -48,7 +48,7 @@
             <li class="li1">
                 <#if couponList??>
                  <#list couponList as coup>
-                  <section><a href="javascript:grant(${coup.id?c});">
+                  <section><a href="javascript:win_yes('是否确定领取？','grant(${coup.id?c});');">
                     <!-- 图片原始尺寸 992*386 -->
                   	<img src="/client/images/bg2_cash_volume.png" alt="产品劵">
                   	<div class="div1">有效期：<span><#if coup.addTime??>${coup.addTime?string('yyyy-MM-dd')}</#if></span> - 
