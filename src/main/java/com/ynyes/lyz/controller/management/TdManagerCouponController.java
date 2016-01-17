@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdCouponType;
 import com.ynyes.lyz.entity.TdDiySite;
@@ -909,36 +910,42 @@ public class TdManagerCouponController {
     			res.put("message", "此优惠券剩余量不足"+number+"张");
     			return res;
     		}
-    		
-    		TdUser user = tdUseService.findOne(userId);
-    		
-    		// 新创建会员领用券
-    		TdCoupon tdCoupon = new TdCoupon();
-    		// 会员领取信息
-    		tdCoupon.setUsername(user.getUsername());
-    		tdCoupon.setMobile(user.getNickname());
-    		tdCoupon.setGetNumber(number);
-    		tdCoupon.setIsOutDate(false);
-    		tdCoupon.setIsUsed(false);
-    		tdCoupon.setGetTime(new Date());
-    		// 优惠券基本信息
-    		tdCoupon.setIsDistributted(true);
-    		tdCoupon.setPrice(coupon.getPrice());
-    		tdCoupon.setAddTime(coupon.getAddTime());
-    		tdCoupon.setTypePicUri(coupon.getTypePicUri());
-    		
-    		tdCoupon.setBrandId(coupon.getBrandId());
-    		tdCoupon.setBrandTitle(coupon.getBrandTitle());
-    		tdCoupon.setTypeDescription(coupon.getTypeDescription());
-    		tdCoupon.setGoodsId(coupon.getGoodsId());
-    		tdCoupon.setGoodsName(coupon.getGoodsName());
-    		tdCoupon.setPicUri(coupon.getPicUri());
-    		tdCoupon.setTypeId(coupon.getTypeId());
-    		tdCoupon.setTypeTitle(coupon.getTypeTitle());
-    		tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
-    		
-    		// 保存领取
-    		tdCouponService.save(tdCoupon);
+    		for (int i = 0; i < number; i++) {
+				
+    			TdUser user = tdUseService.findOne(userId);
+    			
+    			// 新创建会员领用券
+    			TdCoupon tdCoupon = new TdCoupon();
+    			// 会员领取信息
+    			tdCoupon.setUsername(user.getUsername());
+    			tdCoupon.setMobile(user.getNickname());
+    			tdCoupon.setGetNumber(1L);
+    			tdCoupon.setIsOutDate(false);
+    			tdCoupon.setIsUsed(false);
+    			tdCoupon.setGetTime(new Date());
+    			// 优惠券基本信息
+    			tdCoupon.setIsDistributted(true);
+    			tdCoupon.setPrice(coupon.getPrice());
+    			tdCoupon.setAddTime(coupon.getAddTime());
+    			tdCoupon.setTypePicUri(coupon.getTypePicUri());
+    			
+    			tdCoupon.setBrandId(coupon.getBrandId());
+    			TdBrand brand = tdBrandService.findOne(coupon.getBrandId());
+    			if(null != brand)
+    			{
+    				tdCoupon.setBrandTitle(brand.getTitle());
+    			}
+    			tdCoupon.setTypeDescription(coupon.getTypeDescription());
+    			tdCoupon.setGoodsId(coupon.getGoodsId());
+    			tdCoupon.setGoodsName(coupon.getGoodsName());
+    			tdCoupon.setPicUri(coupon.getPicUri());
+    			tdCoupon.setTypeId(coupon.getTypeId());
+    			tdCoupon.setTypeTitle(coupon.getTypeTitle());
+    			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
+    			
+    			// 保存领取
+    			tdCouponService.save(tdCoupon);
+			}
     		
     		// 更新剩余量
     		coupon.setLeftNumber(coupon.getLeftNumber()-number);
@@ -972,36 +979,42 @@ public class TdManagerCouponController {
         		{
         			return ;
         		}
-        		
-        		TdUser user = tdUseService.findOne(id);
-        		
-        		// 新创建会员领用券
-        		TdCoupon tdCoupon = new TdCoupon();
-        		// 会员领取信息
-        		tdCoupon.setUsername(user.getUsername());
-        		tdCoupon.setMobile(user.getNickname());
-        		tdCoupon.setGetNumber(number);
-        		tdCoupon.setIsOutDate(false);
-        		tdCoupon.setIsUsed(false);
-        		tdCoupon.setGetTime(new Date());
-        		// 优惠券基本信息
-        		tdCoupon.setIsDistributted(true);
-        		tdCoupon.setPrice(coupon.getPrice());
-        		tdCoupon.setAddTime(coupon.getAddTime());
-        		tdCoupon.setTypePicUri(coupon.getTypePicUri());
-        		
-        		tdCoupon.setBrandId(coupon.getBrandId());
-        		tdCoupon.setBrandTitle(coupon.getBrandTitle());
-        		tdCoupon.setTypeDescription(coupon.getTypeDescription());
-        		tdCoupon.setGoodsId(coupon.getGoodsId());
-        		tdCoupon.setGoodsName(coupon.getGoodsName());
-        		tdCoupon.setPicUri(coupon.getPicUri());
-        		tdCoupon.setTypeId(coupon.getTypeId());
-        		tdCoupon.setTypeTitle(coupon.getTypeTitle());
-        		tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
-        		
-        		// 保存领取
-        		tdCouponService.save(tdCoupon);
+        		for (int i = 0; i < number; i++) {
+					
+        			TdUser user = tdUseService.findOne(id);
+        			
+        			// 新创建会员领用券
+        			TdCoupon tdCoupon = new TdCoupon();
+        			// 会员领取信息
+        			tdCoupon.setUsername(user.getUsername());
+        			tdCoupon.setMobile(user.getNickname());
+        			tdCoupon.setGetNumber(1L);
+        			tdCoupon.setIsOutDate(false);
+        			tdCoupon.setIsUsed(false);
+        			tdCoupon.setGetTime(new Date());
+        			// 优惠券基本信息
+        			tdCoupon.setIsDistributted(true);
+        			tdCoupon.setPrice(coupon.getPrice());
+        			tdCoupon.setAddTime(coupon.getAddTime());
+        			tdCoupon.setTypePicUri(coupon.getTypePicUri());
+        			
+        			tdCoupon.setBrandId(coupon.getBrandId());
+        			TdBrand brand = tdBrandService.findOne(coupon.getBrandId());
+        			if(null != brand)
+        			{
+        				tdCoupon.setBrandTitle(brand.getTitle());
+        			}
+        			tdCoupon.setTypeDescription(coupon.getTypeDescription());
+        			tdCoupon.setGoodsId(coupon.getGoodsId());
+        			tdCoupon.setGoodsName(coupon.getGoodsName());
+        			tdCoupon.setPicUri(coupon.getPicUri());
+        			tdCoupon.setTypeId(coupon.getTypeId());
+        			tdCoupon.setTypeTitle(coupon.getTypeTitle());
+        			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
+        			
+        			// 保存领取
+        			tdCouponService.save(tdCoupon);
+				}
         		
         		// 更新剩余量
         		coupon.setLeftNumber(coupon.getLeftNumber()-number);
