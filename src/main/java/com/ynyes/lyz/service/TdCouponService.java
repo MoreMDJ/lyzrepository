@@ -448,4 +448,18 @@ public class TdCouponService {
 		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
 				username, typeCategoryId, brandId);
 	}
+	
+	/**
+	 * 查看可领取现金券
+	 * @author Max
+	 */
+	
+	public List<TdCoupon> findByTypeIdAndTypeCategoryId(Long typeId,Long cateId,Date date)
+	{
+		if(null == typeId || null == cateId)
+		{
+			return null;
+		}
+		return repository.findByTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(typeId, cateId, date);
+	}
 }

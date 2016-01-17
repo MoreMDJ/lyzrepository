@@ -720,6 +720,15 @@ public class TdManagerCouponController {
         {
         	TdGoods goods = tdGoodsService.findOne(tdCoupon.getGoodsId());
         	tdCoupon.setGoodsName(goods.getTitle());
+        	tdCoupon.setPicUri(goods.getCoverImageUri());
+        }
+        if(null != tdCoupon.getBrandId())
+        {
+        	TdBrand brand = tdBrandService.findOne(tdCoupon.getBrandId());
+        	if(null != brand)
+        	{
+        		tdCoupon.setBrandTitle(brand.getTitle());
+        	}
         }
         tdCouponService.save(tdCoupon);
         
@@ -928,6 +937,7 @@ public class TdManagerCouponController {
     			tdCoupon.setPrice(coupon.getPrice());
     			tdCoupon.setAddTime(coupon.getAddTime());
     			tdCoupon.setTypePicUri(coupon.getTypePicUri());
+    			tdCoupon.setExpireTime(coupon.getExpireTime());
     			
     			tdCoupon.setBrandId(coupon.getBrandId());
     			TdBrand brand = tdBrandService.findOne(coupon.getBrandId());
@@ -997,6 +1007,7 @@ public class TdManagerCouponController {
         			tdCoupon.setPrice(coupon.getPrice());
         			tdCoupon.setAddTime(coupon.getAddTime());
         			tdCoupon.setTypePicUri(coupon.getTypePicUri());
+        			tdCoupon.setExpireTime(coupon.getExpireTime());
         			
         			tdCoupon.setBrandId(coupon.getBrandId());
         			TdBrand brand = tdBrandService.findOne(coupon.getBrandId());
