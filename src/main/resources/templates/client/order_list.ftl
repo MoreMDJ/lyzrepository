@@ -54,22 +54,24 @@
                 </#list>
             </#if>
             <!-- 赠品 -->
-            <#if order??&&order.presentedList??&&order.presentedList?size gt 0>
-                <!-- 商品列表 -->
-                <#list order.presentedList as item>
-                    <section class="sec1">
-                        <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
-                        <div class="product-info">
-                            <div class="descript">${item.goodsTitle!''}</div>
-                            <div class="choose-num">
-                                <!-- 数量选择 -->
-                                <div class="numbers">数量：<span><#if item.quantity??>${item.quantity}<#else>0</#if></span></div>
-                                <div class="price">赠品</div>
-                                <#--<div class="checked"></div>-->
+            <#if order??&&order.presentedList??>
+                <#if order.presentedList?size gt 0>
+                    <!-- 商品列表 -->
+                    <#list order.presentedList as item>
+                        <section class="sec1">
+                            <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
+                            <div class="product-info">
+                                <div class="descript">${item.goodsTitle!''}</div>
+                                <div class="choose-num">
+                                    <!-- 数量选择 -->
+                                    <div class="numbers">数量：<span><#if item.quantity??>${item.quantity}<#else>0</#if></span></div>
+                                    <div class="price">赠品</div>
+                                    <#--<div class="checked"></div>-->
+                                </div>
                             </div>
-                        </div>
-                    </section>
-                </#list>
+                        </section>
+                    </#list>
+                </#if>
             </#if>
             <!-- 小辅料 -->
             <#if order??&&order.giftGoodsList??&&order.giftGoodsList?size gt 0>

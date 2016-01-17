@@ -38,11 +38,11 @@
             <!-- 送货上门 -->
             <article class="psfs">
                 <div class="div11">
-                    <label>配送时间</label>
+                    <label id="dateLabel"><#if deliveryId??&&deliveryId==1>预约日期<#elseif deliveryId??&&deliveryId==2>提货日期</#if></label>
                     <input type="date" id="theTime" onchange="changeTime();" min="${limitDay!''}"  value=${deliveryDate!''}>
                 </div>
                 <div class="div11">
-                    <label>具体时间</label>
+                    <label id="timeLabel"><#if deliveryId??&&deliveryId==1>预约时间<#elseif deliveryId??&&deliveryId==2>提货时间</#if></label>
                     <a class="btn-select" id="btn_select">
                         <span class="cur-select">${deliveryDetailId}:30-${(deliveryDetailId+1)?eval}:30</span>
                         <select>
@@ -73,7 +73,7 @@
             <ol>
                 <li>
                     <div class="div11">
-                    <label>门店选择</label>
+                    <label id="diyLabel"><#if deliveryId??&&deliveryId==1>归属门店<#elseif deliveryId??&&deliveryId==2>提货门店</#if></label>
                     <a class="target"><#if diySite??>${diySite.title!''}</#if></a>
                     </div>
                     <!-- 门店列表 -->
@@ -110,8 +110,20 @@
                 var theId = $active.attr("id").replace("delivery","");
                 $("#type").val(theId);
                 var index = $active.prevAll('li').length;//当前索引
-            
                 $active.addClass('active').siblings('li').removeClass('active');
+                
+                var title = $active.html().replace("");
+                if(title.indexOf("送货上门") > -1){
+                    $("#dateLabel").html("预约日期");
+                    $("#timeLabel").html("预约时间");
+                    $("#diyLabel").html("归属门店");
+                } 
+                
+                if(title.indexOf("门店自提") > -1){
+                    $("#dateLabel").html("提货日期");
+                    $("#timeLabel").html("提货时间");
+                    $("#diyLabel").html("提货门店");
+                }               
             });
             </script>
         </article>

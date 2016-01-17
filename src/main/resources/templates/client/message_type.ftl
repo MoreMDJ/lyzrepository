@@ -36,6 +36,17 @@
                         </a>
                     </#list>
                 </#if>
+                <#-- 永远存在的一组：用户咨询/回复 -->
+                <a href="/message/list/0">
+                    <dl>
+                        <dt><img src="/client/dadsa"></dt>
+                        <dd>
+                            <h3>咨询与回复</h3>
+                            <span>3</span>
+                            <span></span>
+                        </dd>
+                    </dl>
+                </a>
             </section>
         </div>		
     </body>

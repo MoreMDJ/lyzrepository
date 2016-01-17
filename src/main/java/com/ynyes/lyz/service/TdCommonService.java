@@ -1,7 +1,5 @@
 package com.ynyes.lyz.service;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,23 +11,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.apache.geronimo.mail.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
@@ -49,6 +41,7 @@ import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.entity.TdRequisition;
 import com.ynyes.lyz.entity.TdRequisitionGoods;
+import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUser;
@@ -106,17 +99,15 @@ public class TdCommonService {
 
 	@Autowired
 	private TdPriceListService tdPriceListService;
-	
+
 	@Autowired
 	private TdRequisitionService tdRequisitionService;
-	
+
 	@Autowired
 	private TdRequisitionGoodsService tdRequisitionGoodsService;
-	
+
 	@Autowired
 	private TdInterfaceErrorLogService tdInterfaceErrorLogService;
-	
-	
 
 	/**
 	 * 获取登陆用户信息的方法
@@ -246,6 +237,8 @@ public class TdCommonService {
 						TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
 						if (null != priceListItem) {
 							putaway.add(goods);
+							// 开始判断此件商品是否参加活动
+							priceListItem.setIsPromotion(this.isJoinActivity(req, goods));
 							map.addAttribute("priceListItem" + i + "_" + j + "_" + k, priceListItem);
 						} else {
 							putaway.add(null);
@@ -255,20 +248,6 @@ public class TdCommonService {
 				map.addAttribute("goods_list" + i + "_" + j, putaway);
 			}
 		}
-	}
-
-	/**
-	 * 获取所有已选商品的方法
-	 * 
-	 * @author dengxiao
-	 */
-	public List<TdCartGoods> getSelectedGoods(HttpServletRequest req) {
-		@SuppressWarnings("unchecked")
-		List<TdCartGoods> all_selected = (ArrayList<TdCartGoods>) req.getSession().getAttribute("all_selected");
-		if (null == all_selected) {
-			return new ArrayList<TdCartGoods>();
-		}
-		return all_selected;
 	}
 
 	/**
@@ -283,24 +262,6 @@ public class TdCommonService {
 			return new ArrayList<TdCartColorPackage>();
 		}
 		return all_color;
-	}
-
-	/**
-	 * 获取已选数量（包括商品和调色包）的方法
-	 * 
-	 * @author dengxiao
-	 */
-	public Long getSelectedNumber(HttpServletRequest req) {
-		Long selected_number = 0L;
-		List<TdCartGoods> selected_goods_list = this.getSelectedGoods(req);
-		List<TdCartColorPackage> selected_color_list = this.getSelectedColorPackage(req);
-		if (null != selected_goods_list) {
-			selected_number += selected_goods_list.size();
-		}
-		if (null != selected_color_list) {
-			selected_number += selected_color_list.size();
-		}
-		return selected_number;
 	}
 
 	/**
@@ -431,62 +392,6 @@ public class TdCommonService {
 	}
 
 	/**
-	 * 获取已选商品所参加的活动
-	 * 
-	 * @author dengxiao
-	 */
-	public List<TdActivity> getActivityBySelected(HttpServletRequest req) {
-		// 创建一个集合用于存储当前已选所能参加的所有活动
-		List<TdActivity> activities_joined = new ArrayList<>();
-		// 创建一个集合用于存储当前已选商品所能参加的活动
-		List<TdActivity> activities_by_goods = new ArrayList<>();
-		// 创建一个集合用于存储当前已选调色包商品所能参加的活动
-		List<TdActivity> activities_by_color = new ArrayList<>();
-
-		// 获取所有的已选商品
-		List<TdCartGoods> selectedGoods = this.getSelectedGoods(req);
-		// 获取所有的已选调色包商品
-		List<TdCartColorPackage> selectedColorPackage = this.getSelectedColorPackage(req);
-		// 获取所有已选商品的数量
-		Long selectedNumber = this.getSelectedNumber(req);
-		// 获取当前门店
-		TdDiySite diySite = this.getDiySite(req);
-
-		// 遍历已选商品，获取已选商品所能参加的所有活动
-		for (TdCartGoods cartGoods : selectedGoods) {
-			activities_by_goods = tdActivityService.findActivitiesJoinedOrderBySortIdAsc(
-					new Integer(selectedNumber + ""), (diySite.getId() + ","), (cartGoods.getGoodsId() + "_"),
-					new Date());
-			// 将查找出来的所有跟商品有关的活动添加进入总集合中
-			if (null != activities_by_goods) {
-				for (TdActivity activity : activities_by_goods) {
-					if (null != activity && !activities_joined.contains(activity)) {
-						activities_joined.add(activity);
-					}
-				}
-			}
-		}
-		// 遍历所有的已选调色包，获取已选调色包所能参加的活动
-		for (TdCartColorPackage cartColorPackage : selectedColorPackage) {
-			activities_by_color = tdActivityService.findActivitiesJoinedOrderBySortIdAsc(
-					new Integer(selectedNumber + ""), diySite.getId() + ",", cartColorPackage.getGoodsId() + "_",
-					new Date());
-			// 遍历调色包所参加的活动，判断其是否与已选商品参加的活动重复，如果不重复，则添加进入总集合中
-			if (null != activities_by_color) {
-				for (TdActivity activity : activities_by_color) {
-					if (null != activity && !activities_joined.contains(activity)) {
-						activities_joined.add(activity);
-					}
-				}
-			}
-		}
-
-		// 将总集合进行内部排序（按照sortId进行排序）
-		activities_joined = this.compareTheList(activities_joined);
-		return activities_joined;
-	}
-
-	/**
 	 * 对一个存储了TdActivity的集合进行内部排序的方法（按照sortId正序排序）
 	 * 
 	 * @author dengxiao
@@ -498,6 +403,28 @@ public class TdCommonService {
 				if (a1.getSortId() - a2.getSortId() > 0) {
 					return 1;
 				} else if (a1.getSortId() - a2.getSortId() == 0) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
+		};
+		Collections.sort(list, compartor);
+		return list;
+	}
+
+	/**
+	 * 将一个优惠券集合按照失效时间正序排序
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdCoupon> compareTheCoupon(List<TdCoupon> list) {
+		// 自定义比较规则
+		Comparator<TdCoupon> compartor = new Comparator<TdCoupon>() {
+			public int compare(TdCoupon a1, TdCoupon a2) {
+				if (a1.getExpireTime().getTime() - a2.getExpireTime().getTime() > 0) {
+					return 1;
+				} else if (a1.getExpireTime().getTime() - a2.getExpireTime().getTime() == 0) {
 					return 0;
 				} else {
 					return -1;
@@ -600,7 +527,7 @@ public class TdCommonService {
 		// 获取已选【分类：数量】组
 		Map<Long, Long> group = this.getGroup(req);
 		List<TdOrderGoods> giftGoodsList = order.getGiftGoodsList();
-		if(null == giftGoodsList){
+		if (null == giftGoodsList) {
 			giftGoodsList = new ArrayList<>();
 		}
 		// 获取已选能够参加的活动
@@ -827,14 +754,14 @@ public class TdCommonService {
 
 		virtual.setOrderNumber("XN" + orderNum);
 		virtual.setOrderTime(new Date());
-		
+
 		// Add by Shawn
 		virtual.setProvince(defaultAddress.getProvince());
 		virtual.setCity(defaultAddress.getCity());
 		virtual.setDisctrict(defaultAddress.getDisctrict());
 		virtual.setSubdistrict(defaultAddress.getSubdistrict());
 		virtual.setDetailAddress(defaultAddress.getDetailAddress());
-		
+
 		virtual.setShippingAddress(defaultAddress.getCity() + defaultAddress.getDisctrict()
 				+ defaultAddress.getSubdistrict() + defaultAddress.getDetailAddress());
 		virtual.setShippingName(defaultAddress.getReceiverName());
@@ -1029,6 +956,9 @@ public class TdCommonService {
 		if (null == order_temp) {
 			order_temp = new TdOrder();
 		}
+		if (null != order_temp.getId()) {
+			order_temp = tdOrderService.findOne(order_temp.getId());
+		}
 
 		// 创建一个map用于存储拆单后的所有订单
 		Map<Long, TdOrder> order_map = new HashMap<>();
@@ -1039,14 +969,14 @@ public class TdCommonService {
 			for (TdBrand brand : brand_list) {
 				TdOrder order = new TdOrder();
 				order.setOrderNumber(order_temp.getOrderNumber().replace("XN", brand.getShortName()));
-				
+
 				// Add by Shawn
 				order.setProvince(order_temp.getProvince());
 				order.setCity(order_temp.getCity());
 				order.setDisctrict(order_temp.getDisctrict());
 				order.setSubdistrict(order_temp.getSubdistrict());
 				order.setDetailAddress(order_temp.getDetailAddress());
-				
+
 				order.setShippingAddress(order_temp.getShippingAddress());
 				order.setShippingName(order_temp.getShippingName());
 				order.setShippingPhone(order_temp.getShippingPhone());
@@ -1063,6 +993,7 @@ public class TdCommonService {
 				order.setProductCoupon("");
 				order.setCashCouponId("");
 				order.setStatusId(3L);
+				order.setUserId(order_temp.getUserId());
 				order.setUsername(username);
 				order.setPayTypeId(order_temp.getPayTypeId());
 				order.setPayTypeTitle(order_temp.getPayTypeTitle());
@@ -1103,7 +1034,7 @@ public class TdCommonService {
 					orderGoodsList = new ArrayList<>();
 				}
 				orderGoodsList.add(orderGoods);
-				order.setPresentedList(presentedList);
+				order.setPresentedList(orderGoodsList);
 			}
 		}
 
@@ -1121,7 +1052,7 @@ public class TdCommonService {
 					orderGoodsList = new ArrayList<>();
 				}
 				orderGoodsList.add(orderGoods);
-				order.setGiftGoodsList(giftGoodsList);
+				order.setGiftGoodsList(orderGoodsList);
 			}
 		}
 
@@ -1226,7 +1157,7 @@ public class TdCommonService {
 			order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
 			order.setTotalGoodsPrice(order.getTotalGoodsPrice() + order.getDeliverFee());
 		}
-		
+
 		// add by Shawn
 		List<TdOrder> orderList = new ArrayList<TdOrder>();
 
@@ -1237,11 +1168,11 @@ public class TdCommonService {
 			}
 			if (null != order && null != order.getTotalGoodsPrice() && order.getTotalGoodsPrice() > 0) {
 				order = tdOrderService.save(order);
-				
+
 				orderList.add(order);
 			}
 		}
-		
+
 		// 删除虚拟订单
 		order_temp.setGiftGoodsList(null);
 		order_temp.setPresentedList(null);
@@ -1251,15 +1182,37 @@ public class TdCommonService {
 
 		// 清空session中的虚拟订单
 		req.getSession().setAttribute("order_temp", null);
-		
 
-		
-//		CallWMSImpl callWMSImpl = new CallWMSImpl();
-		
+		// CallWMSImpl callWMSImpl = new CallWMSImpl();
+
 		// 抛单给WMS
 		sendMsgToWMS(orderList, order_temp.getOrderNumber());
 	}
-	
+
+	/**
+	 * 获取已选商品的品牌id集合
+	 * 
+	 * @author dengxiao
+	 */
+	public List<Long> getBrandId(Long userId) {
+		List<Long> brandIds = new ArrayList<>();
+
+		// 创建一个集合用于存储品牌的Id
+		// 获取所有的已选
+		List<TdCartGoods> selected = tdCartGoodsService.findByUserId(userId);
+		if (null != selected) {
+			for (TdCartGoods cart : selected) {
+				if (null != cart && null != cart.getBrandId()) {
+					Long brandId = cart.getBrandId();
+					if (!brandIds.contains(brandId)) {
+						brandIds.add(brandId);
+					}
+				}
+			}
+		}
+		return brandIds;
+	}
+
 	/**
 	 * 计算能够使用的最大额度的预存款的方法
 	 * 
@@ -1286,6 +1239,25 @@ public class TdCommonService {
 		return max;
 	}
 
+	/**
+	 * 判断指定商品是否参加活动
+	 * 
+	 * @author dengxiao
+	 */
+	public Boolean isJoinActivity(HttpServletRequest req, TdGoods goods) {
+		TdDiySite diySite = this.getDiySite(req);
+		// 创建一个boolean值，默认为false，表示没有参加活动
+		Boolean isJoin = false;
+		List<TdActivity> activities = tdActivityService
+				.findByGoodsNumberContainingAndDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfter(
+						goods.getId() + "_", diySite.getId() + ",", new Date());
+		if (null != activities && activities.size() > 0) {
+			isJoin = true;
+		}
+
+		return isJoin;
+	}
+
 	public static String getIp(HttpServletRequest request) {
 		if (request == null)
 			return "";
@@ -1310,111 +1282,115 @@ public class TdCommonService {
 		}
 		return ip;
 	}
-	
-	
+
 	// TODO Client
-	public void sendMsgToWMS(List<TdOrder> orderList,String mainOrderNumber)
-	{
-		if (orderList.size() <= 0)
-		{
-			return ;
+	public void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {
+		if (orderList.size() <= 0) {
+			return;
 		}
-		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase(""))
-		{
-			return ;
+		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase("")) {
+			return;
 		}
 		TdRequisition requisition = SaveRequisiton(orderList, mainOrderNumber);
-		
-	//			String JAVA_PATH = System.getenv("JAVA_HOME");
-	//			System.err.println("JAVA_PATH:"+JAVA_PATH);
-	//			String PATH = System.getenv("Path");
-	//			System.err.println("PATH:" + PATH);
-		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();  
+
+		// String JAVA_PATH = System.getenv("JAVA_HOME");
+		// System.err.println("JAVA_PATH:"+JAVA_PATH);
+		// String PATH = System.getenv("Path");
+		// System.err.println("PATH:" + PATH);
+		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
 		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
-		//url为调用webService的wsdl地址
-		QName name = new QName("http://tempuri.org/","GetErpInfo");
-		//paramvalue为参数值 
+		// url为调用webService的wsdl地址
+		QName name = new QName("http://tempuri.org/", "GetErpInfo");
+		// paramvalue为参数值
 		Object[] objects = null;
-		if (requisition != null)
-		{
-			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList())
-			{
+		if (requisition != null) {
+			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
-				try
-				{
-					objects = client.invoke(name,"td_requisition_goods","1",xmlGoodsEncode);
-				}
-				catch (Exception e)
-				{
+				try {
+					objects = client.invoke(name, "td_requisition_goods", "1", xmlGoodsEncode);
+				} catch (Exception e) {
 					e.printStackTrace();
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
-	//						return "发送异常";	
+					// return "发送异常";
 				}
-				String result = null;
-				if (objects != null)
-				{
-					for (Object object : objects) 
-					{
+				String result = "";
+				if (objects != null) {
+					for (Object object : objects) {
 						result += object;
 					}
 				}
-				Map<String, String> resultMap = chectResult(result);
-				if (resultMap.get("status").equalsIgnoreCase("Y"))
-				{
+				Integer startIndex = result.indexOf("<CODE>");
+				Integer endIndex = result.indexOf("</CODE>");
+				String codeStr = result.substring(startIndex + 6, endIndex);
+				codeStr = codeStr.trim();
+
+				Integer msgBeginIndex = result.indexOf("<MESSAGE>");
+				Integer msgEndIndex = result.indexOf("</MESSAGE>");
+
+				String messageStr = result.substring(msgBeginIndex + 9, msgEndIndex);
+				messageStr.trim();
+				if (!codeStr.equalsIgnoreCase("0")) {
+					writeErrorLog(mainOrderNumber, "无", messageStr);
 				}
-				else
-				{
-					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), resultMap.get("msg"));
-				}
+				// Map<String, String> resultMap = chectResult(result);
+				// if (resultMap.get("status").equalsIgnoreCase("Y"))
+				// {
+				// }
+				// else
+				// {
+				// writeErrorLog(mainOrderNumber,
+				// requisitionGoods.getSubOrderNumber(), resultMap.get("msg"));
+				// }
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
-			try
-			{
-	        	objects = client.invoke(name,"td_requisition","1",xmlEncode);
-	        }
-			catch (Exception e)
-			{
-	        	e.printStackTrace();
-	        	writeErrorLog(mainOrderNumber, "无", e.getMessage());
-	//		        	return "发送异常";
-	        }
+			try {
+				objects = client.invoke(name, "td_requisition", "1", xmlEncode);
+			} catch (Exception e) {
+				e.printStackTrace();
+				writeErrorLog(mainOrderNumber, "无", e.getMessage());
+				// return "发送异常";
+			}
 			String result = null;
-			if (objects != null)
-			{
-				for (Object object : objects) 
-				{
+			if (objects != null) {
+				for (Object object : objects) {
 					result += object;
 				}
 			}
-			Map<String, String> resultMap = chectResult(result);
-			if (resultMap.get("status").equalsIgnoreCase("Y"))
-			{
-			}
-			else
-			{
-				writeErrorLog(mainOrderNumber, "无", resultMap.get("msg"));
+			// Map<String, String> resultMap = chectResult(result);
+			// return
+			// "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
+
+			Integer startIndex = result.indexOf("<CODE>");
+			Integer endIndex = result.indexOf("</CODE>");
+			String codeStr = result.substring(startIndex + 6, endIndex);
+			codeStr = codeStr.trim();
+
+			Integer msgBeginIndex = result.indexOf("<MESSAGE>");
+			Integer msgEndIndex = result.indexOf("</MESSAGE>");
+
+			String messageStr = result.substring(msgBeginIndex + 9, msgEndIndex);
+			messageStr.trim();
+			if (!codeStr.equalsIgnoreCase("0")) {
+				writeErrorLog(mainOrderNumber, "无", messageStr);
 			}
 		}
 	}
-		
-		
+
 	/**
 	 * 保存要货单
+	 * 
 	 * @param orderList
 	 * @param mainOrderNumber
 	 * @return
 	 */
-	private TdRequisition SaveRequisiton(List<TdOrder> orderList,String mainOrderNumber)
-	{
-		if (orderList.size() <= 0)
-		{
+	private TdRequisition SaveRequisiton(List<TdOrder> orderList, String mainOrderNumber) {
+		if (orderList.size() <= 0) {
 			return null;
 		}
 		TdOrder order = orderList.get(0);
-		
+
 		TdRequisition requisition = tdRequisitionService.findByOrderNumber(mainOrderNumber);
-		if (requisition == null)
-		{
+		if (requisition == null) {
 			requisition = new TdRequisition();
 			requisition.setDiySiteId(order.getDiySiteId());
 			requisition.setDiySiteTitle(order.getDiySiteName());
@@ -1423,28 +1399,25 @@ public class TdCommonService {
 			requisition.setOrderNumber(mainOrderNumber);
 			requisition.setReceiveName(order.getShippingName());
 			requisition.setReceiveAddress(order.getShippingAddress());
-			
+
 			// Add by Shawn
 			requisition.setProvince(order.getProvince());
 			requisition.setCity(order.getCity());
 			requisition.setDisctrict(order.getDisctrict());
 			requisition.setSubdistrict(order.getSubdistrict());
 			requisition.setDetailAddress(order.getDetailAddress());
-			
+
 			requisition.setReceivePhone(order.getShippingPhone());
 			requisition.setTotalPrice(order.getTotalPrice());
 			requisition.setTypeId(1L);
 			String dayTime = order.getDeliveryDate();
 			dayTime = dayTime + " " + order.getDeliveryDetailId() + ":30";
 			requisition.setDeliveryTime(dayTime);
-			
+
 			List<TdRequisitionGoods> requisitionGoodsList = new ArrayList<>();
-			for (TdOrder tdOrder : orderList) 
-			{
-				if (null != tdOrder.getOrderGoodsList())
-				{
-					for (TdOrderGoods orderGoods : tdOrder.getOrderGoodsList())
-					{
+			for (TdOrder tdOrder : orderList) {
+				if (null != tdOrder.getOrderGoodsList()) {
+					for (TdOrderGoods orderGoods : tdOrder.getOrderGoodsList()) {
 						TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
 						requisitionGoods.setGoodsCode(orderGoods.getSku());
 						requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
@@ -1456,11 +1429,9 @@ public class TdCommonService {
 						requisitionGoodsList.add(requisitionGoods);
 					}
 				}
-				
-				if (null != tdOrder.getGiftGoodsList())
-				{
-					for (TdOrderGoods orderGoods : tdOrder.getGiftGoodsList())
-					{
+
+				if (null != tdOrder.getGiftGoodsList()) {
+					for (TdOrderGoods orderGoods : tdOrder.getGiftGoodsList()) {
 						TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
 						requisitionGoods.setGoodsCode(orderGoods.getSku());
 						requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
@@ -1472,11 +1443,9 @@ public class TdCommonService {
 						requisitionGoodsList.add(requisitionGoods);
 					}
 				}
-				
-				if (null != tdOrder.getPresentedList())
-				{
-					for (TdOrderGoods orderGoods : tdOrder.getPresentedList())
-					{
+
+				if (null != tdOrder.getPresentedList()) {
+					for (TdOrderGoods orderGoods : tdOrder.getPresentedList()) {
 						TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
 						requisitionGoods.setGoodsCode(orderGoods.getSku());
 						requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
@@ -1494,143 +1463,175 @@ public class TdCommonService {
 		}
 		return requisition;
 	}
-	
+
 	/**
 	 * 根据传进来的类型返回相应的XML
+	 * 
 	 * @param object
-	 * @param type  1：tdRequisition  2：tdRequisitionGoods
+	 * @param type
+	 *            1：tdRequisition 2：tdRequisitionGoods
 	 * @return
 	 */
-	private String XMLMakeAndEncode(Object object,Integer type)
-	{
+	private String XMLMakeAndEncode(Object object, Integer type) {
 		String encodeXML = null;
-		
-		if (type == 1)
-		{
-			TdRequisition requisition = (TdRequisition)object;
-			String xmlStr = "<ERP>"
-					+"<TABLE>"
-					+"<id>"+ requisition.getId() +"</id>"
-					+"<diy_site_title>"+ requisition.getDiySiteTitle() +"</diy_site_title>"
-					+"<diy_site_id>"+ requisition.getDiySiteId() +"</diy_site_id>"
-					+"<customer_name>"+ requisition.getCustomerName() +"</customer_name>"
-					+"<customer_id>"+ requisition.getCustomerId() +"</customer_id>"
-					+"<order_number>"+ requisition.getOrderNumber() +"</order_number>"
-					+"<total_price>"+ requisition.getTotalPrice() +"</total_price>"
-					+"<delivery_time>"+ requisition.getDeliveryTime() +"</delivery_time>"
-					+"<receive_name>"+ requisition.getReceiveName() +"</receive_name>"
-					+"<receive_address>"+ requisition.getReceiveAddress() +"</receive_address>"
-					+"<province>"+ requisition.getProvince() +"</province>"
-					+"<city>"+ requisition.getCity() +"</city>"
-					+"<district>"+ requisition.getDisctrict() +"</district>"
-					+"<street>"+ requisition.getSubdistrict() +"</street>"
-					+"<detail_address>"+ requisition.getDetailAddress() +"</detail_address>"
-					+"<receive_phone>"+ requisition.getReceivePhone() +"</receive_phone>"
-					+"<order_time>"+ requisition.getOrderTime() +"</order_time>"
-					+"<type_id>"+ requisition +"</type_id>"
-					+"</TABLE>"
-					+"</ERP>";
-			
-			
+
+		if (type == 1) {
+			TdRequisition requisition = (TdRequisition) object;
+			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisition.getId() + "</id>" + "<cancel_time></cancel_time>"
+					+ "<check_time></check_time>" + "<diy_site_address></diy_site_address>" + "<diy_site_id>"
+					+ requisition.getDiySiteId() + "</diy_site_id>" + "<diy_site_tel></diy_site_tel>"
+					+ "<diy_site_title>" + requisition.getDiySiteTitle() + "</diy_site_title>"
+					+ "<manager_remark_info></manager_remark_info>" + "<remark_info></remark_info>"
+					+ "<requisition_number></requisition_number>" + "<status_id></status_id>" + "<type_id>"
+					+ requisition.getTypeId() + "</type_id>" + "<customer_name>" + requisition.getCustomerName()
+					+ "</customer_name>" + "<customer_id>" + requisition.getCustomerId() + "</customer_id>"
+					+ "<delivery_time>" + requisition.getDeliveryTime() + "</delivery_time>" + "<order_number>"
+					+ requisition.getOrderNumber() + "</order_number>" + "<receive_address>"
+					+ requisition.getReceiveAddress() + "</receive_address>" + "<receive_name>"
+					+ requisition.getReceiveName() + "</receive_name>" + "<receive_phone>"
+					+ requisition.getReceivePhone() + "</receive_phone>" + "<total_price>" + requisition.getTotalPrice()
+					+ "</total_price>" + "<city>" + requisition.getCity() + "</city>" + "<detail_address>"
+					+ requisition.getDetailAddress() + "</detail_address>" + "<disctrict>" + requisition.getDisctrict()
+					+ "</disctrict>" + "<province>" + requisition.getProvince() + "</province>" + "<subdistrict>"
+					+ requisition.getSubdistrict() + "</subdistrict>" + "<order_time>" + requisition.getOrderTime()
+					+ "</order_time>" + "<sub_order_number></sub_order_number>" + "</TABLE>" + "</ERP>";
+
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
-			try 
-			{
+			try {
 				encodeXML = new String(encodeByte, "UTF-8");
-			}
-			catch (UnsupportedEncodingException e1)
-			{
+			} catch (UnsupportedEncodingException e1) {
 				System.err.println("MDJ_WMS:XML 编码出错!");
 				return "FAILED";
 			}
 		}
-		if (type == 2)
-		{
-			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods)object;
-			String xmlStr = "<ERP>"
-							+"<TABLE>"
-							+"<id>"+ requisitionGoods.getId() +"</id>"
-							+"<goods_code>"+ requisitionGoods.getGoodsCode() +"</goods_code>"
-							+"<goods_title>"+ requisitionGoods.getGoodsTitle() +"</goods_title>"
-							+"<price>"+ requisitionGoods.getPrice() +"</price>"
-							+"<quantity>"+ requisitionGoods.getQuantity() +"</quantity>"
-							+"<order_number>"+ requisitionGoods.getOrderNumber() +"</order_number>"
-							+"<sub_order_number>"+ requisitionGoods.getSubOrderNumber() +"</sub_order_number>"
-							+"</TABLE>"
-							+"</ERP>";
-			
+		if (type == 2) {
+			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods) object;
+			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisitionGoods.getId() + "</id>" + "<goods_code>"
+					+ requisitionGoods.getGoodsCode() + "</goods_code>" + "<goods_title>"
+					+ requisitionGoods.getGoodsTitle() + "</goods_title>" + "<price>" + requisitionGoods.getPrice()
+					+ "</price>" + "<quantity>" + requisitionGoods.getQuantity() + "</quantity>"
+					+ "<td_requistion_id></td_requistion_id>" + "<order_number>" + requisitionGoods.getOrderNumber()
+					+ "</order_number>" + "<sub_order_number>" + requisitionGoods.getSubOrderNumber()
+					+ "</sub_order_number>" + "</TABLE>" + "</ERP>";
+
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
-			try 
-			{
+			try {
 				encodeXML = new String(encodeByte, "UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				System.err.println("MDJ_WMS:XML 编码出错!");
+				return "FAILED";
 			}
-			catch (UnsupportedEncodingException e1)
-			{
+		}
+
+		if (type == 3) {
+			TdReturnNote returnNote = (TdReturnNote) object;
+			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + returnNote.getId() + "</id>" + "<cancel_time>"
+					+ returnNote.getCancelTime() + "</cancel_time>" + "<check_time>" + returnNote.getCheckTime()
+					+ "</check_time>" + "<diy_site_address>" + returnNote.getDiySiteAddress() + "</diy_site_address>"
+					+ "<diy_site_id>" + returnNote.getDiySiteId() + "</diy_site_id>" + "<diy_site_tel>"
+					+ returnNote.getDiySiteTel() + "</diy_site_tel>" + "<diy_site_title>" + returnNote.getDiySiteTitle()
+					+ "</diy_site_title>" + "<manager_remark_info>" + returnNote.getManagerRemarkInfo()
+					+ "</manager_remark_info>" + "<order_number>" + returnNote.getOrderNumber() + "</order_number>"
+					+ "<order_time>" + returnNote.getOrderTime() + "</order_time>" + "<pay_type_id>"
+					+ returnNote.getPayTypeId() + "</pay_type_id>" + "<pay_type_title>" + returnNote.getPayTypeTitle()
+					+ "</pay_type_title>" + "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>"
+					+ "<return_number>" + returnNote.getReturnNumber() + "</return_number>" + "<return_time>"
+					+ returnNote.getReturnTime() + "</return_time>" + "<sort_id>" + returnNote.getSortId()
+					+ "</sort_id>" + "<status_id>" + returnNote.getStatusId() + "</status_id>" + "<username>"
+					+ returnNote.getUsername() + "</username>" + "<deliver_type_title>"
+					+ returnNote.getDeliverTypeTitle() + "</deliver_type_title>" + "<turn_price>"
+					+ returnNote.getTurnPrice() + "</turn_price>" + "<turn_type>" + returnNote.getTurnType()
+					+ "</turn_type>" + "</TABLE>" + "</ERP>";
+
+			byte[] bs = xmlStr.getBytes();
+			byte[] encodeByte = Base64.encode(bs);
+			try {
+				encodeXML = new String(encodeByte, "UTF-8");
+			} catch (UnsupportedEncodingException e1) {
 				System.err.println("MDJ_WMS:XML 编码出错!");
 				return "FAILED";
 			}
 		}
 		return encodeXML;
 	}
-	
-	private void writeErrorLog(String orderNumber,String subOrderNumber,String errorMsg)
-	{
+
+	private void writeErrorLog(String orderNumber, String subOrderNumber, String errorMsg) {
 		TdInterfaceErrorLog errorLog = new TdInterfaceErrorLog();
 		errorLog.setErrorMsg(errorMsg);
 		errorLog.setOrderNumber(orderNumber);
 		errorLog.setSubOrderNumber(subOrderNumber);
 		tdInterfaceErrorLogService.save(errorLog);
 	}
+
 	/**
 	 * 判断接口返回状态
+	 * 
 	 * @param resultStr
 	 * @return
 	 */
-	private Map<String, String> chectResult(String resultStr)
-	{
-		Map<String , String> map = new HashMap<String,String>();
+	private Map<String, String> chectResult(String resultStr) {
+		Map<String, String> map = new HashMap<String, String>();
 		map.put("status", "n");
-		// 解析XML
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = null;
-		try
-		{
-			builder = factory.newDocumentBuilder();
-		}
-		catch (ParserConfigurationException e) 
-		{
-			e.printStackTrace();
-			map.put("msg", "返回参数错误 -1");
+
+		if (null == resultStr) {
 			return map;
 		}
 
-		Document document = null;
+		// add by Shawn
+		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
+		Pattern pat = Pattern.compile(regEx);
+		Matcher mat = pat.matcher(resultStr);
 
-		InputSource is = new InputSource(new StringReader(resultStr));
+		if (mat.find()) {
+			System.out.println("CODE is :" + mat.group(0));
+			String code = mat.group(0).replace("<CODE>", "");
+			code = code.replace("</CODE>", "").trim();
 
-		try
-		{
-			document = builder.parse(is);
-		} 
-		catch (SAXException | IOException e)
-		{
-			e.printStackTrace();
-			map.put("msg", "返回参数错误 -2");
+			if (Integer.parseInt(code) == 0) {
+				map.put("status", "y");
+				return map;
+			}
 		}
-//			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
-		NodeList nodeList = document.getElementsByTagName("STATUS");
-		Node node = nodeList.item(0);
-		NodeList childNodeList = node.getChildNodes();
-		Node nodeCode = childNodeList.item(0);
-		Integer code = Integer.parseInt(nodeCode.getNodeValue());
-		if (code == 1)
-		{
-			String messageStr = childNodeList.item(1).getNodeValue();
-			map.put("msg", messageStr);
-			return map;
-		}
-		map.put("status", "y");
+
 		return map;
 	}
+
+	// TODO Client
+	public void sendBackMsgToWMS(TdReturnNote note) {
+		if (null == note) {
+			return;
+		}
+
+		// String JAVA_PATH = System.getenv("JAVA_HOME");
+		// System.err.println("JAVA_PATH:"+JAVA_PATH);
+		// String PATH = System.getenv("Path");
+		// System.err.println("PATH:" + PATH);
+		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
+		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
+		// url为调用webService的wsdl地址
+		QName name = new QName("http://tempuri.org/", "GetErpInfo");
+		// paramvalue为参数值
+		Object[] objects = null;
+
+		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);
+		try {
+			objects = client.invoke(name, "td_return_note", "1", xmlGoodsEncode);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		String result = "";
+		if (objects != null) {
+			for (Object object : objects) {
+				result += object;
+			}
+		}
+		Map<String, String> resultMap = chectResult(result);
+
+		if (resultMap.get("status").equalsIgnoreCase("Y")) {
+		} else {
+		}
+	}
+
 }

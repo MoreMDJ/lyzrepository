@@ -4,11 +4,6 @@ function operate(operation, type, id) {
 		var inventoryId = "#goods" + id + "quantity";
 		var priceId = "#goods" + id + "price";
 	}
-	if (1 == type) {
-		var elementId = "#color" + id;
-		var inventoryId = "#color" + id + "quantity";
-		var priceId = "#color" + id + "price";
-	}
 
 	var quantity = $(elementId).val();
 	var inventory = $(inventoryId).val();

@@ -12,7 +12,7 @@ function submit() {
 	var limitDay = $("#limitDay").val();
 	var limitId = $("#limitId").val();
 	var limitTime = $("#limitTime").val();
-
+	
 	// 选择的日期不能少于最小日期
 	var time = new Date(date.replace("-", "/").replace("-", "/"));
 	var limit = new Date(limitDay.replace("-", "/").replace("-", "/"));
@@ -21,10 +21,12 @@ function submit() {
 		warning("您能选择的最早时间为<br>" + limitTime);
 		return;
 	}
-
-	if (parseInt(detailTime) < parseInt(limitId)) {
-		warning("您能选择的最早时间为<br>" + limitTime);
-		return;
+	
+	if(time == limit){
+		if (parseInt(detailTime) < parseInt(limitId)) {
+			warning("您能选择的最早时间为<br>" + limitTime);
+			return;
+		}
 	}
 
 	window.location.href = "/order/delivery/save?type=" + type + "&date="

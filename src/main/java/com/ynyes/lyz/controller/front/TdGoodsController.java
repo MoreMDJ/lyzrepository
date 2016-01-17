@@ -29,7 +29,6 @@ import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdGoodsService;
-import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdUserCollectService;
 import com.ynyes.lyz.service.TdUserCommentService;
@@ -365,9 +364,9 @@ public class TdGoodsController {
 		}
 
 		TdGoods goods = tdGoodsService.findOne(goodsId);
-		
+
 		tdCommonService.addUserRecentVisit(req, map, goodsId);
-		
+
 		// 根据门店信息获取用户的价目表
 		TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
 		map.addAttribute("priceListItem", priceListItem);
@@ -478,6 +477,9 @@ public class TdGoodsController {
 		// 新建一个集合用于存储用户的搜索结果
 		List<TdGoods> goods_list = new ArrayList<>();
 
+		// 新建一个集合用于存储显示结果
+		List<TdGoods> visible_list = new ArrayList<>();
+
 		if ("0".equals(sortFiled)) {
 			if ("0".equals(rule1)) {
 				goods_list = tdGoodsService.searchGoodsOrderBySortIdAsc(keywords);
@@ -512,7 +514,8 @@ public class TdGoodsController {
 					// 根据商品的id和价目表id获取指定商品的价目表项
 					TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
 					if (null != priceListItem) {
-						map.addAttribute("priceListItem" + i, priceListItem);
+						map.addAttribute("priceListItem" + goods.getId(), priceListItem);
+						visible_list.add(goods);
 					}
 				}
 			}
@@ -522,9 +525,9 @@ public class TdGoodsController {
 		map.addAttribute("rule2", rule2);
 		map.addAttribute("rule3", rule3);
 		map.addAttribute("keywords", keywords);
-		map.addAttribute("goods_list", goods_list);
+		map.addAttribute("goods_list", visible_list);
 
-		Long number = tdCommonService.getSelectedNumber(req);
+		Long number = tdCartGoodsService.countByUserId(user.getId());
 		// 将已选商品的数量（包括调色包）添加到ModelMap中
 		map.addAttribute("selected_number", number);
 
@@ -558,7 +561,7 @@ public class TdGoodsController {
 			for (int i = 0; i < selected_goods.size(); i++) {
 				TdCartGoods cartGoods = selected_goods.get(i);
 				if (null != cartGoods) {
-					if (null != cartGoods.getGoodsId() && cartGoods.getGoodsId() == goodsId) {
+					if (null != cartGoods.getGoodsId() && cartGoods.getGoodsId().longValue() == goodsId.longValue()) {
 						tdCartGoodsService.delete(cartGoods.getId());
 						res.put("status", 0);
 					} else {

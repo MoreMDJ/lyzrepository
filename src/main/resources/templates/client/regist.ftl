@@ -74,6 +74,9 @@
                 
                 $scope.checkRefer = function(){
                     var check = /^1\d{10}$/;
+                    if(!check.test($scope.infos.referPhone)){
+                        return;
+                    }
                     var cityInfo = $("#my_box").html();
                     var data = {
                         referPhone:$scope.infos.referPhone,
@@ -83,7 +86,7 @@
                     wait();
                     if(check.test($scope.infos.referPhone)){
                         $.post("/regist/refer/check",data,function(res){
-                            close(1);
+                            close(500);
                             $("#diyName").html("归属门店："+res.message);
                         });
                     }
