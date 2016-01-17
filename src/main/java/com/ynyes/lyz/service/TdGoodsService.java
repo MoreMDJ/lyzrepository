@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import com.ynyes.lyz.entity.TdGoods;
-import com.ynyes.lyz.entity.TdPriceList;
-import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.repository.TdGoodsRepo;
 import com.ynyes.lyz.util.SiteMagConstant;
@@ -48,7 +44,7 @@ public class TdGoodsService {
 
 	@Autowired
 	TdPriceListService tdPriceListService;
-	
+
 	@Autowired
 	TdPriceListItemService tdPriceListItemService;
 
@@ -81,9 +77,6 @@ public class TdGoodsService {
 	//
 	// @Autowired
 	// private TdUserCollectService tdUserCollectService;
-
-	@Autowired
-	private TdProductService tdProductService;
 
 	/******** 功能部分 ***********/
 
@@ -171,6 +164,7 @@ public class TdGoodsService {
 
 		return repository.findAll(pageRequest);
 	}
+
 	// 查找所有商品按序号排序
 	public Page<TdGoods> findByIsGiftOrderBySortIdAsc(int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
@@ -466,39 +460,34 @@ public class TdGoodsService {
 
 		return repository.findByCategoryIdTreeContainingAndIsOnSaleTrueOrderBySortIdAsc(catIdStr, pageRequest);
 	}
-	
+
 	/**
 	 * @author MDJ 接口查询
 	 */
-	//通过物料id查询
-	public TdGoods findByinventoryItemId(Long inventoryItemId)
-	{
-		if (inventoryItemId == null)
-		{
+	// 通过物料id查询
+	public TdGoods findByinventoryItemId(Long inventoryItemId) {
+		if (inventoryItemId == null) {
 			return null;
 		}
 		return repository.findByinventoryItemId(inventoryItemId);
 	}
-	
+
 	/**
 	 * @author MDJ 接口查询
 	 */
-	//通过物料id查询
-	public List<TdGoods> findByInvCategoryId(Long invCategoryId)
-	{
-		if (invCategoryId == null)
-		{
+	// 通过物料id查询
+	public List<TdGoods> findByInvCategoryId(Long invCategoryId) {
+		if (invCategoryId == null) {
 			return null;
 		}
 		return repository.findByInvCategoryId(invCategoryId);
 	}
-	
-	//查找空的category
-	public List<TdGoods> findByCategoryIdIsNull()
-	{
+
+	// 查找空的category
+	public List<TdGoods> findByCategoryIdIsNull() {
 		return repository.findByCategoryIdIsNull();
 	}
-	
+
 	/**
 	 * 搜索商品
 	 * 
@@ -1186,8 +1175,7 @@ public class TdGoodsService {
 			return null;
 		}
 
-		if (e.getMarketPrice() == null)
-		{
+		if (e.getMarketPrice() == null) {
 			e.setMarketPrice(10.0);
 		}
 		// 保存分类名称
@@ -1217,8 +1205,6 @@ public class TdGoodsService {
 		if (null == e.getOnSaleTime() && e.getIsOnSale()) {
 			e.setOnSaleTime(new Date());
 		}
-
-
 
 		if (null == e.getId()) {
 			if (null != e.getGiftList() && e.getGiftList().size() > 0) {
@@ -1290,7 +1276,9 @@ public class TdGoodsService {
 		if (null == keywords) {
 			return null;
 		}
-		return repository.searchGoodsOrderBySortIdAsc(keywords);
+		return repository
+				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySortIdAsc(
+						keywords, keywords, keywords, keywords, keywords);
 	}
 
 	/**
@@ -1302,7 +1290,9 @@ public class TdGoodsService {
 		if (null == keywords) {
 			return null;
 		}
-		return repository.searchGoodsOrderBySortIdDesc(keywords);
+		return repository
+				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySortIdDesc(
+						keywords, keywords, keywords, keywords, keywords);
 	}
 
 	/**
@@ -1338,7 +1328,9 @@ public class TdGoodsService {
 		if (null == keywords) {
 			return null;
 		}
-		return repository.searchGoodsOrderBySoldNumberAsc(keywords);
+		return repository
+				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySoldNumberAsc(
+						keywords, keywords, keywords, keywords, keywords);
 	}
 
 	/**
@@ -1350,15 +1342,16 @@ public class TdGoodsService {
 		if (null == keywords) {
 			return null;
 		}
-		return repository.searchGoodsOrderBySoldNumberDesc(keywords);
+		return repository
+				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySoldNumberDesc(
+						keywords, keywords, keywords, keywords, keywords);
 	}
-	
-	public List<TdGoods> searchGoods(String keywords)
-	{
-		if(null == keywords)
-		{
-			return null ;
+
+	public List<TdGoods> searchGoods(String keywords) {
+		if (null == keywords) {
+			return null;
 		}
-		return repository.findByTitleContainingOrSubTitleContainingOrCodeContainingOrderBySortIdDesc(keywords,keywords,keywords);
+		return repository.findByTitleContainingOrSubTitleContainingOrCodeContainingOrderBySortIdDesc(keywords, keywords,
+				keywords);
 	}
 }

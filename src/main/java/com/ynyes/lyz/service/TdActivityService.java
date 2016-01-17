@@ -49,7 +49,7 @@ public class TdActivityService {
 		if (null == e) {
 			return null;
 		}
-		
+
 		// 城市名
 		e.setCityName(tdCityService.findOne(e.getCityId()).getCityName());
 
@@ -103,14 +103,12 @@ public class TdActivityService {
 		}
 		String siteNameString = "";
 		String diySiteIdStr = "";
-		if (null != e.getSiteList() && e.getSiteList().size() > 0)
-		{
+		if (null != e.getSiteList() && e.getSiteList().size() > 0) {
 			for (TdDiySiteList siteList : e.getSiteList()) {
 				siteNameString += siteList.getTitle() + ",";
 			}
 			e.setSiteName(siteNameString);
 		}
-
 
 		// 保存赠品
 		tdGoodsGiftService.save(e.getGiftList());
@@ -120,10 +118,8 @@ public class TdActivityService {
 
 		// 保存门店
 		tdDiySiteListService.save(e.getSiteList());
-		if (null != e.getSiteList() && e.getSiteList().size() > 0)
-		{
-			for (TdDiySiteList siteList : e.getSiteList()) 
-			{
+		if (null != e.getSiteList() && e.getSiteList().size() > 0) {
+			for (TdDiySiteList siteList : e.getSiteList()) {
 				diySiteIdStr += siteList.getSiteId() + ",";
 			}
 			e.setDiySiteIds(diySiteIdStr);
@@ -149,7 +145,8 @@ public class TdActivityService {
 				// 查找到指定id的门店
 				TdDiySite site = tdDiySiteService.findOne(Long.parseLong(siteId));
 				// 查找到指定的价目表
-				TdPriceListItem priceListItem = tdPriceListItemService.findByPriceListIdAndGoodsId(site.getPriceListId(), id);
+				TdPriceListItem priceListItem = tdPriceListItemService
+						.findByPriceListIdAndGoodsId(site.getPriceListId(), id);
 				if (null != priceListItem) {
 					priceListItem.setIsPromotion(true);
 					if (null == priceListItem.getActivities()) {
@@ -228,12 +225,28 @@ public class TdActivityService {
 		if (null == totalGoods || null == diySiteId || null == goodsId || null == now) {
 			return null;
 		}
-		return repository.findByDiySiteIdsContainingAndGoodsNumberContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeAndTotalGoodsLessThanEqualOrderBySortIdAsc(diySiteId, goodsId, now, now, 0L, totalGoods);
+		return repository
+				.findByDiySiteIdsContainingAndGoodsNumberContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeAndTotalGoodsLessThanEqualOrderBySortIdAsc(
+						diySiteId, goodsId, now, now, 0L, totalGoods);
 	}
 
 	public Page<TdActivity> findAll(int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
 		return repository.findAll(pageRequest);
+	}
+
+	/**
+	 * 根据商品id和门店id查找活动
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdActivity> findByGoodsNumberContainingAndDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfter(
+			String goodsId, String diySiteId, Date now) {
+		if (null == goodsId || null == diySiteId || null == now) {
+			return null;
+		}
+		return repository.findByGoodsNumberContainingAndDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfter(
+				goodsId, diySiteId, now, now);
 	}
 
 }

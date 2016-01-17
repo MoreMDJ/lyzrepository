@@ -63,12 +63,26 @@
                     <!-- 赠品 -->
                     <#if order.presentedList??>
                         <#list order.presentedList as item>
-                            <li class="li4">【赠品】<span>${item.goodsTitle!''} x ${item.quantity!'0'}</span></li>
+                            <li class="li2 bdbt-n">
+                                <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
+                                <div class="product-info">
+                                    <div class="div1">${item.goodsTitle!''}<span style="color:red">【赠品】</span></div>
+                                    <div class="div1">${item.sku!''}</div>
+                                    <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}<#else>0.00</#if></span><label>数量：<span>${item.quantity!'0'}</span></label></div>
+                                </div>
+                            </li>
                         </#list>
                     </#if>
                     <#if order.presentedList??>
                         <#list order.giftGoodsList as item>
-                            <li class="li4">【赠品】<span>${item.goodsTitle!''} x ${item.quantity!'0'}</span></li>
+                            <li class="li2 bdbt-n">
+                                <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
+                                <div class="product-info">
+                                    <div class="div1">${item.goodsTitle!''}<span style="color:red">【小辅料】</span></div>
+                                    <div class="div1">${item.sku!''}</div>
+                                    <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}<#else>0.00</#if></span><label>数量：<span>${item.quantity!'0'}</span></label></div>
+                                </div>
+                            </li>
                         </#list>
                     </#if>
                     <li class="li5">支付方式：${order.payTypeTitle!''}<div class="div1">实付款：<p>￥<span><#if order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span></p></div></li>

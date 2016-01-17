@@ -91,8 +91,8 @@
                                     <a href="javascript:changeQuantity(${item.id?c},'delete');">-</a>
                                 </div>
                                 <div class="fen_div02">
-                                    <#if ("priceListItem"+item_index)?eval??&&("priceListItem"+item_index)?eval.salePrice??>
-                                        <a>￥${("priceListItem"+item_index)?eval.salePrice?string("0.00")}</a>
+                                    <#if ("priceListItem"+item.id?c)?eval??&&("priceListItem"+item.id?c)?eval.salePrice??>
+                                        <a>￥${("priceListItem"+item.id?c)?eval.salePrice?string("0.00")}</a>
                                     <#else>
                                         <a>￥0.00</a>
                                     </#if>

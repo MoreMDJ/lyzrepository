@@ -20,15 +20,14 @@ import com.ynyes.lyz.entity.TdGoods;
 
 public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, JpaSpecificationExecutor<TdGoods> {
 
-	
-	//接口 - 物料id
+	// 接口 - 物料id
 	TdGoods findByinventoryItemId(Long inventoryItemId);
-	
-	//接口 - 物料类别
+
+	// 接口 - 物料类别
 	List<TdGoods> findByInvCategoryId(Long invCategoryId);
-	
+
 	List<TdGoods> findByCategoryIdIsNull();
-	
+
 	Page<TdGoods> findByCategoryIdTreeContainingAndIsOnSaleTrue(String categoryId, Pageable page);
 
 	Page<TdGoods> findByCategoryIdTreeContainingAndIsRecommendTypeTrueAndIsOnSaleTrueOrderByIdDesc(String categoryId,
@@ -63,7 +62,7 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	List<TdGoods> findTop10ByIsOnSaleTrueOrderBySoldNumberDesc();
 
 	Page<TdGoods> findByIsOnSaleTrue(Pageable page);
-	
+
 	Page<TdGoods> findByIsGiftTrueAndIsOnSaleTrue(Pageable page);
 
 	List<TdGoods> findByIdAndIsOnSaleTrue(Iterable<Long> ids);
@@ -344,28 +343,16 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	 * 
 	 * @author dengxiao
 	 */
-	@Query("select g from TdGoods g , TdProductCategory c where " 
-			+ "g.name like %?1 and g.categoryId = c.id or "
-			+ "g.title like %?1  and g.categoryId = c.id or " 
-			+ "g.subTitle like %?1 and g.categoryId = c.id or "
-			+ "g.code like %?1 and g.categoryId = c.id or " 
-			+ "c.title like %?1 and g.categoryId = c.id "
-			+ "order by g.sortId asc")
-	List<TdGoods> searchGoodsOrderBySortIdAsc(String keywords);
+	List<TdGoods> findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySortIdAsc(
+			String keywords1, String keywords2, String keywords3, String keywords4, String keywords5);
 
 	/**
 	 * 根据关键词模糊查询商品，其涉及到商品的名称，商品的标题，商品的副标题，商品的sku，商品的分类名称，最后按照sortId（排序号）倒序排序
 	 * 
 	 * @author dengxiao
 	 */
-	@Query("select g from TdGoods g , TdProductCategory c where " 
-			+ "g.name like %?1 and g.categoryId = c.id or "
-			+ "g.title like %?1  and g.categoryId = c.id or " 
-			+ "g.subTitle like %?1 and g.categoryId = c.id or "
-			+ "g.code like %?1 and g.categoryId = c.id or " 
-			+ "c.title like %?1 and g.categoryId = c.id "
-			+ "order by g.sortId desc")
-	List<TdGoods> searchGoodsOrderBySortIdDesc(String keywords);
+	List<TdGoods> findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySortIdDesc(
+			String keywords1, String keywords2, String keywords3, String keywords4, String keywords5);
 
 	/**
 	 * 根据关键词模糊查找商品，按照价格正序排序
@@ -400,29 +387,18 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	 * 
 	 * @author dengxiao
 	 */
-	@Query("select g from TdGoods g,TdProductCategory c where "
-			+ "g.name like %?1 and g.categoryId = c.id or "
-			+ "g.title like %?1  and g.categoryId = c.id or " 
-			+ "g.subTitle like %?1 and g.categoryId = c.id or "
-			+ "g.code like %?1 and g.categoryId = c.id or " 
-			+ "c.title like %?1 and g.categoryId = c.id "
-			+"order by g.soldNumber asc")
-	List<TdGoods> searchGoodsOrderBySoldNumberAsc(String keywords);
-	
+	List<TdGoods> findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySoldNumberAsc(
+			String keywords1, String keywords2, String keywords3, String keywords4, String keywords5);
+
 	/**
-	 * 根据关键词模糊查询商品，按照销量正序排序
+	 * 根据关键词模糊查询商品，按照销量反序排序
 	 * 
 	 * @author dengxiao
 	 */
-	@Query("select g from TdGoods g,TdProductCategory c where "
-			+ "g.name like %?1 and g.categoryId = c.id or "
-			+ "g.title like %?1  and g.categoryId = c.id or " 
-			+ "g.subTitle like %?1 and g.categoryId = c.id or "
-			+ "g.code like %?1 and g.categoryId = c.id or " 
-			+ "c.title like %?1 and g.categoryId = c.id "
-			+"order by g.soldNumber desc")
-	List<TdGoods> searchGoodsOrderBySoldNumberDesc(String keywords);
-	
-	// Max 
-	List<TdGoods> findByTitleContainingOrSubTitleContainingOrCodeContainingOrderBySortIdDesc(String keywords1,String keywords2,String Keywords3);
+	List<TdGoods> findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySoldNumberDesc(
+			String keywords1, String keywords2, String keywords3, String keywords4, String keywords5);
+
+	// Max
+	List<TdGoods> findByTitleContainingOrSubTitleContainingOrCodeContainingOrderBySortIdDesc(String keywords1,
+			String keywords2, String Keywords3);
 }

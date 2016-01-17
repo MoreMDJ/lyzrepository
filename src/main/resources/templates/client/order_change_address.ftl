@@ -19,6 +19,7 @@
         <header>
             <a class="back" href="/order"></a>
             <p>选择收货地址</p>
+            <a class="save fz2" href="/order/add/address" style="font-size:3em;">+</a>
         </header>
         <!-- 头部 END -->
         

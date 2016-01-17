@@ -286,46 +286,44 @@ public class TdOrderService {
 	public Long countByStatusId(Long statusId) {
 		return repository.countByStatusId(statusId);
 	}
-	
+
 	public List<TdOrder> findByStatusIdAndOrderTimeAfter(Long statusId, Date time) {
-		if (null == statusId || null == time)
-		{
+		if (null == statusId || null == time) {
 			return null;
 		}
-		
+
 		return repository.findByStatusIdAndOrderTimeAfter(statusId, time);
 	}
-	
-	public List<TdOrder> findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Long statusId2, Date time) {
-		if (null == statusId || null == statusId2 || null == time)
-		{
+
+	public List<TdOrder> findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Long statusId2,
+			Date time) {
+		if (null == statusId || null == statusId2 || null == time) {
 			return null;
 		}
-		
+
 		return repository.findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(statusId, time, statusId2, time);
 	}
-	
+
 	public List<TdOrder> findByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end) {
-		
-		if (null == statusId || null == start || null == end)
-		{
+
+		if (null == statusId || null == start || null == end) {
 			return null;
 		}
-		
+
 		return repository.findByStatusIdAndOrderTimeBetween(statusId, start, end);
 	}
-	
-	public List<TdOrder> findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Long statusId2, Date start, Date end) {
-		
-		if (null == statusId || null == statusId2 || null == start || null == end)
-		{
+
+	public List<TdOrder> findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Long statusId2,
+			Date start, Date end) {
+
+		if (null == statusId || null == statusId2 || null == start || null == end) {
 			return null;
 		}
-		
-		return repository.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(statusId, start, end, statusId2, start, end);
+
+		return repository.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(statusId, start, end,
+				statusId2, start, end);
 	}
 
-	
 	/**
 	 * 保存
 	 * 
@@ -349,5 +347,12 @@ public class TdOrderService {
 			return null;
 		}
 		return repository.findByUsernameAndStatusIdNotOrderByOrderTimeDesc(username, 8L);
+	}
+
+	public List<TdOrder> findByOrderNumberContaining(String orderNumber) {
+		if (null == orderNumber) {
+			return null;
+		}
+		return repository.findByOrderNumberContaining(orderNumber);
 	}
 }

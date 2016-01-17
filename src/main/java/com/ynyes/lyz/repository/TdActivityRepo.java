@@ -41,4 +41,12 @@ public interface TdActivityRepo
 	 */
 	List<TdActivity> findByDiySiteIdsContainingAndGoodsNumberContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeAndTotalGoodsLessThanEqualOrderBySortIdAsc(
 			String diySiteId, String goodsId, Date date1, Date date2, Long giftType, Integer totalGoods);
+
+	/**
+	 * 根据商品id和门店id查找活动
+	 * 
+	 * @author dengxiao
+	 */
+	List<TdActivity> findByGoodsNumberContainingAndDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfter(
+			String goodsId, String diySiteId, Date begin, Date finish);
 }

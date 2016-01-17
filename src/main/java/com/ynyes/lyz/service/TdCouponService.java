@@ -434,4 +434,18 @@ public class TdCouponService {
 		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
 				username, 2L, goodsId);
 	}
+
+	/**
+	 * 根据用户名查找指定品牌下未过期未使用的通用现金券
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
+			String username, Long typeCategoryId, Long brandId) {
+		if (null == username || null == typeCategoryId || null == brandId) {
+			return null;
+		}
+		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
+				username, typeCategoryId, brandId);
+	}
 }

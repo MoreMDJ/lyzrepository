@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ynyes.lyz.entity.TdArticle;
 import com.ynyes.lyz.entity.TdArticleCategory;
 import com.ynyes.lyz.entity.TdBalanceLog;
-import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
@@ -34,7 +33,6 @@ import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
-import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdSetting;
@@ -132,9 +130,6 @@ public class TdUserController {
 	private TdSettingService tdSettingService;
 
 	@Autowired
-	private TdPayTypeService tdPayTypeService;
-
-	@Autowired
 	private TdArticleCategoryService tdArticleCategoryService;
 
 	@Autowired
@@ -173,7 +168,7 @@ public class TdUserController {
 		map.addAttribute("collect_list", collect_list);
 
 		// 获取已选
-		Long number = tdCommonService.getSelectedNumber(req);
+		Long number = tdCartGoodsService.countByUserId(user.getId());
 		map.addAttribute("number", number);
 
 		// 获取用户的等级
@@ -211,9 +206,8 @@ public class TdUserController {
 		map.addAttribute("unpayed_order_list", unpayed_order_list);
 
 		// 查找所有待发货的订单
-		// List<TdOrder> undeliver_order_list =
-		// tdOrderService.findByUsernameAndStatusId(username, 3L);
-		// map.addAttribute("undeliver_order_list", undeliver_order_list);
+		List<TdOrder> undeliver_order_list = tdOrderService.findByUsernameAndStatusId(username, 3L);
+		map.addAttribute("undeliver_order_list", undeliver_order_list);
 
 		// 查找所有待收货的订单
 		List<TdOrder> unsignin_order_list = tdOrderService.findByUsernameAndStatusId(username, 4L);
@@ -425,45 +419,34 @@ public class TdUserController {
 	 */
 	@RequestMapping(value = "/selected/change/quantity")
 	public String selectedChangeQuantity(HttpServletRequest req, ModelMap map, Long operation, Long type, Long id) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		// 避免“空指针异常”
+		if (null == user) {
+			user = new TdUser();
+		}
+		List<TdCartGoods> selected_goods = tdCartGoodsService.findByUserId(user.getId());
+		Double total_price = 0.0;
 		// 操作已选商品的情况
 		if (0 == type) {
-			List<TdCartGoods> selected_goods = tdCommonService.getSelectedGoods(req);
 			for (int i = 0; i < selected_goods.size(); i++) {
 				TdCartGoods cartGoods = selected_goods.get(i);
-				if (null != cartGoods && null != cartGoods.getGoodsId() && cartGoods.getGoodsId() == id) {
+				if (null != cartGoods && null != cartGoods.getGoodsId()
+						&& cartGoods.getGoodsId().longValue() == id.longValue()) {
 					if (0L == operation) {
 						cartGoods.setQuantity(cartGoods.getQuantity() - 1);
 					}
 					if (1L == operation) {
 						cartGoods.setQuantity(cartGoods.getQuantity() + 1);
 					}
+					tdCartGoodsService.save(cartGoods);
 				}
 			}
-			req.getSession().setAttribute("all_selected", selected_goods);
-		}
-
-		// 操作已选调色包的情况
-		if (1 == type) {
-			List<TdCartColorPackage> selected_colors = tdCommonService.getSelectedColorPackage(req);
-			for (int i = 0; i < selected_colors.size(); i++) {
-				TdCartColorPackage cartColorPackage = selected_colors.get(i);
-				if (null != cartColorPackage && null != cartColorPackage.getGoodsId()
-						&& cartColorPackage.getGoodsId() == id) {
-					if (0L == operation) {
-						cartColorPackage.setQuantity(cartColorPackage.getQuantity() - 1);
-					}
-					if (1L == operation) {
-						cartColorPackage.setQuantity(cartColorPackage.getQuantity() + 1);
-					}
-				}
-			}
-			req.getSession().setAttribute("all_color", selected_colors);
 		}
 
 		// 获取所有已选的商品
-		List<TdCartGoods> all_selected = tdCommonService.getSelectedGoods(req);
-		for (int i = 0; i < all_selected.size(); i++) {
-			TdCartGoods cartGoods = all_selected.get(i);
+		for (int i = 0; i < selected_goods.size(); i++) {
+			TdCartGoods cartGoods = selected_goods.get(i);
 			// 获取已选商品的库存
 			if (null != cartGoods) {
 				TdGoods goods = tdGoodsService.findOne(cartGoods.getGoodsId());
@@ -473,30 +456,16 @@ public class TdUserController {
 					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > goods.getLeftNumber()) {
 						cartGoods.setQuantity(goods.getLeftNumber());
 					}
-
+					cartGoods.setTotalPrice(cartGoods.getQuantity() * cartGoods.getPrice());
+					cartGoods.setRealTotalPrice(cartGoods.getRealPrice() * cartGoods.getQuantity());
+					cartGoods = tdCartGoodsService.save(cartGoods);
+					total_price += cartGoods.getTotalPrice();
 				}
 			}
 		}
-		// 获取所有的调色包
-		List<TdCartColorPackage> selected_colors = tdCommonService.getSelectedColorPackage(req);
-		for (int i = 0; i < selected_colors.size(); i++) {
-			TdCartColorPackage cartColorPackage = selected_colors.get(i);
-			// 获取已选调色包的库存
-			if (null != cartColorPackage) {
-				TdGoods goods = tdGoodsService.findOne(cartColorPackage.getGoodsId());
-				if (null != goods) {
-					map.addAttribute("color" + i, goods.getLeftNumber());
-					// 如果已选数量大于了最大库存，则消减已选数量
-					if (null != cartColorPackage.getQuantity()
-							&& cartColorPackage.getQuantity() > goods.getLeftNumber()) {
-						cartColorPackage.setQuantity(goods.getLeftNumber());
-					}
-				}
-			}
-		}
-		map.addAttribute("selected_number", tdCommonService.getSelectedNumber(req));
-		map.addAttribute("all_selected", all_selected);
-		map.addAttribute("selected_colors", selected_colors);
+		map.addAttribute("selected_number", tdCartGoodsService.countByUserId(user.getId()));
+		map.addAttribute("all_selected", selected_goods);
+		map.addAttribute("totalPrice", total_price);
 		return "/client/selected_goods_and_color";
 	}
 
@@ -1152,118 +1121,6 @@ public class TdUserController {
 	}
 
 	/**
-	 * 对于某个未支付订单，点击去支付，跳转到支付界面的方法
-	 * 
-	 * @author dengxiao
-	 */
-	@RequestMapping(value = "/order/pay")
-	public String userOrderPay(HttpServletRequest req, ModelMap map, Long id) {
-		String username = (String) req.getSession().getAttribute("username");
-		TdUser user = tdUserService.findByUsername(username);
-		if (null == user) {
-			return "redirect:/login";
-		}
-
-		// 获取所有的支付方式
-		// 获取所有的支付方式
-		List<TdPayType> pay_type_list = tdPayTypeService.findByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc();
-		map.addAttribute("pay_type_list", pay_type_list);
-
-		// 查询是否存在货到付款的支付方式
-		TdPayType cashOnDelivery = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
-		if (null != cashOnDelivery) {
-			map.addAttribute("cashOndelivery", cashOnDelivery);
-		}
-
-		map.addAttribute("orderId", id);
-		return "/client/order_to_pay";
-	}
-
-	/**
-	 * 进行订单结算的方法
-	 * 
-	 * @author dengxiao
-	 */
-	@RequestMapping(value = "/order/pay/now")
-	@ResponseBody
-	public Map<String, Object> orderPayNow(HttpServletRequest req, Long type, Long orderId) {
-		Map<String, Object> res = new HashMap<>();
-		res.put("status", -1);
-		// 获取当前登陆用户
-		String username = (String) req.getSession().getAttribute("username");
-		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
-
-		// 获取指定id的订单
-		TdOrder order = tdOrderService.findOne(orderId);
-		// 获取指定的支付方式
-		TdPayType payType = tdPayTypeService.findOne(type);
-		if (null != payType) {
-			String title = payType.getTitle();
-			// 如果是在线支付的情况
-			if (null != payType && payType.getIsOnlinePay()) {
-				switch (title) {
-				case "预存款":
-					// 获取用户的余额
-					Double balance = user.getBalance();
-					// 获取用户的可提现余额
-					Double cashBalance = user.getCashBalance();
-					// 获取用户的不可提现余额
-					Double unCashBalance = user.getUnCashBalance();
-					if (null == balance) {
-						balance = 0.0;
-					}
-					if (null == cashBalance) {
-						cashBalance = 0.0;
-					}
-					if (null == unCashBalance) {
-						unCashBalance = 0.0;
-					}
-
-					Double total_price = 0.0;
-					// 获取订单总额
-					if (null != order && null != order.getTotalPrice()) {
-						total_price = order.getTotalPrice();
-					}
-
-					// 判断余额是否足够支付
-					if (balance < total_price) {
-						res.put("message", "您的余额不足，请选择其他支付方式");
-						return res;
-					}
-
-					if (unCashBalance < total_price) {
-						user.setUnCashBalance(0.0);
-						user.setCashBalance(cashBalance + unCashBalance - total_price);
-					} else {
-						user.setUnCashBalance(unCashBalance - total_price);
-					}
-					order.setStatusId(3L);
-					user.setBalance(balance - total_price);
-					tdUserService.save(user);
-					tdOrderService.save(order);
-					res.put("message", "操作成功");
-					res.put("status", 0);
-					break;
-				}
-			}
-			// 如果不是在线支付
-			if (null != payType && !payType.getIsOnlinePay()) {
-				switch (title) {
-				case "货到付款":
-					if (null != order) {
-						order.setStatusId(3L);
-						tdOrderService.save(order);
-						res.put("message", "操作成功");
-						res.put("status", 0);
-					}
-					break;
-				}
-			}
-		}
-		return res;
-	}
-
-	/**
 	 * 取消订单的方法
 	 * 
 	 * @author dengxiao
@@ -1275,7 +1132,97 @@ public class TdUserController {
 		res.put("status", -1);
 		// 查询到指定的订单
 		TdOrder order = tdOrderService.findOne(orderId);
+		// 首先判断订单是不是运费单
+		Double fee = order.getDeliverFee();
+		if (null != fee && fee > 0) {
+			// 此时是属于运费单的情况了，现在判断下其他单据有没有退还
+			String orderNumber = order.getOrderNumber();
+			if (null != orderNumber && !"".equals(orderNumber)) {
+				Boolean isCancel = true;
+				String otherOrderNumber = "";
+				String newOrderNumber = "";
+				for (int i = 0; i < orderNumber.length(); i++) {
+					if (orderNumber.charAt(i) >= 48 && orderNumber.charAt(i) <= 57) {
+						newOrderNumber += orderNumber.charAt(i);
+					}
+				}
+				// 查询此单的其他单据有没有取消
+				List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
+				if (null != list && list.size() > 0) {
+					for (TdOrder associated_order : list) {
+						if (null != associated_order && null != associated_order.getStatusId()) {
+							// 如果是本单就不用判断了
+							if (null != associated_order.getId() && associated_order.getId() != orderId) {
+								Long statusId = associated_order.getStatusId();
+								if (7L != statusId.longValue()) {
+									otherOrderNumber += associated_order.getOrderNumber();
+									isCancel = false;
+									break;
+								}
+							}
+						}
+
+					}
+				}
+				if (!isCancel) {
+					res.put("message", "亲，您需要先取消掉关联<br>订单（" + otherOrderNumber + "）才能够取消此单");
+					return res;
+				}
+			}
+		}
+
+		// 进行资金退还
+		Double totalPrice = order.getTotalPrice();
+		Double unCashBalanceUsed = order.getUnCashBalanceUsed();
+		Double cashBalanceUsed = order.getCashBalanceUsed();
+		String productCouponId = order.getProductCouponId();
+		String cashCouponId = order.getCashCouponId();
+		Long userId = order.getUserId();
+		TdUser user = tdUserService.findOne(userId);
+		if (null == user) {
+			res.put("message", "未找到订单的归属用户");
+			return res;
+		}
+		user.setBalance(user.getBalance() + totalPrice);
+		user.setUnCashBalance(user.getUnCashBalance() + unCashBalanceUsed);
+		user.setCashBalance(user.getCashBalance() + cashBalanceUsed);
+		tdUserService.save(user);
+
+		// 拆分使用的现金券的id
+		if (null != cashCouponId && !"".equals(cashCouponId)) {
+			String[] cashs = cashCouponId.split(",");
+			if (null != cashs) {
+				for (String sId : cashs) {
+					if (null != sId) {
+						Long id = Long.valueOf(sId);
+						TdCoupon coupon = tdCouponService.findOne(id);
+						if (null != coupon) {
+							coupon.setIsUsed(false);
+							tdCouponService.save(coupon);
+						}
+					}
+				}
+			}
+		}
+
+		// 拆分使用的产品券
+		if (null != productCouponId && !"".equals(productCouponId)) {
+			String[] products = productCouponId.split(",");
+			if (null != products) {
+				for (String sId : products) {
+					if (null != sId) {
+						Long id = Long.valueOf(sId);
+						TdCoupon coupon = tdCouponService.findOne(id);
+						if (null != coupon) {
+							coupon.setIsUsed(false);
+							tdCouponService.save(coupon);
+						}
+					}
+				}
+			}
+		}
 		order.setStatusId(7L);
+
 		tdOrderService.save(order);
 		res.put("status", 0);
 		return res;

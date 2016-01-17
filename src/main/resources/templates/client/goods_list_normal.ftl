@@ -130,7 +130,7 @@
                                                                 
                                                             <#if ("priceListItem"+level_one_index+"_"+level_two_index+"_"+goods_index)?eval.isPromotion??>
                                                                 <#if ("priceListItem"+level_one_index+"_"+level_two_index+"_"+goods_index)?eval.isPromotion>
-                                                                    <a>促销</a>
+                                                                    <a style="margin-right:3%;">促销</a>
                                                                 </#if>
                                                             </#if>
                                                         </#if>
