@@ -1547,6 +1547,29 @@ public class TdCommonService {
 	}
 
 	/**
+	 * 计算正常订单总价，获取总价的方法
+	 * 
+	 * @author dengxiao
+	 */
+	public Double getOrderPice(TdOrder order) {
+		Double totalPrice = 0.00;
+		List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+		if (null != goodsList) {
+			for (TdOrderGoods orderGoods : goodsList) {
+				if (null != orderGoods) {
+					Double price = orderGoods.getPrice();
+					Long quantity = orderGoods.getQuantity();
+					if (null != price && null != quantity) {
+						totalPrice += price * quantity;
+					}
+				}
+			}
+		}
+
+		return totalPrice;
+	}
+
+	/**
 	 * 根据传进来的类型返回相应的XML
 	 * 
 	 * @param object

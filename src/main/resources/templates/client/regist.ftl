@@ -54,6 +54,7 @@
                 
                 $scope.infos = {
                     phone:"",
+                    name:"",
                     code:"",
                     password:"",
                     repassword:"",
@@ -141,6 +142,7 @@
                         type:"post",
                         data:{
                             cityInfo:cityInfo,
+                            name:$scope.infos.name,
                             phone:$scope.infos.phone,
                             code:$scope.infos.code,
                             password:$scope.infos.password,
@@ -195,6 +197,7 @@
                             </#if>
                         </select>
                     </dt>
+                    <dd><input type="text" ng-model="infos.name" ng-required="true" ng-minlength="2" ng-maxlength="8" placeholder="姓名" ></dd>
                     <dd><input type="text" name="phone" ng-model="infos.phone" ng-pattern="/^1\d{10}$/" placeholder="手机号码" ng-required="true"/></dd>
                     <dt>
                         <input type="text" name="code" ng-model="infos.code" ng-minlength="4" ng-maxlength="4" placeholder="手机验证码" ng-required="true"/>

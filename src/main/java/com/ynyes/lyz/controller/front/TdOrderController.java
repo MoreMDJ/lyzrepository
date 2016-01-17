@@ -134,15 +134,6 @@ public class TdOrderController {
 			req.getSession().setAttribute("order_temp", order);
 		}
 
-		String deliverTypeTitle = order.getDeliverTypeTitle();
-		// 如果配送方式是到店自提，則不能使用任何优惠券，同时不收取运费
-		if ("门店自提".equals(deliverTypeTitle)) {
-			isFree = true;
-			if ("到店支付".equals(order.getPayTypeTitle())) {
-				isCoupon = false;
-			}
-		}
-
 		// 获取已选的所有品牌的id
 		List<Long> brandIds = tdCommonService.getBrandId(user.getId(), order);
 
@@ -224,6 +215,26 @@ public class TdOrderController {
 				usedNow = new HashMap<>();
 			}
 			req.getSession().setAttribute("usedNow", usedNow);
+		}
+
+		String deliverTypeTitle = order.getDeliverTypeTitle();
+		// 如果配送方式是到店自提，則不能使用任何优惠券，同时不收取运费
+		if ("门店自提".equals(deliverTypeTitle)) {
+			isFree = true;
+			if ("到店支付".equals(order.getPayTypeTitle())) {
+				isCoupon = false;
+				Double orderPice = tdCommonService.getOrderPice(order);
+				order.setTotalPrice(orderPice);
+				maxCash = orderPice;
+				// 判断用户的余额是否大于max
+				Double balance = user.getBalance();
+				if (null == balance) {
+					balance = 0.00;
+				}
+				if (maxCash > balance) {
+					maxCash = balance;
+				}
+			}
 		}
 
 		map.addAttribute("isFree", isFree);
@@ -645,19 +656,38 @@ public class TdOrderController {
 					}
 					return res;
 				} else {
-					cashCouponId += coupon.getId() + ",";
-					cashCoupon += coupon.getPrice();
-					order.setCashCouponId(cashCouponId);
-					order.setCashCoupon(cashCoupon);
-					req.getSession().setAttribute("order_temp", order);
-					max_cash_can_used -= coupon.getPrice();
-					req.getSession().setAttribute("maxCash", max_cash_can_used);
-					used += coupon.getPrice();
-					usedNow.put(brandId, used);
-					req.getSession().setAttribute("usedNow", usedNow);
-					order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
-					req.getSession().setAttribute("order_temp", order);
-					tdOrderService.save(order);
+					Boolean isHave = false;
+					if (null != cashCouponId && !"".equals(cashCouponId)) {
+						String[] strings = cashCouponId.split(",");
+						if (null != strings && strings.length > 0) {
+							for (String sId : strings) {
+								if (null != sId) {
+									Long theId = Long.parseLong(sId);
+									if (null != theId && theId.longValue() == coupon.getId().longValue()) {
+										isHave = true;
+									}
+								}
+							}
+						}
+					}
+					if (!isHave) {
+						cashCouponId += coupon.getId() + ",";
+						cashCoupon += coupon.getPrice();
+						order.setCashCouponId(cashCouponId);
+						order.setCashCoupon(cashCoupon);
+						req.getSession().setAttribute("order_temp", order);
+						max_cash_can_used -= coupon.getPrice();
+						if (max_cash_can_used < 0) {
+							max_cash_can_used = 0.00;
+						}
+						req.getSession().setAttribute("maxCash", max_cash_can_used);
+						used += coupon.getPrice();
+						usedNow.put(brandId, used);
+						req.getSession().setAttribute("usedNow", usedNow);
+						order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
+						req.getSession().setAttribute("order_temp", order);
+						tdOrderService.save(order);
+					}
 				}
 			}
 			if (1L == status) {
@@ -699,7 +729,9 @@ public class TdOrderController {
 					for (TdOrderGoods orderGoods : orderGoodsList) {
 						if (null != orderGoods && null != orderGoods.getGoodsId()
 								&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
+							System.err.println("进来了！");
 							Long couponNumber = orderGoods.getCouponNumber();
+							System.err.println("没报错！");
 							if (null == couponNumber) {
 								couponNumber = 0L;
 							}
@@ -709,18 +741,42 @@ public class TdOrderController {
 							} else {
 								orderGoods.setCouponNumber(couponNumber + 1L);
 								tdOrderGoodsService.save(orderGoods);
-								productCouponId += coupon.getId() + ",";
-								order.setProductCouponId(productCouponId);
-								max_cash_can_used -= orderGoods.getPrice();
-								Double maxCash = maxCoupon.get(brandId);
-								maxCash -= (orderGoods.getPrice() - orderGoods.getRealPrice());
-								maxCoupon.put(brandId, maxCash);
-								max_cash_can_used -= orderGoods.getPrice();
-								req.getSession().setAttribute("maxCash", max_cash_can_used);
-								req.getSession().setAttribute("maxCoupon", maxCoupon);
-								order.setTotalPrice(order.getTotalPrice() - orderGoods.getPrice());
-								req.getSession().setAttribute("order_temp", order);
-								tdOrderService.save(order);
+								Boolean isHave = false;
+								if (null != productCouponId && !"".equals(productCouponId)) {
+									String[] strings = productCouponId.split(",");
+									if (null != strings && strings.length > 0) {
+										for (String sId : strings) {
+											if (null != sId) {
+												Long theId = Long.parseLong(sId);
+												if (null != theId && theId.longValue() == coupon.getId().longValue()) {
+													isHave = true;
+												}
+											}
+										}
+									}
+								}
+								if (!isHave) {
+									productCouponId += coupon.getId() + ",";
+									order.setProductCouponId(productCouponId);
+									max_cash_can_used -= orderGoods.getPrice();
+									Double maxCash = maxCoupon.get(brandId);
+									if (null == maxCash) {
+										maxCash = 0.00;
+									}
+									maxCash -= (orderGoods.getPrice() - orderGoods.getRealPrice());
+									if (maxCash < 0) {
+										maxCash = 0.00;
+									}
+									maxCoupon.put(brandId, maxCash);
+									if (max_cash_can_used < 0) {
+										max_cash_can_used = 0.00;
+									}
+									req.getSession().setAttribute("maxCash", max_cash_can_used);
+									req.getSession().setAttribute("maxCoupon", maxCoupon);
+									order.setTotalPrice(order.getTotalPrice() - orderGoods.getPrice());
+									req.getSession().setAttribute("order_temp", order);
+									tdOrderService.save(order);
+								}
 							}
 						}
 					}
@@ -756,7 +812,6 @@ public class TdOrderController {
 							maxCash += orderGoods.getPrice();
 							maxCoupon.put(brandId, maxCash);
 							req.getSession().setAttribute("maxCoupon", maxCoupon);
-							max_cash_can_used += orderGoods.getPrice();
 							req.getSession().setAttribute("maxCash", max_cash_can_used);
 							order.setTotalPrice(order.getTotalPrice() + orderGoods.getPrice());
 							req.getSession().setAttribute("order_temp", order);
