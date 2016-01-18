@@ -13,4 +13,6 @@ public interface TdDeliveryInfoDetailRepo
 	TdDeliveryInfoDetail findByTaskNo(String taskNo);
 	
 	List<TdDeliveryInfoDetail> findByOpUser(String opUser);
+	
+	List<TdDeliveryInfoDetail> findBySubOrderNumber(String subOrderNumber);
 }

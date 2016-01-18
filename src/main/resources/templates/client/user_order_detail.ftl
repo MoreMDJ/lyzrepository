@@ -94,33 +94,29 @@
                     
             <!-- 配送信息 -->
             <article class="delivery-info">
+                <#if order.statusId==4>
                 <div class="title">配送信息</div>
                 <!-- 物流信息 -->
-                <div class="logistics-info">物流公司：<span>顺丰速递</span>&nbsp;&nbsp;物流单号：<span>102543245842513</span></div>
-                <div class="estimated-time">预计到达时间：2015-11-30</div>
-                <ul class="delivery-pro">
-                    <li class="active">
-                        <div class="progress-pic"></div>
-                        <div class="progress-ifo">
-                            <div>重庆市渝中区派件员：河流（13883845552）正在派件</div>
-                            <div>2015-11-30  14:30:21</div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="progress-pic"></div>
-                        <div class="progress-ifo">
-                            <div>重庆市渝中区派件员：河流（13883845552）正在派件</div>
-                            <div>2015-11-30  14:30:21</div>
-                        </div>
-                    </li>
-                    <li class="last">
-                        <div class="progress-pic"></div>
-                        <div class="progress-ifo">
-                            <div>重庆市渝中区派件员：河流（13883845552）正在派件</div>
-                            <div>2015-11-30  14:30:21</div>
-                        </div>
-                    </li>
-                </ul>
+                <#--<div class="estimated-time">预计到达时间：2015-11-30</div>-->
+                    <ul class="delivery-pro">
+                        <li class="active">
+                            <div class="progress-pic"></div>
+                            <div class="progress-ifo">
+                                <div>已出库</div>
+                                <div></div>
+                            </div>
+                        </li>
+                        <#if tdUser??>
+                            <li class="last">
+                                <div class="progress-pic"></div>
+                                <div class="progress-ifo">
+                                    <div>${geoInfo.formattedAddress!''}——${tdUser.realName!''}（${tdUser.username!''}）正在派件</div>
+                                    <div>${geoInfo.time?string("0.00")}</div>
+                                </div>
+                            </li>
+                        </#if>
+                    </ul>
+                </#if>
             </article>
             <!-- 配送信息 END -->
         </#if>

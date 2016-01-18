@@ -28,8 +28,10 @@ import com.ynyes.lyz.entity.TdBalanceLog;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
+import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDistrict;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdGeoInfo;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
@@ -51,8 +53,10 @@ import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdCouponService;
+import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
+import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
@@ -143,6 +147,12 @@ public class TdUserController {
 
 	@Autowired
 	private TdOrderGoodsService tdOrderGoodsService;
+
+	@Autowired
+	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
+
+	@Autowired
+	private TdGeoInfoService tdGeoInfoService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1333,6 +1343,24 @@ public class TdUserController {
 		// 获取指定id的订单信息
 		TdOrder order = tdOrderService.findOne(id);
 		map.addAttribute("order", order);
+
+		// 获取配送的信息
+		if (null != order) {
+			String orderNumber = order.getOrderNumber();
+			List<TdDeliveryInfoDetail> delivery_list = tdDeliveryInfoDetailService.findBySubOrderNumber(orderNumber);
+			if (null != delivery_list && delivery_list.size() > 0) {
+				TdDeliveryInfoDetail detail = delivery_list.get(0);
+				if (null != detail) {
+					List<TdGeoInfo> geoInfo_list = tdGeoInfoService.findByOpUserOrderByTimeDesc(detail.getOpUser());
+					TdUser tdUser = tdUserService.findByOpUser(detail.getOpUser());
+					if (null != geoInfo_list && geoInfo_list.size() > 0) {
+						TdGeoInfo geoInfo = geoInfo_list.get(0);
+						map.addAttribute("geoInfo", geoInfo);
+						map.addAttribute("tdUser", tdUser);
+					}
+				}
+			}
+		}
 
 		return "/client/user_order_detail";
 	}

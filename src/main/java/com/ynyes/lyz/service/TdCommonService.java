@@ -1113,7 +1113,8 @@ public class TdCommonService {
 						Long brandId = goods.getBrandId();
 						TdOrder order = order_map.get(brandId);
 						order.setProductCouponId(coupon.getId() + ",");
-						order.setProductCoupon(goods.getTitle() + "【" + goods.getCode() + "】*1,");
+						order.setProductCoupon(
+								order.getProductCoupon() + (goods.getTitle() + "【" + goods.getCode() + "】*1,"));
 						List<TdOrderGoods> list = order.getOrderGoodsList();
 						for (TdOrderGoods orderGoods : list) {
 							if (null != orderGoods && null != orderGoods.getGoodsId()
@@ -1121,6 +1122,7 @@ public class TdCommonService {
 								order.setTotalPrice(order.getTotalPrice() - orderGoods.getPrice());
 							}
 						}
+						tdOrderService.save(order);
 					}
 				}
 			}
@@ -1152,7 +1154,13 @@ public class TdCommonService {
 					Double point = order.getTotalPrice() / total;
 					order.setCashCoupon(order.getCashCoupon() + (cashCoupon * point));
 					order.setCashBalanceUsed(cashBalanceUsed * point);
+					if (order.getCashBalanceUsed() < 0 || order.getCashBalanceUsed() == -0.00) {
+						order.setCashBalanceUsed(0.00);
+					}
 					order.setUnCashBalanceUsed(unCashBalanceUsed * point);
+					if (order.getUnCashBalanceUsed() < 0 || order.getUnCashBalanceUsed() == -0.00) {
+						order.setUnCashBalanceUsed(0.00);
+					}
 				}
 			}
 		}
@@ -1582,38 +1590,24 @@ public class TdCommonService {
 
 		if (type == 1) {
 			TdRequisition requisition = (TdRequisition) object;
-			String xmlStr = "<ERP>"
-					+ "<TABLE>" +
-					"<id>" + requisition.getId() + "</id>"
-					+ "<cancel_time></cancel_time>"
-					+ "<check_time></check_time>" 
-					+ "<diy_site_address></diy_site_address>"
-					+ "<diy_site_id>"
-					+ requisition.getDiySiteId() + "</diy_site_id>" 
-					+ "<diy_site_tel></diy_site_tel>"
+			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisition.getId() + "</id>" + "<cancel_time></cancel_time>"
+					+ "<check_time></check_time>" + "<diy_site_address></diy_site_address>" + "<diy_site_id>"
+					+ requisition.getDiySiteId() + "</diy_site_id>" + "<diy_site_tel></diy_site_tel>"
 					+ "<diy_site_title>" + requisition.getDiySiteTitle() + "</diy_site_title>"
-					+ "<manager_remark_info></manager_remark_info>"
-					+ "<remark_info></remark_info>"
-					+ "<requisition_number></requisition_number>"
-					+ "<status_id></status_id>"
-					+ "<type_id>" + requisition.getTypeId() + "</type_id>"
-					+ "<customer_name>" + requisition.getCustomerName() + "</customer_name>"
-					+ "<customer_id>" + requisition.getCustomerId() + "</customer_id>"
-					+ "<delivery_time>" + requisition.getDeliveryTime() + "</delivery_time>" 
-					+ "<order_number>" + requisition.getOrderNumber() + "</order_number>" 
-					+ "<receive_address>" + requisition.getReceiveAddress() + "</receive_address>"
-					+ "<receive_name>" + requisition.getReceiveName() + "</receive_name>" 
-					+ "<receive_phone>" + requisition.getReceivePhone() + "</receive_phone>"
-					+ "<total_price>" + requisition.getTotalPrice() + "</total_price>" 
-					+ "<city>" + requisition.getCity() + "</city>" 
-					+ "<detail_address>" + requisition.getDetailAddress() + "</detail_address>" 
-					+ "<disctrict>" + requisition.getDisctrict() + "</disctrict>" 
-					+ "<province>" + requisition.getProvince() + "</province>" 
-					+ "<subdistrict>" + requisition.getSubdistrict() + "</subdistrict>" 
-					+ "<order_time>" + requisition.getOrderTime() + "</order_time>" 
-					+ "<sub_order_number></sub_order_number>"
-					+ "</TABLE>"
-					+ "</ERP>";
+					+ "<manager_remark_info></manager_remark_info>" + "<remark_info></remark_info>"
+					+ "<requisition_number></requisition_number>" + "<status_id></status_id>" + "<type_id>"
+					+ requisition.getTypeId() + "</type_id>" + "<customer_name>" + requisition.getCustomerName()
+					+ "</customer_name>" + "<customer_id>" + requisition.getCustomerId() + "</customer_id>"
+					+ "<delivery_time>" + requisition.getDeliveryTime() + "</delivery_time>" + "<order_number>"
+					+ requisition.getOrderNumber() + "</order_number>" + "<receive_address>"
+					+ requisition.getReceiveAddress() + "</receive_address>" + "<receive_name>"
+					+ requisition.getReceiveName() + "</receive_name>" + "<receive_phone>"
+					+ requisition.getReceivePhone() + "</receive_phone>" + "<total_price>" + requisition.getTotalPrice()
+					+ "</total_price>" + "<city>" + requisition.getCity() + "</city>" + "<detail_address>"
+					+ requisition.getDetailAddress() + "</detail_address>" + "<disctrict>" + requisition.getDisctrict()
+					+ "</disctrict>" + "<province>" + requisition.getProvince() + "</province>" + "<subdistrict>"
+					+ requisition.getSubdistrict() + "</subdistrict>" + "<order_time>" + requisition.getOrderTime()
+					+ "</order_time>" + "<sub_order_number></sub_order_number>" + "</TABLE>" + "</ERP>";
 
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
@@ -1626,18 +1620,13 @@ public class TdCommonService {
 		}
 		if (type == 2) {
 			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods) object;
-			String xmlStr ="<ERP>"
-				    + "<TABLE>"
-				    + "<id>" + requisitionGoods.getId() + "</id>" 
-				    + "<goods_code>" + requisitionGoods.getGoodsCode() + "</goods_code>" 
-				    + "<goods_title>" + requisitionGoods.getGoodsTitle() + "</goods_title>"
-				    + "<price>" + requisitionGoods.getPrice() + "</price>"
-				    + "<quantity>" + requisitionGoods.getQuantity() + "</quantity>"
-					+ "<td_requisition_id></td_requisition_id>" 
-				    + "<order_number>" + requisitionGoods.getOrderNumber() + "</order_number>"
-					+ "<sub_order_number>" + requisitionGoods.getSubOrderNumber() + "</sub_order_number>" 
-				    + "</TABLE>"
-					+ "</ERP>";
+			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisitionGoods.getId() + "</id>" + "<goods_code>"
+					+ requisitionGoods.getGoodsCode() + "</goods_code>" + "<goods_title>"
+					+ requisitionGoods.getGoodsTitle() + "</goods_title>" + "<price>" + requisitionGoods.getPrice()
+					+ "</price>" + "<quantity>" + requisitionGoods.getQuantity() + "</quantity>"
+					+ "<td_requisition_id></td_requisition_id>" + "<order_number>" + requisitionGoods.getOrderNumber()
+					+ "</order_number>" + "<sub_order_number>" + requisitionGoods.getSubOrderNumber()
+					+ "</sub_order_number>" + "</TABLE>" + "</ERP>";
 
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
@@ -1651,31 +1640,133 @@ public class TdCommonService {
 
 		if (type == 3) {
 			TdReturnNote returnNote = (TdReturnNote) object;
-			String xmlStr = "<ERP>"
-					+ "<TABLE>" 
-					+ "<id>" + returnNote.getId() + "</id>"
-					+ "<cancel_time>" + returnNote.getCancelTime()==null ? "" : returnNote.getCancelTime() + "</cancel_time>" 
-					+ "<check_time>" + returnNote.getCheckTime() == null ? "" : returnNote.getCheckTime() + "</check_time>"
-					+ "<diy_site_address>" + returnNote.getDiySiteAddress() == null ? "" : returnNote.getDiySiteAddress() + "</diy_site_address>"
-					+ "<diy_site_id>" + returnNote.getDiySiteId() == null ? "" : returnNote.getDiySiteId() + "</diy_site_id>"
-					+ "<diy_site_tel>" + returnNote.getDiySiteTel() == null ? "" : returnNote.getDiySiteTel() + "</diy_site_tel>" 
-					+ "<diy_site_title>" + returnNote.getDiySiteTitle() == null ? "" : returnNote.getDiySiteTitle() + "</diy_site_title>"
-					+ "<manager_remark_info>" + returnNote.getManagerRemarkInfo() == null ? "" : returnNote.getManagerRemarkInfo() + "</manager_remark_info>"
-					+ "<order_number>" + returnNote.getOrderNumber() == null ? "" : returnNote.getOrderNumber() + "</order_number>"
-					+ "<order_time>" + returnNote.getOrderTime() == null ? "" : returnNote.getOrderTime() + "</order_time>" 
-					+ "<pay_type_id>" + returnNote.getPayTypeId() == null ? "" : returnNote.getPayTypeId() + "</pay_type_id>"
-					+ "<pay_type_title>" + returnNote.getPayTypeTitle() == null ? "" : returnNote.getPayTypeTitle() + "</pay_type_title>"
-					+ "<remark_info>" + returnNote.getRemarkInfo() == null ? "" : returnNote.getRemarkInfo() + "</remark_info>"
-					+ "<return_number>" + returnNote.getReturnNumber() == null ? "" : returnNote.getReturnNumber() + "</return_number>"
-					+ "<return_time>" + returnNote.getReturnTime() == null ? "" : returnNote.getReturnTime() + "</return_time>"
-					+ "<sort_id>" + returnNote.getSortId() == null ? "" : returnNote.getSortId() + "</sort_id>"
-					+ "<status_id>" + returnNote.getStatusId() == null ? "" : returnNote.getStatusId() + "</status_id>" 
-					+ "<username>" + returnNote.getUsername() == null ? "" : returnNote.getUsername() + "</username>" 
-					+ "<deliver_type_title>" + returnNote.getDeliverTypeTitle() == null ? "" : returnNote.getDeliverTypeTitle() + "</deliver_type_title>" 
-					+ "<turn_price>" + returnNote.getTurnPrice() == null ? "" : returnNote.getTurnPrice() + "</turn_price>" 
-					+ "<turn_type>" + returnNote.getTurnType() == null ? "" : returnNote.getTurnType() + "</turn_type>" 
-					+ "</TABLE>"
-					+ "</ERP>";
+			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + returnNote.getId() + "</id>" + "<cancel_time>"
+					+ returnNote.getCancelTime() == null
+							? ""
+							: returnNote.getCancelTime() + "</cancel_time>" + "<check_time>"
+									+ returnNote.getCheckTime() == null
+											? ""
+											: returnNote.getCheckTime() + "</check_time>" + "<diy_site_address>"
+													+ returnNote.getDiySiteAddress() == null
+															? ""
+															: returnNote.getDiySiteAddress() + "</diy_site_address>"
+																	+ "<diy_site_id>"
+																	+ returnNote.getDiySiteId() == null
+																			? ""
+																			: returnNote.getDiySiteId()
+																					+ "</diy_site_id>"
+																					+ "<diy_site_tel>"
+																					+ returnNote.getDiySiteTel() == null
+																							? ""
+																							: returnNote.getDiySiteTel()
+																									+ "</diy_site_tel>"
+																									+ "<diy_site_title>"
+																									+ returnNote
+																											.getDiySiteTitle() == null
+																													? ""
+																													: returnNote
+																															.getDiySiteTitle()
+																															+ "</diy_site_title>"
+																															+ "<manager_remark_info>"
+																															+ returnNote
+																																	.getManagerRemarkInfo() == null
+																																			? ""
+																																			: returnNote
+																																					.getManagerRemarkInfo()
+																																					+ "</manager_remark_info>"
+																																					+ "<order_number>"
+																																					+ returnNote
+																																							.getOrderNumber() == null
+																																									? ""
+																																									: returnNote
+																																											.getOrderNumber()
+																																											+ "</order_number>"
+																																											+ "<order_time>"
+																																											+ returnNote
+																																													.getOrderTime() == null
+																																															? ""
+																																															: returnNote
+																																																	.getOrderTime()
+																																																	+ "</order_time>"
+																																																	+ "<pay_type_id>"
+																																																	+ returnNote
+																																																			.getPayTypeId() == null
+																																																					? ""
+																																																					: returnNote
+																																																							.getPayTypeId()
+																																																							+ "</pay_type_id>"
+																																																							+ "<pay_type_title>"
+																																																							+ returnNote
+																																																									.getPayTypeTitle() == null
+																																																											? ""
+																																																											: returnNote
+																																																													.getPayTypeTitle()
+																																																													+ "</pay_type_title>"
+																																																													+ "<remark_info>"
+																																																													+ returnNote
+																																																															.getRemarkInfo() == null
+																																																																	? ""
+																																																																	: returnNote
+																																																																			.getRemarkInfo()
+																																																																			+ "</remark_info>"
+																																																																			+ "<return_number>"
+																																																																			+ returnNote
+																																																																					.getReturnNumber() == null
+																																																																							? ""
+																																																																							: returnNote
+																																																																									.getReturnNumber()
+																																																																									+ "</return_number>"
+																																																																									+ "<return_time>"
+																																																																									+ returnNote
+																																																																											.getReturnTime() == null
+																																																																													? ""
+																																																																													: returnNote
+																																																																															.getReturnTime()
+																																																																															+ "</return_time>"
+																																																																															+ "<sort_id>"
+																																																																															+ returnNote
+																																																																																	.getSortId() == null
+																																																																																			? ""
+																																																																																			: returnNote
+																																																																																					.getSortId()
+																																																																																					+ "</sort_id>"
+																																																																																					+ "<status_id>"
+																																																																																					+ returnNote
+																																																																																							.getStatusId() == null
+																																																																																									? ""
+																																																																																									: returnNote
+																																																																																											.getStatusId()
+																																																																																											+ "</status_id>"
+																																																																																											+ "<username>"
+																																																																																											+ returnNote
+																																																																																													.getUsername() == null
+																																																																																															? ""
+																																																																																															: returnNote
+																																																																																																	.getUsername()
+																																																																																																	+ "</username>"
+																																																																																																	+ "<deliver_type_title>"
+																																																																																																	+ returnNote
+																																																																																																			.getDeliverTypeTitle() == null
+																																																																																																					? ""
+																																																																																																					: returnNote
+																																																																																																							.getDeliverTypeTitle()
+																																																																																																							+ "</deliver_type_title>"
+																																																																																																							+ "<turn_price>"
+																																																																																																							+ returnNote
+																																																																																																									.getTurnPrice() == null
+																																																																																																											? ""
+																																																																																																											: returnNote
+																																																																																																													.getTurnPrice()
+																																																																																																													+ "</turn_price>"
+																																																																																																													+ "<turn_type>"
+																																																																																																													+ returnNote
+																																																																																																															.getTurnType() == null
+																																																																																																																	? ""
+																																																																																																																	: returnNote
+																																																																																																																			.getTurnType()
+																																																																																																																			+ "</turn_type>"
+																																																																																																																			+ "</TABLE>"
+																																																																																																																			+ "</ERP>";
 
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
@@ -1748,12 +1839,9 @@ public class TdCommonService {
 		Object[] objects = null;
 
 		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);
-		try
-		{
+		try {
 			objects = client.invoke(name, "td_return_note", "1", xmlGoodsEncode);
-		} 
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		String result = "";

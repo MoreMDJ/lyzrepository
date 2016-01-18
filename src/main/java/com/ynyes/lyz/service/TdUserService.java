@@ -40,9 +40,10 @@ public class TdUserService {
 		}
 		return repository.findOne(id);
 	}
-	
+
 	/**
 	 * 按username查找，自身除外
+	 * 
 	 * @author Zhangji
 	 * @param username
 	 * @param id
@@ -71,81 +72,87 @@ public class TdUserService {
 		}
 		return repository.findByUsernameAndPasswordAndIsEnableTrue(username, password);
 	}
-	
+
 	/**
 	 * 根据用户名查找用户
+	 * 
 	 * @author dengxiao
 	 */
-	public TdUser findByUsername(String username){
-		if(null == username){
+	public TdUser findByUsername(String username) {
+		if (null == username) {
 			return null;
 		}
 		return repository.findByUsername(username);
 	}
-	
+
 	/**
 	 * 根据用户名查找启用的用户
+	 * 
 	 * @author dengxiao
 	 */
-	public TdUser findByUsernameAndIsEnableTrue(String username){
-		if(null == username){
+	public TdUser findByUsernameAndIsEnableTrue(String username) {
+		if (null == username) {
 			return null;
 		}
 		return repository.findByUsernameAndIsEnableTrue(username);
 	}
-	
+
 	/**
 	 * 根据用户名和城市名查找用户
+	 * 
 	 * @author dengxiao
 	 */
-	public TdUser findByUsernameAndCityNameAndIsEnableTrue(String username,String cityName){
-		if(null == username||null == cityName){
+	public TdUser findByUsernameAndCityNameAndIsEnableTrue(String username, String cityName) {
+		if (null == username || null == cityName) {
 			return null;
 		}
 		return repository.findByUsernameAndCityNameAndIsEnableTrue(username, cityName);
 	}
-	
+
 	/**
 	 * @author lc
 	 * @注释：查找所有按id降序排序
 	 */
-	public Page<TdUser> findAllOrderByIdDesc(int page, int size)
-	{
-	    PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
-	        
-	    return repository.findAll(pageRequest);
+	public Page<TdUser> findAllOrderByIdDesc(int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+
+		return repository.findAll(pageRequest);
 	}
-	
+
 	/**
-	 * @author lc
-	 * @注释：
+	 * @author lc @注释：
 	 */
-	 public Page<TdUser> findByUserLevelIdOrderByIdDesc(Long userLevelId, int page, int size)
-	 {
-	     PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
-	        
-	     return repository.findByUserLevelIdOrderByIdDesc(userLevelId, pageRequest);
-	 }
-	 
-	 /**
+	public Page<TdUser> findByUserLevelIdOrderByIdDesc(Long userLevelId, int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+
+		return repository.findByUserLevelIdOrderByIdDesc(userLevelId, pageRequest);
+	}
+
+	/**
 	 * @author lc
 	 * @注释：搜索用户
 	 */
-	 public Page<TdUser> searchAndOrderByIdDesc(String keywords, int page, int size)
-	 {
-	     PageRequest pageRequest = new PageRequest(page, size);
-	        
-	     return repository.findByUsernameContainingOrEmailContainingOrderByIdDesc(keywords, keywords, pageRequest);
-	 }
-	 
-	 /**
+	public Page<TdUser> searchAndOrderByIdDesc(String keywords, int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+
+		return repository.findByUsernameContainingOrEmailContainingOrderByIdDesc(keywords, keywords, pageRequest);
+	}
+
+	/**
 	 * @author lc
-	 * @注释：按等级搜索用户 
+	 * @注释：按等级搜索用户
 	 */
-	 public Page<TdUser> searchAndfindByUserLevelIdOrderByIdDesc(String keywords, Long userLevelId, int page, int size)
-	 {
-	     PageRequest pageRequest = new PageRequest(page, size);
-	        
-	     return repository.findByUsernameContainingAndUserLevelIdOrEmailContainingAndUserLevelIdOrderByIdDesc(keywords, userLevelId,  keywords, userLevelId, pageRequest);
-	 }
+	public Page<TdUser> searchAndfindByUserLevelIdOrderByIdDesc(String keywords, Long userLevelId, int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+
+		return repository.findByUsernameContainingAndUserLevelIdOrEmailContainingAndUserLevelIdOrderByIdDesc(keywords,
+				userLevelId, keywords, userLevelId, pageRequest);
+	}
+
+	public TdUser findByOpUser(String opUser) {
+		if (null == opUser) {
+			return null;
+		}
+		return repository.findByOpUser(opUser);
+	}
 }
