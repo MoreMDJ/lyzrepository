@@ -22,7 +22,7 @@ function selectCoupon(id){
 					close(1);
 					warning("亲，您的网速不给力啊");
 				},
-				success(res){
+				successs:function(res){
 					close(100);
 					if(0 == res.status){
 						history.go(0);
@@ -46,7 +46,7 @@ function selectCoupon(id){
 					close(1);
 					warning("亲，您的网速不给力啊");
 				},
-				success(res){
+				success:function(res){
 					close(100);
 					if(0 == res.status){
 						history.go(0);
