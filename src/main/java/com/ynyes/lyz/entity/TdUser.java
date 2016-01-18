@@ -25,6 +25,10 @@ public class TdUser {
 	@OneToMany
 	@JoinColumn(name = "userId")
 	private List<TdShippingAddress> shippingAddressList;
+	
+	// 快递员用户编码
+	@Column
+	private String opUser;
 
 	// 用户头像
 	@Column
@@ -381,4 +385,13 @@ public class TdUser {
 		this.customerId = customerId;
 	}
 
+	public String getOpUser() {
+		return opUser;
+	}
+
+	public void setOpUser(String opUser) {
+		this.opUser = opUser;
+	}
+
+	
 }
