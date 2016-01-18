@@ -987,6 +987,9 @@ public class TdCommonService {
 				order.setSubdistrict(order_temp.getSubdistrict());
 				order.setDetailAddress(order_temp.getDetailAddress());
 
+				order.setDiySiteId(order_temp.getDiySiteId());
+				order.setDiySiteName(order_temp.getDiySiteName());
+				order.setDiySitePhone(order_temp.getDiySitePhone());
 				order.setShippingAddress(order_temp.getShippingAddress());
 				order.setShippingName(order_temp.getShippingName());
 				order.setShippingPhone(order_temp.getShippingPhone());
