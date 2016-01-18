@@ -2,7 +2,6 @@ package com.ynyes.lyz.controller.front;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdBrandService;
@@ -34,9 +32,6 @@ public class TdCouponController {
 	@Autowired
 	private TdCouponService tdCouponService;
 	
-	@Autowired
-	private TdBrandService tdBrandService;
-	
 	/**
 	 * 抢券
 	 * @author Max
@@ -52,9 +47,9 @@ public class TdCouponController {
 		}
 		
 		// 查找可领取现金券
-		map.addAttribute("couponList", tdCouponService.findByTypeIdAndTypeCategoryId(1L, 1L,new Date()));
+		map.addAttribute("couponList", tdCouponService.findByTypeIdAndTypeCategoryId(2L, 1L,new Date()));
 		// 可领取产品券
-		map.addAttribute("coupon_list", tdCouponService.findByTypeIdAndTypeCategoryId(1L, 3L,new Date()));
+		map.addAttribute("coupon_list", tdCouponService.findByTypeIdAndTypeCategoryId(2L, 3L,new Date()));
 		
 		return "/client/coupon_list";
 	}
