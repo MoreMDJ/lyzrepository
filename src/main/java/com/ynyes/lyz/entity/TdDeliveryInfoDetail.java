@@ -74,6 +74,18 @@ public class TdDeliveryInfoDetail {
 	@Column
 	private Double requstNumber;
 	
+	//分单号
+	@Column
+	private String subOrderNumber;
+	
+	public String getSubOrderNumber() {
+		return subOrderNumber;
+	}
+
+	public void setSubOrderNumber(String subOrderNumber) {
+		this.subOrderNumber = subOrderNumber;
+	}
+
 	public Double getBackNumber() {
 		return backNumber;
 	}

@@ -163,7 +163,7 @@ public class CallWMSImpl implements ICallWMS {
 				String c_op_user = null;//作业人员
 				String c_modified_userno = null;//修改人员
 				String c_owner_no = null;//委托业主
-				String c_reserved1 = null;//主单号
+				String c_reserved1 = null;//分单号
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -287,16 +287,6 @@ public class CallWMSImpl implements ICallWMS {
 				tdDeliveryInfo.setModifiedUserno(c_modified_userno);
 				tdDeliveryInfo.setOwnerNo(c_owner_no);
 				tdDeliveryInfoService.save(tdDeliveryInfo);
-				if (c_reserved1 != null)
-				{
-					 TdOrder tdOrder = tdOrderService.findByOrderNumber(c_reserved1);
-					 if (tdOrder != null)
-					 {
-						 tdOrder.setStatusId(4L);
-						 tdOrderService.save(tdOrder);
-					 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-					
-				}
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
@@ -315,6 +305,7 @@ public class CallWMSImpl implements ICallWMS {
 				String c_gcode = null;//商品编号
 				Double c_d_ack_qty = null; //实回数量
 				Double c_d_request_qty = null;//请求数量
+				String c_reserved1 = null;//分单号
 				
 				
 				Node node = nodeList.item(i);
@@ -338,6 +329,13 @@ public class CallWMSImpl implements ICallWMS {
 							else
 							{
 								c_task_no = null;
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_reserved1"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_reserved1 = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
 						else if (childNode.getNodeName().equalsIgnoreCase("c_begin_dt"))
@@ -451,8 +449,17 @@ public class CallWMSImpl implements ICallWMS {
 				infoDetail.setgCode(c_gcode);
 				infoDetail.setRequstNumber(c_d_request_qty);
 				infoDetail.setBackNumber(c_d_ack_qty);
+				infoDetail.setSubOrderNumber(c_reserved1);
 				tdDeliveryInfoDetailService.save(infoDetail);
-				
+				if (c_reserved1 != null)
+				{
+					 TdOrder tdOrder = tdOrderService.findByOrderNumber(c_reserved1);
+					 if (tdOrder != null && tdOrder.getStatusId() != null && tdOrder.getStatusId() == 3L)
+					 {
+						 tdOrder.setStatusId(4L);
+						 tdOrderService.save(tdOrder);
+					 }
+				}
 				Long backquantity = Math.round(infoDetail.getBackNumber() == null ? 0 : infoDetail.getBackNumber());
 				TdGoods tdGoods = tdGoodsService.findByCode(infoDetail.getgCode());
 				if (tdGoods != null && tdGoods.getLeftNumber() != null)
