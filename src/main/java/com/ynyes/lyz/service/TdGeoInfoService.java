@@ -117,4 +117,11 @@ public class TdGeoInfoService {
         
         return repository.save(e);
     }
+    
+    public List<TdGeoInfo> findByOpUserOrderByTimeDesc(String opUser){
+    	if(null == opUser){
+    		return null;
+    	}
+    	return repository.findByOpUserOrderByTimeDesc(opUser);
+    }
 }

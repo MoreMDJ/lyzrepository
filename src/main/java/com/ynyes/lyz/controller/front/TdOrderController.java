@@ -548,6 +548,9 @@ public class TdOrderController {
 				if (null != no_product_coupon_by_goodsId && no_product_coupon_by_goodsId.size() > 0) {
 					Long brandId = cartGoods.getBrandId();
 					List<TdCoupon> list = cash_coupon_map.get(brandId);
+					if (null == list) {
+						list = new ArrayList<>();
+					}
 					list.addAll(no_product_coupon_by_goodsId);
 					cash_coupon_map.put(brandId, list);
 				}

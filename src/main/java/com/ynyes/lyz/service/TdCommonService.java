@@ -1113,7 +1113,8 @@ public class TdCommonService {
 						Long brandId = goods.getBrandId();
 						TdOrder order = order_map.get(brandId);
 						order.setProductCouponId(coupon.getId() + ",");
-						order.setProductCoupon(goods.getTitle() + "【" + goods.getCode() + "】*1,");
+						order.setProductCoupon(
+								order.getProductCoupon() + (goods.getTitle() + "【" + goods.getCode() + "】*1,"));
 						List<TdOrderGoods> list = order.getOrderGoodsList();
 						for (TdOrderGoods orderGoods : list) {
 							if (null != orderGoods && null != orderGoods.getGoodsId()
@@ -1121,6 +1122,7 @@ public class TdCommonService {
 								order.setTotalPrice(order.getTotalPrice() - orderGoods.getPrice());
 							}
 						}
+						tdOrderService.save(order);
 					}
 				}
 			}
@@ -1152,7 +1154,13 @@ public class TdCommonService {
 					Double point = order.getTotalPrice() / total;
 					order.setCashCoupon(order.getCashCoupon() + (cashCoupon * point));
 					order.setCashBalanceUsed(cashBalanceUsed * point);
+					if (order.getCashBalanceUsed() < 0 || order.getCashBalanceUsed() == -0.00) {
+						order.setCashBalanceUsed(0.00);
+					}
 					order.setUnCashBalanceUsed(unCashBalanceUsed * point);
+					if (order.getUnCashBalanceUsed() < 0 || order.getUnCashBalanceUsed() == -0.00) {
+						order.setUnCashBalanceUsed(0.00);
+					}
 				}
 			}
 		}
@@ -1591,25 +1599,25 @@ public class TdCommonService {
 					+ "<diy_site_id>" + requisition.getDiySiteId() + "</diy_site_id>" 
 					+ "<diy_site_tel></diy_site_tel>"
 					+ "<diy_site_title>" + requisition.getDiySiteTitle() + "</diy_site_title>"
-					+ "<manager_remark_info></manager_remark_info>"
+					+ "<manager_remark_info></manager_remark_info>" 
 					+ "<remark_info></remark_info>"
-					+ "<requisition_number></requisition_number>"
+					+ "<requisition_number></requisition_number>" 
 					+ "<status_id></status_id>"
 					+ "<type_id>" + requisition.getTypeId() + "</type_id>"
 					+ "<customer_name>" + requisition.getCustomerName() + "</customer_name>"
 					+ "<customer_id>" + requisition.getCustomerId() + "</customer_id>"
 					+ "<delivery_time>" + requisition.getDeliveryTime() + "</delivery_time>" 
-					+ "<order_number>" + requisition.getOrderNumber() + "</order_number>" 
+					+ "<order_number>" + requisition.getOrderNumber() + "</order_number>"
 					+ "<receive_address>" + requisition.getReceiveAddress() + "</receive_address>"
-					+ "<receive_name>" + requisition.getReceiveName() + "</receive_name>" 
-					+ "<receive_phone>" + requisition.getReceivePhone() + "</receive_phone>"
+					+ "<receive_name>" + requisition.getReceiveName() + "</receive_name>"
+					+ "<receive_phone>" + requisition.getReceivePhone() + "</receive_phone>" 
 					+ "<total_price>" + requisition.getTotalPrice() + "</total_price>" 
-					+ "<city>" + requisition.getCity() + "</city>" 
-					+ "<detail_address>" + requisition.getDetailAddress() + "</detail_address>" 
-					+ "<disctrict>" + requisition.getDisctrict() + "</disctrict>" 
+					+ "<city>" + requisition.getCity() + "</city>"
+					+ "<detail_address>" + requisition.getDetailAddress() + "</detail_address>"
+					+ "<disctrict>" + requisition.getDisctrict() + "</disctrict>"
 					+ "<province>" + requisition.getProvince() + "</province>" 
 					+ "<subdistrict>" + requisition.getSubdistrict() + "</subdistrict>" 
-					+ "<order_time>" + requisition.getOrderTime() + "</order_time>" 
+					+ "<order_time>" + requisition.getOrderTime() + "</order_time>"
 					+ "<sub_order_number></sub_order_number>"
 					+ "</TABLE>"
 					+ "</ERP>";
@@ -1625,17 +1633,17 @@ public class TdCommonService {
 		}
 		if (type == 2) {
 			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods) object;
-			String xmlStr ="<ERP>"
-				    + "<TABLE>"
-				    + "<id>" + requisitionGoods.getId() + "</id>" 
-				    + "<goods_code>" + requisitionGoods.getGoodsCode() + "</goods_code>" 
-				    + "<goods_title>" + requisitionGoods.getGoodsTitle() + "</goods_title>"
-				    + "<price>" + requisitionGoods.getPrice() + "</price>"
-				    + "<quantity>" + requisitionGoods.getQuantity() + "</quantity>"
-					+ "<td_requisition_id></td_requisition_id>" 
-				    + "<order_number>" + requisitionGoods.getOrderNumber() + "</order_number>"
-					+ "<sub_order_number>" + requisitionGoods.getSubOrderNumber() + "</sub_order_number>" 
-				    + "</TABLE>"
+			String xmlStr = "<ERP>"
+					+ "<TABLE>"
+					+ "<id>" + requisitionGoods.getId() + "</id>" 
+					+ "<goods_code>" + requisitionGoods.getGoodsCode() + "</goods_code>"
+					+ "<goods_title>" + requisitionGoods.getGoodsTitle() + "</goods_title>"
+					+ "<price>" + requisitionGoods.getPrice() + "</price>"
+					+ "<quantity>" + requisitionGoods.getQuantity() + "</quantity>"
+					+ "<td_requisition_id></td_requisition_id>"
+					+ "<order_number>" + requisitionGoods.getOrderNumber() + "</order_number>" 
+					+ "<sub_order_number>" + requisitionGoods.getSubOrderNumber() + "</sub_order_number>"
+					+ "</TABLE>"
 					+ "</ERP>";
 
 			byte[] bs = xmlStr.getBytes();
@@ -1702,7 +1710,6 @@ public class TdCommonService {
 					+ "</ERP>";
 			
 			xmlStr.replace("null", "");
-
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
 			try {
@@ -1774,12 +1781,9 @@ public class TdCommonService {
 		Object[] objects = null;
 
 		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);
-		try
-		{
+		try {
 			objects = client.invoke(name, "td_return_note", "1", xmlGoodsEncode);
-		} 
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		String result = "";
