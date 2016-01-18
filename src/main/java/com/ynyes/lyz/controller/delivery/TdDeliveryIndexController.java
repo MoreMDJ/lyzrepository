@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ynyes.lyz.entity.TdDeliveryInfo;
+import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdGeoInfo;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdUser;
-import com.ynyes.lyz.service.TdDeliveryInfoService;
+import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
@@ -53,7 +53,7 @@ public class TdDeliveryIndexController {
 	private TdGeoInfoService tdGeoInfoService;
 
 	@Autowired
-	private TdDeliveryInfoService tdDeliveryInfoService;
+	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
 
 	/**
 	 * 获取配送列表
@@ -143,12 +143,12 @@ public class TdDeliveryIndexController {
 		// 查看本配送员所有
 		List<String> orderNumberList = new ArrayList<String>();
 
-		List<TdDeliveryInfo> dlList = tdDeliveryInfoService.findByOpUser(user.getOpUser());
+		List<TdDeliveryInfoDetail> detailList = tdDeliveryInfoDetailService.findByOpUser(user.getOpUser());
 
-		if (null != dlList && dlList.size() > 0) {
-			for (TdDeliveryInfo info : dlList) {
-				if (null != info.getOrderNumber()) {
-					orderNumberList.add(info.getOrderNumber());
+		if (null != detailList && detailList.size() > 0) {
+			for (TdDeliveryInfoDetail detail : detailList) {
+				if (null != detail.getSubOrderNumber() && !orderNumberList.contains(detail.getSubOrderNumber())) {
+					orderNumberList.add(detail.getSubOrderNumber());
 				}
 			}
 		}
@@ -314,6 +314,13 @@ public class TdDeliveryIndexController {
 			res.put("message", "请重新登录");
 			return res;
 		}
+		
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (null == user) {
+			res.put("message", "请重新登录");
+			return res;
+		}
 
 		if (null == geoInfo.getLongitude() || null == geoInfo.getLatitude()) {
 			res.put("message", "定位信息有误");
@@ -322,6 +329,7 @@ public class TdDeliveryIndexController {
 
 		geoInfo.setUsername(username);
 		geoInfo.setTime(new Date());
+		geoInfo.setOpUser(user.getOpUser());
 
 		tdGeoInfoService.save(geoInfo);
 

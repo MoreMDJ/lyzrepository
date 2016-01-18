@@ -50,6 +50,10 @@ public class TdGeoInfo {
     @Column
     private String username;
     
+    // 配送员ID
+    @Column
+    private String opUser;
+    
     // 定位精度
     @Column
     private String accuracy;
@@ -128,5 +132,13 @@ public class TdGeoInfo {
 
 	public void setIsConverted(Boolean isConverted) {
 		this.isConverted = isConverted;
+	}
+
+	public String getOpUser() {
+		return opUser;
+	}
+
+	public void setOpUser(String opUser) {
+		this.opUser = opUser;
 	}
 }

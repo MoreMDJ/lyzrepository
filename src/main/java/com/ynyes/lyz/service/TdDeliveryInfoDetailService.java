@@ -99,6 +99,15 @@ public class TdDeliveryInfoDetailService {
         return repository.findAll(pageRequest);
     }
     
+    public List<TdDeliveryInfoDetail> findByOpUser(String opUser)
+    {
+		if (opUser == null)
+		{
+			return null;
+		}
+		return repository.findByOpUser(opUser);
+	}
+    
     /**
      * 保存
      * 
