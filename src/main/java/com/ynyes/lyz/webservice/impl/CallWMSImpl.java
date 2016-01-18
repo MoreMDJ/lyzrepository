@@ -464,7 +464,7 @@ public class CallWMSImpl implements ICallWMS {
 				TdGoods tdGoods = tdGoodsService.findByCode(infoDetail.getgCode());
 				if (tdGoods != null && tdGoods.getLeftNumber() != null)
 				{
-					tdGoods.setLeftNumber(tdGoods.getLeftNumber() - backquantity);
+					tdGoods.setLeftNumber(tdGoods.getLeftNumber() - backquantity >= 0 ? tdGoods.getLeftNumber() - backquantity : 0);
 					tdGoodsService.save(tdGoods, "goods");
 				}
 			}
