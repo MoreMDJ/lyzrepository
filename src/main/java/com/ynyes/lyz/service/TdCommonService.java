@@ -1088,7 +1088,7 @@ public class TdCommonService {
 							TdGoods goods = tdGoodsService.findOne(goodsId);
 							Long brandId = goods.getBrandId();
 							TdOrder order = order_map.get(brandId);
-							order.setCashCoupon(order.getCashBalanceUsed() + coupon.getPrice());
+							order.setCashCoupon(order.getCashCoupon() + coupon.getPrice());
 							// 余下的金额暂不统计，在后面按照比例拆分
 							cashCoupon -= coupon.getPrice();
 							order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
