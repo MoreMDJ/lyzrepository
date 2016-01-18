@@ -172,11 +172,15 @@ function submitOwnMoney()
   <!--弹窗 END-->
 
   <!-- 头部 -->
-  <header>
-    <a class="back" href="javascript:history.go(-1);"></a>
-    <p>详情产看</p>
-  </header>
-  <!-- 头部 END -->
+    <#-- 引入警告提示样式 -->
+    <#include "/client/common_warn.ftl">
+    <#-- 引入等待提示样式 -->
+    <#include "/client/common_wait.ftl">   
+      <header>
+        <a class="back" href="/delivery"></a>
+        <p>详情产看</p>
+      </header>
+      <!-- 头部 END -->
 
 	<#if td_order??>
   <!-- 详情查看 -->
@@ -229,20 +233,39 @@ function submitOwnMoney()
     </section>
     <#if td_order.statusId == 4>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(1)">确认送达</a>
-    <a class="btn-submit-save bgc-ff8e08" href="javascript:;">拍照上传</a>
+    <a class="btn-submit-save bgc-ff8e08" <#if td_order.photo??>href="javascript:;" style="background:#999"<#else>href="javascript:photo();"</#if> >拍照上传</a>
     </#if>
     <#if td_order.statusId != 6>
-    <a class="btn-submit-save bgc-ff8e08" href="javascript:photo();" onclick="pupopen()">申请欠款</a>
+    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="pupopen()">申请欠款</a>
     </#if>
     <div style="display:none">
-        <form id="imgUpload" action="" enctype="multipart/form-data">
-            <input type="file" id="clickFile">
+        <form id="imgUpload" action="/delivery/img" enctype="multipart/form-data" method="post">
+            <input type="file" onchange="upload()" name="Filedata" id="clickFile">
+            <input type="text" name="orderNumber"  value="${td_order.orderNumber!''}">
+            <input type="text" name="id" value="<#if id??>${id?c}<#else>0</#if>">
         </form>
     </div>
     <script>
+        $(function(){
+            var msg = "${msg!''}";
+            if("" != msg){
+                if(0 != msg){
+                    warning("上传失败");
+                }else if(0 == msg){
+                    warning("上传成功")
+                }
+            }
+        });
+    
         function photo(){
             var ele = document.getElementById("clickFile");
             ele.click();
+        }
+        
+        function upload(){
+            var form = document.getElementById("imgUpload");
+            wait();
+            form.submit();
         }
     </script>
   </article>

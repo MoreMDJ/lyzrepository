@@ -22,7 +22,7 @@ $(function() {
 						close(1);
 						warning("亲，您的网速不给力啊");
 					},
-					success(res){
+					success:function(res){
 						close(100);
 						if(0 == res.status){
 							$("#check" + id).removeClass("checked");
@@ -47,7 +47,7 @@ $(function() {
 						close(1);
 						warning("亲，您的网速不给力啊");
 					},
-					success(res){
+					success:function(res){
 						close(100);
 						if(0 == res.status){
 							$("#check" + id).addClass("checked");

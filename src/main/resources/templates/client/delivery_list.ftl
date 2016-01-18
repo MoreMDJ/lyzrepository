@@ -108,7 +108,7 @@ function timer() {
   <!--弹窗 END-->
   <!-- 头部 -->
   <header>
-    <a class="back" href="#"></a>
+    <a class="back" style="/client/images/esc.png" href="/login/out"></a>
     <div class="date-group">
       <a <#if days?? && days!=7>class="active"</#if> href="/delivery?days=3">三天内</a>
       <a <#if days?? && days==7>class="active"</#if> href="/delivery?days=7">七天内</a>

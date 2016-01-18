@@ -286,6 +286,10 @@ public class TdOrder {
 	// 使用优惠券限额
 	@Column(scale = 2)
 	private Double limitCash;
+	
+	//签收图片地址
+	@Column
+	private String photo;
 
 	public Double getRefund() {
 		return refund;
@@ -781,5 +785,13 @@ public class TdOrder {
 
 	public void setDetailAddress(String detailAddress) {
 		this.detailAddress = detailAddress;
+	}
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 }
