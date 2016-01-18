@@ -1489,14 +1489,17 @@ public class TdCommonService {
 			requisition.setOrderNumber(mainOrderNumber);
 			requisition.setReceiveName(order.getShippingName());
 			requisition.setReceiveAddress(order.getShippingAddress());
-
+			requisition.setRemarkInfo(order.getRemark());
+			requisition.setDiySiteTel(order.getDiySitePhone());
+			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
+			
 			// Add by Shawn
 			requisition.setProvince(order.getProvince());
 			requisition.setCity(order.getCity());
 			requisition.setDisctrict(order.getDisctrict());
 			requisition.setSubdistrict(order.getSubdistrict());
 			requisition.setDetailAddress(order.getDetailAddress());
-
+			
 			requisition.setReceivePhone(order.getShippingPhone());
 			requisition.setTotalPrice(order.getTotalPrice());
 			requisition.setTypeId(1L);
@@ -1597,11 +1600,11 @@ public class TdCommonService {
 					+ "<check_time></check_time>" 
 					+ "<diy_site_address></diy_site_address>"
 					+ "<diy_site_id>" + requisition.getDiySiteId() + "</diy_site_id>" 
-					+ "<diy_site_tel></diy_site_tel>"
+					+ "<diy_site_tel>"+ requisition.getDiySiteTel() +"</diy_site_tel>"
 					+ "<diy_site_title>" + requisition.getDiySiteTitle() + "</diy_site_title>"
-					+ "<manager_remark_info></manager_remark_info>" 
-					+ "<remark_info></remark_info>"
-					+ "<requisition_number></requisition_number>" 
+					+ "<manager_remark_info></manager_remark_info>"
+					+ "<remark_info>"+ requisition.getRemarkInfo() +"</remark_info>"
+					+ "<requisition_number></requisition_number>"
 					+ "<status_id></status_id>"
 					+ "<type_id>" + requisition.getTypeId() + "</type_id>"
 					+ "<customer_name>" + requisition.getCustomerName() + "</customer_name>"

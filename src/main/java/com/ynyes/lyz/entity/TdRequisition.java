@@ -48,6 +48,10 @@ public class TdRequisition {
 	@Column
 	private Double totalPrice;
 	
+	// 代收金额
+	@Column
+	private Double leftPrice;
+	
 	// 送货时间
 	@Column
     private String deliveryTime;
@@ -98,6 +102,38 @@ public class TdRequisition {
     // 要货单类型 1： 要货单  2：要货单退单 3： 要货单订单
     @Column
     private Long typeId;
+    
+    // 订单备注
+    @Column
+    private String remarkInfo;
+    
+    // 门店电话
+    @Column
+    private String diySiteTel;
+    
+	public Double getLeftPrice() {
+		return leftPrice;
+	}
+
+	public void setLeftPrice(Double leftPrice) {
+		this.leftPrice = leftPrice;
+	}
+
+	public String getDiySiteTel() {
+		return diySiteTel;
+	}
+
+	public void setDiySiteTel(String diySiteTel) {
+		this.diySiteTel = diySiteTel;
+	}
+
+	public String getRemarkInfo() {
+		return remarkInfo;
+	}
+
+	public void setRemarkInfo(String remarkInfo) {
+		this.remarkInfo = remarkInfo;
+	}
 
 	public Long getId() {
 		return id;
