@@ -101,6 +101,10 @@ public class TdOrder {
 	// 配送门店id
 	@Column
 	private Long diySiteId;
+	
+	//配送门店编码
+	@Column
+	private String diySiteCode;
 
 	// 配送门店名称
 	@Column
@@ -793,5 +797,13 @@ public class TdOrder {
 
 	public void setPhoto(String photo) {
 		this.photo = photo;
+	}
+
+	public String getDiySiteCode() {
+		return diySiteCode;
+	}
+
+	public void setDiySiteCode(String diySiteCode) {
+		this.diySiteCode = diySiteCode;
 	}
 }
