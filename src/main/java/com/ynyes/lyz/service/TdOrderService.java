@@ -287,42 +287,83 @@ public class TdOrderService {
 		return repository.countByStatusId(statusId);
 	}
 
-	public List<TdOrder> findByStatusIdAndOrderTimeAfter(Long statusId, Date time) {
-		if (null == statusId || null == time) {
+	public List<TdOrder> findByStatusIdAndOrderTimeAfter(Long statusId, Date time, List<String> orderNumberList) {
+		if (null == statusId || null == time || null == orderNumberList || orderNumberList.size() == 0) {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeAfter(statusId, time);
+		return repository.findByStatusIdAndOrderTimeAfterAndOrderNumberIn(statusId, time, orderNumberList);
 	}
 
 	public List<TdOrder> findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Long statusId2,
-			Date time) {
+			List<String> orderNumberList, Date time) {
 		if (null == statusId || null == statusId2 || null == time) {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(statusId, time, statusId2, time);
+		return repository.findByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberIn(statusId, time, orderNumberList, statusId2, time, orderNumberList);
 	}
 
-	public List<TdOrder> findByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end) {
+	public List<TdOrder> findByStatusIdAndOrderTimeBetween(Long statusId, List<String> orderNumberList, Date start, Date end) {
 
-		if (null == statusId || null == start || null == end) {
+		if (null == statusId || null == start || null == end || null == orderNumberList || orderNumberList.size() == 0) {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeBetween(statusId, start, end);
+		return repository.findByStatusIdAndOrderTimeBetweenAndOrderNumberIn(statusId, orderNumberList, start, end);
 	}
 
 	public List<TdOrder> findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Long statusId2,
-			Date start, Date end) {
+			List<String> orderNumberList, Date start, Date end) {
 
-		if (null == statusId || null == statusId2 || null == start || null == end) {
+		if (null == statusId || null == statusId2 || null == start || null == end || null == orderNumberList || orderNumberList.size() == 0) {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(statusId, start, end,
-				statusId2, start, end);
+		return repository.findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberIn(statusId, start, end,
+				orderNumberList, statusId2, start, end, orderNumberList);
 	}
+	
+	
+	
+	public Integer countByStatusIdAndOrderTimeAfter(Long statusId, Date time, List<String> orderNumberList) {
+		if (null == statusId || null == time || null == orderNumberList || orderNumberList.size() == 0) {
+			return null;
+		}
+
+		return repository.countByStatusIdAndOrderTimeAfterAndOrderNumberIn(statusId, time, orderNumberList);
+	}
+
+	public Integer countByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Long statusId2,
+			List<String> orderNumberList, Date time) {
+		if (null == statusId || null == statusId2 || null == time) {
+			return null;
+		}
+
+		return repository.countByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberIn(statusId, time, orderNumberList, statusId2, time, orderNumberList);
+	}
+
+	public Integer countByStatusIdAndOrderTimeBetween(Long statusId, List<String> orderNumberList, Date start, Date end) {
+
+		if (null == statusId || null == start || null == end || null == orderNumberList || orderNumberList.size() == 0) {
+			return null;
+		}
+
+		return repository.countByStatusIdAndOrderTimeBetweenAndOrderNumberIn(statusId, orderNumberList, start, end);
+	}
+
+	public Integer countByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Long statusId2,
+			List<String> orderNumberList, Date start, Date end) {
+
+		if (null == statusId || null == statusId2 || null == start || null == end || null == orderNumberList || orderNumberList.size() == 0) {
+			return null;
+		}
+
+		return repository.countByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberIn(statusId, start, end,
+				orderNumberList, statusId2, start, end, orderNumberList);
+	}
+	
+	
 
 	/**
 	 * 保存

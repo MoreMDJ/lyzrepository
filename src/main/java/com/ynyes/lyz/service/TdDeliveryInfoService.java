@@ -77,6 +77,7 @@ public class TdDeliveryInfoService {
         
         return repository.findOne(id);
     }
+    
     public TdDeliveryInfo findByTaskNo(String taskNo)
     {
 		if (taskNo == null)
@@ -84,6 +85,15 @@ public class TdDeliveryInfoService {
 			return null;
 		}
 		return repository.findByTaskNo(taskNo);
+	}
+    
+    public List<TdDeliveryInfo> findByOpUser(String opUser)
+    {
+		if (opUser == null)
+		{
+			return null;
+		}
+		return repository.findByOpUser(opUser);
 	}
     
     /**

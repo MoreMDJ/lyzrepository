@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.delivery;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdGeoInfo;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
@@ -42,6 +45,9 @@ public class TdDeliveryIndexController {
 	
 	@Autowired
 	private TdGeoInfoService tdGeoInfoService;
+	
+	@Autowired
+	private TdDeliveryInfoService tdDeliveryInfoService;
 
 	/**
 	 * 获取配送列表
@@ -124,39 +130,64 @@ public class TdDeliveryIndexController {
 			map.addAttribute("days", days);
 		}
 		
+		// 查看本配送员所有
+		List<String> orderNumberList = new ArrayList<String>();
+		
+		List<TdDeliveryInfo> dlList = tdDeliveryInfoService.findByOpUser(user.getOpUser());
+		
+		if (null != dlList && dlList.size() > 0)
+		{
+			for (TdDeliveryInfo info : dlList)
+			{
+				if (null != info.getOrderNumber())
+				{
+					orderNumberList.add(info.getOrderNumber());
+				}
+			}
+		}
+		
+		
 		List<TdOrder> orderList = null;
 		
-		if (null != startDate)
+		if (null != startDate && orderNumberList.size() > 0)
 		{
 			if (null != endDate)
 			{
 				if (type.equals(1))
 				{
-					orderList = tdOrderService.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(5L, 6L, startDate, endDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(5L, 6L, orderNumberList, startDate, endDate);
 				}
 				else if (type.equals(2))
 				{
-					orderList = tdOrderService.findByStatusIdAndOrderTimeBetween(4L, startDate, endDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeBetween(4L, orderNumberList, startDate, endDate);
 				}
 				else if (type.equals(3))
 				{
-					orderList = tdOrderService.findByStatusIdAndOrderTimeBetween(3L, startDate, endDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeBetween(3L, orderNumberList, startDate, endDate);
 				}
+				
+				map.addAttribute("count_type_1", tdOrderService.countByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(5L, 6L, orderNumberList, startDate, endDate));
+				map.addAttribute("count_type_2", tdOrderService.countByStatusIdAndOrderTimeBetween(4L, orderNumberList, startDate, endDate));
+				map.addAttribute("count_type_3", tdOrderService.countByStatusIdAndOrderTimeBetween(3L, orderNumberList, startDate, endDate));
 			}
 			else
 			{
 				if (type.equals(1))
 				{
-					orderList = tdOrderService.findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(5L, 6L, startDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(5L, 6L, orderNumberList, startDate);
 				}
 				else if (type.equals(2))
 				{
-					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(4L, startDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(4L, startDate, orderNumberList);
 				}
 				else if (type.equals(3))
 				{
-					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(3L, startDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(3L, startDate, orderNumberList);
 				}
+				
+				map.addAttribute("count_type_1", tdOrderService.countByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(5L, 6L, orderNumberList, startDate));
+				map.addAttribute("count_type_2", tdOrderService.countByStatusIdAndOrderTimeAfter(4L, startDate, orderNumberList));
+				map.addAttribute("count_type_3", tdOrderService.countByStatusIdAndOrderTimeAfter(3L, startDate, orderNumberList));
 			}
 		}
 		

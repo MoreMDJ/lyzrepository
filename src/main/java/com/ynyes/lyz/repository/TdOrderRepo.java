@@ -22,14 +22,28 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 
 	Page<TdOrder> findByUsernameOrderByIdDesc(String username, Pageable page);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeAfter(Long statusId, Date time);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Date time, Long statusId2, Date time2);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end);
+	List<TdOrder> findByStatusIdAndOrderTimeAfterAndOrderNumberIn(Long statusId, Date time, List<String> orderNumbers);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end, Long statusId2, Date start2, Date end2);
+	List<TdOrder> findByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberIn(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
+	
+	List<TdOrder> findByStatusIdAndOrderTimeBetweenAndOrderNumberIn(Long statusId, List<String> orderNumbers, Date start, Date end);
+	
+	List<TdOrder> findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberIn(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
 
+	
+	Integer countByStatusIdAndOrderTimeAfterAndOrderNumberIn(Long statusId, Date time, List<String> orderNumbers);
+	
+	Integer countByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberIn(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
+	
+	Integer countByStatusIdAndOrderTimeBetweenAndOrderNumberIn(Long statusId, List<String> orderNumbers, Date start, Date end);
+	
+	Integer countByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberIn(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
+
+	
+	
+	
 	Page<TdOrder> findByUsernameAndStatusIdNotOrderByIdDesc(String username, Long statusId, Pageable page);
 
 	Page<TdOrder> findByUsernameAndStatusIdOrUsernameAndStatusIdOrUsernameAndStatusIdOrderByIdDesc(String username1,

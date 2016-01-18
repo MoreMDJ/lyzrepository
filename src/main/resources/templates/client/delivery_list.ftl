@@ -120,9 +120,9 @@ function timer() {
   <!-- 详情列表 -->
   <article class="look-details-list">
     <ul>
-      <li <#if type?? && type==1>class="active"</#if>><a href="/delivery?type=1<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">已配送（<#if order_list??>${order_list?size}<#else>0</#if>）</a></li>
-      <li <#if type?? && type==2>class="active"</#if>><a href="/delivery?type=2<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">配送中（<#if order_list??>${order_list?size}<#else>0</#if>）</a></li>
-      <li <#if type?? && type==3>class="active"</#if>><a href="/delivery?type=3<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">待配送（<#if order_list??>${order_list?size}<#else>0</#if>）</a></li>
+      <li <#if type?? && type==1>class="active"</#if>><a href="/delivery?type=1<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">已配送（${count_type_1!'0'}）</a></li>
+      <li <#if type?? && type==2>class="active"</#if>><a href="/delivery?type=2<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">配送中（${count_type_2!'0'}）</a></li>
+      <li <#if type?? && type==3>class="active"</#if>><a href="/delivery?type=3<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">待配送（${count_type_3!'0'}）</a></li>
     </ul>
     <!-- 详情列表 -->
     
