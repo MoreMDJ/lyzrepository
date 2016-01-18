@@ -45,6 +45,7 @@ import org.xml.sax.SAXException;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdGoods;
+import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
@@ -65,6 +66,9 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdGoodsService tdGoodsService;
+	
+	@Autowired
+	private TdOrderService tdOrderService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -233,6 +237,13 @@ public class CallWMSImpl implements ICallWMS {
 								c_owner_no = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_reserved1"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_reserved1 = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
 					}
 				}
 				
@@ -269,12 +280,23 @@ public class CallWMSImpl implements ICallWMS {
 						e.printStackTrace();
 					}
 				}
+				
+				tdDeliveryInfo.setOrderNumber(c_reserved1);
 				tdDeliveryInfo.setOpStatus(c_op_status);
 				tdDeliveryInfo.setOpUser(c_op_user);
 				tdDeliveryInfo.setModifiedUserno(c_modified_userno);
 				tdDeliveryInfo.setOwnerNo(c_owner_no);
 				tdDeliveryInfoService.save(tdDeliveryInfo);
-				
+				if (c_reserved1 != null)
+				{
+					 TdOrder tdOrder = tdOrderService.findByOrderNumber(c_reserved1);
+					 if (tdOrder != null)
+					 {
+						 tdOrder.setStatusId(4L);
+						 tdOrderService.save(tdOrder);
+					 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+					
+				}
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
