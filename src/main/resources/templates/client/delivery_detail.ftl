@@ -229,10 +229,22 @@ function submitOwnMoney()
     </section>
     <#if td_order.statusId == 4>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(1)">确认送达</a>
+    <a class="btn-submit-save bgc-ff8e08" href="javascript:;">拍照上传</a>
     </#if>
     <#if td_order.statusId != 6>
-    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="pupopen()">申请欠款</a>
+    <a class="btn-submit-save bgc-ff8e08" href="javascript:photo();" onclick="pupopen()">申请欠款</a>
     </#if>
+    <div style="display:none">
+        <form id="imgUpload" action="" enctype="multipart/form-data">
+            <input type="file" id="clickFile">
+        </form>
+    </div>
+    <script>
+        function photo(){
+            var ele = document.getElementById("clickFile");
+            ele.click();
+        }
+    </script>
   </article>
   <!-- 详情查看 END -->
   </#if>

@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.util.ImageUtil;
 
-
-
 /**
  * 图片控制器
  *
@@ -24,35 +22,34 @@ import com.ynyes.lyz.util.ImageUtil;
  */
 @Controller
 public class TdImageController {
-    /*
-     * 返回图片
-     */
-    @RequestMapping(value = "/images/{name:.+}", method = RequestMethod.GET)
-    @ResponseBody
-    public void getPic(@PathVariable String name, HttpServletResponse resp)
-            throws IOException {
-        if (null == name) {
-            return;
-        }
+	/*
+	 * 返回图片
+	 */
+	@RequestMapping(value = "/images/{name:.+}", method = RequestMethod.GET)
+	@ResponseBody
+	public void getPic(@PathVariable String name, HttpServletResponse resp) throws IOException {
+		if (null == name) {
+			return;
+		}
 
-        String path = ImageUtil.ImageRoot + "/";
+		String path = ImageUtil.ImageRoot + "/";
 
-        FileInputStream fis = new FileInputStream(path + name);
+		FileInputStream fis = new FileInputStream(path + name);
 
-        int size = fis.available(); // 得到文件大小
+		int size = fis.available(); // 得到文件大小
 
-        byte data[] = new byte[size];
+		byte data[] = new byte[size];
 
-        fis.read(data); // 读数据
+		fis.read(data); // 读数据
 
-        fis.close();
+		fis.close();
 
-        resp.setContentType("image/gif");
+		resp.setContentType("image/gif");
 
-        OutputStream os = resp.getOutputStream();
-        os.write(data);
-        os.flush();
-        os.close();
-    }
+		OutputStream os = resp.getOutputStream();
+		os.write(data);
+		os.flush();
+		os.close();
+	}
 
 }
