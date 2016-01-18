@@ -206,6 +206,13 @@ $(function () {
     <dd><input name="realName" type="text" value="<#if user??>${user.realName!""}</#if>" class="input normal"></dd>
   </dl>
   <dl>
+    <dt>用户编码</dt>
+    <dd>
+    	<input name="opUser" type="text" value="<#if user??>${user.opUser!""}</#if>" class="input normal">
+    	<span class="Validform_checktip">仅配送员填写</span>
+    </dd>
+  </dl>
+  <dl>
     <dt>归属门店</dt>
     <dd>
         <select name="upperDiySiteId" datatype="n">
