@@ -20,18 +20,17 @@ public class TdSubdistrictService {
 
 	@Autowired
 	private TdSubdistrictRepo repository;
-	
+
 	@Autowired
 	private TdDistrictService tdDistrictService;
 
 	public TdSubdistrict save(TdSubdistrict e) {
-		if (null == e) 
-		{
+		if (null == e) {
 			return null;
 		}
-		
+
 		e.setDistrictName(tdDistrictService.findOne(e.getDistrictId()).getName());
-		
+
 		return repository.save(e);
 	}
 
@@ -63,13 +62,23 @@ public class TdSubdistrictService {
 		}
 		return repository.findByDistrictIdOrderBySortIdAsc(districtId);
 	}
-	
 
-	public Page<TdSubdistrict> findAll(int page, int size)
-    {
-		
-        PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "sortId"));
-        
-        return repository.findAll(pageRequest);
-    }
+	public Page<TdSubdistrict> findAll(int page, int size) {
+
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "sortId"));
+
+		return repository.findAll(pageRequest);
+	}
+
+	/**
+	 * 根据行政区划名称和行政街道名称查找行政街道
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdSubdistrict> findByDistrictNameAndNameOrderBySortIdAsc(String districtName, String subDistrictName) {
+		if (null == districtName || null == subDistrictName) {
+			return null;
+		}
+		return repository.findByDistrictNameAndNameOrderBySortIdAsc(districtName, subDistrictName);
+	}
 }

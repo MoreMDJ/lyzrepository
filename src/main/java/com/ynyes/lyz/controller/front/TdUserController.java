@@ -940,9 +940,9 @@ public class TdUserController {
 		if (null != site && (site.getStatus() == 2)) {
 			map.addAttribute("isSelected", false);
 		}
-
 		// 获取用户所在城市的所有行政区划
-		List<TdDistrict> district_list = tdDistrictService.findByCityIdOrderBySortIdAsc(user.getCityId());
+		TdCity city = tdCityService.findBySobIdCity(user.getCityId());
+		List<TdDistrict> district_list = tdDistrictService.findByCityIdOrderBySortIdAsc(city.getId());
 		// 遍历集合，获取第一项行政区划下的所有行政街道
 		if (null != district_list) {
 			for (int i = 0; i < district_list.size(); i++) {
@@ -997,6 +997,7 @@ public class TdUserController {
 		// 更改用户的归属门店
 		user.setUpperDiySiteId(diySite.getId());
 		user.setDiyName(diySite.getTitle());
+		user.setCustomerId(diySite.getCustomerId());
 		tdUserService.save(user);
 
 		res.put("status", 0);

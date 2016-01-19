@@ -134,7 +134,7 @@
                     <div class="div2">
                         <label>本次使用</label>
                         <div class="wallet-balance">
-                            <div class="first">共￥<span id="all_balance"><#if max??>${max?string("0.00")}<#else>0.00</#if></span></div>
+                            <div class="first">￥<span id="all_balance"><#if max??>${max?string("0.00")}<#else>0.00</#if></span></div>
                             <div id="isUserCash" class="checked <#if !(isCoupon??&&isCoupon==false)>active</#if>"></div>
                             
                         </div>
@@ -160,8 +160,8 @@
                 <!-- 商品费用 -->
                 <section class="pro-price">
                     <div class="div1">
-                        <label>商品金额</label>
-                        <div>￥<span><#if order??&&order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if><span></div>
+                        <label>商品价值</label>
+                        <div>￥<span><#if order??&&order.totalGoodsPrice??>${order.totalGoodsPrice?string("0.00")}<#else>0.00</#if><span></div>
                     </div>
                     <div class="div1">
                         <label>运费</label>
@@ -177,17 +177,7 @@
         <!-- 底部 -->
         <footer class="fill-order-foot">
             <div class="disbur">应支付：￥
-                <span id="order_total_price">
-                    <#if order??&&order.totalPrice??&&order.deliverFee??>
-                        <#if isFree??&&isFree>
-                            ${order.totalPrice?string("0.00")}
-                        <#else>
-                            ${(order.totalPrice+order.deliverFee)?string("0.00")}
-                        </#if>
-                    <#else>
-                        0.00
-                    </#if>
-                </span>
+                <span id="order_total_price"><#if order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span>
             </div>
             <#--<a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>-->
             <a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>

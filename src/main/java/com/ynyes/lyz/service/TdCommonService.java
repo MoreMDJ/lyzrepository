@@ -808,10 +808,6 @@ public class TdCommonService {
 			goods.setQuantity(cart.getQuantity());
 			goods.setBrandId(cart.getBrandId());
 			goods.setBrandTitle(cart.getBrandTitle());
-			virtual.setTotalGoodsPrice(virtual.getTotalGoodsPrice() + (cart.getPrice() * cart.getQuantity()));
-			virtual.setTotalPrice(virtual.getTotalPrice() + (cart.getPrice() * cart.getQuantity()));
-			virtual.setLimitCash(
-					virtual.getLimitCash() + ((cart.getPrice() - cart.getRealPrice()) * cart.getQuantity()));
 			List<TdOrderGoods> goodsList = virtual.getOrderGoodsList();
 			goodsList.add(goods);
 			tdOrderGoodsService.save(goods);
@@ -851,6 +847,7 @@ public class TdCommonService {
 
 		// 获取用户的门店
 		TdDiySite diySite = this.getDiySite(req);
+		//获取用户门店所能参加的活动
 		List<TdActivity> activity_list = tdActivityService
 				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySite.getId() + "",
 						new Date());
@@ -1192,7 +1189,6 @@ public class TdCommonService {
 			}
 			if (null != order && null != order.getTotalGoodsPrice() && order.getTotalGoodsPrice() > 0) {
 				order = tdOrderService.save(order);
-
 				orderList.add(order);
 			}
 		}
@@ -1496,6 +1492,16 @@ public class TdCommonService {
 			requisition.setReceiveAddress(order.getShippingAddress());
 			requisition.setRemarkInfo(order.getRemark());
 			requisition.setDiySiteTel(order.getDiySitePhone());
+			
+			//add by Shawn
+			if(null == order.getTotalPrice()){
+				order.setTotalPrice(0.00);
+			}
+			
+			if(null == order.getActualPay()){
+				order.setActualPay(0.00);
+			}
+			
 			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
 			
 			// Add by Shawn
