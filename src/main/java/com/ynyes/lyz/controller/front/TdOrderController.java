@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ibm.icu.math.BigDecimal;
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
@@ -1003,35 +1004,6 @@ public class TdOrderController {
 		// 获取虚拟订单
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
 
-		// 获取用户的不可体现余额
-		Double unCashBalance = user.getUnCashBalance();
-		if (null == unCashBalance) {
-			unCashBalance = 0.00;
-		}
-
-		// 获取用户的可提现余额
-		Double cashBalance = user.getCashBalance();
-		if (null == cashBalance) {
-			cashBalance = 0.00;
-		}
-
-		Double balance = user.getBalance();
-		if (null == balance) {
-			balance = 0.00;
-		}
-
-		if (unCashBalance > userUsed) {
-			user.setUnCashBalance(user.getUnCashBalance() - userUsed);
-			order_temp.setUnCashBalanceUsed(userUsed);
-		} else {
-			user.setUnCashBalance(0.0);
-			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - userUsed);
-			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
-			order_temp.setCashBalanceUsed(userUsed - user.getUnCashBalance());
-		}
-		user.setBalance(user.getBalance() - userUsed);
-		tdUserService.save(user);
-
 		String address = order_temp.getShippingAddress();
 		String shippingName = order_temp.getShippingName();
 		String shippingPhone = order_temp.getShippingPhone();
@@ -1052,6 +1024,9 @@ public class TdOrderController {
 
 		String cashCouponId = order_temp.getCashCouponId();
 		String productCouponId = order_temp.getProductCouponId();
+
+		BigDecimal b = new BigDecimal(order_temp.getTotalPrice());
+		order_temp.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
 		if (isOnline) {
 			// 判断是否还有未支付的金额
@@ -1130,6 +1105,34 @@ public class TdOrderController {
 			}
 			order_temp.setStatusId(3L);
 		}
+		// 获取用户的不可体现余额
+		Double unCashBalance = user.getUnCashBalance();
+		if (null == unCashBalance) {
+			unCashBalance = 0.00;
+		}
+
+		// 获取用户的可提现余额
+		Double cashBalance = user.getCashBalance();
+		if (null == cashBalance) {
+			cashBalance = 0.00;
+		}
+
+		Double balance = user.getBalance();
+		if (null == balance) {
+			balance = 0.00;
+		}
+
+		if (unCashBalance > userUsed) {
+			user.setUnCashBalance(user.getUnCashBalance() - userUsed);
+			order_temp.setUnCashBalanceUsed(userUsed);
+		} else {
+			user.setUnCashBalance(0.0);
+			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - userUsed);
+			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
+			order_temp.setCashBalanceUsed(userUsed - user.getUnCashBalance());
+		}
+		user.setBalance(user.getBalance() - userUsed);
+		tdUserService.save(user);
 
 		tdOrderService.save(order_temp);
 

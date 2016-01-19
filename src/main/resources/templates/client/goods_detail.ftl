@@ -106,11 +106,11 @@
 						<div>送至：</div>
 						<p>重庆市 渝中区 解放碑</p>
 					</li>
-					-->
 					<li class="li04">
 						<div>服务：</div>
 						<p>${goods.service!''}</p>
 					</li>
+                   -->
 				</ul>
 				<div class="index_test_box"></div>
 				<dl class="det_text">
@@ -135,7 +135,7 @@
 					-->
 				</dl>
 				<#if activity_list??>
-    				<div class="det_mes">
+    				<div class="det_mes"  style="margin-bottom:10px;">
                         <div class="det_mestitle">促销活动</div>
                         <ul>
                             <#list activity_list as item>
@@ -195,7 +195,7 @@
 						<span onclick="addCart();">加入已选</span>
 					</li>
 					<li>
-						<span onclick="window.location.href='/goods/buy/now?goodsId=${goods.id?c}'">立刻购买</span>
+						<span onclick="buyNow(${goods.id?c});">立刻购买</span>
 					</li>	
 				</ul>
 			</section>

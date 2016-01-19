@@ -134,9 +134,10 @@
                     <div class="div2">
                         <label>本次使用</label>
                         <div class="wallet-balance">
-                            <div class="first">￥<span id="all_balance"><#if max??>${max?string("0.00")}<#else>0.00</#if></span></div>
+                            <div class="first"><span><input id="usedBalance" style="border:#dddddd 1px solid;line-height:20px;padding-left:20px;" type="text" value="<#if max??>${max?string("0.00")}<#else>0.00</#if>"></span></div>
                             <div id="isUserCash" class="checked <#if !(isCoupon??&&isCoupon==false)>active</#if>"></div>
-                            
+                            <#-- <#if max??>${max?string("0.00")}<#else>0.00</#if> -->
+                            <input type="hidden" id="userBalance" value="${user.balance}">
                         </div>
                     </div>
                 </section>
@@ -176,7 +177,7 @@
         
         <!-- 底部 -->
         <footer class="fill-order-foot">
-            <div class="disbur">应支付：￥
+            <div class="disbur">还需支付：￥
                 <span id="order_total_price"><#if order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span>
             </div>
             <#--<a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>-->

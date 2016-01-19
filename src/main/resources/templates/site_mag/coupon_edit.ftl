@@ -138,7 +138,7 @@ function changeType(e)
   <dl>
     <dt>现金券金额</dt>
     <dd>
-      <input name="price" type="text" value="<#if coupon??&&coupon.price??>${coupon.price?string("0.00")}<#else>0.00</#if>" class="input txt100" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" ">
+      <input name="price" type="text" value="<#if coupon??&&coupon.price??>${coupon.price?string("0.00")}<#else>0.00</#if>" class="input txt100" datatype="/^\d{0,8}\.{0,1}(\d{1,2})?$/" sucmsg=" ">
       <span class="Validform_checktip">*仅现金券设置</span>
     </dd>
   </dl>
