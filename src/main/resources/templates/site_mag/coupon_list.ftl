@@ -98,7 +98,7 @@ function __doPostBack(eventTarget, eventArgument) {
                 <td>
                 <#if item.typeId?? && item.typeId==2>用户抢券<#else>手动发券</#if>
                 </td>
-                <td><#if item.leftNumber??>${item.leftNumber?c!""}</#if></td>
+                <td><#if item.leftNumber??>${item.leftNumber?c}<#else>0</#if></td>
                 <td><#if item.addTime??>${item.addTime?string('yyyy-MM-dd HH:mm')}</#if></td>
                 <td><input name="listSortId" type="text" disabled="" value="${item.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
                 <td align="center">

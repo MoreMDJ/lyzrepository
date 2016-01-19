@@ -990,6 +990,7 @@ public class TdOrderController {
 	@RequestMapping(value = "/check")
 	@ResponseBody
 	public Map<String, Object> checkOrder(HttpServletRequest req, Boolean userCash, Double userUsed, ModelMap map) {
+		System.err.println("进入支付控制器");
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 
@@ -1002,29 +1003,36 @@ public class TdOrderController {
 		}
 
 		// 获取虚拟订单
+		System.err.println("开始获取虚拟订单");
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
 
+		System.err.println("获取虚拟订单中的地址信息");
 		String address = order_temp.getShippingAddress();
 		String shippingName = order_temp.getShippingName();
 		String shippingPhone = order_temp.getShippingPhone();
 
+		System.err.println("判断是否填写收货地址");
 		if ((null == address || null == shippingName || null == shippingPhone)
 				&& !"门店自提".equals(order_temp.getDeliverTypeTitle())) {
 			res.put("message", "请填写收货地址");
 			return res;
 		}
 
+		System.err.println("开始判断用户是否属于线上支付");
 		// 判断用户是否是线下付款
 		Boolean isOnline = false;
 		Long payTypeId = order_temp.getPayTypeId();
 		TdPayType payType = tdPayTypeService.findOne(payTypeId);
 		if (null != payType && payType.getIsOnlinePay()) {
+			System.err.println("用户属于线上支付");
 			isOnline = true;
 		}
 
+		System.err.println("开始获取该订单使用的优惠券id");
 		String cashCouponId = order_temp.getCashCouponId();
 		String productCouponId = order_temp.getProductCouponId();
 
+		System.err.println("开始忽略小数点后2位之后的数字");
 		BigDecimal b = new BigDecimal(order_temp.getTotalPrice());
 		order_temp.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
@@ -1148,6 +1156,7 @@ public class TdOrderController {
 	 */
 	@RequestMapping(value = "/pay")
 	public String orderPay(HttpServletRequest req) {
+		System.err.println("进入确认下单的方法");
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {

@@ -959,7 +959,7 @@ public class TdCommonService {
 	 * @author dengxiao
 	 */
 	public void dismantleOrder(HttpServletRequest req, String username) {
-
+		System.err.println("开始拆单");
 		// 获取虚拟订单
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null == order_temp) {
