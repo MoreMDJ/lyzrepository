@@ -1201,7 +1201,7 @@ public class TdUserController {
 			res.put("message", "未找到订单的归属用户");
 			return res;
 		}
-		user.setBalance(user.getBalance() + totalPrice);
+		user.setBalance(user.getBalance() + unCashBalanceUsed + cashBalanceUsed);
 		user.setUnCashBalance(user.getUnCashBalance() + unCashBalanceUsed);
 		user.setCashBalance(user.getCashBalance() + cashBalanceUsed);
 		tdUserService.save(user);
