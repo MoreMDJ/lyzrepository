@@ -1496,6 +1496,18 @@ public class TdCommonService {
 			requisition.setReceiveAddress(order.getShippingAddress());
 			requisition.setRemarkInfo(order.getRemark());
 			requisition.setDiySiteTel(order.getDiySitePhone());
+			
+			// add by Shawn
+			if (null == order.getTotalPrice())
+			{
+				order.setTotalPrice(0.0);
+			}
+			
+			if (null == order.getActualPay())
+			{
+				order.setActualPay(0.0);
+			}
+			
 			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
 			
 			// Add by Shawn
@@ -1629,6 +1641,8 @@ public class TdCommonService {
 					+ "</TABLE>"
 					+ "</ERP>";
 
+			System.out.print("MDJWS: returnNote-->" + xmlStr);
+			
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
 			try {
