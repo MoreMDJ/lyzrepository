@@ -109,6 +109,35 @@ function submitDelivery(id)
 	});
 }
 
+// 拒签退货
+function submitReturn(id)
+{
+	if (null == id)
+	{
+		warning("ID不能为空");
+		return;
+	}
+	
+	$.ajax({ 
+		url: "/delivery/submitReturn", 
+		type: "post",
+		dataType: "json",
+		data: {"id": id},
+		success: function(data)
+		{
+        	if (data.code == 0)
+        	{
+        		warning("退货成功");
+        		window.location.reload();
+        	}
+        	else
+        	{
+        		warning(data.message);
+        	}
+  		}
+	});
+}
+
 function submitOwnMoney()
 {
 	var payed = document.getElementById("payed").value;
@@ -232,7 +261,8 @@ function submitOwnMoney()
       </div>
     </section>
     <#if td_order.statusId == 4>
-    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(1)">确认送达</a>
+    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitReturn(${td_order.id?c})">拒签退货</a>
+    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(${td_order.id?c})">确认送达</a>
     <a class="btn-submit-save bgc-ff8e08" <#if td_order.photo??>href="javascript:;" style="background:#999"<#else>href="javascript:photo();"</#if> >拍照上传</a>
     </#if>
     <#if td_order.statusId != 6>

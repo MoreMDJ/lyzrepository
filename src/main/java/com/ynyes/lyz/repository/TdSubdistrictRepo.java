@@ -16,4 +16,11 @@ public interface TdSubdistrictRepo
 	 * @author dengxiao
 	 */
 	List<TdSubdistrict> findByDistrictIdOrderBySortIdAsc(Long districtId);
+
+	/**
+	 * 根据行政区划名称和行政街道名称查找行政街道
+	 * 
+	 * @author dengxiao
+	 */
+	List<TdSubdistrict> findByDistrictNameAndNameOrderBySortIdAsc(String districtName, String subDistrictName);
 }

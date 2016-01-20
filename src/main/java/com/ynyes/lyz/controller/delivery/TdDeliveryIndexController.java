@@ -1,5 +1,7 @@
 package com.ynyes.lyz.controller.delivery;
 
+import static org.apache.commons.lang3.StringUtils.leftPad;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,14 +28,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
+import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGeoInfo;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
+import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
+import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGeoInfoService;
+import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
+import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
@@ -54,6 +63,15 @@ public class TdDeliveryIndexController {
 
 	@Autowired
 	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
+	
+	@Autowired
+	private TdDiySiteService tdDiySiteService;
+	
+	@Autowired
+	private TdOrderGoodsService tdOrderGoodsService;
+	
+	@Autowired
+	private TdReturnNoteService tdReturnNoteService;
 
 	/**
 	 * 获取配送列表
@@ -200,6 +218,15 @@ public class TdDeliveryIndexController {
 		return "/client/delivery_list";
 	}
 
+	/**
+	 * 订单详情
+	 * 
+	 * @param id
+	 * @param req
+	 * @param map
+	 * @param msg
+	 * @return
+	 */
 	@RequestMapping(value = "/detail/{id}", method = RequestMethod.GET)
 	public String detail(@PathVariable Long id, HttpServletRequest req, ModelMap map, Long msg) {
 		String username = (String) req.getSession().getAttribute("username");
@@ -223,6 +250,14 @@ public class TdDeliveryIndexController {
 		return "/client/delivery_detail";
 	}
 
+	/**
+	 * 确认收货
+	 * 
+	 * @param id
+	 * @param req
+	 * @param map
+	 * @return
+	 */
 	@RequestMapping(value = "/submitDelivery", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> submit(Long id, HttpServletRequest req, ModelMap map) {
@@ -251,6 +286,147 @@ public class TdDeliveryIndexController {
 
 		tdOrderService.save(order);
 
+		res.put("code", 0);
+
+		return res;
+	}
+	
+	/**
+	 * 拒签退货
+	 * 
+	 * @param id
+	 * @param req
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value = "/submitReturn", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> submitReturn(Long id, HttpServletRequest req, ModelMap map) {
+		Map<String, Object> res = new HashMap<String, Object>();
+		res.put("code", 1);
+
+		if (null == id) {
+			res.put("message", "ID不能为空");
+			return res;
+		}
+
+		TdOrder order = tdOrderService.findOne(id);
+
+		if (null == order) {
+			res.put("message", "订单不存在");
+			return res;
+		}
+
+		if (null != order.getStatusId() && !order.getStatusId().equals(4L)) {
+			res.put("message", "订单未出库");
+			return res;
+		}
+
+		// 确认收货
+		order.setStatusId(5L);
+		order.setDeliveryTime(new Date());
+
+		order = tdOrderService.save(order);
+
+		// 生成退货单
+		if (null != order) {
+			TdReturnNote returnNote = new TdReturnNote();
+
+			// 退货单编号
+			Date current = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+			String curStr = sdf.format(current);
+			Random random = new Random();
+
+			returnNote.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+
+			// 添加订单信息
+			returnNote.setOrderNumber(order.getOrderNumber());
+			// 支付方式
+			returnNote.setPayTypeId(order.getPayTypeId());
+			returnNote.setPayTypeTitle(order.getPayTypeTitle());
+			// 门店信息
+			if (null != order.getDiySiteId()) {
+				TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
+				returnNote.setDiySiteId(order.getDiySiteId());
+				returnNote.setDiySiteTel(diySite.getServiceTele());
+				returnNote.setDiySiteTitle(diySite.getTitle());
+				returnNote.setDiySiteAddress(diySite.getAddress());
+			}
+
+			// 退货信息
+			returnNote.setUsername(order.getUsername());
+			returnNote.setRemarkInfo("拒签退货");
+
+			Long turnType = 2L;
+			// 退货方式
+			returnNote.setTurnType(turnType);
+			// 原订单配送方式
+			if ("门店自提".equals(order.getDeliverTypeTitle())) {
+				if (turnType.equals(1L)) {
+					returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
+				} else {
+					returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
+				}
+			} else {
+				if (turnType.equals(1L)) {
+					returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
+				} else {
+					returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
+				}
+			}
+
+			returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
+			returnNote.setOrderTime(new Date());
+
+			returnNote.setTurnPrice(order.getTotalGoodsPrice());
+			List<TdOrderGoods> orderGoodsList = new ArrayList<>();
+			if (null != order.getOrderGoodsList()) {
+				for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
+					TdOrderGoods orderGoods = new TdOrderGoods();
+
+					orderGoods.setBrandId(oGoods.getBrandId());
+					orderGoods.setBrandTitle(oGoods.getBrandTitle());
+					orderGoods.setGoodsId(oGoods.getGoodsId());
+					orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
+					orderGoods.setSku(oGoods.getSku());
+					orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
+					orderGoods.setGoodsColor(oGoods.getGoodsColor());
+					orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
+					orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
+					orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
+					orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
+
+					orderGoods.setPrice(oGoods.getPrice());
+					orderGoods.setQuantity(oGoods.getQuantity());
+
+					orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
+					orderGoods.setPoints(oGoods.getPoints());
+					// tdOrderGoodsService.save(orderGoods);
+					// 添加商品信息
+					orderGoodsList.add(orderGoods);
+
+					// 订单商品设置退货为True
+					oGoods.setIsReturnApplied(true);
+					// 更新订单商品信息是否退货状态
+					tdOrderGoodsService.save(oGoods);
+				}
+			}
+
+			returnNote.setReturnGoodsList(orderGoodsList);
+			tdOrderGoodsService.save(orderGoodsList);
+			// 保存退货单
+			tdReturnNoteService.save(returnNote);
+
+			order.setStatusId(7L);
+			order.setIsRefund(true);
+			tdOrderService.save(order);
+
+			res.put("code", 0);
+			res.put("message", "提交退货成功");
+			return res;
+		}
+		
 		res.put("code", 0);
 
 		return res;

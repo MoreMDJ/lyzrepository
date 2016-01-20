@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
+import com.ibm.icu.math.BigDecimal;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
@@ -808,10 +809,6 @@ public class TdCommonService {
 			goods.setQuantity(cart.getQuantity());
 			goods.setBrandId(cart.getBrandId());
 			goods.setBrandTitle(cart.getBrandTitle());
-			virtual.setTotalGoodsPrice(virtual.getTotalGoodsPrice() + (cart.getPrice() * cart.getQuantity()));
-			virtual.setTotalPrice(virtual.getTotalPrice() + (cart.getPrice() * cart.getQuantity()));
-			virtual.setLimitCash(
-					virtual.getLimitCash() + ((cart.getPrice() - cart.getRealPrice()) * cart.getQuantity()));
 			List<TdOrderGoods> goodsList = virtual.getOrderGoodsList();
 			goodsList.add(goods);
 			tdOrderGoodsService.save(goods);
@@ -851,6 +848,7 @@ public class TdCommonService {
 
 		// 获取用户的门店
 		TdDiySite diySite = this.getDiySite(req);
+		// 获取用户门店所能参加的活动
 		List<TdActivity> activity_list = tdActivityService
 				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySite.getId() + "",
 						new Date());
@@ -1004,15 +1002,16 @@ public class TdCommonService {
 				order.setTotalPrice(0.00);
 				order.setLimitCash(0.00);
 				order.setCashCoupon(0.00);
-				order.setLimitCash(0.00);
 				order.setProductCoupon("");
 				order.setCashCouponId("");
+				order.setProductCouponId("");
 				order.setStatusId(3L);
 				order.setUserId(order_temp.getUserId());
 				order.setUsername(username);
 				order.setPayTypeId(order_temp.getPayTypeId());
 				order.setPayTypeTitle(order_temp.getPayTypeTitle());
 				order.setOrderTime(order_temp.getOrderTime());
+				order.setRemark(order_temp.getRemark());
 				order_map.put(brand.getId(), order);
 			}
 		}
@@ -1071,100 +1070,121 @@ public class TdCommonService {
 			}
 		}
 
-		// 获取使用现金券的金额
-		Double cashCoupon = order_temp.getCashCoupon();
-		if (null == cashCoupon) {
-			cashCoupon = 0.00;
-		}
-		// 拆分已使用的现金券
+		// 获取使用的现金券
 		String cashCouponId = order_temp.getCashCouponId();
-		// 分解cashCouponId
-		if (null != cashCouponId) {
-			String[] cashIds = cashCouponId.split(",");
-			for (String id : cashIds) {
-				if (null != id && !"".equals(id.trim())) {
-					Long couponId = Long.parseLong(id);
-					// 根据优惠券的id查找优惠券
-					TdCoupon coupon = tdCouponService.findOne(couponId);
-					if (null != coupon) {
-						Long goodsId = coupon.getGoodsId();
-						// 如果goodsId存在，则表示这张优惠券是指定产品现金券
-						if (null != goodsId) {
-							TdGoods goods = tdGoodsService.findOne(goodsId);
-							Long brandId = goods.getBrandId();
-							TdOrder order = order_map.get(brandId);
-							order.setCashCoupon(order.getCashCoupon() + coupon.getPrice());
-							// 余下的金额暂不统计，在后面按照比例拆分
-							cashCoupon -= coupon.getPrice();
-							order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
-						}
-					}
-				}
-			}
-		}
-
-		// 拆分使用的产品券
+		// 获取使用的产品券
 		String productCouponId = order_temp.getProductCouponId();
-		// 分解
-		String[] productIds = productCouponId.split(",");
-		for (String id : productIds) {
-			if (null != id && !"".equals(id.trim())) {
-				Long couponId = Long.parseLong(id);
-				TdCoupon coupon = tdCouponService.findOne(couponId);
-				if (null != coupon) {
-					Long goodsId = coupon.getGoodsId();
-					if (null != goodsId) {
-						TdGoods goods = tdGoodsService.findOne(goodsId);
-						Long brandId = goods.getBrandId();
-						TdOrder order = order_map.get(brandId);
-						order.setProductCouponId(coupon.getId() + ",");
-						order.setProductCoupon(
-								order.getProductCoupon() + (goods.getTitle() + "【" + goods.getCode() + "】*1,"));
-						List<TdOrderGoods> list = order.getOrderGoodsList();
-						for (TdOrderGoods orderGoods : list) {
-							if (null != orderGoods && null != orderGoods.getGoodsId()
-									&& coupon.getGoodsId() == orderGoods.getGoodsId()) {
-								order.setTotalPrice(order.getTotalPrice() - orderGoods.getPrice());
+
+		// 开始拆分现金券
+		if (null != cashCouponId && !"".equals(cashCouponId)) {
+			String[] coupons = cashCouponId.split(",");
+			if (null != coupons && coupons.length > 0) {
+				for (String sId : coupons) {
+					if (null != sId && !"".equals(sId)) {
+						Long id = Long.parseLong(sId);
+						if (null != id) {
+							TdCoupon coupon = tdCouponService.findOne(id);
+							if (null != coupon) {
+								Long brandId = coupon.getBrandId();
+								if (null != brandId) {
+									TdOrder order = order_map.get(brandId);
+									if (null != order) {
+										order.setCashCouponId(order.getCashCouponId() + coupon.getId() + ",");
+										if (null == coupon.getPrice()) {
+											coupon.setPrice(0.00);
+										}
+										order.setCashCoupon(order.getCashCoupon() + coupon.getPrice());
+									}
+								}
 							}
 						}
-						tdOrderService.save(order);
 					}
 				}
 			}
 		}
 
-		// 开始进行剩余优惠券（即是通用现金券）的拆分，同时也可以进行可提现余额，不可提现余额的拆分
-
-		Double total = 0.00;
-		Double cashBalanceUsed = order_temp.getCashBalanceUsed();
-		if (null == cashBalanceUsed) {
-			cashBalanceUsed = 0.00;
+		// 开始拆分产品券
+		if (null != productCouponId && !"".equals(productCouponId)) {
+			String[] coupons = productCouponId.split(",");
+			if (null != coupons && coupons.length > 0) {
+				for (String sId : coupons) {
+					if (null != sId && !"".equals(sId)) {
+						Long id = Long.parseLong(sId);
+						if (null != id) {
+							TdCoupon coupon = tdCouponService.findOne(id);
+							if (null != coupon) {
+								Long brandId = coupon.getBrandId();
+								if (null != brandId) {
+									TdOrder order = order_map.get(brandId);
+									if (null != order) {
+										order.setProductCouponId(order.getProductCouponId() + coupon.getId() + ",");
+										// 遍历已选，找到指定产品券对应的产品
+										List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+										if (null != orderGoodsList && orderGoodsList.size() > 0) {
+											for (TdOrderGoods orderGoods : orderGoodsList) {
+												if (null != orderGoods && null != orderGoods.getGoodsId()
+														&& null != coupon.getGoodsId() && orderGoods.getGoodsId()
+																.longValue() == coupon.getGoodsId().longValue()) {
+													Double price = orderGoods.getPrice();
+													if (null == price) {
+														price = 0.00;
+													}
+													order.setTotalPrice(order.getTotalPrice() - price);
+													order.setProductCoupon(
+															order.getProductCoupon() + (orderGoods.getGoodsTitle() + "【"
+																	+ orderGoods.getSku() + "】*1,"));
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
+
+		// 获取原单总价
+		Double totalPrice = order_temp.getTotalPrice();
+		if (null == totalPrice) {
+			totalPrice = 0.00;
+		}
+
+		// 获取原订单使用不可提现的金额
 		Double unCashBalanceUsed = order_temp.getUnCashBalanceUsed();
+
+		// 获取原订单使用不可提现的金额
+		Double cashBalanceUsed = order_temp.getCashBalanceUsed();
 		if (null == unCashBalanceUsed) {
 			unCashBalanceUsed = 0.00;
 		}
-
-		// 获取目前的总金额
-		for (TdOrder order : order_map.values()) {
-			if (null != order && null != order.getTotalPrice()) {
-				total += order.getTotalPrice();
-			}
+		if (null == cashBalanceUsed) {
+			cashBalanceUsed = 0.00;
 		}
 
-		// 在此循环，拆分通用现金券额度，可提现余额，不可提现余额
+		// 遍历当前生成的订单
 		for (TdOrder order : order_map.values()) {
-			if (null != order && null != order.getTotalPrice()) {
-				if (total != 0) {
-					Double point = order.getTotalPrice() / total;
-					order.setCashCoupon(order.getCashCoupon() + (cashCoupon * point));
-					order.setCashBalanceUsed(cashBalanceUsed * point);
-					if (order.getCashBalanceUsed() < 0 || order.getCashBalanceUsed() == -0.00) {
-						order.setCashBalanceUsed(0.00);
-					}
-					order.setUnCashBalanceUsed(unCashBalanceUsed * point);
-					if (order.getUnCashBalanceUsed() < 0 || order.getUnCashBalanceUsed() == -0.00) {
-						order.setUnCashBalanceUsed(0.00);
+			if (null != order) {
+				Double price = order.getTotalPrice();
+				if (null == price || 0.00 == price) {
+					order.setUnCashBalanceUsed(0.00);
+					order.setCashBalanceUsed(0.00);
+				} else {
+					Double point = price / totalPrice;
+					if (null != point) {
+						DecimalFormat df = new DecimalFormat("#.00");
+						String scale2_uncash = df.format(unCashBalanceUsed * point);
+						String scale2_cash = df.format(cashBalanceUsed * point);
+						if (null == scale2_uncash) {
+							scale2_uncash = "0.00";
+						}
+						if (null == scale2_cash) {
+							scale2_cash = "0.00";
+						}
+						order.setUnCashBalanceUsed(Double.parseDouble(scale2_uncash));
+						order.setCashBalanceUsed(Double.parseDouble(scale2_cash));
+						order.setActualPay(order.getUnCashBalanceUsed() + order.getCashBalanceUsed());
 					}
 				}
 			}
@@ -1178,10 +1198,9 @@ public class TdCommonService {
 				TdOrder order = order_map.get(brandId);
 				// 运费放置在乐易装的订单上
 				order.setDeliverFee(order_temp.getDeliverFee());
-				order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
-				order.setTotalGoodsPrice(order.getTotalGoodsPrice() + order.getDeliverFee());
 			}
 		}
+
 		// add by Shawn
 		List<TdOrder> orderList = new ArrayList<TdOrder>();
 
@@ -1191,9 +1210,13 @@ public class TdCommonService {
 				System.err.println(string);
 			}
 			if (null != order && null != order.getTotalGoodsPrice() && order.getTotalGoodsPrice() > 0) {
+				BigDecimal b = new BigDecimal(order.getTotalPrice());
+				order.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 				order = tdOrderService.save(order);
-
-				orderList.add(order);
+				// 增加一个判定，只有配送单才会抛到WMS去——dengxiao
+				if ("送货上门".equals(order.getDeliverTypeTitle())) {
+					orderList.add(order);
+				}
 			}
 		}
 
@@ -1497,18 +1520,24 @@ public class TdCommonService {
 			requisition.setReceiveAddress(order.getShippingAddress());
 			requisition.setRemarkInfo(order.getRemark());
 			requisition.setDiySiteTel(order.getDiySitePhone());
-			if (order.getTotalPrice() != null && order.getActualPay() != null)
-			{
-				requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
+
+			// add by Shawn
+			if (null == order.getTotalPrice()) {
+				order.setTotalPrice(0.0);
 			}
-			
+
+			if (null == order.getActualPay()) {
+				order.setActualPay(0.0);
+			}
+			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
+
 			// Add by Shawn
 			requisition.setProvince(order.getProvince());
 			requisition.setCity(order.getCity());
 			requisition.setDisctrict(order.getDisctrict());
 			requisition.setSubdistrict(order.getSubdistrict());
 			requisition.setDetailAddress(order.getDetailAddress());
-			
+
 			requisition.setReceivePhone(order.getShippingPhone());
 			requisition.setTotalPrice(order.getTotalPrice());
 			requisition.setTypeId(1L);
@@ -1634,6 +1663,8 @@ public class TdCommonService {
 					+ "</ERP>";
 			
 			xmlStr = xmlStr.replace("null", "");
+
+			System.out.print("MDJWS: returnNote-->" + xmlStr);
 
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);

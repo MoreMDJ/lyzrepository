@@ -104,7 +104,7 @@
                         </tr>
                         <tr>
                             <td valign="top">订单备注：${order.remarkInfo!''}</td>
-                            <#if order.isNeedInvoice><td valign="top">发票抬头：${order.invoiceTitle!''}</td></#if>
+                            <#if order.isNeedInvoice?? && order.isNeedInvoice><td valign="top">发票抬头：${order.invoiceTitle!''}</td></#if>
                         </tr>
                     </tbody></table>
                     <table width="100%" border="0" align="center" cellpadding="5" cellspacing="0" style="border-top: 1px solid #000; font-size: 12px; font-family: '微软雅黑'; background: #fff;">

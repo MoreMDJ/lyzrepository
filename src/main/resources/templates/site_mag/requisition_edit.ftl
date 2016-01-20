@@ -111,29 +111,8 @@
         <dl>
             <dd style="margin-left: 50px; text-align: center;">
                 <div class="order-flow" style="width: 850px">
-                    <#if requisition.statusId == 1>
-                        <div class="order-flow-left">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">要货单已生成</p>
-                                <p>${requisition.orderTime!""}</p>
-                            </span>
-                        </div>
-                        <div class="order-flow-wait">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">待审核</p>
-                            </span>
-                        </div>
-                       
-                        <div class="order-flow-right-wait">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">未完成</p>
-                                <p></p>
-                            </span>
-                        </div>
-                    <#elseif requisition.statusId == 2>                      
+                    <#if requisition.statusId??>
+                        <#if requisition.statusId == 1>
                             <div class="order-flow-left">
                                 <a class="order-flow-input"></a>
                                 <span>
@@ -141,38 +120,60 @@
                                     <p>${requisition.orderTime!""}</p>
                                 </span>
                             </div>
-                            <div class="order-flow-arrive">
+                            <div class="order-flow-wait">
                                 <a class="order-flow-input"></a>
                                 <span>
-                                    <p class="name">已确认</p>
-                                    <p>${requisition.checkTime!""}</p>
+                                    <p class="name">待审核</p>
                                 </span>
                             </div>
-                            
+                           
                             <div class="order-flow-right-wait">
                                 <a class="order-flow-input"></a>
                                 <span>
-                                    <p class="name">已完成</p>
+                                    <p class="name">未完成</p>
                                     <p></p>
                                 </span>
                             </div>
-
-                    <#elseif requisition.statusId == 3>
-                        <div class="order-flow-left">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">订单已生成</p>
-                                <p>${requisition.orderTime!""}</p>
-                            </span>
-                        </div>
-                        <div class="order-flow-right-arrive">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">已取消</p>
-                                <p>${requisition.cancelTime!''}</p>
-                            </span>
-                        </div>                
-                    
+                        <#elseif requisition.statusId == 2>                      
+                                <div class="order-flow-left">
+                                    <a class="order-flow-input"></a>
+                                    <span>
+                                        <p class="name">要货单已生成</p>
+                                        <p>${requisition.orderTime!""}</p>
+                                    </span>
+                                </div>
+                                <div class="order-flow-arrive">
+                                    <a class="order-flow-input"></a>
+                                    <span>
+                                        <p class="name">已确认</p>
+                                        <p>${requisition.checkTime!""}</p>
+                                    </span>
+                                </div>
+                                
+                                <div class="order-flow-right-wait">
+                                    <a class="order-flow-input"></a>
+                                    <span>
+                                        <p class="name">已完成</p>
+                                        <p></p>
+                                    </span>
+                                </div>
+    
+                        <#elseif requisition.statusId == 3>
+                            <div class="order-flow-left">
+                                <a class="order-flow-input"></a>
+                                <span>
+                                    <p class="name">订单已生成</p>
+                                    <p>${requisition.orderTime!""}</p>
+                                </span>
+                            </div>
+                            <div class="order-flow-right-arrive">
+                                <a class="order-flow-input"></a>
+                                <span>
+                                    <p class="name">已取消</p>
+                                    <p>${requisition.cancelTime!''}</p>
+                                </span>
+                            </div>                
+                        </#if>
                     </#if>
                 </div>
             </dd>

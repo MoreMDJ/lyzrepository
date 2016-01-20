@@ -291,6 +291,16 @@
                     <tbody>
                     <tr>
                         <th>
+                            原订单号
+                        </th>
+                        <td>
+                            <div class="position">
+                                ${returnNote.orderNumber!''}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             支付方式
                         </th>
                         <td>
@@ -393,16 +403,18 @@
     <!--工具栏-->
     <div class="page-footer">
         <div class="btn-list">
-            <#if returnNote.statusId==1>
-                <input type="button" id="btnConfirm" value="确认退货单" class="btn">
-            <#elseif returnNote.statusId==2>
-                    <input type="button" id="btnPayment" value="通知物流" class="btn">
-            <#elseif returnNote.statusId==3>
-                <input type="button" id="btnOrderExpress" value="验货确认" class="btn">
-            <#elseif returnNote.statusId==4>
-                <input type="button" id="btnOrderReceive" value="确认退款" class="btn green">
-            <#elseif returnNote.statusId==5>
-                <input type="button"  value="已完成" class="btn">
+            <#if returnNote.statusId??>
+                <#if returnNote.statusId==1>
+                    <input type="button" id="btnConfirm" value="确认退货单" class="btn">
+                <#elseif returnNote.statusId==2>
+                        <input type="button" id="btnPayment" value="通知物流" class="btn">
+                <#elseif returnNote.statusId==3>
+                    <input type="button" id="btnOrderExpress" value="验货确认" class="btn">
+                <#elseif returnNote.statusId==4>
+                    <input type="button" id="btnOrderReceive" value="确认退款" class="btn green">
+                <#elseif returnNote.statusId==5>
+                    <input type="button"  value="已完成" class="btn">
+                </#if>
             </#if>
             <#--
             <#if returnNote.statusId != 7>
