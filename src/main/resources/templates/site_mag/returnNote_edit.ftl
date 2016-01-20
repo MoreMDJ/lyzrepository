@@ -291,6 +291,16 @@
                     <tbody>
                     <tr>
                         <th>
+                            原订单号
+                        </th>
+                        <td>
+                            <div class="position">
+                                ${returnNote.orderNumber!''}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             支付方式
                         </th>
                         <td>
