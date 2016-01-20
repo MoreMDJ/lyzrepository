@@ -1011,6 +1011,7 @@ public class TdCommonService {
 				order.setPayTypeId(order_temp.getPayTypeId());
 				order.setPayTypeTitle(order_temp.getPayTypeTitle());
 				order.setOrderTime(order_temp.getOrderTime());
+				order.setRemark(order_temp.getRemark());
 				order_map.put(brand.getId(), order);
 			}
 		}
@@ -1520,13 +1521,11 @@ public class TdCommonService {
 			requisition.setDiySiteTel(order.getDiySitePhone());
 
 			// add by Shawn
-			if (null == order.getTotalPrice())
-			{
+			if (null == order.getTotalPrice()) {
 				order.setTotalPrice(0.0);
 			}
-			
-			if (null == order.getActualPay())
-			{
+
+			if (null == order.getActualPay()) {
 				order.setActualPay(0.0);
 			}
 			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
@@ -1650,7 +1649,7 @@ public class TdCommonService {
 					+ "</order_time>" + "<sub_order_number></sub_order_number>" + "</TABLE>" + "</ERP>";
 
 			System.out.print("MDJWS: returnNote-->" + xmlStr);
-			
+
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
 			try {
@@ -1764,7 +1763,7 @@ public class TdCommonService {
 		TdInterfaceErrorLog errorLog = new TdInterfaceErrorLog();
 		errorLog.setErrorMsg(errorMsg);
 		errorLog.setOrderNumber(orderNumber);
-	errorLog.setSubOrderNumber(subOrderNumber);
+		errorLog.setSubOrderNumber(subOrderNumber);
 		tdInterfaceErrorLogService.save(errorLog);
 	}
 
