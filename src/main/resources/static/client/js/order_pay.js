@@ -70,10 +70,17 @@ function orderPay() {
 		return;
 	}
 
-	console.debug(usedBalance);
-	console.debug(userBalance);
-	if (usedBalance * 1 > userBalance * 1) {
-		warning("亲，您输入的预存款使<br>用额大于了您的总额");
+	if (parseFloat(usedBalance) > parseFloat(userBalance)) {
+		warning("亲，您输入的预存款使<br>用额大于了您的存款总额");
+		return;
+	}
+
+	// 获取订单总额
+	var order_total_price = $("#order_total_price").html();
+	console.debug(order_total_price);
+
+	if (parseFloat(usedBalance) > parseFloat(order_total_price)) {
+		warning("亲，您输入的预存款使<br>用额大于了订单总额");
 		return;
 	}
 

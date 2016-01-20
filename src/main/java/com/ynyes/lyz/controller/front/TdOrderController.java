@@ -117,8 +117,14 @@ public class TdOrderController {
 		}
 		map.addAttribute("user", user);
 
+		TdOrder order_temp = new TdOrder();
+
 		// 生成虚拟订单
-		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
+		if (null != id) {
+			order_temp = tdOrderService.findOne(id);
+		} else {
+			order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
+		}
 
 		// 如果session中没有虚拟订单，则通过方法生成一个
 		if (null == order_temp) {
@@ -215,6 +221,7 @@ public class TdOrderController {
 			tdCommonService.clear(req);
 		}
 
+		map.addAttribute("order", order_temp);
 		map.addAttribute("no_product_coupon_list", no_product_coupon_list);
 		map.addAttribute("product_coupon_list", product_coupon_list);
 		return "/client/order_pay";
@@ -233,10 +240,8 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-		if (null != req.getSession().getAttribute("order_temp"))
-		{
-			TdOrder order = (TdOrder) req.getSession().getAttribute(
-					"order_temp");
+		if (null != req.getSession().getAttribute("order_temp")) {
+			TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 			order = tdOrderService.findOne(order.getId());
 			if (null != order) {
 				if (null == order.getPresentedList()) {

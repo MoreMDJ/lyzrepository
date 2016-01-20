@@ -137,7 +137,7 @@
                             <div class="first"><span><input id="usedBalance" style="border:#dddddd 1px solid;line-height:20px;padding-left:20px;" type="text" value="<#if max??>${max?string("0.00")}<#else>0.00</#if>"></span></div>
                             <div id="isUserCash" class="checked <#if !(isCoupon??&&isCoupon==false)>active</#if>"></div>
                             <#-- <#if max??>${max?string("0.00")}<#else>0.00</#if> -->
-                            <input type="hidden" id="userBalance" value="${user.balance}">
+                            <input type="hidden" id="userBalance" value="<#if user.balance??>${user.balance?string("0.00")}<#else>0.00</#if>">
                         </div>
                     </div>
                 </section>

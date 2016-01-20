@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
+import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.repository.TdGoodsRepo;
@@ -62,6 +63,9 @@ public class TdGoodsService {
 
 	@Autowired
 	TdPriceChangeLogService tdPriceChangeLogService;
+
+	@Autowired
+	private TdBrandService tdBrandService;
 
 	// @Autowired
 	// private TdUserRecentVisitService tdUserRecentVisitService;
@@ -1215,6 +1219,16 @@ public class TdGoodsService {
 				e.setTotalComb(e.getCombList().size());
 			}
 		}
+
+		// 保存品牌名
+		Long brandId = e.getBrandId();
+		if (null != brandId) {
+			TdBrand brand = tdBrandService.findOne(brandId);
+			if (null != brand) {
+				e.setBrandTitle(brand.getTitle());
+			}
+		}
+
 		e = repository.save(e);
 
 		return e;

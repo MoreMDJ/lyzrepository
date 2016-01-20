@@ -1153,6 +1153,21 @@ public class TdCommonService {
 			}
 		}
 
+		// 查询是否存在乐易装的品牌
+		if (null != order_temp.getDeliverTypeTitle() && !"门店自提".equals(order_temp.getDeliverTypeTitle())) {
+			TdBrand brand = tdBrandService.findByTitle("乐易装");
+			if (null != brand) {
+				Long brandId = brand.getId();
+				TdOrder order = order_map.get(brandId);
+				// 运费放置在乐易装的订单上
+				order.setDeliverFee(order_temp.getDeliverFee());
+				if (null == order.getTotalPrice()) {
+					order.setTotalPrice(0.00);
+				}
+				order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
+			}
+		}
+
 		// 获取原单总价
 		Double totalPrice = order_temp.getTotalPrice();
 		if (null == totalPrice) {
@@ -1195,21 +1210,6 @@ public class TdCommonService {
 						order.setActualPay(order.getUnCashBalanceUsed() + order.getCashBalanceUsed());
 					}
 				}
-			}
-		}
-
-		// 查询是否存在乐易装的品牌
-		if (null != order_temp.getDeliverTypeTitle() && !"门店自提".equals(order_temp.getDeliverTypeTitle())) {
-			TdBrand brand = tdBrandService.findByTitle("乐易装");
-			if (null != brand) {
-				Long brandId = brand.getId();
-				TdOrder order = order_map.get(brandId);
-				// 运费放置在乐易装的订单上
-				order.setDeliverFee(order_temp.getDeliverFee());
-				if (null != order.getTotalPrice()) {
-					order.setTotalPrice(0.00);
-				}
-				order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
 			}
 		}
 
@@ -1541,7 +1541,7 @@ public class TdCommonService {
 			if (null == order.getActualPay()) {
 				order.setActualPay(0.0);
 			}
-			
+
 			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
 
 			// Add by Shawn
