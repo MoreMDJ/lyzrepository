@@ -1183,63 +1183,66 @@ public class TdUserController {
 			}
 		}
 
-		// 进行资金退还
-		Double totalPrice = order.getTotalPrice();
-		Double unCashBalanceUsed = order.getUnCashBalanceUsed();
-		if (null == unCashBalanceUsed) {
-			unCashBalanceUsed = 0.00;
-		}
-		Double cashBalanceUsed = order.getCashBalanceUsed();
-		if (null == cashBalanceUsed) {
-			cashBalanceUsed = 0.00;
-		}
-		String productCouponId = order.getProductCouponId();
-		String cashCouponId = order.getCashCouponId();
-		Long userId = order.getUserId();
-		TdUser user = tdUserService.findOne(userId);
-		if (null == user) {
-			res.put("message", "未找到订单的归属用户");
-			return res;
-		}
-		user.setBalance(user.getBalance() + unCashBalanceUsed + cashBalanceUsed);
-		user.setUnCashBalance(user.getUnCashBalance() + unCashBalanceUsed);
-		user.setCashBalance(user.getCashBalance() + cashBalanceUsed);
-		tdUserService.save(user);
-
-		// 拆分使用的现金券的id
-		if (null != cashCouponId && !"".equals(cashCouponId)) {
-			String[] cashs = cashCouponId.split(",");
-			if (null != cashs) {
-				for (String sId : cashs) {
-					if (null != sId) {
-						Long id = Long.valueOf(sId);
-						TdCoupon coupon = tdCouponService.findOne(id);
-						if (null != coupon) {
-							coupon.setIsUsed(false);
-							tdCouponService.save(coupon);
-						}
-					}
-				}
-			}
-		}
-
-		// 拆分使用的产品券
-		if (null != productCouponId && !"".equals(productCouponId)) {
-			String[] products = productCouponId.split(",");
-			if (null != products) {
-				for (String sId : products) {
-					if (null != sId) {
-						Long id = Long.valueOf(sId);
-						TdCoupon coupon = tdCouponService.findOne(id);
-						if (null != coupon) {
-							coupon.setIsUsed(false);
-							tdCouponService.save(coupon);
-						}
-					}
-				}
-			}
-		}
+		
 		if (null != order.getStatusId() && 3L == order.getStatusId()) {
+			// 进行资金退还
+			Double totalPrice = order.getTotalPrice();
+			Double unCashBalanceUsed = order.getUnCashBalanceUsed();
+			if (null == unCashBalanceUsed) {
+				unCashBalanceUsed = 0.00;
+			}
+			Double cashBalanceUsed = order.getCashBalanceUsed();
+			if (null == cashBalanceUsed) {
+				cashBalanceUsed = 0.00;
+			}
+			String productCouponId = order.getProductCouponId();
+			String cashCouponId = order.getCashCouponId();
+			Long userId = order.getUserId();
+			TdUser user = tdUserService.findOne(userId);
+			if (null == user) {
+				res.put("message", "未找到订单的归属用户");
+				return res;
+			}
+			user.setBalance(user.getBalance() + unCashBalanceUsed + cashBalanceUsed);
+			user.setUnCashBalance(user.getUnCashBalance() + unCashBalanceUsed);
+			user.setCashBalance(user.getCashBalance() + cashBalanceUsed);
+			tdUserService.save(user);
+
+			// 拆分使用的现金券的id
+			if (null != cashCouponId && !"".equals(cashCouponId)) {
+				String[] cashs = cashCouponId.split(",");
+				if (null != cashs) {
+					for (String sId : cashs) {
+						if (null != sId) {
+							Long id = Long.valueOf(sId);
+							TdCoupon coupon = tdCouponService.findOne(id);
+							if (null != coupon) {
+								coupon.setIsUsed(false);
+								tdCouponService.save(coupon);
+							}
+						}
+					}
+				}
+			}
+
+			// 拆分使用的产品券
+			if (null != productCouponId && !"".equals(productCouponId)) {
+				String[] products = productCouponId.split(",");
+				if (null != products) {
+					for (String sId : products) {
+						if (null != sId) {
+							Long id = Long.valueOf(sId);
+							TdCoupon coupon = tdCouponService.findOne(id);
+							if (null != coupon) {
+								coupon.setIsUsed(false);
+								tdCouponService.save(coupon);
+							}
+						}
+					}
+				}
+			}
+			
+			
 			TdReturnNote note = new TdReturnNote();
 			// 退货单编号
 			Date current = new Date();
