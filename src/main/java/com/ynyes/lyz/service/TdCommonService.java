@@ -959,7 +959,7 @@ public class TdCommonService {
 	 * @author dengxiao
 	 */
 	public void dismantleOrder(HttpServletRequest req, String username) {
-		System.err.println("开始拆单");
+
 		// 获取虚拟订单
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null == order_temp) {
@@ -1741,7 +1741,7 @@ public class TdCommonService {
 					+ returnNote.getTurnPrice() + "</turn_price>" + "<turn_type>" + returnNote.getTurnType()
 					+ "</turn_type>" + "</TABLE>" + "</ERP>";
 
-			xmlStr.replace("null", "");
+			xmlStr = xmlStr.replace("null", "");
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
 			try {
@@ -1758,7 +1758,7 @@ public class TdCommonService {
 		TdInterfaceErrorLog errorLog = new TdInterfaceErrorLog();
 		errorLog.setErrorMsg(errorMsg);
 		errorLog.setOrderNumber(orderNumber);
-		errorLog.setSubOrderNumber(subOrderNumber);
+	errorLog.setSubOrderNumber(subOrderNumber);
 		tdInterfaceErrorLogService.save(errorLog);
 	}
 
