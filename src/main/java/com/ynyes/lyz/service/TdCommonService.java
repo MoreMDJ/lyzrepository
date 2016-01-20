@@ -1523,12 +1523,11 @@ public class TdCommonService {
 
 			// add by Shawn
 			if (null == order.getTotalPrice()) {
-				order.setTotalPrice(0.0);
+				order.setTotalPrice(0.00);
 			}
 
 			if (null == order.getActualPay()) {
-				order.setActualPay(0.0);
-			}
+				order.setActualPay(0.00);
 			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
 
 			// Add by Shawn
@@ -1592,6 +1591,7 @@ public class TdCommonService {
 			requisition.setRequisiteGoodsList(requisitionGoodsList);
 			requisition = tdRequisitionService.save(requisition);
 		}
+			}
 		return requisition;
 	}
 
@@ -1821,7 +1821,6 @@ public class TdCommonService {
 		if (null == note) {
 			return;
 		}
-
 		String JAVA_PATH = System.getenv("JAVA_HOME");
 		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
 		String PATH = System.getenv("Path");
