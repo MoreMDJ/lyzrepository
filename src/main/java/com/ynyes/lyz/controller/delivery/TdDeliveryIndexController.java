@@ -417,6 +417,8 @@ public class TdDeliveryIndexController {
 			tdOrderGoodsService.save(orderGoodsList);
 			// 保存退货单
 			tdReturnNoteService.save(returnNote);
+			
+//			tdCommonService.sendBackMsgToWMS(returnNote);
 
 			order.setStatusId(7L);
 			order.setIsRefund(true);
