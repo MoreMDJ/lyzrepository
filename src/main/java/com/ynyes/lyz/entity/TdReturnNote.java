@@ -73,7 +73,7 @@ public class TdReturnNote {
 	@Column
 	private String username;
 
-	// 下单时间
+	// 退货单下单时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date orderTime;
