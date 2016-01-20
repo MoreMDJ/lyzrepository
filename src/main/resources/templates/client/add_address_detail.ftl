@@ -5,7 +5,7 @@
 <!-- 头部 END -->
 
 <!-- 选择城区 -->
-<article class="add-shipping-address" id="region" class="colo_sec">
+<article class="add-shipping-address" id="region"  style="overflow:auto;">
     <#if region_list??>
         <#list region_list as item>
             <div class="select-city" onclick="getRegion(${item.id?c},'${item.name!''}',${status!'0'});">
