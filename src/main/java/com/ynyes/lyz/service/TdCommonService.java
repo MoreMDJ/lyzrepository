@@ -1527,6 +1527,7 @@ public class TdCommonService {
 			requisition.setReceiveAddress(order.getShippingAddress());
 			requisition.setRemarkInfo(order.getRemark());
 			requisition.setDiySiteTel(order.getDiySitePhone());
+			requisition.setOrderTime(order.getOrderTime());
 
 			// add by Shawn
 			if (null == order.getTotalPrice()) {
@@ -1639,7 +1640,9 @@ public class TdCommonService {
 
 		if (type == 1) {
 			TdRequisition requisition = (TdRequisition) object;
-			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisition.getId() + "</id>" + "<cancel_time></cancel_time>"
+			String xmlStr = "<ERP>" + "<TABLE>" 
+			+ "<id>" + requisition.getId() + "</id>" 
+					+ "<cancel_time></cancel_time>"
 					+ "<check_time></check_time>" + "<diy_site_address></diy_site_address>" + "<diy_site_id>"
 					+ requisition.getDiyCode() + "</diy_site_id>" + "<diy_site_tel>" + requisition.getDiySiteTel()
 					+ "</diy_site_tel>" + "<manager_remark_info></manager_remark_info>" + "<remark_info>"
@@ -1673,9 +1676,13 @@ public class TdCommonService {
 		}
 		if (type == 2) {
 			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods) object;
-			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisitionGoods.getId() + "</id>" + "<goods_code>"
-					+ requisitionGoods.getGoodsCode() + "</goods_code>" + "<goods_title>"
-					+ requisitionGoods.getGoodsTitle() + "</goods_title>" + "<price>" + requisitionGoods.getPrice()
+			String xmlStr = "<ERP>" + "<TABLE>" 
+			+ "<id>" + requisitionGoods.getId() + "</id>" 
+					+ "<goods_code>"
+					+ requisitionGoods.getGoodsCode() + "</goods_code>" 
+					+ "<goods_title>"
+					+ requisitionGoods.getGoodsTitle() + "</goods_title>" 
+					+ "<price>" + requisitionGoods.getPrice()
 					+ "</price>" + "<quantity>" + requisitionGoods.getQuantity() + "</quantity>"
 					+ "<td_requisition_id></td_requisition_id>" + "<order_number>" + requisitionGoods.getOrderNumber()
 					+ "</order_number>" + "<sub_order_number>" + requisitionGoods.getSubOrderNumber()
