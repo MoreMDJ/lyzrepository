@@ -1517,15 +1517,14 @@ public class TdCommonService {
 			requisition.setDiySiteTel(order.getDiySitePhone());
 
 			// add by Shawn
-			if (null == order.getTotalPrice())
-			{
-				order.setTotalPrice(0.0);
+			if (null == order.getTotalPrice()) {
+				order.setTotalPrice(0.00);
 			}
-			
-			if (null == order.getActualPay())
-			{
-				order.setActualPay(0.0);
+
+			if (null == order.getActualPay()) {
+				order.setActualPay(0.00);
 			}
+
 			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
 
 			// Add by Shawn
@@ -1646,8 +1645,6 @@ public class TdCommonService {
 					+ requisition.getSubdistrict() + "</subdistrict>" + "<order_time>" + requisition.getOrderTime()
 					+ "</order_time>" + "<sub_order_number></sub_order_number>" + "</TABLE>" + "</ERP>";
 
-			System.out.print("MDJWS: returnNote-->" + xmlStr);
-			
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
 			try {
@@ -1803,7 +1800,6 @@ public class TdCommonService {
 		if (null == note) {
 			return;
 		}
-
 		String JAVA_PATH = System.getenv("JAVA_HOME");
 		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
 		String PATH = System.getenv("Path");
