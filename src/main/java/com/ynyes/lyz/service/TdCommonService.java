@@ -1212,7 +1212,10 @@ public class TdCommonService {
 				BigDecimal b = new BigDecimal(order.getTotalPrice());
 				order.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 				order = tdOrderService.save(order);
-				orderList.add(order);
+				// 增加一个判定，只有配送单才会抛到WMS去——dengxiao
+				if ("送货上门".equals(order.getDeliverTypeTitle())) {
+					orderList.add(order);
+				}
 			}
 		}
 
