@@ -101,7 +101,7 @@ function __doPostBack(eventTarget, eventArgument) {
                     <input type="hidden" name="listId" id="listId" value="${requisition.id?c}">
                 </td>
                 <td>
-                    <a href="/Verwalter/requisition/requisition/edit?id=${requisition.id?c}">${requisition.requisitionNumber!""}</a></td>
+                    <a href="/Verwalter/requisition/requisition/edit?id=${requisition.id?c}">${requisition.orderNumber!""}</a></td>
                 <td>${requisition.diySiteTitle!""}</td>
                 <td>${requisition.remarkInfo!""}</td>
                 <td><#if requisition.orderTime??>${requisition.orderTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>

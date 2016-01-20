@@ -1011,6 +1011,7 @@ public class TdCommonService {
 				order.setPayTypeId(order_temp.getPayTypeId());
 				order.setPayTypeTitle(order_temp.getPayTypeTitle());
 				order.setOrderTime(order_temp.getOrderTime());
+				order.setRemark(order_temp.getRemark());
 				order_map.put(brand.getId(), order);
 			}
 		}
@@ -1212,7 +1213,10 @@ public class TdCommonService {
 				BigDecimal b = new BigDecimal(order.getTotalPrice());
 				order.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 				order = tdOrderService.save(order);
-				orderList.add(order);
+				// 增加一个判定，只有配送单才会抛到WMS去——dengxiao
+				if ("送货上门".equals(order.getDeliverTypeTitle())) {
+					orderList.add(order);
+				}
 			}
 		}
 
@@ -1523,8 +1527,6 @@ public class TdCommonService {
 
 			if (null == order.getActualPay()) {
 				order.setActualPay(0.00);
-			}
-
 			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
 
 			// Add by Shawn
@@ -1588,6 +1590,7 @@ public class TdCommonService {
 			requisition.setRequisiteGoodsList(requisitionGoodsList);
 			requisition = tdRequisitionService.save(requisition);
 		}
+			}
 		return requisition;
 	}
 
@@ -1644,6 +1647,8 @@ public class TdCommonService {
 					+ "</disctrict>" + "<province>" + requisition.getProvince() + "</province>" + "<subdistrict>"
 					+ requisition.getSubdistrict() + "</subdistrict>" + "<order_time>" + requisition.getOrderTime()
 					+ "</order_time>" + "<sub_order_number></sub_order_number>" + "</TABLE>" + "</ERP>";
+
+			System.out.print("MDJWS: returnNote-->" + xmlStr);
 
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
@@ -1758,7 +1763,7 @@ public class TdCommonService {
 		TdInterfaceErrorLog errorLog = new TdInterfaceErrorLog();
 		errorLog.setErrorMsg(errorMsg);
 		errorLog.setOrderNumber(orderNumber);
-	errorLog.setSubOrderNumber(subOrderNumber);
+		errorLog.setSubOrderNumber(subOrderNumber);
 		tdInterfaceErrorLogService.save(errorLog);
 	}
 

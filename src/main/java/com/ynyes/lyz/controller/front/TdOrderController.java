@@ -233,18 +233,23 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
-		order = tdOrderService.findOne(order.getId());
-		if (null != order) {
-			if (null == order.getPresentedList()) {
-				order.setPresentedList(new ArrayList<TdOrderGoods>());
+		if (null != req.getSession().getAttribute("order_temp"))
+		{
+			TdOrder order = (TdOrder) req.getSession().getAttribute(
+					"order_temp");
+			order = tdOrderService.findOne(order.getId());
+			if (null != order) {
+				if (null == order.getPresentedList()) {
+					order.setPresentedList(new ArrayList<TdOrderGoods>());
+				}
+
+				if (null == order.getGiftGoodsList()) {
+					order.setGiftGoodsList(new ArrayList<TdOrderGoods>());
+				}
 			}
 
-			if (null == order.getGiftGoodsList()) {
-				order.setGiftGoodsList(new ArrayList<TdOrderGoods>());
-			}
+			map.addAttribute("order", order);
 		}
-		map.addAttribute("order", order);
 		return "/client/order_list";
 	}
 
