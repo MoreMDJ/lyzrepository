@@ -3,6 +3,8 @@ package com.ynyes.lyz.service;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.regexp.REUtil;
+import org.neo4j.cypher.internal.compiler.v2_1.commands.indexQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -96,6 +98,33 @@ public class TdOrderService {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
 
 		return repository.findAll(pageRequest);
+	}
+	
+	/**
+	 * 根据门店查询订单
+	 * @param diyCode
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public Page<TdOrder> findByDiyCode(String diyCode,int page,int size)
+	{
+		if (diyCode == null)
+		{
+			return null;
+		}
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC,"id"));
+		return repository.findByDiySiteCode(diyCode, pageRequest);
+	}
+	
+	public Page<TdOrder> findByDiyCodeAndStatusIdOrderByIdDesc(String diyCode ,Long statusId,Integer page,Integer size)
+	{
+		if (diyCode == null || statusId == null || page == null || size == null)
+		{
+			return null;
+		}
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByDiySiteCodeAndStatusIdOrderByIdDesc(diyCode, statusId, pageRequest);
 	}
 
 	public Page<TdOrder> findByStatusIdOrderByIdDesc(long statusId, int page, int size) {

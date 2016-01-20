@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -20,7 +21,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdManager;
+import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdShippingAddress;
@@ -31,7 +35,10 @@ import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
+import com.ynyes.lyz.service.TdManagerRoleService;
+import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdOrderService;
+import com.ynyes.lyz.service.TdOwnMoneyRecordService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.service.TdProductCategoryService;
@@ -95,6 +102,15 @@ public class TdManagerOrderController {
 
 	@Autowired
 	private TdPriceListService tdPriceListService;
+	
+	@Autowired
+	private TdManagerService tdManagerService;
+	
+	@Autowired
+	private TdManagerRoleService tdManagerRoleService;
+	
+	@Autowired
+	private TdOwnMoneyRecordService tdOwnMoneyRecordService;
 
 	// 城市选择
 	@RequestMapping(value = "/city", method = RequestMethod.POST)
@@ -236,6 +252,111 @@ public class TdManagerOrderController {
 
 		return "/site_mag/pay_type_list";
 	}
+	
+	
+	// 欠款审核
+	@RequestMapping(value = "/own/list")
+	public String ownList(HttpServletRequest req, Integer page, Long statusId, Integer size,ModelMap map, String __EVENTTARGET,
+			String __EVENTARGUMENT, String __VIEWSTATE,Long[] listChkId,Long payLeft)
+	{
+		String username = (String) req.getSession().getAttribute("manager");
+		if (null == username) 
+		{
+			return "redirect:/Verwalter/login";
+		}
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		String diyCode = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+			if (tdManagerRole == null)
+			{
+				return "redirect:/Verwalter/login";
+			}
+			if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
+			{
+				diyCode = tdManagerRole.getTitle();
+			}
+		}
+		
+		if (null == page || page < 0) 
+		{
+			page = 0;
+		}
+
+		if (null == size || size <= 0) 
+		{
+			size = SiteMagConstant.pageSize;
+		}
+		
+		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
+		{
+			map.addAttribute("own_page",tdOwnMoneyRecordService.findByDiyCodeOrderByIdDesc(tdManager.getDiyCode(), page, size));
+		}
+		else
+		{
+			map.addAttribute("own_page",tdOwnMoneyRecordService.findAllOrderBySortIdAsc(page, size));
+		}
+		if (null != __EVENTTARGET)
+		{
+			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
+			{
+				if (null != __EVENTARGUMENT)
+				{
+					page = Integer.parseInt(__EVENTARGUMENT);
+				}
+			}
+			else if (__EVENTTARGET.equalsIgnoreCase("statusId")) 
+			{
+				if (null != statusId)
+				{
+					if (statusId == 0)
+					{
+						map.remove("own_page");
+						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsEnableOrderByIdDesc(diyCode, false, page, size));
+					}
+					else if (statusId == 1)
+					{
+						map.remove("own_page");
+						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsEnableOrderByIdDesc(diyCode, false, page, size));
+					}
+				}
+			}
+			else if (__EVENTTARGET.equalsIgnoreCase("btnEnable")) 
+			{
+				if (null != listChkId)
+				{
+					btnEnale(listChkId);
+				}
+			}
+			else if (__EVENTTARGET.equalsIgnoreCase("payLeft")) 
+			{
+				if (null != payLeft)
+				{
+					if (payLeft == 0)
+					{
+						map.remove("own_page");
+						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsPayedOrderByIdDesc(diyCode, false, page, size));
+					}
+					else if (payLeft == 1)
+					{
+						map.remove("own_page");
+						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsPayedOrderByIdDesc(diyCode, true, page, size));
+					}
+				}
+			}
+			
+		}
+		map.addAttribute("page", page);
+		map.addAttribute("size", size);
+		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+		map.addAttribute("statusId",statusId);
+		map.addAttribute("payLeft",payLeft);
+		return "/site_mag/own_list";
+	}
 
 	// 订单设置编辑
 	@RequestMapping(value = "/setting/{type}/edit")
@@ -344,9 +465,26 @@ public class TdManagerOrderController {
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
 			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
+
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
+
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		if (tdManagerRole == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
+		
+		
+		
+		
+
 		if (null != __EVENTTARGET) {
 			if (__EVENTTARGET.equalsIgnoreCase("btnCancel")) {
 				btnCancel(listId, listChkId);
@@ -370,15 +508,34 @@ public class TdManagerOrderController {
 
 		if (null == size || size <= 0) {
 			size = SiteMagConstant.pageSize;
-			;
 		}
 
-		if (null != statusId) {
-			if (statusId.equals(0L)) // 全部订单
+		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
+		{
+			if (null != statusId) 
 			{
-				map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size));
-			} else {
-				map.addAttribute("order_page", tdOrderService.findByStatusIdOrderByIdDesc(statusId, page, size));
+				if (statusId.equals(0L)) // 全部订单
+				{
+					map.addAttribute("order_page", tdOrderService.findByDiyCode(tdManager.getDiyCode(), page, size));
+				}
+				else
+				{
+					map.addAttribute("order_page", tdOrderService.findByDiyCodeAndStatusIdOrderByIdDesc(tdManager.getDiyCode(), statusId, page, size));
+				}
+			}
+		}
+		else 
+		{
+			if (null != statusId)
+			{
+				if (statusId.equals(0L)) // 全部订单
+				{
+					map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size));
+				} 
+				else 
+				{
+					map.addAttribute("order_page", tdOrderService.findByStatusIdOrderByIdDesc(statusId, page, size));
+				}
 			}
 		}
 
@@ -815,6 +972,22 @@ public class TdManagerOrderController {
 				// 只有已取消(7L)订单能进行删除
 				if (tdOrder.getStatusId().equals(7L)) {
 					tdOrderService.delete(tdOrder);
+				}
+			}
+		}
+	}
+	private void btnEnale(Long[] chkIds) {
+		if ( null == chkIds || chkIds.length < 1) {
+			return;
+		}
+
+		for (Long chkId : chkIds) {
+			if (chkId >= 0) {
+				TdOwnMoneyRecord ownMoneyRecord = tdOwnMoneyRecordService.findOne(chkId);
+				if (ownMoneyRecord != null)
+				{
+					ownMoneyRecord.setIsEnable(true);
+					tdOwnMoneyRecordService.save(ownMoneyRecord);
 				}
 			}
 		}

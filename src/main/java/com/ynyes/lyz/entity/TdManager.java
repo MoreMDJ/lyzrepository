@@ -81,8 +81,20 @@ public class TdManager {
     // 排序号
     @Column
     private Double sortId;
+    
+    // 门店编码
+    @Column
+    private String diyCode;
 
-    public Long getId() {
+    public String getDiyCode() {
+		return diyCode;
+	}
+
+	public void setDiyCode(String diyCode) {
+		this.diyCode = diyCode;
+	}
+
+	public Long getId() {
         return id;
     }
 

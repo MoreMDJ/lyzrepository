@@ -1488,6 +1488,7 @@ public class TdCommonService {
 		if (requisition == null) {
 			requisition = new TdRequisition();
 			requisition.setDiySiteId(order.getDiySiteId());
+			requisition.setDiyCode(order.getDiySiteCode());
 			requisition.setDiySiteTitle(order.getDiySiteName());
 			requisition.setCustomerName(order.getUsername());
 			requisition.setCustomerId(order.getUserId());
@@ -1496,7 +1497,10 @@ public class TdCommonService {
 			requisition.setReceiveAddress(order.getShippingAddress());
 			requisition.setRemarkInfo(order.getRemark());
 			requisition.setDiySiteTel(order.getDiySitePhone());
-			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
+			if (order.getTotalPrice() != null && order.getActualPay() != null)
+			{
+				requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
+			}
 			
 			// Add by Shawn
 			requisition.setProvince(order.getProvince());
@@ -1604,7 +1608,7 @@ public class TdCommonService {
 					+ "<cancel_time></cancel_time>"
 					+ "<check_time></check_time>" 
 					+ "<diy_site_address></diy_site_address>"
-					+ "<diy_site_id>" + requisition.getDiySiteId() + "</diy_site_id>" 
+					+ "<diy_site_id>" + requisition.getDiyCode() + "</diy_site_id>" 
 					+ "<diy_site_tel>"+ requisition.getDiySiteTel() +"</diy_site_tel>"
 					+ "<manager_remark_info></manager_remark_info>"
 					+ "<remark_info>"+ requisition.getRemarkInfo() +"</remark_info>"
@@ -1625,9 +1629,11 @@ public class TdCommonService {
 					+ "<province>" + requisition.getProvince() + "</province>" 
 					+ "<subdistrict>" + requisition.getSubdistrict() + "</subdistrict>" 
 					+ "<order_time>" + requisition.getOrderTime() + "</order_time>"
-					+ "<sub_order_number></sub_order_number>"
+					+ "<sub_order_number>"+ requisition.getLeftPrice() +"</sub_order_number>"
 					+ "</TABLE>"
 					+ "</ERP>";
+			
+			xmlStr = xmlStr.replace("null", "");
 
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
@@ -1725,7 +1731,7 @@ public class TdCommonService {
 					+ returnNote.getTurnPrice() + "</turn_price>" + "<turn_type>" + returnNote.getTurnType()
 					+ "</turn_type>" + "</TABLE>" + "</ERP>";
 
-			xmlStr.replace("null", "");
+			xmlStr = xmlStr.replace("null", "");
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
 			try {

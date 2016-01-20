@@ -288,6 +288,7 @@ public class TdDeliveryIndexController {
 		TdOwnMoneyRecord rec = new TdOwnMoneyRecord();
 		rec.setCreateTime(new Date());
 		rec.setOrderNumber(order.getOrderNumber());
+		rec.setDiyCode(order.getDiySiteCode());
 		rec.setOwned(owned);
 		rec.setPayed(payed);
 		rec.setUsername(order.getUsername());

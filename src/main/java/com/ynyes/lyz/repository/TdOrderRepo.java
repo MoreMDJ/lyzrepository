@@ -18,6 +18,14 @@ import com.ynyes.lyz.entity.TdOrder;
  */
 
 public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, JpaSpecificationExecutor<TdOrder> {
+	
+	//根据门店id
+	Page<TdOrder> findByDiySiteCode(String diyCode,Pageable page);
+	
+	//根据门店id和订单状态
+	Page<TdOrder> findByDiySiteCodeAndStatusIdOrderByIdDesc(String diyCode,Long statusId,Pageable page);
+	
+	
 	Page<TdOrder> findByStatusIdOrderByIdDesc(Long statusId, Pageable page);
 
 	Page<TdOrder> findByUsernameOrderByIdDesc(String username, Pageable page);

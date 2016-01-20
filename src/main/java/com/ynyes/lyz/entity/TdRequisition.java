@@ -111,6 +111,19 @@ public class TdRequisition {
     @Column
     private String diySiteTel;
     
+    // 门店编码
+    @Column
+    private String diyCode;
+    
+    
+	public String getDiyCode() {
+		return diyCode;
+	}
+
+	public void setDiyCode(String diyCode) {
+		this.diyCode = diyCode;
+	}
+
 	public Double getLeftPrice() {
 		return leftPrice;
 	}
