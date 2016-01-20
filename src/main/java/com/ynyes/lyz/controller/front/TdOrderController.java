@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ibm.icu.math.BigDecimal;
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
@@ -37,6 +38,7 @@ import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
+import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
 import com.ynyes.lyz.service.TdUserService;
@@ -84,6 +86,9 @@ public class TdOrderController {
 	@Autowired
 	private TdOrderGoodsService tdOrderGoodsService;
 
+	@Autowired
+	private TdPriceCountService tdPriceCouintService;
+
 	/**
 	 * 清空部分信息的控制器
 	 * 
@@ -110,32 +115,46 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-
 		map.addAttribute("user", user);
 
-		// 创建一个布尔值用于判断能否使用优惠券
-		Boolean isCoupon = true;
-		// 创建一个布尔值用于判断是否收取运费
-		Boolean isFree = false;
-		TdOrder order = null;
-		if (null != id) {
-			req.getSession().setAttribute("order_temp", null);
-			req.getSession().setAttribute("maxCash", null);
-			req.getSession().setAttribute("maxCoupon", null);
-			req.getSession().setAttribute("usedNow", null);
-			order = tdOrderService.findOne(id);
-			req.getSession().setAttribute("order_temp", order);
-		} else {
-			order = (TdOrder) req.getSession().getAttribute("order_temp");
+		// 生成虚拟订单
+		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
+
+		// 如果session中没有虚拟订单，则通过方法生成一个
+		if (null == order_temp) {
+			order_temp = tdCommonService.createVirtual(req);
 		}
-		if (null == order) {
-			order = tdCommonService.createVirtual(req);
-			// 将其放入session中
-			req.getSession().setAttribute("order_temp", order);
+
+		order_temp = tdPriceCouintService.checkCouponIsUsed(order_temp);
+
+		// 计算价格和最大优惠券使用金额
+		Map<String, Object> results = tdPriceCouintService.countPrice(order_temp, user);
+
+		// 如果计算的结果不为NULL，就获取一系列的值
+		if (null != results) {
+			TdOrder order_count = (TdOrder) results.get("result");
+			Double max = (Double) results.get("max");
+			Boolean isCoupon = (Boolean) results.get("isCoupon");
+
+			// 得到订单的金额
+			if (null != order_count) {
+				order_temp = order_count;
+				map.addAttribute("order", order_temp);
+			}
+
+			// 获取该单能够使用的最大预存款
+			if (null != max) {
+				map.addAttribute("max", max);
+			}
+
+			if (null != isCoupon) {
+				map.addAttribute("isCoupon", isCoupon);
+			}
+
 		}
 
 		// 获取已选的所有品牌的id
-		List<Long> brandIds = tdCommonService.getBrandId(user.getId(), order);
+		List<Long> brandIds = tdCommonService.getBrandId(user.getId(), order_temp);
 
 		// 创建一个集合存储用户所能够使用的现金券
 		List<TdCoupon> no_product_coupon_list = new ArrayList<>();
@@ -152,7 +171,7 @@ public class TdOrderController {
 		}
 
 		// 遍历所有已选，查找用户对于当前订单可以使用的指定商品现金券和产品券
-		List<TdOrderGoods> selected = order.getOrderGoodsList();
+		List<TdOrderGoods> selected = order_temp.getOrderGoodsList();
 		if (null != selected) {
 			for (TdOrderGoods goods : selected) {
 				if (null != goods) {
@@ -171,8 +190,8 @@ public class TdOrderController {
 			}
 		}
 
-		String productCouponId = order.getProductCouponId();
-		String cashCouponId = order.getCashCouponId();
+		String productCouponId = order_temp.getProductCouponId();
+		String cashCouponId = order_temp.getCashCouponId();
 
 		if (null != productCouponId && !"".equals(productCouponId)) {
 			String[] strings = productCouponId.split(",");
@@ -188,61 +207,16 @@ public class TdOrderController {
 			}
 		}
 
-		Double maxCash = (Double) req.getSession().getAttribute("maxCash");
-		if (null == maxCash) {
-			maxCash = tdCommonService.getMaxCash(req, map, order);
-			req.getSession().setAttribute("maxCash", maxCash);
-		}
+		// 将虚拟订单添加到session中
+		req.getSession().setAttribute("order_temp", order_temp);
 
 		// 清空已选
 		if (null == id) {
 			tdCommonService.clear(req);
 		}
 
-		Map<Long, Double> maxCoupon = (Map<Long, Double>) req.getSession().getAttribute("maxCoupon");
-		if (null == maxCoupon) {
-			maxCoupon = tdCommonService.getMaxCoupon(order, user.getId());
-			if (null == maxCoupon) {
-				maxCoupon = new HashMap<>();
-			}
-			req.getSession().setAttribute("maxCoupon", maxCoupon);
-		}
-
-		Map<Long, Double> usedNow = (Map<Long, Double>) req.getSession().getAttribute("usedNow");
-		if (null == usedNow) {
-			usedNow = tdCommonService.getUsedNow(order, user.getId());
-			if (null == usedNow) {
-				usedNow = new HashMap<>();
-			}
-			req.getSession().setAttribute("usedNow", usedNow);
-		}
-
-		String deliverTypeTitle = order.getDeliverTypeTitle();
-		// 如果配送方式是到店自提，則不能使用任何优惠券，同时不收取运费
-		if ("门店自提".equals(deliverTypeTitle)) {
-			isFree = true;
-			if ("到店支付".equals(order.getPayTypeTitle())) {
-				isCoupon = false;
-				Double orderPice = tdCommonService.getOrderPice(order);
-				order.setTotalPrice(orderPice);
-				maxCash = orderPice;
-				// 判断用户的余额是否大于max
-				Double balance = user.getBalance();
-				if (null == balance) {
-					balance = 0.00;
-				}
-				if (maxCash > balance) {
-					maxCash = balance;
-				}
-			}
-		}
-
-		map.addAttribute("isFree", isFree);
 		map.addAttribute("no_product_coupon_list", no_product_coupon_list);
 		map.addAttribute("product_coupon_list", product_coupon_list);
-		map.addAttribute("order", order);
-		map.addAttribute("isCoupon", isCoupon);
-		map.addAttribute("max", maxCash);
 		return "/client/order_pay";
 
 	}
@@ -616,7 +590,6 @@ public class TdOrderController {
 
 		// 获取虚拟订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
-		Double max_cash_can_used = (Double) req.getSession().getAttribute("maxCash");
 
 		String productCouponId = order.getProductCouponId();
 		if (null == productCouponId) {
@@ -626,10 +599,6 @@ public class TdOrderController {
 		if (null == cashCouponId) {
 			cashCouponId = "";
 		}
-		Double cashCoupon = order.getCashCoupon();
-		if (null == cashCoupon) {
-			cashCoupon = 0.00;
-		}
 
 		// 获取指定id的优惠券
 		TdCoupon coupon = tdCouponService.findOne(id);
@@ -637,29 +606,54 @@ public class TdOrderController {
 			res.put("message", "未找到指定的优惠券");
 			return res;
 		}
-		Map<Long, Double> maxCoupon = (Map<Long, Double>) req.getSession().getAttribute("maxCoupon");
-		// 获取当前使用的额度
-		Map<Long, Double> usedNow = (Map<Long, Double>) req.getSession().getAttribute("usedNow");
-		// 获取指定券的品牌
+
+		// 判断当前优惠券是否过期或是被使用
+		if ((null != coupon.getIsOutDate() && coupon.getIsOutDate())
+				|| (null != coupon.getIsUsed() && coupon.getIsUsed())) {
+			res.put("message", "此优惠券已被使用或已过期");
+			return res;
+		}
+
+		// 获取每个品牌的优惠券的最大使用额度和当前使用额度
+		Map<Long, Double[]> permit = tdPriceCouintService.getPermit(order);
+		if (null == permit) {
+			res.put("message", "操作优惠券失败");
+			return res;
+		}
+
 		Long brandId = coupon.getBrandId();
+		TdBrand brand = tdBrandService.findOne(brandId);
+		// 获取该品牌的优惠券【可使用限额，已使用限额】的队列
+		Double[] permits = permit.get(brandId);
+		if (null == permits) {
+			permits = new Double[2];
+			permits[0] = 0.00;
+			permits[1] = 0.00;
+		}
+		if (null == permits[0]) {
+			permits[0] = 0.00;
+		}
+		if (null == permits[1]) {
+			permits[1] = 0.00;
+		}
+
 		if (0L == type) {
 			if (0L == status) {
 				if (null == brandId) {
 					res.put("message", "未找到指定优惠券的信息");
 					return res;
 				}
-				TdBrand brand = tdBrandService.findOne(brandId);
-				Double maxCash = maxCoupon.get(brandId);
-				Double used = usedNow.get(brandId);
-				if ((used + coupon.getPrice()) > maxCash) {
-					if (0.00 == maxCash.doubleValue()) {
+				if ((permits[1] + coupon.getPrice()) > permits[0]) {
+					if (0.00 == permits[0].doubleValue()) {
 						res.put("message", "本单不能使用" + brand.getTitle() + "公司<br>的优惠券");
 					} else {
-						res.put("message", "您所能使用的" + brand.getTitle() + "公司<br>的优惠券最大限额为" + maxCash + "元");
+						res.put("message", "您所能使用的" + brand.getTitle() + "公司<br>的优惠券最大限额为" + permits[1] + "元");
 					}
 					return res;
 				} else {
+					// 创建一个布尔变量用于判断该张券是否在当前订单使用过，以应对网络条件不好的情况下，同一张券在一张订单中多次使用的情况
 					Boolean isHave = false;
+
 					if (null != cashCouponId && !"".equals(cashCouponId)) {
 						String[] strings = cashCouponId.split(",");
 						if (null != strings && strings.length > 0) {
@@ -673,21 +667,11 @@ public class TdOrderController {
 							}
 						}
 					}
+
+					// 指定的券在本单中没有使用时，才能够添加成功
 					if (!isHave) {
 						cashCouponId += coupon.getId() + ",";
-						cashCoupon += coupon.getPrice();
 						order.setCashCouponId(cashCouponId);
-						order.setCashCoupon(cashCoupon);
-						req.getSession().setAttribute("order_temp", order);
-						max_cash_can_used -= coupon.getPrice();
-						if (max_cash_can_used < 0) {
-							max_cash_can_used = 0.00;
-						}
-						req.getSession().setAttribute("maxCash", max_cash_can_used);
-						used += coupon.getPrice();
-						usedNow.put(brandId, used);
-						req.getSession().setAttribute("usedNow", usedNow);
-						order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
 						req.getSession().setAttribute("order_temp", order);
 						tdOrderService.save(order);
 					}
@@ -695,9 +679,11 @@ public class TdOrderController {
 			}
 			if (1L == status) {
 				if (!"".equals(cashCouponId)) {
+					// 拆分当前使用的现金券
 					String[] strings = cashCouponId.split(",");
-					Double used = usedNow.get(brandId);
+					// 创建一个新的变量用于存储删减后的现金券使用情况
 					String ids = "";
+					// 遍历现金券，当id与当前获取的优惠券的id不相同，添加到新的使用记录中
 					if (null != strings) {
 						for (String sCouponId : strings) {
 							if (null != sCouponId) {
@@ -708,16 +694,7 @@ public class TdOrderController {
 							}
 							cashCouponId = ids;
 						}
-						cashCoupon -= coupon.getPrice();
 						order.setCashCouponId(cashCouponId);
-						order.setCashCoupon(cashCoupon);
-						req.getSession().setAttribute("order_temp", order);
-						max_cash_can_used += coupon.getPrice();
-						req.getSession().setAttribute("maxCash", max_cash_can_used);
-						used -= coupon.getPrice();
-						usedNow.put(brandId, used);
-						req.getSession().setAttribute("usedNow", usedNow);
-						order.setTotalPrice(order.getTotalPrice() + coupon.getPrice());
 						req.getSession().setAttribute("order_temp", order);
 						tdOrderService.save(order);
 					}
@@ -726,103 +703,90 @@ public class TdOrderController {
 		}
 
 		if (1L == type) {
-			List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+			// 获取订单的已选商品
+			List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+			if (null == goodsList) {
+				res.put("message", "未检索到订单的商品信息");
+				return res;
+			}
 			if (0L == status) {
-				if (null != orderGoodsList) {
-					for (TdOrderGoods orderGoods : orderGoodsList) {
-						if (null != orderGoods && null != orderGoods.getGoodsId()
-								&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
-							System.err.println("进来了！");
-							Long couponNumber = orderGoods.getCouponNumber();
-							System.err.println("没报错！");
-							if (null == couponNumber) {
-								couponNumber = 0L;
-							}
-							if (couponNumber == orderGoods.getQuantity()) {
-								res.put("message", "您不能使用更多对于<br>该件产品的优惠券了");
-								return res;
-							} else {
-								orderGoods.setCouponNumber(couponNumber + 1L);
-								tdOrderGoodsService.save(orderGoods);
-								Boolean isHave = false;
-								if (null != productCouponId && !"".equals(productCouponId)) {
-									String[] strings = productCouponId.split(",");
-									if (null != strings && strings.length > 0) {
-										for (String sId : strings) {
-											if (null != sId) {
-												Long theId = Long.parseLong(sId);
-												if (null != theId && theId.longValue() == coupon.getId().longValue()) {
-													isHave = true;
-												}
+				// 遍历订单商品，查找到与产品券对应的
+				for (TdOrderGoods orderGoods : goodsList) {
+					if (null != orderGoods && null != orderGoods.getGoodsId()
+							&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
+						// 获取此件商品的产品券使用数量
+						Long couponNumber = orderGoods.getCouponNumber();
+
+						if (null == couponNumber) {
+							couponNumber = 0L;
+						}
+
+						// 如果使用的产品券已经等于商品的数量，那么就不能够再使用了
+						if (couponNumber == orderGoods.getQuantity()) {
+							res.put("message", "您不能使用更多对于<br>该件产品的优惠券了");
+							return res;
+						} else {
+							// 创建一个布尔变量用于判断该张券是否在当前订单使用过，以应对网络条件不好的情况下，同一张券在一张订单中多次使用的情况
+							Boolean isHave = false;
+							if (null != productCouponId && !"".equals(productCouponId)) {
+								String[] strings = productCouponId.split(",");
+								if (null != strings && strings.length > 0) {
+									for (String sId : strings) {
+										if (null != sId) {
+											Long theId = Long.parseLong(sId);
+											if (null != theId && theId.longValue() == coupon.getId().longValue()) {
+												isHave = true;
 											}
 										}
 									}
 								}
-								if (!isHave) {
-									productCouponId += coupon.getId() + ",";
-									order.setProductCouponId(productCouponId);
-									max_cash_can_used -= orderGoods.getPrice();
-									Double maxCash = maxCoupon.get(brandId);
-									if (null == maxCash) {
-										maxCash = 0.00;
-									}
-									maxCash -= (orderGoods.getPrice() - orderGoods.getRealPrice());
-									if (maxCash < 0) {
-										maxCash = 0.00;
-									}
-									maxCoupon.put(brandId, maxCash);
-									if (max_cash_can_used < 0) {
-										max_cash_can_used = 0.00;
-									}
-									req.getSession().setAttribute("maxCash", max_cash_can_used);
-									req.getSession().setAttribute("maxCoupon", maxCoupon);
-									order.setTotalPrice(order.getTotalPrice() - orderGoods.getPrice());
-									req.getSession().setAttribute("order_temp", order);
-									tdOrderService.save(order);
-								}
+							}
+
+							if (!isHave) {
+								orderGoods.setCouponNumber(couponNumber + 1L);
+								tdOrderGoodsService.save(orderGoods);
+								productCouponId += coupon.getId() + ",";
+								order.setProductCouponId(productCouponId);
+								req.getSession().setAttribute("order_temp", order);
+								tdOrderService.save(order);
 							}
 						}
 					}
 				}
 			}
 			if (1L == status) {
-				if (null != orderGoodsList) {
-					for (TdOrderGoods orderGoods : orderGoodsList) {
-						if (null != orderGoods && null != orderGoods.getGoodsId()
-								&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
-							Long couponNumber = orderGoods.getCouponNumber();
-							if (null == couponNumber) {
-								couponNumber = 0L;
-							}
+				// 遍历已选商品，查找到与指定产品券所对应的那一个
+				for (TdOrderGoods orderGoods : goodsList) {
+					if (null != orderGoods && null != orderGoods.getGoodsId()
+							&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
+						// 获取该件商品使用产品券的数量
+						Long couponNumber = orderGoods.getCouponNumber();
+						if (null == couponNumber) {
+							couponNumber = 0L;
+						} else {
 							orderGoods.setCouponNumber(orderGoods.getCouponNumber() - 1L);
-							tdOrderGoodsService.save(orderGoods);
-							if (!"".equals(productCouponId)) {
-								String[] strings = productCouponId.split(",");
-								String ids = "";
-								for (String sCouponId : strings) {
-									if (null != sCouponId) {
-										Long couponId = Long.valueOf(sCouponId);
-										if (null != couponId && couponId.longValue() != coupon.getId().longValue()) {
-											ids += (sCouponId + ",");
-										}
-										productCouponId = ids;
+						}
+						tdOrderGoodsService.save(orderGoods);
+						if (!"".equals(productCouponId)) {
+							String[] strings = productCouponId.split(",");
+							// 创建一个变量用于存储新的产品券使用情况
+							String ids = "";
+							for (String sCouponId : strings) {
+								if (null != sCouponId) {
+									Long couponId = Long.valueOf(sCouponId);
+									if (null != couponId && couponId.longValue() != coupon.getId().longValue()) {
+										ids += (sCouponId + ",");
 									}
+									productCouponId = ids;
 								}
 							}
-							order.setProductCouponId(productCouponId);
-							max_cash_can_used += orderGoods.getPrice();
-							Double maxCash = maxCoupon.get(brandId);
-							maxCash += orderGoods.getPrice();
-							maxCoupon.put(brandId, maxCash);
-							req.getSession().setAttribute("maxCoupon", maxCoupon);
-							req.getSession().setAttribute("maxCash", max_cash_can_used);
-							order.setTotalPrice(order.getTotalPrice() + orderGoods.getPrice());
-							req.getSession().setAttribute("order_temp", order);
-							tdOrderService.save(order);
 						}
+						order.setProductCouponId(productCouponId);
+						req.getSession().setAttribute("order_temp", order);
+						tdOrderService.save(order);
 					}
-
 				}
+
 			}
 		}
 
@@ -1025,7 +989,8 @@ public class TdOrderController {
 	 */
 	@RequestMapping(value = "/check")
 	@ResponseBody
-	public Map<String, Object> checkOrder(HttpServletRequest req, Boolean userCash, ModelMap map) {
+	public Map<String, Object> checkOrder(HttpServletRequest req, Boolean userCash, Double userUsed, ModelMap map) {
+		System.err.println("进入支付控制器");
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 
@@ -1037,64 +1002,43 @@ public class TdOrderController {
 			return res;
 		}
 
-		// 获取用户的不可体现余额
-		Double unCashBalance = user.getUnCashBalance();
-		if (null == unCashBalance) {
-			unCashBalance = 0.00;
-		}
-
 		// 获取虚拟订单
+		System.err.println("开始获取虚拟订单");
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
 
-		// 获取用户的可提现余额
-		Double cashBalance = user.getCashBalance();
-		if (null == cashBalance) {
-			cashBalance = 0.00;
-		}
-
-		Double maxCash = null;
-		if (userCash) {
-			maxCash = tdCommonService.getMaxCash(req, map, order_temp);
-		}
-		if (null == maxCash) {
-			maxCash = 0.0;
-		}
-
-		if (unCashBalance > maxCash) {
-			user.setUnCashBalance(user.getUnCashBalance() - maxCash);
-			order_temp.setUnCashBalanceUsed(maxCash);
-		} else {
-			user.setUnCashBalance(0.0);
-			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - maxCash);
-			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
-			order_temp.setCashBalanceUsed(maxCash - user.getUnCashBalance());
-		}
-		user.setBalance(user.getBalance() - maxCash);
-		tdUserService.save(user);
-
+		System.err.println("获取虚拟订单中的地址信息");
 		String address = order_temp.getShippingAddress();
 		String shippingName = order_temp.getShippingName();
 		String shippingPhone = order_temp.getShippingPhone();
 
-		if (null == address || null == shippingName || null == shippingPhone) {
+		System.err.println("判断是否填写收货地址");
+		if ((null == address || null == shippingName || null == shippingPhone)
+				&& !"门店自提".equals(order_temp.getDeliverTypeTitle())) {
 			res.put("message", "请填写收货地址");
 			return res;
 		}
 
+		System.err.println("开始判断用户是否属于线上支付");
 		// 判断用户是否是线下付款
 		Boolean isOnline = false;
 		Long payTypeId = order_temp.getPayTypeId();
 		TdPayType payType = tdPayTypeService.findOne(payTypeId);
 		if (null != payType && payType.getIsOnlinePay()) {
+			System.err.println("用户属于线上支付");
 			isOnline = true;
 		}
 
+		System.err.println("开始获取该订单使用的优惠券id");
 		String cashCouponId = order_temp.getCashCouponId();
 		String productCouponId = order_temp.getProductCouponId();
 
+		System.err.println("开始忽略小数点后2位之后的数字");
+		BigDecimal b = new BigDecimal(order_temp.getTotalPrice());
+		order_temp.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+
 		if (isOnline) {
 			// 判断是否还有未支付的金额
-			if (maxCash < (order_temp.getTotalPrice() + order_temp.getDeliverFee())) {
+			if (userUsed < order_temp.getTotalPrice()) {
 				// 跳转第三方
 				// res.put("url", payType.get);
 				res.put("message", "您的余额不足");
@@ -1169,6 +1113,34 @@ public class TdOrderController {
 			}
 			order_temp.setStatusId(3L);
 		}
+		// 获取用户的不可体现余额
+		Double unCashBalance = user.getUnCashBalance();
+		if (null == unCashBalance) {
+			unCashBalance = 0.00;
+		}
+
+		// 获取用户的可提现余额
+		Double cashBalance = user.getCashBalance();
+		if (null == cashBalance) {
+			cashBalance = 0.00;
+		}
+
+		Double balance = user.getBalance();
+		if (null == balance) {
+			balance = 0.00;
+		}
+
+		if (unCashBalance > userUsed) {
+			user.setUnCashBalance(user.getUnCashBalance() - userUsed);
+			order_temp.setUnCashBalanceUsed(userUsed);
+		} else {
+			user.setUnCashBalance(0.0);
+			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - userUsed);
+			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
+			order_temp.setCashBalanceUsed(userUsed - user.getUnCashBalance());
+		}
+		user.setBalance(user.getBalance() - userUsed);
+		tdUserService.save(user);
 
 		tdOrderService.save(order_temp);
 
@@ -1184,6 +1156,7 @@ public class TdOrderController {
 	 */
 	@RequestMapping(value = "/pay")
 	public String orderPay(HttpServletRequest req) {
+		System.err.println("进入确认下单的方法");
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {

@@ -344,3 +344,19 @@ function clearing() {
 		window.location.href = "/order";
 	}
 }
+
+/**
+ * 在商品详情页点击立即购买的方法
+ * 
+ * @author dengxiao
+ */
+function buyNow(id) {
+	var quantity = $("#quantity" + id).val();
+
+	if (0 == quantity) {
+		warning("亲，请选择商品的数量");
+	}
+
+	window.location.href = "/goods/buy/now?goodsId=" + id + "&quantity="
+			+ quantity;
+}

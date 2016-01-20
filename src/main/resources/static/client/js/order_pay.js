@@ -53,11 +53,30 @@ function orderPay() {
 	var userCash = false;
 	var isUserCash = $("#isUserCash");
 	var classes = isUserCash.attr("class");
-	console.debug(classes);
-	if(classes.indexOf("active") != -1){
+	if (classes.indexOf("active") != -1) {
 		userCash = true;
 	}
-	
+
+	var reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/;
+
+	// 获取当前用户使用的预存款额度
+	var usedBalance = $("#usedBalance").val();
+
+	// 获取当前用户的余额
+	var userBalance = $("#userBalance").val();
+
+	if (!reg.test(usedBalance)) {
+		warning("亲，预存款一栏中输入正确的数字（必须为大于或等于0的数字且不超过小数点后2位）");
+		return;
+	}
+
+	console.debug(usedBalance);
+	console.debug(userBalance);
+	if (usedBalance * 1 > userBalance * 1) {
+		warning("亲，您输入的预存款使<br>用额大于了您的总额");
+		return;
+	}
+
 	// 开启等待图标
 	wait();
 
@@ -66,8 +85,9 @@ function orderPay() {
 		url : "/order/check",
 		type : "post",
 		timeout : 10000,
-		data:{
-			userCash:userCash
+		data : {
+			userCash : userCash,
+			userUsed : usedBalance
 		},
 		error : function() {
 			// 关闭等待图标
@@ -79,13 +99,13 @@ function orderPay() {
 			close(100);
 			$("#buyNow").attr("href", "javascript:void(0);")
 			warning(res.message);
-			if(-1 == res.status){
+			if (-1 == res.status) {
 				$("#buyNow").attr("href", "javascript:orderPay();")
 			}
-			if(0 == res.status){
-				setTimeout(function(){
+			if (0 == res.status) {
+				setTimeout(function() {
 					window.location.href = "/order/pay";
-				},1000)
+				}, 1000)
 			}
 		}
 	});

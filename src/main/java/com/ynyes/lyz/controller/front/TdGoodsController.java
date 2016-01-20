@@ -382,24 +382,11 @@ public class TdGoodsController {
 			isCollect = true;
 		}
 
-		// 创建一个集合用于存储该商品参加的活动
-		List<TdActivity> activity_list = new ArrayList<>();
-
-		// 获取该商品参加的所有活动
-		// if (null != priceListItem.getActivities()) {
-		// String activities = priceListItem.getActivities();
-		// if (null != activities) {
-		// String[] all_activity = activities.split(",");
-		// if (null != all_activity) {
-		// for (String sId : all_activity) {
-		// if (null != sId) {
-		// TdActivity activity = tdActivityService.findOne(Long.parseLong(sId));
-		// activity_list.add(activity);
-		// }
-		// }
-		// }
-		// }
-		// }
+		// 获取用户的门店
+		TdDiySite diySite = tdCommonService.getDiySite(req);
+		List<TdActivity> activity_list = tdActivityService
+				.findByGoodsNumberContainingAndDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfter(
+						goods.getId() + "_", diySite.getId() + ",", new Date());
 
 		// 获取客服电话
 		List<TdSetting> all = tdSettingService.findAll();
@@ -584,7 +571,7 @@ public class TdGoodsController {
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/buy/now")
-	public String buyNow(HttpServletRequest req, ModelMap map, Long goodsId) {
+	public String buyNow(HttpServletRequest req, ModelMap map, Long goodsId, Long quantity) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {
@@ -600,6 +587,7 @@ public class TdGoodsController {
 		TdCartGoods cartGoods = new TdCartGoods();
 		cartGoods.setBrandId(goods.getBrandId());
 		cartGoods.setBrandTitle(goods.getBrandTitle());
+		cartGoods.setGoodsTitle(goods.getTitle());
 		cartGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
 		cartGoods.setGoodsId(goods.getId());
 		cartGoods.setSku(goods.getCode());
@@ -608,12 +596,14 @@ public class TdGoodsController {
 		cartGoods.setRealPrice(priceListItem.getRealSalePrice());
 		cartGoods.setUserId(user.getId());
 		cartGoods.setUsername(username);
+		cartGoods.setQuantity(quantity);
 
 		// 获取所有的已选
 		List<TdCartGoods> cartGoods_list = tdCartGoodsService.findByUsername(username);
 		Boolean isHave = false;
 		for (TdCartGoods cart : cartGoods_list) {
-			if (null != cart && null != cart.getGoodsId() && cart.getGoodsId() == cartGoods.getGoodsId()) {
+			if (null != cart && null != cart.getGoodsId()
+					&& cart.getGoodsId().longValue() == cartGoods.getGoodsId().longValue()) {
 				isHave = true;
 				cart.setPrice(cartGoods.getPrice());
 				cart.setRealPrice(cartGoods.getRealPrice());
@@ -626,6 +616,7 @@ public class TdGoodsController {
 		}
 
 		if (!isHave) {
+
 			cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
 			cartGoods.setRealTotalPrice(cartGoods.getRealPrice() * cartGoods.getQuantity());
 			tdCartGoodsService.save(cartGoods);
