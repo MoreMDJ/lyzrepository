@@ -1433,7 +1433,7 @@ public class TdCommonService {
 		QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
 		Object[] objects = null;
-		if (requisition != null) {
+		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
 			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
 				try {
@@ -1535,74 +1535,75 @@ public class TdCommonService {
 
 			// add by Shawn
 			if (null == order.getTotalPrice()) {
-				order.setTotalPrice(0.00);
+				order.setTotalPrice(0.0);
 			}
 
 			if (null == order.getActualPay()) {
-				order.setActualPay(0.00);
-				requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
+				order.setActualPay(0.0);
+			}
+			
+			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
 
-				// Add by Shawn
-				requisition.setProvince(order.getProvince());
-				requisition.setCity(order.getCity());
-				requisition.setDisctrict(order.getDisctrict());
-				requisition.setSubdistrict(order.getSubdistrict());
-				requisition.setDetailAddress(order.getDetailAddress());
+			// Add by Shawn
+			requisition.setProvince(order.getProvince());
+			requisition.setCity(order.getCity());
+			requisition.setDisctrict(order.getDisctrict());
+			requisition.setSubdistrict(order.getSubdistrict());
+			requisition.setDetailAddress(order.getDetailAddress());
 
-				requisition.setReceivePhone(order.getShippingPhone());
-				requisition.setTotalPrice(order.getTotalPrice());
-				requisition.setTypeId(1L);
-				String dayTime = order.getDeliveryDate();
-				dayTime = dayTime + " " + order.getDeliveryDetailId() + ":30";
-				requisition.setDeliveryTime(dayTime);
+			requisition.setReceivePhone(order.getShippingPhone());
+			requisition.setTotalPrice(order.getTotalPrice());
+			requisition.setTypeId(1L);
+			String dayTime = order.getDeliveryDate();
+			dayTime = dayTime + " " + order.getDeliveryDetailId() + ":30";
+			requisition.setDeliveryTime(dayTime);
 
-				List<TdRequisitionGoods> requisitionGoodsList = new ArrayList<>();
-				for (TdOrder tdOrder : orderList) {
-					if (null != tdOrder.getOrderGoodsList()) {
-						for (TdOrderGoods orderGoods : tdOrder.getOrderGoodsList()) {
-							TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
-							requisitionGoods.setGoodsCode(orderGoods.getSku());
-							requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
-							requisitionGoods.setPrice(orderGoods.getPrice());
-							requisitionGoods.setQuantity(orderGoods.getQuantity());
-							requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
-							requisitionGoods.setOrderNumber(mainOrderNumber);
-							tdRequisitionGoodsService.save(requisitionGoods);
-							requisitionGoodsList.add(requisitionGoods);
-						}
-					}
-
-					if (null != tdOrder.getGiftGoodsList()) {
-						for (TdOrderGoods orderGoods : tdOrder.getGiftGoodsList()) {
-							TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
-							requisitionGoods.setGoodsCode(orderGoods.getSku());
-							requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
-							requisitionGoods.setPrice(orderGoods.getPrice());
-							requisitionGoods.setQuantity(orderGoods.getQuantity());
-							requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
-							requisitionGoods.setOrderNumber(mainOrderNumber);
-							tdRequisitionGoodsService.save(requisitionGoods);
-							requisitionGoodsList.add(requisitionGoods);
-						}
-					}
-
-					if (null != tdOrder.getPresentedList()) {
-						for (TdOrderGoods orderGoods : tdOrder.getPresentedList()) {
-							TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
-							requisitionGoods.setGoodsCode(orderGoods.getSku());
-							requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
-							requisitionGoods.setPrice(orderGoods.getPrice());
-							requisitionGoods.setQuantity(orderGoods.getQuantity());
-							requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
-							requisitionGoods.setOrderNumber(mainOrderNumber);
-							tdRequisitionGoodsService.save(requisitionGoods);
-							requisitionGoodsList.add(requisitionGoods);
-						}
+			List<TdRequisitionGoods> requisitionGoodsList = new ArrayList<>();
+			for (TdOrder tdOrder : orderList) {
+				if (null != tdOrder.getOrderGoodsList()) {
+					for (TdOrderGoods orderGoods : tdOrder.getOrderGoodsList()) {
+						TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+						requisitionGoods.setGoodsCode(orderGoods.getSku());
+						requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+						requisitionGoods.setPrice(orderGoods.getPrice());
+						requisitionGoods.setQuantity(orderGoods.getQuantity());
+						requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+						requisitionGoods.setOrderNumber(mainOrderNumber);
+						tdRequisitionGoodsService.save(requisitionGoods);
+						requisitionGoodsList.add(requisitionGoods);
 					}
 				}
-				requisition.setRequisiteGoodsList(requisitionGoodsList);
-				requisition = tdRequisitionService.save(requisition);
+
+				if (null != tdOrder.getGiftGoodsList()) {
+					for (TdOrderGoods orderGoods : tdOrder.getGiftGoodsList()) {
+						TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+						requisitionGoods.setGoodsCode(orderGoods.getSku());
+						requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+						requisitionGoods.setPrice(orderGoods.getPrice());
+						requisitionGoods.setQuantity(orderGoods.getQuantity());
+						requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+						requisitionGoods.setOrderNumber(mainOrderNumber);
+						tdRequisitionGoodsService.save(requisitionGoods);
+						requisitionGoodsList.add(requisitionGoods);
+					}
+				}
+
+				if (null != tdOrder.getPresentedList()) {
+					for (TdOrderGoods orderGoods : tdOrder.getPresentedList()) {
+						TdRequisitionGoods requisitionGoods = new TdRequisitionGoods();
+						requisitionGoods.setGoodsCode(orderGoods.getSku());
+						requisitionGoods.setGoodsTitle(orderGoods.getGoodsTitle());
+						requisitionGoods.setPrice(orderGoods.getPrice());
+						requisitionGoods.setQuantity(orderGoods.getQuantity());
+						requisitionGoods.setSubOrderNumber(tdOrder.getOrderNumber());
+						requisitionGoods.setOrderNumber(mainOrderNumber);
+						tdRequisitionGoodsService.save(requisitionGoods);
+						requisitionGoodsList.add(requisitionGoods);
+					}
+				}
 			}
+			requisition.setRequisiteGoodsList(requisitionGoodsList);
+			requisition = tdRequisitionService.save(requisition);
 		}
 		return requisition;
 	}
