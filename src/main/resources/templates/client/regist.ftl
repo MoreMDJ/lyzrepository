@@ -52,7 +52,7 @@
                 
                 $scope.time = 0;
                 
-                $scope.infos = {
+                $scope.infos = [{
                     phone:"",
                     name:"",
                     code:"",
@@ -60,7 +60,7 @@
                     repassword:"",
                     referPhone:"",
                     diySiteName:"归属门店：默认门店"
-                }
+                }]
                 
                 $scope.changeSms = function(){
                     $("#sendSys").val("重新获取（"+$scope.time+"）");

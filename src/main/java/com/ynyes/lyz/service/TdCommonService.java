@@ -1101,6 +1101,7 @@ public class TdCommonService {
 											coupon.setPrice(0.00);
 										}
 										order.setCashCoupon(order.getCashCoupon() + coupon.getPrice());
+										order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
 									}
 								}
 							}
@@ -1205,6 +1206,10 @@ public class TdCommonService {
 				TdOrder order = order_map.get(brandId);
 				// 运费放置在乐易装的订单上
 				order.setDeliverFee(order_temp.getDeliverFee());
+				if (null != order.getTotalPrice()) {
+					order.setTotalPrice(0.00);
+				}
+				order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
 			}
 		}
 
