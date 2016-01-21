@@ -259,22 +259,22 @@ function submitOwnMoney()
 		        	</#list>
 		        </#if>
 		        <div class="mesg">支付方式：${sub_order.payTypeTitle!''}</div>
+		        <#--
 		        <div class="mesg">已交款：${sub_order.actualPay!'0'}元</div>
         		<div class="mesg">欠款：<#if sub_order.totalPrice?? && sub_order.actualPay??>${sub_order.totalPrice-sub_order.actualPay}<#else>0</#if>元</div>
+  			  	-->
   			  </div>
 		    </section>
 	    </#list>
     </#if>
     <!-- 申请欠款 -->
-    <#--
     <section>
-      <div class="title">申请欠款</div>
+      <div class="title">欠款信息</div>
       <div class="content">
-        <div class="mesg">已交款：${td_order.actualPay!'0'}元</div>
-        <div class="mesg">欠款：<#if td_order.totalPrice?? && td_order.actualPay??>${td_order.totalPrice-td_order.actualPay}<#else>0</#if>元</div>
+        <div class="mesg">已交款：${td_order.allActualPay!'0'}元</div>
+        <div class="mesg">欠款：<#if td_order.allTotalPrice?? && td_order.allActualPay??>${td_order.allTotalPrice-td_order.allActualPay}<#else>0</#if>元</div>
       </div>
     </section>
-    -->
     <#if td_order.statusId == 4>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitReturn(${td_order.id?c})">拒签退货</a>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(${td_order.id?c})">确认送达</a>
