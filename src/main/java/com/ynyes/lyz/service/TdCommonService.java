@@ -1541,15 +1541,19 @@ public class TdCommonService {
 			requisition.setOrderTime(order.getOrderTime());
 
 			// add by Shawn
-			if (null == order.getTotalPrice()) {
+			if (null == order.getAllTotalPay()) {
 				order.setTotalPrice(0.0);
 			}
 
-			if (null == order.getActualPay()) {
+			if (null == order.getAllActualPay()) {
 				order.setActualPay(0.0);
 			}
 
-			requisition.setLeftPrice(order.getTotalPrice() - order.getActualPay());
+			Double left = order.getAllTotalPay() - order.getAllActualPay();
+			
+			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
+			
+			requisition.setLeftPrice(order.getAllActualPay());
 
 			// Add by Shawn
 			requisition.setProvince(order.getProvince());
@@ -1560,7 +1564,7 @@ public class TdCommonService {
 			requisition.setDiySiteTitle(order.getDiySiteName());
 
 			requisition.setReceivePhone(order.getShippingPhone());
-			requisition.setTotalPrice(order.getTotalPrice());
+			requisition.setTotalPrice(order.getAllTotalPay());
 			requisition.setTypeId(1L);
 			String dayTime = order.getDeliveryDate();
 			dayTime = dayTime + " " + order.getDeliveryDetailId() + ":30";
