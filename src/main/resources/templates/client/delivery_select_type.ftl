@@ -60,6 +60,14 @@
         function logout(){
 		  window.location.href = "/login/out";
 		}
+		
+		function orderDeli() {
+			window.location.href = "/delivery/order";
+		}
+		
+		function returnDeli() {
+			window.location.href = "/delivery/return";
+		}
 	</script>
 	<body style="height: 100%; background: #f3f4f6;">
 		<div>
@@ -68,8 +76,8 @@
 				<p>选择模式</p>
 			</div>
 			<section class="add_1_21">
-				<button class="btn01">退货</button>
-				<button class="btn02">进货</button>
+				<button class="btn01" onclick="returnDeli();">退货单</button>
+				<button class="btn02" onclick="orderDeli();">配送单</button>
 				<button class="out" onclick="logout();">退出</button>
 			</section>
 		</div>		

@@ -1,5 +1,6 @@
 package com.ynyes.lyz.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,43 @@ public class TdReturnNoteService {
 	public List<TdReturnNote> findAll() {
 		return (List<TdReturnNote>) repository.findAll();
 	}
+	
+	public List<TdReturnNote> findByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end) {
+
+		if (null == statusId || null == start || null == end) {
+			return null;
+		}
+
+		return repository.findByStatusIdAndOrderTimeBetween(statusId, start, end);
+	}
+	
+	public Integer countByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end) {
+
+		if (null == statusId || null == start || null == end) {
+			return null;
+		}
+
+		return repository.countByStatusIdAndOrderTimeBetween(statusId, start, end);
+	}
+	
+	public List<TdReturnNote> findByStatusIdAndOrderTimeAfter(Long statusId, Date time) {
+
+		if (null == statusId || null == time) {
+			return null;
+		}
+
+		return repository.findByStatusIdAndOrderTimeAfter(statusId, time);
+	}
+	
+	public Integer countByStatusIdAndOrderTimeAfter(Long statusId, Date time) {
+
+		if (null == statusId || null == time) {
+			return null;
+		}
+
+		return repository.countByStatusIdAndOrderTimeAfter(statusId, time);
+	}
+	
 
 	public Page<TdReturnNote> findAll(int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));

@@ -78,6 +78,12 @@ public class TdReturnNote {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date orderTime;
 
+
+	// 取货时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date recvTime;
+	
 	// 取消时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -295,6 +301,14 @@ public class TdReturnNote {
 
 	public void setDriver(String driver) {
 		this.driver = driver;
+	}
+
+	public Date getRecvTime() {
+		return recvTime;
+	}
+
+	public void setRecvTime(Date recvTime) {
+		this.recvTime = recvTime;
 	}
 
 	@Override

@@ -80,8 +80,8 @@ function timer() {
 }
 </script>
 <script>
-// 确认送达
-function submitDelivery(id)
+// 确认收货
+function submitRecv(id)
 {
 	if (null == id)
 	{
@@ -90,7 +90,7 @@ function submitDelivery(id)
 	}
 	
 	$.ajax({ 
-		url: "/delivery/submitDelivery", 
+		url: "/delivery/return/recv", 
 		type: "post",
 		dataType: "json",
 		data: {"id": id},
@@ -109,65 +109,6 @@ function submitDelivery(id)
 	});
 }
 
-// 拒签退货
-function submitReturn(id)
-{
-	if (null == id)
-	{
-		warning("ID不能为空");
-		return;
-	}
-	
-	$.ajax({ 
-		url: "/delivery/submitReturn", 
-		type: "post",
-		dataType: "json",
-		data: {"id": id},
-		success: function(data)
-		{
-        	if (data.code == 0)
-        	{
-        		warning("退货成功");
-        		window.location.reload();
-        	}
-        	else
-        	{
-        		warning(data.message);
-        	}
-  		}
-	});
-}
-
-function submitOwnMoney()
-{
-	var payed = document.getElementById("payed").value;
-	var owned = document.getElementById("owned").value;
-	
-	if (null == payed || null == owned || "" == payed || "" == owned)
-	{
-		warning("请输入正确的金额");
-		return;
-	}
-	
-	$.ajax({ 
-		url: "/delivery/submitOwnMoney/1", 
-		type: "post",
-		dataType: "json",
-		data: {"payed": payed, "owned": owned},
-		success: function(data)
-		{
-        	if (data.code == 0)
-        	{
-        		warning("申请成功");
-        		window.location.reload();
-        	}
-        	else
-        	{
-        		warning(data.message);
-        	}
-  		}
-	});
-}
 </script>
 </head>
 <body class="bgc-f3f4f6">
@@ -206,70 +147,58 @@ function submitOwnMoney()
     <#-- 引入等待提示样式 -->
     <#include "/client/common_wait.ftl">   
       <header>
-        <a class="back" href="/delivery/order"></a>
+        <a class="back" href="/delivery/return"></a>
         <p>详情产看</p>
       </header>
       <!-- 头部 END -->
 
-	<#if td_order??>
+	<#if td_return_order??>
   <!-- 详情查看 -->
   <article class="look-details">
     <!-- 配送详情 -->
     <section>
-      <div class="title">配送详情</div>
+      <div class="title">退货单详情</div>
       <div class="content">
-      	<#if td_order.statusId==4 || td_order.statusId==3>
-      		<div class="mesg">预计送达时间：${td_order.deliveryDate!''}</div>
-      	<#elseif td_order.statusId==5 || td_order.statusId==6>
-      		<div class="mesg">送达时间：${td_order.deliveryTime!''}</div>
-      	</#if>
-        <div class="mesg">收货人姓名：${td_order.shippingName!''}</div>
-        <div class="mesg">手机号码：${td_order.shippingPhone!''}</div>
-        <div class="mesg">收货地址：${td_order.shippingAddress!''}</div>
-        <div class="mesg">配送信息：由乐易装专送提供高品质配送服务</div>
+        <div class="mesg">退货单编号：${td_return_order.returnNumber!''}</div>
+        
+        <#if td_return_order.statusId??>
+	        <#if td_return_order.statusId==2>
+	        	<div class="mesg">状态：待取货</div>
+	        <#elseif td_return_order.statusId==3>
+	        	<div class="mesg">状态：待入库</div>
+	    	<#elseif td_return_order.statusId==4>
+	        	<div class="mesg">状态：已入库</div>
+	    	<#elseif td_return_order.statusId==5>
+	        	<div class="mesg">状态：已完成</div>
+	        </#if>
+        </#if>
       </div>
     </section>
-    <!-- 订单详情 -->
+    <!-- 退货商品 -->
     <section>
-      <div class="title">订单详情</div>
+      <div class="title">退货商品</div>
       <div class="content">
-        <div class="mesg">订单号码：${td_order.orderNumber!''}</div>
-        <#if td_order.orderGoodsList??>
-        	<#list td_order.orderGoodsList as item>
+        <div class="mesg">订单编号：${td_return_order.orderNumber!''}</div>
+        <#if td_return_order.returnGoodsList??>
+        	<#list td_return_order.returnGoodsList as item>
         		<div class="mesg">产品：${item.goodsTitle!''} * ${item.quantity!'0'}</div>
         	</#list>
         </#if>
-        <#if td_order.presentedList??>
-        	<#list td_order.presentedList as item>
-        		<div class="mesg">活动赠品：${item.goodsTitle!''} * ${item.quantity!'0'}</div>
-        	</#list>
-        </#if>
-        <#if td_order.giftGoodsList??>
-        	<#list td_order.giftGoodsList as item>
-        		<div class="mesg">赠品：${item.goodsTitle!''} * ${item.quantity!'0'}</div>
-        	</#list>
-        </#if>
-        <div class="mesg">支付方式：${td_order.payTypeTitle!''}</div>
+        
       </div>
     </section>
-    <!-- 申请欠款 -->
-    <section>
-      <div class="title">申请欠款</div>
-      <div class="content">
-        <div class="mesg">已交款：${td_order.actualPay!'0'}元</div>
-        <div class="mesg">欠款：<#if td_order.totalPrice?? && td_order.actualPay??>${td_order.totalPrice-td_order.actualPay}<#else>0</#if>元</div>
-      </div>
-    </section>
-    <#if td_order.statusId == 4>
-    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitReturn(${td_order.id?c})">拒签退货</a>
-    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(${td_order.id?c})">确认送达</a>
-    <a class="btn-submit-save bgc-ff8e08" <#if td_order.photo??>href="javascript:;" style="background:#999"<#else>href="javascript:photo();"</#if> >拍照上传</a>
+    <#if td_return_order.statusId == 2>
+    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitRecv(${td_return_order.id?c})">确认收货</a>
+    <#--
+    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(${td_return_order.id?c})">确认收货</a>
+    <a class="btn-submit-save bgc-ff8e08" <#if td_return_order.photo??>href="javascript:;" style="background:#999"<#else>href="javascript:photo();"</#if> >拍照上传</a>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="pupopen()">申请欠款</a>
+    -->
     </#if>
     <div style="display:none">
         <form id="imgUpload" action="/delivery/img" enctype="multipart/form-data" method="post">
             <input type="file" onchange="upload()" name="Filedata" id="clickFile">
-            <input type="text" name="orderNumber"  value="${td_order.orderNumber!''}">
+            <input type="text" name="orderNumber"  value="${td_return_order.orderNumber!''}">
             <input type="text" name="id" value="<#if id??>${id?c}<#else>0</#if>">
         </form>
     </div>

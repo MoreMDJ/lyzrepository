@@ -120,22 +120,21 @@ function timer() {
   <!-- 详情列表 -->
   <article class="look-details-list">
     <ul>
-      <li <#if type?? && type==1>class="active"</#if>><a href="/delivery/return?type=1<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">已配送（${count_type_1!'0'}）</a></li>
-      <li <#if type?? && type==2>class="active"</#if>><a href="/delivery/return?type=2<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">配送中（${count_type_2!'0'}）</a></li>
-      <li <#if type?? && type==3>class="active"</#if>><a href="/delivery/return?type=3<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">待配送（${count_type_3!'0'}）</a></li>
+      <li <#if type?? && type==1>class="active"</#if>><a href="/delivery/return?type=1<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">待取货（${count_type_1!'0'}）</a></li>
+      <li <#if type?? && type==2>class="active"</#if>><a href="/delivery/return?type=2<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">已取货（${count_type_2!'0'}）</a></li>
+      <li <#if type?? && type==3>class="active"</#if>><a href="/delivery/return?type=3<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">已返仓（${count_type_3!'0'}）</a></li>
     </ul>
     <!-- 详情列表 -->
     
-    <#if order_list??>
-    	<#list order_list as item>
+    <#if return_list??>
+    	<#list return_list as item>
     		<section>
-		      <a href="/delivery/detail/${item.id?c}">
-		      	<#if item.statusId==3 || item.statusId==4>
-		        	<div class="time">【预计 ${item.deliveryDate!''} <span>12:00</span> 送达】</div>
-	        	<#elseif item.statusId==5 || item.statusId==6>
-	        		<div class="time">【<#if item.deliveryTime??>${item.deliveryTime?string("yyyy-MM-dd")}</#if> <span><#if item.deliveryTime??>${item.deliveryTime?string("HH:mm")}</#if></span> 送达】</div>
-		        </#if>
-		        <div class="address">收货地址：${item.shippingAddress!''}</div>
+		      <a href="/delivery/return/detail/${item.id?c}">
+		      	
+		        	<div class="time">【退货时间 ${item.orderTime!''}】</div>
+	        	
+		        <div class="address">退货单号：${item.returnNumber!''}</div>
+		        <div class="address">定单号：${item.orderNumber!''}</div>
 		      </a>
 		    </section>
     	</#list>
