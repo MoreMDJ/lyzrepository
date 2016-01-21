@@ -175,10 +175,10 @@ function addColor() {
 			// 将已选数量正确显示到指定的位置
 			$("#select_num").text(selected_number);
 
-			var the_new_quantity = $("#the_new_quantity").val();
-			$("#select_color_quantity").val(the_new_quantity);
+			var the_new_quantity = 0;
+			$("#select_color_quantity").val(0);
 			var unit_price = $("#unit_price").val();
-			var colorPrice = unit_price * the_new_quantity;
+			var colorPrice = unit_price;
 			$("#color_price").html("￥" + colorPrice);
 
 			$('.colo_choice').height($(window).height())
@@ -226,6 +226,7 @@ function deleteSelectedColorPackage(id) {
 	var docElementId = "#colorPackage" + id;
 	// 获取节点元素
 	var ele = $(docElementId);
+	
 	// 开启等待图标
 	wait();
 	$.ajax({
@@ -242,7 +243,9 @@ function deleteSelectedColorPackage(id) {
 		success : function(res) {
 			// 关闭等待响应的图标
 			close(1);
+			console.debug(id);
 			ele.remove();
+			
 			// 将已选数量正确显示到指定的位置
 			$("#select_num").text(res.selected_number);
 		}

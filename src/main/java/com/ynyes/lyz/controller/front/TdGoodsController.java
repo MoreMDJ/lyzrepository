@@ -130,6 +130,12 @@ public class TdGoodsController {
 	 */
 	@RequestMapping(value = "/get/color")
 	public String getColor(HttpServletRequest req, Long goodsId, ModelMap map) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			user = new TdUser();
+		}
+
 		// 根据goodsId获取指定的商品
 		TdGoods goods = tdGoodsService.findOne(goodsId);
 		// 创建一个集合用于存储指定商品特调色的调色包商品
@@ -142,7 +148,11 @@ public class TdGoodsController {
 				// 获取指定sku的调色包商品
 				TdGoods colorGoods = tdGoodsService.findByCode(all_color_code[i]);
 				if (null != colorGoods) {
-					color_package_list.add(colorGoods);
+					// 获取指定调色包对于用户的价格
+					TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, colorGoods);
+					if (null != priceListItem && null != priceListItem.getSalePrice()) {
+						color_package_list.add(colorGoods);
+					}
 				}
 			}
 		}
@@ -166,6 +176,7 @@ public class TdGoodsController {
 
 		map.addAttribute("goodsId", goodsId);
 		map.addAttribute("color_package_list", color_package_list);
+		map.addAttribute("select_colors", tdCartGoodsService.findByUserIdAndIsColorTrue(user.getId()));
 		return "/client/color_package";
 	}
 
@@ -217,7 +228,8 @@ public class TdGoodsController {
 		// 创建一个布尔对象用于表示当前添加的调色包是不是已选中已经有了的，其初始值为false，表示没有
 		for (int i = 0; i < selected_goods.size(); i++) {
 			TdCartGoods cart = selected_goods.get(i);
-			if (null != cart && null != cart.getGoodsId() && goods.getId() == cart.getGoodsId()) {
+			if (null != cart && null != cart.getGoodsId()
+					&& goods.getId().longValue() == cart.getGoodsId().longValue()) {
 				isHave = true;
 				cart.setQuantity(cart.getQuantity() + cartGoods.getQuantity());
 				cart.setPrice(cartGoods.getPrice());
@@ -233,6 +245,7 @@ public class TdGoodsController {
 			tdCartGoodsService.save(cartGoods);
 		}
 
+		map.addAttribute("inventory", goods.getLeftNumber());
 		map.addAttribute("unit_price", priceListItem.getSalePrice());
 		map.addAttribute("select_colors", tdCartGoodsService.findByUserIdAndIsColorTrue(user.getId()));
 		// 获取所有已选商品的数量
@@ -263,7 +276,8 @@ public class TdGoodsController {
 		// 遍历已选调色包，找到指定id的调色包
 		for (int i = 0; i < all_color.size(); i++) {
 			TdCartGoods cartGoods = all_color.get(i);
-			if (null != cartGoods && null != cartGoods.getGoodsId() && cartGoods.getGoodsId() == colorPackageGoodsId) {
+			if (null != cartGoods && null != cartGoods.getGoodsId()
+					&& cartGoods.getGoodsId().longValue() == colorPackageGoodsId.longValue()) {
 				tdCartGoodsService.delete(cartGoods.getId());
 			}
 		}

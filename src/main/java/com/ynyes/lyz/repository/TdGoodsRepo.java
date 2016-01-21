@@ -25,8 +25,7 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 
 	// 接口 - 物料类别
 	List<TdGoods> findByInvCategoryId(Long invCategoryId);
-	
-	
+
 	List<TdGoods> findByCategoryIdIsNull();
 
 	Page<TdGoods> findByCategoryIdTreeContainingAndIsOnSaleTrue(String categoryId, Pageable page);
@@ -402,4 +401,6 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	// Max
 	List<TdGoods> findByTitleContainingOrSubTitleContainingOrCodeContainingOrderBySortIdDesc(String keywords1,
 			String keywords2, String Keywords3);
+
+	List<TdGoods> findByIsColorPackageTrueOrderBySortIdAsc();
 }

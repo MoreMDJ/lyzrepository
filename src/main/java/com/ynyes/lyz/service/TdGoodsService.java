@@ -1368,4 +1368,8 @@ public class TdGoodsService {
 		return repository.findByTitleContainingOrSubTitleContainingOrCodeContainingOrderBySortIdDesc(keywords, keywords,
 				keywords);
 	}
+
+	public List<TdGoods> findByIsColorPackageTrueOrderBySortIdAsc() {
+		return repository.findByIsColorPackageTrueOrderBySortIdAsc();
+	}
 }

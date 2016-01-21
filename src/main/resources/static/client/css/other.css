@@ -942,6 +942,8 @@
 	line-height: 34px;
 	text-align: center;
 	font-size: 1.2em;
+	height:34px;
+	overflow:hidden;
 }
 
 .colo_sec dl dd span:nth-child(2) {

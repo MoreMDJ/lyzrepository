@@ -118,9 +118,9 @@
                                                         <h3 onclick="window.location.href='/goods/detail/${goods.id?c}'">${goods.title!''}</h3>
                                                         <label>${goods.code!''}</label>
                                                         <#-- 判断该商品是不是属于调色商品 -->
-                                                        <#--<#if goods.isColorful??&&goods.isColorful>-->
+                                                        <#if goods.isColorful??&&goods.isColorful>
                                                             <a id="color${goods.id?c}" href="javascript:changeColor(${goods.id?c});">调色</a>
-                                                        <#--</#if>-->
+                                                        </#if>
                                                     </dt>
                                                     <dd>
                                                         <#if ("priceListItem"+level_one_index+"_"+level_two_index+"_"+goods_index)?eval??>

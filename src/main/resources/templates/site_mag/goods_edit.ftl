@@ -347,6 +347,32 @@ function del_goods_comb(obj) {
             </dd>
         </dl>
         <dl>
+            <dt>是否为调色产品</dt>
+            <dd>
+                <div class="rule-multi-radio multi-radio">
+                    <span>
+                        <input type="radio" name="isColorful" value="0" <#if goods?? && goods.isColorful?? && goods.isColorful==true>checked="checked"</#if>>
+                        <label>是</label>
+                        <input type="radio" name="isColorful" value="1" <#if goods??==false || goods.isColorful?? && goods.isColorful==false>checked="checked"</#if>>
+                        <label>否</label>
+                    </span>
+                </div>
+            </dd>
+        </dl>
+        <dl>
+            <dt>是否为调色包</dt>
+            <dd>
+                <div class="rule-multi-radio multi-radio">
+                    <span>
+                        <input type="radio" name="isColorPackage" value="0" <#if goods?? && goods.isColorPackage?? && goods.isColorPackage==true>checked="checked"</#if>>
+                        <label>是</label>
+                        <input type="radio" name="isColorPackage" value="1" <#if goods??==false || goods.isColorPackage?? && goods.isColorPackage==false>checked="checked"</#if>>
+                        <label>否</label>
+                    </span>
+                </div>
+            </dd>
+        </dl>
+        <dl>
             <dt>库存余量</dt>
             <dd>
                 <input name="leftNumber" type="text" value="<#if goods?? && goods.leftNumber??>${goods.leftNumber?c!"0"}<#else>0</#if>" class="input normal" datatype="n" sucmsg=" ">
@@ -376,6 +402,39 @@ function del_goods_comb(obj) {
                 <#include "/site_mag/goods_category_param_list.ftl" />
             </#if>
         </div>
+        <dl>
+            <dt>可选调色包</dt>
+            <dd>
+                <table style="border:1px;border-style:solid;width:60%;text-align:center;">
+                    <tr style="border:1px;border-style:solid;text-align:center;width:100%;">
+                        <td style="border:1px;border-style:solid;">选择</td>
+                        <td style="border:1px;border-style:solid;">名称</td>
+                        <td style="border:1px;border-style:solid;">SKU</td>
+                    </tr>
+                    <#if color_list??>
+                        <#list color_list as item>
+                            <tr style="border:1px;border-style:solid;text-align:center;width:100%;">
+                                <td style="border:1px;border-style:solid;">
+                                    <input 
+                                        <#if package_sku??>
+                                            <#list package_sku as sku>
+                                                <#if item.code==sku>checked="checked"</#if>
+                                            </#list>
+                                        </#if>
+                                     type="checkbox" name="colorPackageSku" value="${item.code!''}">
+                                </td>
+                                <td style="border:1px;border-style:solid;">
+                                    ${item.title!''}
+                                </td>
+                                <td style="border:1px;border-style:solid;">
+                                    ${item.code!''}
+                                </td>
+                            </tr>
+                        </#list>
+                    </#if>
+                </table>
+            </dd>
+        </dl>
     </div>
     <div class="tab-content" style="display: none;">
         <dl>

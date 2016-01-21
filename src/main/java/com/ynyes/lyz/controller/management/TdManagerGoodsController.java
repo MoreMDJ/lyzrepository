@@ -1,5 +1,6 @@
 package com.ynyes.lyz.controller.management;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -59,8 +60,8 @@ public class TdManagerGoodsController {
 	@Autowired
 	TdManagerLogService tdManagerLogService;
 
-	 @Autowired
-	 TdBrandService tdBrandService;
+	@Autowired
+	TdBrandService tdBrandService;
 
 	// @Autowired
 	// TdParameterService tdParameterService;
@@ -76,21 +77,16 @@ public class TdManagerGoodsController {
 	@Autowired // zhangji 2015-12-30 16:26:29
 	TdPriceListService tdPriceListService;
 
-	
-	
 	@RequestMapping(value = "/refresh")
-	public String refreshCategorg()
-	{
-		List<TdProductCategory> parentIdIsNullCategory = tdProductCategoryService.findByParentIdNotNullOrderBySortIdAsc();
-		for (TdProductCategory tdProductCategory : parentIdIsNullCategory) 
-		{
+	public String refreshCategorg() {
+		List<TdProductCategory> parentIdIsNullCategory = tdProductCategoryService
+				.findByParentIdNotNullOrderBySortIdAsc();
+		for (TdProductCategory tdProductCategory : parentIdIsNullCategory) {
 			List<TdGoods> tdGood_list = tdGoodsService.findByInvCategoryId(tdProductCategory.getInvCategoryId());
-			if (tdGood_list == null || tdGood_list.size() <= 0)
-			{
+			if (tdGood_list == null || tdGood_list.size() <= 0) {
 				continue;
 			}
-			for (int i = 0; i < tdGood_list.size(); i++) 
-			{
+			for (int i = 0; i < tdGood_list.size(); i++) {
 				TdGoods tdGoods = tdGood_list.get(i);
 				tdGoods.setCategoryId(tdProductCategory.getId());
 				tdGoodsService.save(tdGoods, "1");
@@ -98,7 +94,7 @@ public class TdManagerGoodsController {
 		}
 		return "redirect:/Verwalter/goods/list";
 	}
-	
+
 	@RequestMapping(value = "/edit/parameter/{categoryId}", method = RequestMethod.POST)
 	public String parameter(@PathVariable Long categoryId, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -119,8 +115,7 @@ public class TdManagerGoodsController {
 				map.addAttribute("product_list", tdProductService.findByProductCategoryTreeContaining(categoryId));
 
 				// 查找品牌
-				map.addAttribute("brand_list",
-						tdBrandService.findAll());
+				map.addAttribute("brand_list", tdBrandService.findAll());
 			}
 
 		}
@@ -322,7 +317,7 @@ public class TdManagerGoodsController {
 		map.addAttribute("categoryId", categoryId);
 		map.addAttribute("property", property);
 		List<TdGoods> findByCategoryIdIsNull = tdGoodsService.findByCategoryIdIsNull();
-		map.addAttribute("left_goods",findByCategoryIdIsNull.size());
+		map.addAttribute("left_goods", findByCategoryIdIsNull.size());
 
 		// 文字列表模式
 		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewTxt")) {
@@ -694,9 +689,30 @@ public class TdManagerGoodsController {
 						tdProductService.findByProductCategoryTreeContaining(tdGoods.getCategoryId()));
 
 				// 查找品牌
-				 map.addAttribute("brand_list",
-				 tdBrandService.findAll());
+				map.addAttribute("brand_list", tdBrandService.findAll());
 
+				// 查找出所有的调色包产品，按照排序号正序排序
+				List<TdGoods> color_list = tdGoodsService.findByIsColorPackageTrueOrderBySortIdAsc();
+				map.addAttribute("color_list", color_list);
+
+				// 获取指定商品可调色调色包
+				String colorPackageSku = tdGoods.getColorPackageSku();
+
+				List<String> package_sku = new ArrayList<>();
+
+				// 拆分这个字段
+				if (null != colorPackageSku && !"".equals(colorPackageSku)) {
+					String[] skus = colorPackageSku.split(",");
+					if (null != skus && skus.length > 0) {
+						for (String sku : skus) {
+							if (null != sku && !"".equals(sku)) {
+								package_sku.add(colorPackageSku);
+							}
+						}
+					}
+				}
+
+				map.addAttribute("package_sku", package_sku);
 				// map.addAttribute("warehouse_list",
 				// tdWarehouseService.findAll());
 
@@ -835,7 +851,8 @@ public class TdManagerGoodsController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String save(TdGoods tdGoods, String[] hid_photo_name_show360, String __EVENTTARGET, String __EVENTARGUMENT,
 			String __VIEWSTATE, String menuId, String channelId, ModelMap map, Boolean isRecommendIndex,
-			Boolean isRecommendType, Boolean isHot, Boolean isNew, Boolean isSpecialPrice, HttpServletRequest req) {
+			Long isColorful, Long isColorPackage, Boolean isRecommendType, Boolean isHot, Boolean isNew,
+			Boolean isSpecialPrice, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -851,6 +868,22 @@ public class TdManagerGoodsController {
 			type = "add";
 		} else {
 			type = "edit";
+		}
+
+		if (null != isColorful && isColorful.longValue() == 0L) {
+			tdGoods.setIsColorful(true);
+		}
+
+		if (null != isColorful && isColorful.longValue() == 1L) {
+			tdGoods.setIsColorful(false);
+		}
+
+		if (null != isColorPackage && isColorPackage.longValue() == 0L) {
+			tdGoods.setIsColorPackage(true);
+		}
+
+		if (null != isColorPackage && isColorPackage.longValue() == 1L) {
+			tdGoods.setIsColorPackage(false);
 		}
 
 		/**

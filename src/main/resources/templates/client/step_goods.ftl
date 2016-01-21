@@ -43,9 +43,9 @@
                                                     </#if>
                                                 </#if>
                                                 <#-- 判断是否属于调色产品 -->
-                                                <#--<#if goods.isColorful??&&goods.isColorful>-->
+                                                <#if goods.isColorful??&&goods.isColorful>
                                                     <span onclick="changeColor(${goods.id?c});">调色</span>
-                                                <#--</#if>-->
+                                                </#if>
                                             </div>
                                         </dd>
                                     </dl>   

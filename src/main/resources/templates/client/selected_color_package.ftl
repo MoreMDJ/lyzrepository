@@ -14,8 +14,8 @@
             </dt>
             <#if select_colors??>
                 <#list select_colors as item>
-                    <dd id="colorPackage${item.id?c}">
-                        <span>${item.number!''}</span>
+                    <dd id="colorPackage${item.goodsId?c}">
+                        <span>${item.sku!''}</span>
                         <span>${item.quantity!''}</span>
                         <span>
                             <#if item.totalPrice??>

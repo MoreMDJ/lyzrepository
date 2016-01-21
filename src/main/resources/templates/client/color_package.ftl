@@ -16,8 +16,8 @@
                     <#list color_package_list as item>
                         <li onclick="getColor('${item.code!''}',${item.id?c})"><img src="${item.imageUri!''}"></li>
                         <#-- 指定调色包的库存 -->
-                        <#if item.inventory??>
-                            <input type="hidden" id="colorPackageInventory${item.id?c}" value="${item.inventory?c}">
+                        <#if item.leftNumber??>
+                            <input type="hidden" id="colorPackageInventory${item.id?c}" value="${item.leftNumber?c}">
                         <#else>
                             <input type="hidden" id="colorPackageInventory${item.id?c}" value="0">
                         </#if>
