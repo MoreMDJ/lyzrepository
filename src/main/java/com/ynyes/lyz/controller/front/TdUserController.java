@@ -1167,24 +1167,6 @@ public class TdUserController {
 			}
 		}
 
-		// 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
-		List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
-		// 进行遍历操作
-		if (null != list && list.size() > 0) {
-			for (TdOrder subOrder : list) {
-				if (null != subOrder) {
-					// 设置订单状态为取消状态，同时记录已退货属性
-					Long statusId = subOrder.getStatusId();
-					if (null != statusId && 3L == statusId.longValue()) {
-						// 在此进行资金和优惠券的退还
-						tdPriceCountService.cashAndCouponBack(subOrder, user);
-					}
-					subOrder.setStatusId(7L);
-					subOrder.setIsRefund(true);
-				}
-			}
-		}
-
 		if (null != order.getStatusId() && 3L == order.getStatusId()) {
 			// 生成退货单
 			if (null != order) {
@@ -1288,6 +1270,24 @@ public class TdUserController {
 			}
 		}
 
+		// 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
+		List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
+		// 进行遍历操作
+		if (null != list && list.size() > 0) {
+			for (TdOrder subOrder : list) {
+				if (null != subOrder) {
+					// 设置订单状态为取消状态，同时记录已退货属性
+					Long statusId = subOrder.getStatusId();
+					if (null != statusId && 3L == statusId.longValue()) {
+						// 在此进行资金和优惠券的退还
+						tdPriceCountService.cashAndCouponBack(subOrder, user);
+					}
+					subOrder.setStatusId(7L);
+					subOrder.setIsRefund(true);
+				}
+			}
+		}
+
 		order.setStatusId(7L);
 		order.setIsRefund(true);
 		tdOrderService.save(order);
@@ -1313,7 +1313,7 @@ public class TdUserController {
 		}
 		order.setStatusId(5L);
 		tdOrderService.save(order);
-		
+
 		res.put("status", 0);
 		return res;
 	}
