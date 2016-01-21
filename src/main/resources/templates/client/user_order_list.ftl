@@ -123,7 +123,9 @@
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
                                                     <#case 9>退货中<#break>
-                                                    <#case 10>退货完成<#break>
+                                                    <#case 10>退货确认<#break>
+                                                    <#case 11>退货取消<#break>
+                                                    <#case 12>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
@@ -200,7 +202,9 @@
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
                                                     <#case 9>退货中<#break>
-                                                    <#case 10>退货完成<#break>
+                                                    <#case 10>退货确认<#break>
+                                                    <#case 11>退货取消<#break>
+                                                    <#case 12>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
@@ -276,7 +280,9 @@
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
                                                     <#case 9>退货中<#break>
-                                                    <#case 10>退货完成<#break>
+                                                    <#case 10>退货确认<#break>
+                                                    <#case 11>退货取消<#break>
+                                                    <#case 12>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
@@ -352,7 +358,9 @@
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
                                                     <#case 9>退货中<#break>
-                                                    <#case 10>退货完成<#break>
+                                                    <#case 10>退货确认<#break>
+                                                    <#case 11>退货取消<#break>
+                                                    <#case 12>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
@@ -428,7 +436,9 @@
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
                                                     <#case 9>退货中<#break>
-                                                    <#case 10>退货完成<#break>
+                                                    <#case 10>退货确认<#break>
+                                                    <#case 11>退货取消<#break>
+                                                    <#case 12>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
