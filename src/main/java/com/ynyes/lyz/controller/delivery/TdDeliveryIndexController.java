@@ -65,37 +65,28 @@ public class TdDeliveryIndexController {
 
 	@Autowired
 	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
-	
+
 	@Autowired
 	private TdDiySiteService tdDiySiteService;
-	
+
 	@Autowired
 	private TdOrderGoodsService tdOrderGoodsService;
-	
+
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
-	
+
 	@Autowired
 	private TdDeliveryInfoService tdDeliveryInfoService;
 
-	/**
-	 * 获取配送列表
-	 * 
-	 * @param start
-	 *            开始日期
-	 * @param end
-	 *            结束日期
-	 * @param days
-	 *            几天内
-	 * @param type
-	 *            类型
-	 * @param req
-	 * @param map
-	 * @return
-	 */
 	@RequestMapping
-	public String deliveryIndex(String start, String end, Integer days, Integer type, HttpServletRequest req,
-			ModelMap map) {
+	public String deliveryIndex() {
+		return "";
+	}
+
+	
+	@RequestMapping(value="/return")
+	public String deliveryReturnIndex(String start, String end, Integer days,
+			Integer type, HttpServletRequest req, ModelMap map) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		if (null == username) {
@@ -165,19 +156,18 @@ public class TdDeliveryIndexController {
 
 		// 查看本配送员所有
 		List<String> orderNumberList = new ArrayList<String>();
-		
+
 		// 根据快递员编号找task_no
-		List<TdDeliveryInfo> deliveryInfoList = tdDeliveryInfoService.findDistinctTaskNoByDriver(user.getOpUser());
-		
-		if (null != deliveryInfoList && deliveryInfoList.size() > 0)
-		{
+		List<TdDeliveryInfo> deliveryInfoList = tdDeliveryInfoService
+				.findDistinctTaskNoByDriver(user.getOpUser());
+
+		if (null != deliveryInfoList && deliveryInfoList.size() > 0) {
 			List<String> taskNoList = new ArrayList<String>();
-			
-			for (TdDeliveryInfo deInfo : deliveryInfoList)
-			{
+
+			for (TdDeliveryInfo deInfo : deliveryInfoList) {
 				taskNoList.add(deInfo.getTaskNo());
 			}
-			
+
 			if (taskNoList.size() > 0)
 
 			{
@@ -197,40 +187,229 @@ public class TdDeliveryIndexController {
 		if (null != startDate && orderNumberList.size() > 0) {
 			if (null != endDate) {
 				if (type.equals(1)) {
-					orderList = tdOrderService.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(5L, 6L,
-							orderNumberList, startDate, endDate);
+					orderList = tdOrderService
+							.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(
+									5L, 6L, orderNumberList, startDate, endDate);
 				} else if (type.equals(2)) {
-					orderList = tdOrderService.findByStatusIdAndOrderTimeBetween(4L, orderNumberList, startDate,
-							endDate);
+					orderList = tdOrderService
+							.findByStatusIdAndOrderTimeBetween(4L,
+									orderNumberList, startDate, endDate);
 				} else if (type.equals(3)) {
-					orderList = tdOrderService.findByStatusIdAndOrderTimeBetween(3L, orderNumberList, startDate,
-							endDate);
+					orderList = tdOrderService
+							.findByStatusIdAndOrderTimeBetween(3L,
+									orderNumberList, startDate, endDate);
 				}
 
-				map.addAttribute("count_type_1",
-						tdOrderService.countByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(5L, 6L,
+				map.addAttribute(
+						"count_type_1",
+						tdOrderService
+								.countByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(
+										5L, 6L, orderNumberList, startDate,
+										endDate));
+				map.addAttribute("count_type_2", tdOrderService
+						.countByStatusIdAndOrderTimeBetween(4L,
 								orderNumberList, startDate, endDate));
-				map.addAttribute("count_type_2",
-						tdOrderService.countByStatusIdAndOrderTimeBetween(4L, orderNumberList, startDate, endDate));
-				map.addAttribute("count_type_3",
-						tdOrderService.countByStatusIdAndOrderTimeBetween(3L, orderNumberList, startDate, endDate));
+				map.addAttribute("count_type_3", tdOrderService
+						.countByStatusIdAndOrderTimeBetween(3L,
+								orderNumberList, startDate, endDate));
 			} else {
 				if (type.equals(1)) {
-					orderList = tdOrderService.findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(5L, 6L,
-							orderNumberList, startDate);
+					orderList = tdOrderService
+							.findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(
+									5L, 6L, orderNumberList, startDate);
 				} else if (type.equals(2)) {
-					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(4L, startDate, orderNumberList);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(
+							4L, startDate, orderNumberList);
 				} else if (type.equals(3)) {
-					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(3L, startDate, orderNumberList);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(
+							3L, startDate, orderNumberList);
 				}
 
-				map.addAttribute("count_type_1",
-						tdOrderService.countByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(5L, 6L,
-								orderNumberList, startDate));
-				map.addAttribute("count_type_2",
-						tdOrderService.countByStatusIdAndOrderTimeAfter(4L, startDate, orderNumberList));
-				map.addAttribute("count_type_3",
-						tdOrderService.countByStatusIdAndOrderTimeAfter(3L, startDate, orderNumberList));
+				map.addAttribute(
+						"count_type_1",
+						tdOrderService
+								.countByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(
+										5L, 6L, orderNumberList, startDate));
+				map.addAttribute("count_type_2", tdOrderService
+						.countByStatusIdAndOrderTimeAfter(4L, startDate,
+								orderNumberList));
+				map.addAttribute("count_type_3", tdOrderService
+						.countByStatusIdAndOrderTimeAfter(3L, startDate,
+								orderNumberList));
+			}
+		}
+
+		map.addAttribute("order_list", orderList);
+
+		return "/client/return_list";
+	}
+	/**
+	 * 获取配送列表
+	 * 
+	 * @param start
+	 *            开始日期
+	 * @param end
+	 *            结束日期
+	 * @param days
+	 *            几天内
+	 * @param type
+	 *            类型
+	 * @param req
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value="/order")
+	public String deliveryIndex(String start, String end, Integer days,
+			Integer type, HttpServletRequest req, ModelMap map) {
+		String username = (String) req.getSession().getAttribute("username");
+
+		if (null == username) {
+			return "redirect:/login";
+		}
+
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (null == user) {
+			return "redirect:/login";
+		}
+
+		if (null == type) {
+			type = 1;
+		}
+
+		map.addAttribute("type", type);
+
+		if (null == start && null == end && null == days) {
+			days = 3;
+		}
+
+		Date startDate = null, endDate = null;
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
+
+		if (null != start) {
+			try {
+				cal.setTime(sdf.parse(start));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			startDate = cal.getTime();
+			map.addAttribute("startDate", startDate);
+		}
+
+		if (null != end) {
+			try {
+				cal.setTime(sdf.parse(end));
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 59);
+				cal.set(Calendar.SECOND, 59);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			endDate = cal.getTime();
+			map.addAttribute("endDate", endDate);
+		}
+
+		if (null == startDate && null == endDate) {
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+
+			// 7天内
+			if (days.equals(7)) {
+				cal.add(Calendar.DATE, -7);
+				startDate = cal.getTime();
+			} else {
+				cal.add(Calendar.DATE, -3);
+				startDate = cal.getTime();
+			}
+
+			map.addAttribute("days", days);
+		}
+
+		// 查看本配送员所有
+		List<String> orderNumberList = new ArrayList<String>();
+
+		// 根据快递员编号找task_no
+		List<TdDeliveryInfo> deliveryInfoList = tdDeliveryInfoService
+				.findDistinctTaskNoByDriver(user.getOpUser());
+
+		if (null != deliveryInfoList && deliveryInfoList.size() > 0) {
+			List<String> taskNoList = new ArrayList<String>();
+
+			for (TdDeliveryInfo deInfo : deliveryInfoList) {
+				taskNoList.add(deInfo.getTaskNo());
+			}
+
+			if (taskNoList.size() > 0)
+
+			{
+				List<TdDeliveryInfoDetail> detailList = tdDeliveryInfoDetailService
+						.findDistinctSubOrderNumberByTaskNoIn(taskNoList);
+
+				if (null != detailList && detailList.size() > 0) {
+					for (TdDeliveryInfoDetail detail : detailList) {
+						orderNumberList.add(detail.getSubOrderNumber());
+					}
+				}
+			}
+		}
+
+		List<TdOrder> orderList = null;
+
+		if (null != startDate && orderNumberList.size() > 0) {
+			if (null != endDate) {
+				if (type.equals(1)) {
+					orderList = tdOrderService
+							.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(
+									5L, 6L, orderNumberList, startDate, endDate);
+				} else if (type.equals(2)) {
+					orderList = tdOrderService
+							.findByStatusIdAndOrderTimeBetween(4L,
+									orderNumberList, startDate, endDate);
+				} else if (type.equals(3)) {
+					orderList = tdOrderService
+							.findByStatusIdAndOrderTimeBetween(3L,
+									orderNumberList, startDate, endDate);
+				}
+
+				map.addAttribute(
+						"count_type_1",
+						tdOrderService
+								.countByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(
+										5L, 6L, orderNumberList, startDate,
+										endDate));
+				map.addAttribute("count_type_2", tdOrderService
+						.countByStatusIdAndOrderTimeBetween(4L,
+								orderNumberList, startDate, endDate));
+				map.addAttribute("count_type_3", tdOrderService
+						.countByStatusIdAndOrderTimeBetween(3L,
+								orderNumberList, startDate, endDate));
+			} else {
+				if (type.equals(1)) {
+					orderList = tdOrderService
+							.findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(
+									5L, 6L, orderNumberList, startDate);
+				} else if (type.equals(2)) {
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(
+							4L, startDate, orderNumberList);
+				} else if (type.equals(3)) {
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(
+							3L, startDate, orderNumberList);
+				}
+
+				map.addAttribute(
+						"count_type_1",
+						tdOrderService
+								.countByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(
+										5L, 6L, orderNumberList, startDate));
+				map.addAttribute("count_type_2", tdOrderService
+						.countByStatusIdAndOrderTimeAfter(4L, startDate,
+								orderNumberList));
+				map.addAttribute("count_type_3", tdOrderService
+						.countByStatusIdAndOrderTimeAfter(3L, startDate,
+								orderNumberList));
 			}
 		}
 
@@ -249,7 +428,8 @@ public class TdDeliveryIndexController {
 	 * @return
 	 */
 	@RequestMapping(value = "/detail/{id}", method = RequestMethod.GET)
-	public String detail(@PathVariable Long id, HttpServletRequest req, ModelMap map, Long msg) {
+	public String detail(@PathVariable Long id, HttpServletRequest req,
+			ModelMap map, Long msg) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		if (null == username) {
@@ -281,7 +461,8 @@ public class TdDeliveryIndexController {
 	 */
 	@RequestMapping(value = "/submitDelivery", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submit(Long id, HttpServletRequest req, ModelMap map) {
+	public Map<String, Object> submit(Long id, HttpServletRequest req,
+			ModelMap map) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
@@ -311,7 +492,7 @@ public class TdDeliveryIndexController {
 
 		return res;
 	}
-	
+
 	/**
 	 * 拒签退货
 	 * 
@@ -322,7 +503,8 @@ public class TdDeliveryIndexController {
 	 */
 	@RequestMapping(value = "/submitReturn", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submitReturn(Long id, HttpServletRequest req, ModelMap map) {
+	public Map<String, Object> submitReturn(Long id, HttpServletRequest req,
+			ModelMap map) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
@@ -359,7 +541,8 @@ public class TdDeliveryIndexController {
 			String curStr = sdf.format(current);
 			Random random = new Random();
 
-			returnNote.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+			returnNote.setReturnNumber("T" + curStr
+					+ leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
 
 			// 添加订单信息
 			returnNote.setOrderNumber(order.getOrderNumber());
@@ -368,7 +551,8 @@ public class TdDeliveryIndexController {
 			returnNote.setPayTypeTitle(order.getPayTypeTitle());
 			// 门店信息
 			if (null != order.getDiySiteId()) {
-				TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
+				TdDiySite diySite = tdDiySiteService.findOne(order
+						.getDiySiteId());
 				returnNote.setDiySiteId(order.getDiySiteId());
 				returnNote.setDiySiteTel(diySite.getServiceTele());
 				returnNote.setDiySiteTitle(diySite.getTitle());
@@ -379,23 +563,11 @@ public class TdDeliveryIndexController {
 			returnNote.setUsername(order.getUsername());
 			returnNote.setRemarkInfo("拒签退货");
 
-			Long turnType = 2L;
-			// 退货方式
-			returnNote.setTurnType(turnType);
-			// 原订单配送方式
-			if ("门店自提".equals(order.getDeliverTypeTitle())) {
-				if (turnType.equals(1L)) {
-					returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
-				} else {
-					returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
-				}
-			} else {
-				if (turnType.equals(1L)) {
-					returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
-				} else {
-					returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
-				}
-			}
+			// 退货方式 物流取货
+			returnNote.setTurnType(2L);
+			
+			// 待取货
+			returnNote.setStatusId(2L);
 
 			returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
 			returnNote.setOrderTime(new Date());
@@ -411,7 +583,8 @@ public class TdDeliveryIndexController {
 					orderGoods.setGoodsId(oGoods.getGoodsId());
 					orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
 					orderGoods.setSku(oGoods.getSku());
-					orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
+					orderGoods.setGoodsCoverImageUri(oGoods
+							.getGoodsCoverImageUri());
 					orderGoods.setGoodsColor(oGoods.getGoodsColor());
 					orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
 					orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
@@ -421,7 +594,8 @@ public class TdDeliveryIndexController {
 					orderGoods.setPrice(oGoods.getPrice());
 					orderGoods.setQuantity(oGoods.getQuantity());
 
-					orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
+					orderGoods.setDeliveredQuantity(oGoods
+							.getDeliveredQuantity());
 					orderGoods.setPoints(oGoods.getPoints());
 					// tdOrderGoodsService.save(orderGoods);
 					// 添加商品信息
@@ -438,10 +612,10 @@ public class TdDeliveryIndexController {
 			tdOrderGoodsService.save(orderGoodsList);
 			// 保存退货单
 			tdReturnNoteService.save(returnNote);
-			
-//			tdCommonService.sendBackMsgToWMS(returnNote);
 
-			order.setStatusId(7L);
+			// tdCommonService.sendBackMsgToWMS(returnNote);
+
+			order.setStatusId(9L);
 			order.setIsRefund(true);
 			tdOrderService.save(order);
 
@@ -449,7 +623,7 @@ public class TdDeliveryIndexController {
 			res.put("message", "提交退货成功");
 			return res;
 		}
-		
+
 		res.put("code", 0);
 
 		return res;
@@ -457,8 +631,8 @@ public class TdDeliveryIndexController {
 
 	@RequestMapping(value = "/submitOwnMoney/{id}", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submitMoney(@PathVariable Long id, Double payed, Double owned, HttpServletRequest req,
-			ModelMap map) {
+	public Map<String, Object> submitMoney(@PathVariable Long id, Double payed,
+			Double owned, HttpServletRequest req, ModelMap map) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
@@ -474,7 +648,8 @@ public class TdDeliveryIndexController {
 			return res;
 		}
 
-		List<TdOwnMoneyRecord> recList = tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(order.getOrderNumber());
+		List<TdOwnMoneyRecord> recList = tdOwnMoneyRecordService
+				.findByOrderNumberIgnoreCase(order.getOrderNumber());
 
 		if (null != recList && recList.size() > 0) {
 			res.put("message", "该订单已申请了欠款");
@@ -504,7 +679,8 @@ public class TdDeliveryIndexController {
 
 	@RequestMapping(value = "/geo/submit", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submitMoney(TdGeoInfo geoInfo, HttpServletRequest req, ModelMap map) {
+	public Map<String, Object> submitMoney(TdGeoInfo geoInfo,
+			HttpServletRequest req, ModelMap map) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
@@ -514,7 +690,7 @@ public class TdDeliveryIndexController {
 			res.put("message", "请重新登录");
 			return res;
 		}
-		
+
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 
 		if (null == user) {
@@ -539,7 +715,8 @@ public class TdDeliveryIndexController {
 	}
 
 	@RequestMapping(value = "/img", method = RequestMethod.POST)
-	public String uploadImg(@RequestParam MultipartFile Filedata, HttpServletRequest req, String orderNumber, Long id) {
+	public String uploadImg(@RequestParam MultipartFile Filedata,
+			HttpServletRequest req, String orderNumber, Long id) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsername(username);
 		if (null == user) {
@@ -565,7 +742,8 @@ public class TdDeliveryIndexController {
 
 			File file = new File(uri);
 
-			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(file));
+			BufferedOutputStream stream = new BufferedOutputStream(
+					new FileOutputStream(file));
 			stream.write(bytes);
 			stream.close();
 

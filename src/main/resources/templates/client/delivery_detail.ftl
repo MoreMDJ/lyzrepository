@@ -21,7 +21,7 @@ var map, geolocation;
 //加载地图，调用浏览器定位服务
 map = new AMap.Map('container');
 
-setInterval("timer()", 1000 * 60 * 60);
+setInterval("timer()", 1000 * 60 * 5);
     
 function timer() {
     map.plugin('AMap.Geolocation', function() {
