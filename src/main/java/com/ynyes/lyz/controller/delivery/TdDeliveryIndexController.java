@@ -80,7 +80,7 @@ public class TdDeliveryIndexController {
 
 	@RequestMapping
 	public String deliveryIndex() {
-		return "";
+		return "/client/delivery_select_type";
 	}
 
 	
@@ -512,6 +512,20 @@ public class TdDeliveryIndexController {
 			res.put("message", "ID不能为空");
 			return res;
 		}
+		
+		String username = (String) req.getSession().getAttribute("username");
+
+		if (null == username) {
+			res.put("message", "请重新登录");
+			return res;
+		}
+
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (null == user) {
+			res.put("message", "请重新登录");
+			return res;
+		}
 
 		TdOrder order = tdOrderService.findOne(id);
 
@@ -565,6 +579,9 @@ public class TdDeliveryIndexController {
 
 			// 退货方式 物流取货
 			returnNote.setTurnType(2L);
+			
+			// 快递员为自己
+			returnNote.setDriver(user.getOpUser());
 			
 			// 待取货
 			returnNote.setStatusId(2L);

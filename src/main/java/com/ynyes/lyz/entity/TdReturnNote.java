@@ -108,6 +108,10 @@ public class TdReturnNote {
 	// 退货金额
 	@Column(scale=2)
 	private Double turnPrice;
+	
+	// 快递员
+	@Column
+	private String driver;
 
 	public Long getId() {
 		return id;
@@ -283,6 +287,14 @@ public class TdReturnNote {
 
 	public void setTurnPrice(Double turnPrice) {
 		this.turnPrice = turnPrice;
+	}
+
+	public String getDriver() {
+		return driver;
+	}
+
+	public void setDriver(String driver) {
+		this.driver = driver;
 	}
 
 	@Override
