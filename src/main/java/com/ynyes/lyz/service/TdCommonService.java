@@ -1542,11 +1542,11 @@ public class TdCommonService {
 
 			// add by Shawn
 			if (null == order.getAllTotalPay()) {
-				order.setTotalPrice(0.0);
+				order.setAllTotalPay(0.0);
 			}
 
 			if (null == order.getAllActualPay()) {
-				order.setActualPay(0.0);
+				order.setAllActualPay(0.0);
 			}
 
 			Double left = order.getAllTotalPay() - order.getAllActualPay();

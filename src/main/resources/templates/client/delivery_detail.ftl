@@ -240,7 +240,7 @@ function submitOwnMoney()
     <#if sub_order_list??>
     	<#list sub_order_list as sub_order>
 		    <section>
-		      <div class="title">订单详情</div>
+		      <div class="title">分单详情</div>
 		      <div class="content">
 		        <div class="mesg">分单号：${sub_order.orderNumber!''}</div>
 		        <#if sub_order.orderGoodsList??>
