@@ -226,33 +226,47 @@ function submitOwnMoney()
         <div class="mesg">收货人姓名：${td_order.shippingName!''}</div>
         <div class="mesg">手机号码：${td_order.shippingPhone!''}</div>
         <div class="mesg">收货地址：${td_order.shippingAddress!''}</div>
-        <div class="mesg">配送信息：由乐易装专送提供高品质配送服务</div>
+        <div class="mesg">备注信息：${td_order.remark!''}</div>
+      </div>
+    </section>
+    <section>
+      <div class="title">门店信息</div>
+      <div class="content">
+        <div class="mesg">门店名称：${td_order.diySiteName!'0'}</div>
+        <div class="mesg">门店电话：${td_order.diySitePhone!'0'}</div>
       </div>
     </section>
     <!-- 订单详情 -->
-    <section>
-      <div class="title">订单详情</div>
-      <div class="content">
-        <div class="mesg">订单号码：${td_order.orderNumber!''}</div>
-        <#if td_order.orderGoodsList??>
-        	<#list td_order.orderGoodsList as item>
-        		<div class="mesg">产品：${item.goodsTitle!''} * ${item.quantity!'0'}</div>
-        	</#list>
-        </#if>
-        <#if td_order.presentedList??>
-        	<#list td_order.presentedList as item>
-        		<div class="mesg">活动赠品：${item.goodsTitle!''} * ${item.quantity!'0'}</div>
-        	</#list>
-        </#if>
-        <#if td_order.giftGoodsList??>
-        	<#list td_order.giftGoodsList as item>
-        		<div class="mesg">赠品：${item.goodsTitle!''} * ${item.quantity!'0'}</div>
-        	</#list>
-        </#if>
-        <div class="mesg">支付方式：${td_order.payTypeTitle!''}</div>
-      </div>
-    </section>
+    <#if sub_order_list??>
+    	<#list sub_order_list as sub_order>
+		    <section>
+		      <div class="title">订单详情</div>
+		      <div class="content">
+		        <div class="mesg">分单号：${sub_order.orderNumber!''}</div>
+		        <#if sub_order.orderGoodsList??>
+		        	<#list sub_order.orderGoodsList as item>
+		        		<div class="mesg">产品：${item.goodsTitle!''} * ${item.quantity!'0'}  编号:${item.sku!''}</div>
+		        	</#list>
+		        </#if>
+		        <#if sub_order.presentedList??>
+		        	<#list sub_order.presentedList as item>
+		        		<div class="mesg">活动赠品：${item.goodsTitle!''} * ${item.quantity!'0'}</div>
+		        	</#list>
+		        </#if>
+		        <#if sub_order.giftGoodsList??>
+		        	<#list sub_order.giftGoodsList as item>
+		        		<div class="mesg">赠品：${item.goodsTitle!''} * ${item.quantity!'0'}</div>
+		        	</#list>
+		        </#if>
+		        <div class="mesg">支付方式：${sub_order.payTypeTitle!''}</div>
+		        <div class="mesg">已交款：${sub_order.actualPay!'0'}元</div>
+        		<div class="mesg">欠款：<#if sub_order.totalPrice?? && sub_order.actualPay??>${sub_order.totalPrice-sub_order.actualPay}<#else>0</#if>元</div>
+  			  </div>
+		    </section>
+	    </#list>
+    </#if>
     <!-- 申请欠款 -->
+    <#--
     <section>
       <div class="title">申请欠款</div>
       <div class="content">
@@ -260,6 +274,7 @@ function submitOwnMoney()
         <div class="mesg">欠款：<#if td_order.totalPrice?? && td_order.actualPay??>${td_order.totalPrice-td_order.actualPay}<#else>0</#if>元</div>
       </div>
     </section>
+    -->
     <#if td_order.statusId == 4>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitReturn(${td_order.id?c})">拒签退货</a>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(${td_order.id?c})">确认送达</a>

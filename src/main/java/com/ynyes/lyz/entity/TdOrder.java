@@ -311,7 +311,7 @@ public class TdOrder {
 	// 实际总单金额
 	@Column(scale = 2)
 	private Double allTotalPay;
-
+	
 	public Double getRefund() {
 		return refund;
 	}
@@ -840,19 +840,19 @@ public class TdOrder {
 		this.mainOrderNumber = mainOrderNumber;
 	}
 
-	public Double getAllActualPay() {
-		return allActualPay;
-	}
-
-	public void setAllActualPay(Double allActualPay) {
-		this.allActualPay = allActualPay;
-	}
-
 	public Double getAllTotalPay() {
 		return allTotalPay;
 	}
 
 	public void setAllTotalPay(Double allTotalPay) {
 		this.allTotalPay = allTotalPay;
+	}
+
+	public Double getAllActualPay() {
+		return allActualPay;
+	}
+
+	public void setAllActualPay(Double allActualPay) {
+		this.allActualPay = allActualPay;
 	}
 }
