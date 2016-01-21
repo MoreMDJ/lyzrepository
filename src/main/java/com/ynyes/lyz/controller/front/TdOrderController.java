@@ -418,6 +418,7 @@ public class TdOrderController {
 		order.setDiySiteId(tdDiySite.getId());
 		order.setDiySiteName(tdDiySite.getTitle());
 		order.setDiySitePhone(tdDiySite.getServiceTele());
+		order.setDiySiteCode(tdDiySite.getStoreCode());
 
 		req.getSession().setAttribute("order_temp", order);
 		tdOrderService.save(order);
