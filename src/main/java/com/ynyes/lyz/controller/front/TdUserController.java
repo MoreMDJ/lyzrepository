@@ -1297,6 +1297,28 @@ public class TdUserController {
 	}
 
 	/**
+	 * 用户确认收货的方法
+	 * 
+	 * @author dengxiao
+	 */
+	@RequestMapping(value = "/confirm/accipt")
+	@ResponseBody
+	public Map<String, Object> userConfirmAccipt(Long id) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+		TdOrder order = tdOrderService.findOne(id);
+		if (null == order) {
+			res.put("message", "未查找到指定的订单");
+			return res;
+		}
+		order.setStatusId(5L);
+		tdOrderService.save(order);
+		
+		res.put("status", 0);
+		return res;
+	}
+
+	/**
 	 * 跳转到订单详情的方法
 	 * 
 	 * @author dengxiao

@@ -98,3 +98,35 @@ function deleteOrder(id) {
 		}
 	});
 }
+
+/**
+ * 用户确认收货的方法
+ * 
+ * @author dengxiao
+ */
+function confirmAccipt(id) {
+	// 开启等待图标
+	wait();
+
+	$.ajax({
+		url : "/user/confirm/accipt",
+		type : "post",
+		timeout : 10000,
+		data : {
+			id : id
+		},
+		error : function() {
+			// 关闭等待图标
+			close(1);
+			warning("亲，您的网速不给力啊");
+		},
+		success : function(res) {
+			close(100);
+			if (0 == res.status) {
+				window.location.reload();
+			} else {
+				setTimeout(warning(res.message), 500);
+			}
+		}
+	});
+}

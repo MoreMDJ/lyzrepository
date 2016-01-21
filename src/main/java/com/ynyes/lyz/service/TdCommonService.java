@@ -1006,7 +1006,7 @@ public class TdCommonService {
 				order.setCashCouponId("");
 				order.setProductCouponId("");
 				order.setStatusId(3L);
-				order.setUserId(order_temp.getUserId());
+				order.setUserId(order_temp.getUserId());	
 				order.setUsername(username);
 				order.setPayTypeId(order_temp.getPayTypeId());
 				order.setPayTypeTitle(order_temp.getPayTypeTitle());
