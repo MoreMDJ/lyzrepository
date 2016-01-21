@@ -72,9 +72,6 @@ public class TdOrderController {
 	private TdCityService tdCityService;
 
 	@Autowired
-	private TdCartGoodsService tdCartGoodsService;
-
-	@Autowired
 	private TdDistrictService tdDistrictService;
 
 	@Autowired
