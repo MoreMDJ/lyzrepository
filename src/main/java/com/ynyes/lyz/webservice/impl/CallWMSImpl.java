@@ -45,6 +45,7 @@ import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdBackDetailService;
 import com.ynyes.lyz.service.TdBackMainService;
@@ -53,6 +54,7 @@ import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPriceCountService;
+import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.webservice.ICallWMS;
 
@@ -82,6 +84,9 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdPriceCountService tdPriceCountService;
+	
+	@Autowired
+	private TdReturnNoteService tdReturnNoteService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -764,16 +769,22 @@ public class CallWMSImpl implements ICallWMS {
 				}
 				tdBackMainService.save(tdBackMain);
 				
-				TdOrder order = tdOrderService.findByOrderNumber(c_po_no);
-				if (order != null)
+				TdReturnNote tdReturnNote = tdReturnNoteService.findByReturnNumber(c_po_no);
+				if (tdReturnNote != null) 
 				{
-					if (order.getStatusId() == 9 || order.getStatusId() == 10 || order.getStatusId() == 11 || order.getStatusId() == 12)
+					tdReturnNote.setStatusId(5L);
+					
+					TdOrder order = tdOrderService.findByOrderNumber(tdReturnNote.getOrderNumber());
+					if (order != null)
 					{
-						order.setStatusId(12L);
-						tdOrderService.save(order);
+						if (order.getStatusId() == 9 || order.getStatusId() == 10 || order.getStatusId() == 11 || order.getStatusId() == 12)
+						{
+							order.setStatusId(12L);
+							tdOrderService.save(order);
+						}
+						TdUser tdUser = tdUserService.findByUsername(order.getUsername());
+						tdPriceCountService.cashAndCouponBack(order, tdUser);
 					}
-					TdUser tdUser = tdUserService.findByUsername(order.getUsername());
-					tdPriceCountService.cashAndCouponBack(order, tdUser);
 				}
 				
 //				if (c_reserved1 != null) 
