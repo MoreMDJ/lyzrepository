@@ -60,6 +60,7 @@ import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
+import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdSettingService;
@@ -153,6 +154,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdGeoInfoService tdGeoInfoService;
+
+	@Autowired
+	private TdPriceCountService tdPriceCountService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1139,109 +1143,49 @@ public class TdUserController {
 	 */
 	@RequestMapping(value = "/order/cancel")
 	@ResponseBody
-	public Map<String, Object> userOrderCancel(Long orderId) {
+	public Map<String, Object> userOrderCancel(Long orderId, HttpServletRequest req) {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
+
+		// 查询登陆用户
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			res.put("message", "未能成功获取到登陆用户的信息");
+			return res;
+		}
+
 		// 查询到指定的订单
 		TdOrder order = tdOrderService.findOne(orderId);
 		// 首先判断订单是不是运费单
-		Double fee = order.getDeliverFee();
-		if (null != fee && fee > 0) {
-			// 此时是属于运费单的情况了，现在判断下其他单据有没有退还
-			String orderNumber = order.getOrderNumber();
-			if (null != orderNumber && !"".equals(orderNumber)) {
-				Boolean isCancel = true;
-				String otherOrderNumber = "";
-				String newOrderNumber = "";
-				for (int i = 0; i < orderNumber.length(); i++) {
-					if (orderNumber.charAt(i) >= 48 && orderNumber.charAt(i) <= 57) {
-						newOrderNumber += orderNumber.charAt(i);
-					}
-				}
-				// 查询此单的其他单据有没有取消
-				List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
-				if (null != list && list.size() > 0) {
-					for (TdOrder associated_order : list) {
-						if (null != associated_order && null != associated_order.getStatusId()) {
-							// 如果是本单就不用判断了
-							if (null != associated_order.getId() && associated_order.getId() != orderId) {
-								Long statusId = associated_order.getStatusId();
-								if (7L != statusId.longValue()) {
-									otherOrderNumber += associated_order.getOrderNumber();
-									isCancel = false;
-									break;
-								}
-							}
-						}
+		String orderNumber = order.getOrderNumber();
+		String newOrderNumber = "";
+		// 通过计算得到订单的数字部分
+		for (int i = 0; i < orderNumber.length(); i++) {
+			if (orderNumber.charAt(i) >= 48 && orderNumber.charAt(i) <= 57) {
+				newOrderNumber += orderNumber.charAt(i);
+			}
+		}
 
+		// 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
+		List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
+		// 进行遍历操作
+		if (null != list && list.size() > 0) {
+			for (TdOrder subOrder : list) {
+				if (null != subOrder) {
+					// 设置订单状态为取消状态，同时记录已退货属性
+					Long statusId = subOrder.getStatusId();
+					if (null != statusId && 3L == statusId.longValue()) {
+						// 在此进行资金和优惠券的退还
+						tdPriceCountService.cashAndCouponBack(subOrder, user);
 					}
-				}
-				if (!isCancel) {
-					res.put("message", "亲，您需要先取消掉关联<br>订单（" + otherOrderNumber + "）才能够取消此单");
-					return res;
+					subOrder.setStatusId(7L);
+					subOrder.setIsRefund(true);
 				}
 			}
 		}
 
-		
 		if (null != order.getStatusId() && 3L == order.getStatusId()) {
-			// 进行资金退还
-			Double totalPrice = order.getTotalPrice();
-			Double unCashBalanceUsed = order.getUnCashBalanceUsed();
-			if (null == unCashBalanceUsed) {
-				unCashBalanceUsed = 0.00;
-			}
-			Double cashBalanceUsed = order.getCashBalanceUsed();
-			if (null == cashBalanceUsed) {
-				cashBalanceUsed = 0.00;
-			}
-			String productCouponId = order.getProductCouponId();
-			String cashCouponId = order.getCashCouponId();
-			Long userId = order.getUserId();
-			TdUser user = tdUserService.findOne(userId);
-			if (null == user) {
-				res.put("message", "未找到订单的归属用户");
-				return res;
-			}
-			user.setBalance(user.getBalance() + unCashBalanceUsed + cashBalanceUsed);
-			user.setUnCashBalance(user.getUnCashBalance() + unCashBalanceUsed);
-			user.setCashBalance(user.getCashBalance() + cashBalanceUsed);
-			tdUserService.save(user);
-
-			// 拆分使用的现金券的id
-			if (null != cashCouponId && !"".equals(cashCouponId)) {
-				String[] cashs = cashCouponId.split(",");
-				if (null != cashs) {
-					for (String sId : cashs) {
-						if (null != sId) {
-							Long id = Long.valueOf(sId);
-							TdCoupon coupon = tdCouponService.findOne(id);
-							if (null != coupon) {
-								coupon.setIsUsed(false);
-								tdCouponService.save(coupon);
-							}
-						}
-					}
-				}
-			}
-
-			// 拆分使用的产品券
-			if (null != productCouponId && !"".equals(productCouponId)) {
-				String[] products = productCouponId.split(",");
-				if (null != products) {
-					for (String sId : products) {
-						if (null != sId) {
-							Long id = Long.valueOf(sId);
-							TdCoupon coupon = tdCouponService.findOne(id);
-							if (null != coupon) {
-								coupon.setIsUsed(false);
-								tdCouponService.save(coupon);
-							}
-						}
-					}
-				}
-			}
-			
 			// 生成退货单
 			if (null != order) {
 				TdReturnNote returnNote = new TdReturnNote();
@@ -1333,11 +1277,11 @@ public class TdUserController {
 				returnNote = tdReturnNoteService.save(returnNote);
 
 				tdCommonService.sendBackMsgToWMS(returnNote);
-				
+
 				returnNote.setStatusId(3L);
-				
+
 				tdReturnNoteService.save(returnNote);
-				
+
 				order.setStatusId(7L);
 				order.setIsRefund(true);
 				tdOrderService.save(order);
@@ -1345,9 +1289,11 @@ public class TdUserController {
 		}
 
 		order.setStatusId(7L);
+		order.setIsRefund(true);
 		tdOrderService.save(order);
 		res.put("status", 0);
 		return res;
+
 	}
 
 	/**
