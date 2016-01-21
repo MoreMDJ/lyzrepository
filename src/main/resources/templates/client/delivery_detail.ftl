@@ -271,9 +271,9 @@ function submitOwnMoney()
     <section>
       <div class="title">代收款信息</div>
       <div class="content">
-      	<div class="mesg">总金额：${td_order.allTotalPrice!'0'}元</div>
+      	<div class="mesg">总金额：${td_order.allTotalPay!'0'}元</div>
         <div class="mesg">实收金额：${td_order.allActualPay!'0'}元</div>
-        <div class="mesg">欠款：<#if td_order.allTotalPrice?? && td_order.allActualPay??>${td_order.allTotalPrice-td_order.allActualPay}<#else>0</#if>元</div>
+        <div class="mesg">欠款：<#if td_order.allTotalPay?? && td_order.allActualPay??>${td_order.allTotalPay-td_order.allActualPay}<#else>0</#if>元</div>
       </div>
     </section>
     <#if td_order.statusId == 4>
