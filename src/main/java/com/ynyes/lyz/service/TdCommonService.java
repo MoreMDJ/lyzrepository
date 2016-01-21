@@ -1551,6 +1551,7 @@ public class TdCommonService {
 			requisition.setDisctrict(order.getDisctrict());
 			requisition.setSubdistrict(order.getSubdistrict());
 			requisition.setDetailAddress(order.getDetailAddress());
+			requisition.setDiySiteTitle(order.getDiySiteName());
 
 			requisition.setReceivePhone(order.getShippingPhone());
 			requisition.setTotalPrice(order.getTotalPrice());
@@ -1650,7 +1651,7 @@ public class TdCommonService {
 					+ "<cancel_time></cancel_time>"
 					+ "<check_time></check_time>" 
 					+ "<diy_site_address></diy_site_address>" 
-					+ "<diy_site_id>" + requisition.getDiyCode() + "</diy_site_id>" 
+					+ "<diy_site_id>" + requisition.getDiySiteTitle() + "</diy_site_id>" 
 					+ "<diy_site_tel>" + requisition.getDiySiteTel() + "</diy_site_tel>" 
 					+ "<manager_remark_info></manager_remark_info>" 
 					+ "<remark_info>" + requisition.getRemarkInfo() + "</remark_info>" 

@@ -107,6 +107,7 @@ public class TdManagerIndexController {
 		            	}
 					}
 	                
+	                int tempIndex = 0;
 	                if (null != level0menuList && level0menuList.length > 0){
 		                for(int j = 0; j < level0menuList.length && total_index < tdManagerRole.getTotalPermission(); j++){
 		                	if (total_index >= tdManagerRole.getPermissionList().size()) {
@@ -161,8 +162,9 @@ public class TdManagerIndexController {
 				                    
 				                    change(level1MenuList, level1menuList);
 				                    if (null != level1MenuList && level1MenuList.size() > 0) {
-					                    map.addAttribute("level_" + i + j + "_menu_list",
+					                    map.addAttribute("level_" + i + tempIndex + "_menu_list",
 					                                level1MenuList);
+					                    tempIndex +=1;
 				                    }
 			                    }
 	
