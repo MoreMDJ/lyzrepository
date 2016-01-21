@@ -613,7 +613,14 @@
                 <span id="spanOrderNumber">${order.orderNumber!""}</span>
             </dd>
         </dl>
-        
+        <#if order.photo??>
+            <dl>
+                <dt>签收照片</dt>
+                <dd>
+                    <img src="${order.photo!''}">
+                </dd>
+            </dl>
+        </#if>
         <dl>
             <dt>商品列表</dt>
             <dd>
