@@ -1651,7 +1651,7 @@ public class TdCommonService {
 					+ "<cancel_time></cancel_time>"
 					+ "<check_time></check_time>" 
 					+ "<diy_site_address></diy_site_address>" 
-					+ "<diy_site_id>" + requisition.getDiySiteTitle() + "</diy_site_id>" 
+					+ "<diy_site_id>" + requisition.getDiySiteId() + "</diy_site_id>" 
 					+ "<diy_site_tel>" + requisition.getDiySiteTel() + "</diy_site_tel>" 
 					+ "<manager_remark_info></manager_remark_info>" 
 					+ "<remark_info>" + requisition.getRemarkInfo() + "</remark_info>" 

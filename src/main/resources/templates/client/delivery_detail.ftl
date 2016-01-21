@@ -264,8 +264,6 @@ function submitOwnMoney()
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitReturn(${td_order.id?c})">拒签退货</a>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(${td_order.id?c})">确认送达</a>
     <a class="btn-submit-save bgc-ff8e08" <#if td_order.photo??>href="javascript:;" style="background:#999"<#else>href="javascript:photo();"</#if> >拍照上传</a>
-    </#if>
-    <#if td_order.statusId != 6>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="pupopen()">申请欠款</a>
     </#if>
     <div style="display:none">

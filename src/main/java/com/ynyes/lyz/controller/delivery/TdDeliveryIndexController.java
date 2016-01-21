@@ -173,9 +173,9 @@ public class TdDeliveryIndexController {
 		{
 			List<String> taskNoList = new ArrayList<String>();
 			
-			for (String taskNo : taskNoList)
+			for (TdDeliveryInfo deInfo : deliveryInfoList)
 			{
-				taskNoList.add(taskNo);
+				taskNoList.add(deInfo.getTaskNo());
 			}
 			
 			if (taskNoList.size() > 0)
