@@ -406,6 +406,14 @@
 	height: 40px;
 	background-color: #fff;
 }
+
+.look-details-list ul li.delivery {
+	float: left;
+	width: 50%;
+	height: 40px;
+	line-height: 40px;
+}
+
 .look-details-list ul li {
 	float: left;
 	width: 33.33%;

@@ -111,7 +111,7 @@ function timer() {
     <a class="back" style="/client/images/esc.png" href="/delivery"></a>
     <div class="date-group">
       <a <#if days?? && days!=7>class="active"</#if> href="/delivery/return?days=3">三天内</a>
-      <a <#if days?? && days==7>class="active"</#if> href="/delivery/return?days=7">七天内</a>
+      <a <#if days?? && days==7>class="active"</#if> href="/delivery/return?days=7">一周内</a>
       <a <#if startDate?? || endDate??>class="active"</#if> class="btn-filter" href="javascript:;" onclick="pupopen()">筛选</a>
     </div>
   </header>

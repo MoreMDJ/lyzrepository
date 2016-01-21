@@ -293,7 +293,7 @@ public class TdDeliveryIndexController {
 				cal.add(Calendar.DATE, -7);
 				startDate = cal.getTime();
 			} else {
-				cal.add(Calendar.DATE, -3);
+				cal.add(Calendar.DATE, -1);
 				startDate = cal.getTime();
 			}
 

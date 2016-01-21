@@ -88,8 +88,8 @@ function timer() {
   <div id="bg"></div>
   <div id="popbox">
     <div class="time-select">
-      <div>开始时间：<input type="date" id="start" min="2015-12-04" value="<#if startDate??>${startDate?string("yyyy-MM-dd")}</#if>"></div>
-      <div>结束时间：<input type="date" id="end" min="2015-12-04"  value="<#if endDate??>${endDate?string("yyyy-MM-dd")}</#if>"></div>
+      <div>开始时间：<input type="date" id="start" min="2015-12-01" value="<#if startDate??>${startDate?string("yyyy-MM-dd")}<#else>${.now?string("yyyy-MM-dd")}</#if>"></div>
+      <div>结束时间：<input type="date" id="end" min="2015-12-01"  value="<#if endDate??>${endDate?string("yyyy-MM-dd")}</#if>"></div>
       <a class="btn-sure-time" href="javascript:;" onclick="pupclose()">确定</a>
     </div>    
   </div>
@@ -110,9 +110,9 @@ function timer() {
   <header>
     <a class="back" href="/delivery"></a>
     <div class="date-group">
-      <a <#if days?? && days!=7>class="active"</#if> href="/delivery/order?days=3">三天内</a>
-      <a <#if days?? && days==7>class="active"</#if> href="/delivery/order?days=7">七天内</a>
-      <a <#if startDate?? || endDate??>class="active"</#if> class="btn-filter" href="javascript:;" onclick="pupopen()">筛选</a>
+      <a <#if days?? && days!=7>class="active"</#if> href="/delivery/order?days=3">今天</a>
+      <a <#if days?? && days==7>class="active"</#if> href="/delivery/order?days=7">一周内</a>
+      <a <#if startDate?? || endDate??>class="active btn-filter"</#if> href="javascript:;" onclick="pupopen()">筛选</a>
     </div>
   </header>
   <!-- 头部 END -->
@@ -120,8 +120,8 @@ function timer() {
   <!-- 详情列表 -->
   <article class="look-details-list">
     <ul>
-      <li <#if type?? && type==2>class="active"</#if>><a href="/delivery/order?type=2<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">配送中（${count_type_2!'0'}）</a></li>
-      <li <#if type?? && type==1>class="active"</#if>><a href="/delivery/order?type=1<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">已配送（${count_type_1!'0'}）</a></li>
+      <li class="<#if type?? && type==2>active</#if> delivery"><a href="/delivery/order?type=2<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">配送中（${count_type_2!'0'}）</a></li>
+      <li class="<#if type?? && type==1>active</#if> delivery"><a href="/delivery/order?type=1<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">已配送（${count_type_1!'0'}）</a></li>
       <#--
       <li <#if type?? && type==3>class="active"</#if>><a href="/delivery/order?type=3<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">待配送（${count_type_3!'0'}）</a></li>
       -->
