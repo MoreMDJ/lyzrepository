@@ -1012,8 +1012,12 @@ public class TdCommonService {
 				order.setPayTypeTitle(order_temp.getPayTypeTitle());
 				order.setOrderTime(order_temp.getOrderTime());
 				order.setRemark(order_temp.getRemark());
+				// 设置主单号
 				order.setMainOrderNumber(order_temp.getOrderNumber());
+				// 设置实际总支付的预存款额度
 				order.setAllActualPay(order_temp.getActualPay());
+				// 设置实际应该支付的总额
+				order.setAllTotalPay(order_temp.getTotalPrice());
 				order_map.put(brand.getId(), order);
 			}
 		}
