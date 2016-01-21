@@ -76,8 +76,8 @@
 				<p>选择模式</p>
 			</div>
 			<section class="add_1_21">
-				<button class="btn01" onclick="returnDeli();">退货单</button>
 				<button class="btn02" onclick="orderDeli();">配送单</button>
+				<button class="btn01" onclick="returnDeli();">退货单</button>
 				<button class="out" onclick="logout();">退出</button>
 			</section>
 		</div>		

@@ -32,22 +32,22 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	
 	
 	
-	List<TdOrder> findByStatusIdAndOrderTimeAfterAndOrderNumberIn(Long statusId, Date time, List<String> orderNumbers);
+	List<TdOrder> findByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberIn(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
+	List<TdOrder> findByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeBetweenAndOrderNumberIn(Long statusId, List<String> orderNumbers, Date start, Date end);
+	List<TdOrder> findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, List<String> orderNumbers, Date start, Date end);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberIn(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
+	List<TdOrder> findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
 
 	
-	Integer countByStatusIdAndOrderTimeAfterAndOrderNumberIn(Long statusId, Date time, List<String> orderNumbers);
+	Integer countByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
 	
-	Integer countByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberIn(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
+	Integer countByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
 	
-	Integer countByStatusIdAndOrderTimeBetweenAndOrderNumberIn(Long statusId, List<String> orderNumbers, Date start, Date end);
+	Integer countByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end,  List<String> orderNumbers);
 	
-	Integer countByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberIn(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
+	Integer countByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
 
 	
 	

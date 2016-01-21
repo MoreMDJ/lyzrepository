@@ -801,7 +801,7 @@ public class TdDeliveryIndexController {
 
 			TdOrder order = tdOrderService.findByOrderNumber(orderNumber);
 			if (null != order) {
-				order.setPhoto(uri);
+				order.setPhoto("/images/" + fileName);
 				tdOrderService.save(order);
 			}
 		} catch (Exception e) {
