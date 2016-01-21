@@ -337,7 +337,7 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, orderNumberList, start, end);
+		return repository.findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end, orderNumberList);
 	}
 
 	public List<TdOrder> findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Long statusId2,

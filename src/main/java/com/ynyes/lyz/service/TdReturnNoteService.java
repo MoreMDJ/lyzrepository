@@ -92,7 +92,7 @@ public class TdReturnNoteService {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeBetween(statusId, start, end);
+		return repository.findByStatusIdAndOrderTimeBetweenOrderByIdDesc(statusId, start, end);
 	}
 	
 	public Integer countByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end) {
@@ -101,7 +101,7 @@ public class TdReturnNoteService {
 			return null;
 		}
 
-		return repository.countByStatusIdAndOrderTimeBetween(statusId, start, end);
+		return repository.countByStatusIdAndOrderTimeBetweenOrderByIdDesc(statusId, start, end);
 	}
 	
 	public List<TdReturnNote> findByStatusIdAndOrderTimeAfter(Long statusId, Date time) {
@@ -110,7 +110,7 @@ public class TdReturnNoteService {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeAfter(statusId, time);
+		return repository.findByStatusIdAndOrderTimeAfterOrderByIdDesc(statusId, time);
 	}
 	
 	public Integer countByStatusIdAndOrderTimeAfter(Long statusId, Date time) {
@@ -119,7 +119,7 @@ public class TdReturnNoteService {
 			return null;
 		}
 
-		return repository.countByStatusIdAndOrderTimeAfter(statusId, time);
+		return repository.countByStatusIdAndOrderTimeAfterOrderByIdDesc(statusId, time);
 	}
 	
 

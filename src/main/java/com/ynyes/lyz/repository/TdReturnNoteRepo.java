@@ -17,11 +17,11 @@ public interface TdReturnNoteRepo extends PagingAndSortingRepository<TdReturnNot
 	
 	TdReturnNote findByReturnNumber(String returnNumber);
 
-	List<TdReturnNote> findByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end);
+	List<TdReturnNote> findByStatusIdAndOrderTimeBetweenOrderByIdDesc(Long statusId, Date start, Date end);
 
-	List<TdReturnNote> findByStatusIdAndOrderTimeAfter(Long statusId, Date time);
+	List<TdReturnNote> findByStatusIdAndOrderTimeAfterOrderByIdDesc(Long statusId, Date time);
 	
-	Integer countByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end);
+	Integer countByStatusIdAndOrderTimeBetweenOrderByIdDesc(Long statusId, Date start, Date end);
 
-	Integer countByStatusIdAndOrderTimeAfter(Long statusId, Date time);
+	Integer countByStatusIdAndOrderTimeAfterOrderByIdDesc(Long statusId, Date time);
 }
