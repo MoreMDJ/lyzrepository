@@ -3,8 +3,6 @@ package com.ynyes.lyz.service;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.regexp.REUtil;
-import org.neo4j.cypher.internal.compiler.v2_1.commands.indexQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

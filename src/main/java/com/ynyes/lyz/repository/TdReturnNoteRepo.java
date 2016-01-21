@@ -15,4 +15,5 @@ public interface TdReturnNoteRepo extends PagingAndSortingRepository<TdReturnNot
 	List <TdReturnNote> findByUsername(String username);
 	
 	TdReturnNote findByReturnNumber(String returnNumber);
+
 }

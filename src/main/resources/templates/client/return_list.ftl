@@ -6,7 +6,7 @@
 <meta name="copyright" content="" />
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-<title>乐易装</title>
+<title>乐易装-退货列表</title>
 <!-- css -->
 <link rel="stylesheet" type="text/css" href="/client/css/my_base.css"/>
 <link rel="stylesheet" type="text/css" href="/client/css/x_common.css"/>
@@ -102,16 +102,16 @@ function timer() {
     function pupclose(){
       document.getElementById("bg").style.display="none";
       document.getElementById("popbox").style.display="none" ;
-      window.location.href="/delivery/order?start=" + document.getElementById("start").value + "&end=" + document.getElementById("end").value;
+      window.location.href="/delivery/return?start=" + document.getElementById("start").value + "&end=" + document.getElementById("end").value;
     }
   </script>
   <!--弹窗 END-->
   <!-- 头部 -->
   <header>
-    <a class="back" href="javascript:history.go(-1);"></a>
+    <a class="back" style="/client/images/esc.png" href="/login/out"></a>
     <div class="date-group">
-      <a <#if days?? && days!=7>class="active"</#if> href="/delivery/order?days=3">三天内</a>
-      <a <#if days?? && days==7>class="active"</#if> href="/delivery/order?days=7">七天内</a>
+      <a <#if days?? && days!=7>class="active"</#if> href="/delivery/return?days=3">三天内</a>
+      <a <#if days?? && days==7>class="active"</#if> href="/delivery/return?days=7">七天内</a>
       <a <#if startDate?? || endDate??>class="active"</#if> class="btn-filter" href="javascript:;" onclick="pupopen()">筛选</a>
     </div>
   </header>
@@ -120,9 +120,9 @@ function timer() {
   <!-- 详情列表 -->
   <article class="look-details-list">
     <ul>
-      <li <#if type?? && type==1>class="active"</#if>><a href="/delivery/order?type=1<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">已配送（${count_type_1!'0'}）</a></li>
-      <li <#if type?? && type==2>class="active"</#if>><a href="/delivery/order?type=2<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">配送中（${count_type_2!'0'}）</a></li>
-      <li <#if type?? && type==3>class="active"</#if>><a href="/delivery/order?type=3<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">待配送（${count_type_3!'0'}）</a></li>
+      <li <#if type?? && type==1>class="active"</#if>><a href="/delivery/return?type=1<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">已配送（${count_type_1!'0'}）</a></li>
+      <li <#if type?? && type==2>class="active"</#if>><a href="/delivery/return?type=2<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">配送中（${count_type_2!'0'}）</a></li>
+      <li <#if type?? && type==3>class="active"</#if>><a href="/delivery/return?type=3<#if days??>&days=${days}</#if><#if startDate??>&start=${startDate?string("yyyy-MM-dd")}</#if><#if endDate??>&end=${endDate?string("yyyy-MM-dd")}</#if>">待配送（${count_type_3!'0'}）</a></li>
     </ul>
     <!-- 详情列表 -->
     
