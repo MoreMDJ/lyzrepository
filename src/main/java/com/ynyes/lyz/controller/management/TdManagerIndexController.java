@@ -61,9 +61,12 @@ public class TdManagerIndexController {
         
         if (null != tdManagerRole && !tdManagerRole.getIsSys())
         {
+        	
+        	// rootmenuList :数据库里面的list
+        	// rootmenuList :根据角色提取的list
         	List<TdNavigationMenu> rootMenuList = tdNavigationMenuService.findByParentIdAndSort(0L);
         	TdNavigationMenu rootmenuList[] = null;
-        	if (null !=rootMenuList ) 
+        	if (null !=rootMenuList )
         	{
         		//将list中的数据存入数组中
                 rootmenuList = new TdNavigationMenu[rootMenuList.size()];
@@ -108,22 +111,31 @@ public class TdManagerIndexController {
 					}
 	                
 	                TdNavigationMenu level0menuList[] = null;
-	                if (null != level0MenuList) {
+	                if (null != level0MenuList)
+	                {
 	                	//将list中的数据存入数组中
 		                level0menuList = new TdNavigationMenu[level0MenuList.size()];
-		            	for(int a = 0; a < level0MenuList.size(); a++){
+		            	for(int a = 0; a < level0MenuList.size(); a++)
+		            	{
 		            		level0menuList[a] = level0MenuList.get(a);
 		            	}
 					}
 	                
 	                int tempIndex = 0;
-	                if (null != level0menuList && level0menuList.length > 0){
-		                for(int j = 0; j < level0menuList.length && total_index < tdManagerRole.getTotalPermission(); j++){
-		                	if (total_index >= tdManagerRole.getPermissionList().size()) {
+	                if (null != level0menuList && level0menuList.length > 0)
+	                {
+		                for(int j = 0; j < level0menuList.length && total_index < tdManagerRole.getTotalPermission(); j++)
+		                {
+		                	if (total_index >= tdManagerRole.getPermissionList().size())
+		                	{
 		                		level0menuList[j] = null;
-							}else{
-								if(null!=tdManagerRole.getPermissionList().get(total_index)){
-			                		if (null!=(tdManagerRole.getPermissionList().get(total_index).getIsView()) && (tdManagerRole.getPermissionList().get(total_index).getIsView())==false) {
+							}
+		                	else
+		                	{
+								if(null!=tdManagerRole.getPermissionList().get(total_index))
+								{
+			                		if (null!=(tdManagerRole.getPermissionList().get(total_index).getIsView()) && (tdManagerRole.getPermissionList().get(total_index).getIsView())==false) 
+			                		{
 			                			level0menuList[j] = null;
 				    				}
 			                	}
@@ -139,27 +151,36 @@ public class TdManagerIndexController {
 			                    // 取二级菜单列表
 			                	
 			                    List<TdNavigationMenu> level1MenuList = null;
-			                    if(null != level0Menu){
-			                    	level1MenuList = tdNavigationMenuService
-				                            .findByParentIdAndSort(level0Menu.getId());
+			                    if(null != level0Menu)
+			                    {
+			                    	level1MenuList = tdNavigationMenuService.findByParentIdAndSort(level0Menu.getId());
 			                    }
 			                    
 			                    TdNavigationMenu level1menuList[] = null;
-			                    if (null != level1MenuList) {
+			                    if (null != level1MenuList) 
+			                    {
 			                    	//将list中的数据存入数组中
 					            	level1menuList = new TdNavigationMenu[level1MenuList.size()];
-					            	for(int b = 0; b < level1MenuList.size(); b++){
+					            	for(int b = 0; b < level1MenuList.size(); b++)
+					            	{
 					            		level1menuList[b] = level1MenuList.get(b);
 					            	}
 								}
 			                    
-			                    if (null != level1menuList && level1menuList.length > 0) {
-				                    for(int c = 0; c < level1menuList.length && total_index < tdManagerRole.getTotalPermission(); c++){
-				                    	if (total_index >= tdManagerRole.getPermissionList().size()) {
+			                    if (null != level1menuList && level1menuList.length > 0) 
+			                    {
+				                    for(int c = 0; c < level1menuList.length && total_index < tdManagerRole.getTotalPermission(); c++)
+				                    {
+				                    	if (total_index >= tdManagerRole.getPermissionList().size()) 
+				                    	{
 				                    		level1menuList[c] = null;
-										}else{
-											if(null!=tdManagerRole.getPermissionList().get(total_index)){
-					                    		if (null!=(tdManagerRole.getPermissionList().get(total_index).getIsView()) && (tdManagerRole.getPermissionList().get(total_index).getIsView())==false) {
+										}
+				                    	else
+				                    	{
+											if(null!=tdManagerRole.getPermissionList().get(total_index))
+											{
+					                    		if (null!=(tdManagerRole.getPermissionList().get(total_index).getIsView()) && (tdManagerRole.getPermissionList().get(total_index).getIsView())==false) 
+					                    		{
 					                    			level1menuList[c] = null;
 						        				}
 						                    	
@@ -170,53 +191,56 @@ public class TdManagerIndexController {
 				                    }
 				                    
 				                    change(level1MenuList, level1menuList);
-				                    if (null != level1MenuList && level1MenuList.size() > 0) {
-					                    map.addAttribute("level_" + i + tempIndex + "_menu_list",
-					                                level1MenuList);
+				                    if (null != level1MenuList && level1MenuList.size() > 0) 
+				                    {
+					                    map.addAttribute("level_" + i + tempIndex + "_menu_list", level1MenuList);
 					                    tempIndex +=1;
 				                    }
 			                    }
 	
 		                }
 		                change(level0MenuList, level0menuList);
-		                if (null != level0MenuList && level0MenuList.size() > 0){
-			                map.addAttribute("level_" + i + "_menu_list",
-			                        level0MenuList);
-			                }
-	                }    		
+		                if (null != level0MenuList && level0MenuList.size() > 0)
+		                {
+			                map.addAttribute("level_" + i + "_menu_list", level0MenuList);
+			             }
+	                }		
 				
 			}
 			//change(rootMenuList, rootmenuList);
-			if (null != rootMenuList && rootMenuList.size() > 0){
+			if (null != rootMenuList && rootMenuList.size() > 0)
+			{
 				map.addAttribute("root_menu_list", rootMenuList);
 		    }
 		}
-        else{
-        	List<TdNavigationMenu> rootMenuList = tdNavigationMenuService
-                    .findByParentIdAndSort(0L);
+        else
+        {
+        	List<TdNavigationMenu> rootMenuList = tdNavigationMenuService.findByParentIdAndSort(0L);
 
-            if (null != rootMenuList && rootMenuList.size() > 0) {
-                for (int i = 0; i < rootMenuList.size(); i++) {
+            if (null != rootMenuList && rootMenuList.size() > 0) 
+            {
+                for (int i = 0; i < rootMenuList.size(); i++) 
+                {
                     TdNavigationMenu rootMenu = rootMenuList.get(i);
 
                     // 取一级菜单列表
                     List<TdNavigationMenu> level0MenuList = tdNavigationMenuService
                             .findByParentIdAndSort(rootMenu.getId());
 
-                    if (null != level0MenuList && level0MenuList.size() > 0) {
-                        map.addAttribute("level_" + i + "_menu_list",
-                                level0MenuList);
+                    if (null != level0MenuList && level0MenuList.size() > 0) 
+                    {
+                        map.addAttribute("level_" + i + "_menu_list", level0MenuList);
 
-                        for (int j = 0; j < level0MenuList.size(); j++) {
+                        for (int j = 0; j < level0MenuList.size(); j++) 
+                        {
                             TdNavigationMenu level0Menu = level0MenuList.get(j);
 
                             // 取二级菜单列表
-                            List<TdNavigationMenu> level1MenuList = tdNavigationMenuService
-                                    .findByParentIdAndSort(level0Menu.getId());
+                            List<TdNavigationMenu> level1MenuList = tdNavigationMenuService.findByParentIdAndSort(level0Menu.getId());
 
-                            if (null != level1MenuList && level1MenuList.size() > 0) {
-                                map.addAttribute("level_" + i + j + "_menu_list",
-                                        level1MenuList);
+                            if (null != level1MenuList && level1MenuList.size() > 0)
+                            {
+                                map.addAttribute("level_" + i + j + "_menu_list", level1MenuList);
                             }
                         }
                     }

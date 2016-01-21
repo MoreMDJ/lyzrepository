@@ -122,6 +122,8 @@
                                                     <#case 5>待评价<#break>
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
+                                                    <#case 9>退货中<#break>
+                                                    <#case 10>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
@@ -197,6 +199,8 @@
                                                     <#case 5>待评价<#break>
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
+                                                    <#case 9>退货中<#break>
+                                                    <#case 10>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
@@ -271,6 +275,8 @@
                                                     <#case 5>待评价<#break>
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
+                                                    <#case 9>退货中<#break>
+                                                    <#case 10>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
@@ -345,6 +351,8 @@
                                                     <#case 5>待评价<#break>
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
+                                                    <#case 9>退货中<#break>
+                                                    <#case 10>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
@@ -419,6 +427,8 @@
                                                     <#case 5>待评价<#break>
                                                     <#case 6>已完成<#break>
                                                     <#case 7>已取消<#break>
+                                                    <#case 9>退货中<#break>
+                                                    <#case 10>退货完成<#break>
                                                 </#switch>
                                             </#if>
                                         </div>
