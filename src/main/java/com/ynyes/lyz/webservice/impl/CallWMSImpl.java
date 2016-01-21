@@ -164,6 +164,7 @@ public class CallWMSImpl implements ICallWMS {
 				String c_modified_userno = null;//修改人员
 				String c_owner_no = null;//委托业主
 				String c_reserved1 = null;//分单号
+				String c_Driver = null;//送货员
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -244,6 +245,14 @@ public class CallWMSImpl implements ICallWMS {
 								c_reserved1 = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_Driver"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_Driver = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						
 					}
 				}
 				
@@ -255,6 +264,8 @@ public class CallWMSImpl implements ICallWMS {
 				}
 				tdDeliveryInfo.setTaskNo(c_task_no);
 				tdDeliveryInfo.setWhNo(c_wh_no);
+				tdDeliveryInfo.setDriver(c_Driver);
+				
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss SSS");
 				if (c_begin_dt != null)
 				{

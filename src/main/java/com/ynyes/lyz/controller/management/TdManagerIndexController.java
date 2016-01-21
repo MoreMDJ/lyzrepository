@@ -59,42 +59,51 @@ public class TdManagerIndexController {
             tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
         }
         
-        if (null != tdManagerRole && !tdManagerRole.getIsSys()) {
-        	List<TdNavigationMenu> rootMenuList = tdNavigationMenuService
-                    .findByParentIdAndSort(0L);
+        if (null != tdManagerRole && !tdManagerRole.getIsSys())
+        {
+        	List<TdNavigationMenu> rootMenuList = tdNavigationMenuService.findByParentIdAndSort(0L);
         	TdNavigationMenu rootmenuList[] = null;
-        	if (null !=rootMenuList ) {
+        	if (null !=rootMenuList ) 
+        	{
         		//将list中的数据存入数组中
                 rootmenuList = new TdNavigationMenu[rootMenuList.size()];
-            	for(int i = 0; i < rootMenuList.size(); i++){
+            	for(int i = 0; i < rootMenuList.size(); i++)
+            	{
             		rootmenuList[i] = rootMenuList.get(i);
             	}
 			}
         	
 //        	int tempNumber = 0;
         	int total_index = 0;
-			for(int i = 0; i < rootmenuList.length && total_index < tdManagerRole.getTotalPermission(); i++){
-					if (total_index >= tdManagerRole.getPermissionList().size()) {
+			for(int i = 0; i < rootmenuList.length && total_index < tdManagerRole.getTotalPermission(); i++)
+			{
+					if (total_index >= tdManagerRole.getPermissionList().size()) 
+					{
 						//rootMenuList.remove(i);
 						rootmenuList[i] = null;
-					}else{
-						if (null!=(tdManagerRole.getPermissionList().get(total_index).getIsView()) && (tdManagerRole.getPermissionList().get(total_index).getIsView())==false) {
+					}
+					else
+					{
+						if (null!=(tdManagerRole.getPermissionList().get(total_index).getIsView()) && (tdManagerRole.getPermissionList().get(total_index).getIsView())==false)
+						{
 							rootmenuList[i] = null;
 						}
 					}
-	
 					total_index = total_index + 1;
 					TdNavigationMenu rootMenu = null;
-					if (i < rootmenuList.length) {
+					if (i < rootmenuList.length) 
+					{
 					    rootMenu = rootMenuList.get(i);
 					}
 					
 	                // 取一级菜单列表
 	                List<TdNavigationMenu> level0MenuList = null;
-	                if (null != rootMenu) {
-	                	level0MenuList = tdNavigationMenuService
-		                        .findByParentIdAndSort(rootMenu.getId());
-					}else{
+	                if (null != rootMenu) 
+	                {
+	                	level0MenuList = tdNavigationMenuService.findByParentIdAndSort(rootMenu.getId());
+					}
+	                else
+	                {
 						
 					}
 	                

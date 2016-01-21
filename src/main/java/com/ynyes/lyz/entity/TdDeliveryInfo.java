@@ -64,6 +64,18 @@ public class TdDeliveryInfo {
 	// 分单号（订单号）
 	@Column
 	private String orderNumber;
+	
+	// 送货员
+	@Column
+	private String driver;
+
+	public String getDriver() {
+		return driver;
+	}
+
+	public void setDriver(String driver) {
+		this.driver = driver;
+	}
 
 	public String getOrderNumber() {
 		return orderNumber;
