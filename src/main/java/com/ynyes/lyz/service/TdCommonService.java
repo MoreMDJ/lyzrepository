@@ -1553,7 +1553,7 @@ public class TdCommonService {
 			
 			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
 			
-			requisition.setLeftPrice(order.getAllActualPay());
+//			requisition.setLeftPrice(order.getAllActualPay());
 
 			// Add by Shawn
 			requisition.setProvince(order.getProvince());
