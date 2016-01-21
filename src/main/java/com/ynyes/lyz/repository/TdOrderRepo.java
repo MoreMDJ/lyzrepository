@@ -32,22 +32,22 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	
 	
 	
-	List<TdOrder> findByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
+	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
+	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end,  List<String> orderNumbers);
+	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end,  List<String> orderNumbers);
 	
-	List<TdOrder> findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
+	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
 
 	
-	Integer countByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
+	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
 	
-	Integer countByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
+	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
 	
-	Integer countByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end,  List<String> orderNumbers);
+	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end,  List<String> orderNumbers);
 	
-	Integer countByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
+	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
 
 	
 	

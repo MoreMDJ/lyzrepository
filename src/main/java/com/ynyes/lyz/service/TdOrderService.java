@@ -319,7 +319,7 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList);
+		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList);
 	}
 
 	public List<TdOrder> findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Long statusId2,
@@ -328,7 +328,7 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList, statusId2, time, orderNumberList);
+		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList, statusId2, time, orderNumberList);
 	}
 
 	public List<TdOrder> findByStatusIdAndOrderTimeBetween(Long statusId, List<String> orderNumberList, Date start, Date end) {
@@ -337,7 +337,7 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end, orderNumberList);
+		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end, orderNumberList);
 	}
 
 	public List<TdOrder> findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Long statusId2,
@@ -347,7 +347,7 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.findByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end,
+		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end,
 				orderNumberList, statusId2, start, end, orderNumberList);
 	}
 	
@@ -358,7 +358,7 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.countByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList);
+		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList);
 	}
 
 	public Integer countByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Long statusId2,
@@ -367,7 +367,7 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.countByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList, statusId2, time, orderNumberList);
+		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList, statusId2, time, orderNumberList);
 	}
 
 	public Integer countByStatusIdAndOrderTimeBetween(Long statusId, List<String> orderNumberList, Date start, Date end) {
@@ -376,7 +376,7 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.countByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end, orderNumberList);
+		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end, orderNumberList);
 	}
 
 	public Integer countByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Long statusId2,
@@ -386,7 +386,7 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.countByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end,
+		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end,
 				orderNumberList, statusId2, start, end, orderNumberList);
 	}
 	
