@@ -28,7 +28,7 @@
                 tiptype:4, 
                 ajaxPost:true,
                 callback:function(data){
-                    alert(data.message);
+                    warning(data.message);
                     if(data.code==0)
                     {
                         win_no();
