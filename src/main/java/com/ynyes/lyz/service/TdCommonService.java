@@ -1012,6 +1012,7 @@ public class TdCommonService {
 				order.setPayTypeTitle(order_temp.getPayTypeTitle());
 				order.setOrderTime(order_temp.getOrderTime());
 				order.setRemark(order_temp.getRemark());
+				order.setMainOrderNumber(order_temp.getOrderNumber());
 				order_map.put(brand.getId(), order);
 			}
 		}
@@ -1646,24 +1647,17 @@ public class TdCommonService {
 
 		if (type == 1) {
 			TdRequisition requisition = (TdRequisition) object;
-			String xmlStr = "<ERP>" + "<TABLE>" 
-					+ "<id>" + requisition.getId() + "</id>" 
-					+ "<cancel_time></cancel_time>"
-					+ "<check_time></check_time>" 
-					+ "<diy_site_address></diy_site_address>" 
-					+ "<diy_site_id>" + requisition.getDiySiteId() + "</diy_site_id>" 
-					+ "<diy_site_tel>" + requisition.getDiySiteTel() + "</diy_site_tel>" 
-					+ "<manager_remark_info></manager_remark_info>" 
-					+ "<remark_info>" + requisition.getRemarkInfo() + "</remark_info>" 
-					+ "<requisition_number></requisition_number>"
-					+ "<status_id></status_id>" 
-					+ "<type_id>" + requisition.getTypeId() + "</type_id>"
-					+ "<customer_name>" + requisition.getCustomerName() + "</customer_name>" 
-					+ "<customer_id>" + requisition.getCustomerId() + "</customer_id>" 
-					+ "<delivery_time>" + requisition.getDeliveryTime() + "</delivery_time>" 
-					+ "<order_number>" + requisition.getOrderNumber() + "</order_number>"
-					+ "<receive_address>" + requisition.getReceiveAddress() + "</receive_address>" 
-					+ "<receive_name>" + requisition.getReceiveName() + "</receive_name>" + "<receive_phone>"
+			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisition.getId() + "</id>" + "<cancel_time></cancel_time>"
+					+ "<check_time></check_time>" + "<diy_site_address></diy_site_address>" + "<diy_site_id>"
+					+ requisition.getDiySiteId() + "</diy_site_id>" + "<diy_site_tel>" + requisition.getDiySiteTel()
+					+ "</diy_site_tel>" + "<manager_remark_info></manager_remark_info>" + "<remark_info>"
+					+ requisition.getRemarkInfo() + "</remark_info>" + "<requisition_number></requisition_number>"
+					+ "<status_id></status_id>" + "<type_id>" + requisition.getTypeId() + "</type_id>"
+					+ "<customer_name>" + requisition.getCustomerName() + "</customer_name>" + "<customer_id>"
+					+ requisition.getCustomerId() + "</customer_id>" + "<delivery_time>" + requisition.getDeliveryTime()
+					+ "</delivery_time>" + "<order_number>" + requisition.getOrderNumber() + "</order_number>"
+					+ "<receive_address>" + requisition.getReceiveAddress() + "</receive_address>" + "<receive_name>"
+					+ requisition.getReceiveName() + "</receive_name>" + "<receive_phone>"
 					+ requisition.getReceivePhone() + "</receive_phone>" + "<total_price>" + requisition.getTotalPrice()
 					+ "</total_price>" + "<city>" + requisition.getCity() + "</city>" + "<detail_address>"
 					+ requisition.getDetailAddress() + "</detail_address>" + "<disctrict>" + requisition.getDisctrict()
@@ -1687,13 +1681,9 @@ public class TdCommonService {
 		}
 		if (type == 2) {
 			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods) object;
-			String xmlStr = "<ERP>" + "<TABLE>" 
-			+ "<id>" + requisitionGoods.getId() + "</id>" 
-					+ "<goods_code>"
-					+ requisitionGoods.getGoodsCode() + "</goods_code>" 
-					+ "<goods_title>"
-					+ requisitionGoods.getGoodsTitle() + "</goods_title>" 
-					+ "<price>" + requisitionGoods.getPrice()
+			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisitionGoods.getId() + "</id>" + "<goods_code>"
+					+ requisitionGoods.getGoodsCode() + "</goods_code>" + "<goods_title>"
+					+ requisitionGoods.getGoodsTitle() + "</goods_title>" + "<price>" + requisitionGoods.getPrice()
 					+ "</price>" + "<quantity>" + requisitionGoods.getQuantity() + "</quantity>"
 					+ "<td_requisition_id></td_requisition_id>" + "<order_number>" + requisitionGoods.getOrderNumber()
 					+ "</order_number>" + "<sub_order_number>" + requisitionGoods.getSubOrderNumber()

@@ -173,7 +173,8 @@ public class TdOrder {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date refundTime;;
 
-	// 订单状态 1:待审核 2:待付款 3:待出库 4:待签收 5: 待评价 6: 已完成 7: 已取消 8:用户删除  9:退货中  10：退货确认 11：退货取消  12 : 退货完成
+	// 订单状态 1:待审核 2:待付款 3:待出库 4:待签收 5: 待评价 6: 已完成 7: 已取消 8:用户删除 9:退货中 10：退货确认
+	// 11：退货取消 12 : 退货完成
 	@Column
 	private Long statusId;
 
@@ -298,6 +299,10 @@ public class TdOrder {
 	// 是否是券
 	@Column
 	private Boolean isCoupon;
+
+	// 主单号
+	@Column
+	private String mainOrderNumber;
 
 	public Double getRefund() {
 		return refund;
@@ -817,5 +822,13 @@ public class TdOrder {
 
 	public void setIsCoupon(Boolean isCoupon) {
 		this.isCoupon = isCoupon;
+	}
+
+	public String getMainOrderNumber() {
+		return mainOrderNumber;
+	}
+
+	public void setMainOrderNumber(String mainOrderNumber) {
+		this.mainOrderNumber = mainOrderNumber;
 	}
 }
