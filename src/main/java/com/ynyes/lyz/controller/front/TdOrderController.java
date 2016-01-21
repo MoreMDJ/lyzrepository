@@ -1042,6 +1042,7 @@ public class TdOrderController {
 		System.err.println("开始忽略小数点后2位之后的数字");
 		BigDecimal b = new BigDecimal(order_temp.getTotalPrice());
 		order_temp.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+		order_temp.setActualPay(userUsed);
 
 		if (isOnline) {
 			// 判断是否还有未支付的金额
