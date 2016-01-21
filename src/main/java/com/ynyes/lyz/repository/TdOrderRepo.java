@@ -123,4 +123,6 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	
 	//根据订单号查找订单
 	List<TdOrder> findByOrderNumberContaining(String orderNumber);
+	
+	List<TdOrder> findByMainOrderNumberIgnoreCase(String mainOrderNumber);
 }

@@ -415,7 +415,16 @@ public class TdDeliveryIndexController {
 		}
 
 		if (null != id) {
-			map.addAttribute("td_order", tdOrderService.findOne(id));
+			
+			TdOrder order = tdOrderService.findOne(id);
+			
+			if (null != order && null != order.getMainOrderNumber())
+			{
+				List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
+				
+				map.addAttribute("sub_order_list", orderList);
+			}
+			map.addAttribute("td_order", order);
 		}
 
 		map.addAttribute("id", id);
@@ -473,16 +482,23 @@ public class TdDeliveryIndexController {
 			res.put("message", "订单不存在");
 			return res;
 		}
+		
+		// 所有子单都处理
+		if (null != order.getMainOrderNumber())
+		{
+			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
+			
+			if (null != orderList)
+			{
+				for (TdOrder subOrder : orderList)
+				{
+					subOrder.setStatusId(5L);
+					subOrder.setDeliveryTime(new Date());
 
-		if (null != order.getStatusId() && !order.getStatusId().equals(4L)) {
-			res.put("message", "订单未出库");
-			return res;
+					subOrder = tdOrderService.save(subOrder);
+				}
+			}
 		}
-
-		order.setStatusId(5L);
-		order.setDeliveryTime(new Date());
-
-		tdOrderService.save(order);
 
 		res.put("code", 0);
 
@@ -574,111 +590,113 @@ public class TdDeliveryIndexController {
 			return res;
 		}
 
-		if (null != order.getStatusId() && !order.getStatusId().equals(4L)) {
-			res.put("message", "订单未出库");
-			return res;
-		}
-
-		// 确认收货
-		order.setStatusId(5L);
-		order.setDeliveryTime(new Date());
-
-		order = tdOrderService.save(order);
-
-		// 生成退货单
-		if (null != order) {
-			TdReturnNote returnNote = new TdReturnNote();
-
-			// 退货单编号
-			Date current = new Date();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-			String curStr = sdf.format(current);
-			Random random = new Random();
-
-			returnNote.setReturnNumber("T" + curStr
-					+ leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
-
-			// 添加订单信息
-			returnNote.setOrderNumber(order.getOrderNumber());
-			// 支付方式
-			returnNote.setPayTypeId(order.getPayTypeId());
-			returnNote.setPayTypeTitle(order.getPayTypeTitle());
-			// 门店信息
-			if (null != order.getDiySiteId()) {
-				TdDiySite diySite = tdDiySiteService.findOne(order
-						.getDiySiteId());
-				returnNote.setDiySiteId(order.getDiySiteId());
-				returnNote.setDiySiteTel(diySite.getServiceTele());
-				returnNote.setDiySiteTitle(diySite.getTitle());
-				returnNote.setDiySiteAddress(diySite.getAddress());
-			}
-
-			// 退货信息
-			returnNote.setUsername(order.getUsername());
-			returnNote.setRemarkInfo("拒签退货");
-
-			// 退货方式 物流取货
-			returnNote.setTurnType(2L);
+		// 所有子单都确认收货
+		if (null != order.getMainOrderNumber())
+		{
+			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
 			
-			// 快递员为自己
-			returnNote.setDriver(user.getOpUser());
-			
-			// 待取货
-			returnNote.setStatusId(2L);
+			if (null != orderList)
+			{
+				for (TdOrder subOrder : orderList)
+				{
+					subOrder.setStatusId(5L);
+					subOrder.setDeliveryTime(new Date());
 
-			returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
-			returnNote.setOrderTime(new Date());
+					subOrder = tdOrderService.save(subOrder);
+					
+					// 生成退货单
+					if (null != subOrder) {
+						TdReturnNote returnNote = new TdReturnNote();
 
-			returnNote.setTurnPrice(order.getTotalGoodsPrice());
-			List<TdOrderGoods> orderGoodsList = new ArrayList<>();
-			if (null != order.getOrderGoodsList()) {
-				for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
-					TdOrderGoods orderGoods = new TdOrderGoods();
+						// 退货单编号
+						Date current = new Date();
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+						String curStr = sdf.format(current);
+						Random random = new Random();
 
-					orderGoods.setBrandId(oGoods.getBrandId());
-					orderGoods.setBrandTitle(oGoods.getBrandTitle());
-					orderGoods.setGoodsId(oGoods.getGoodsId());
-					orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
-					orderGoods.setSku(oGoods.getSku());
-					orderGoods.setGoodsCoverImageUri(oGoods
-							.getGoodsCoverImageUri());
-					orderGoods.setGoodsColor(oGoods.getGoodsColor());
-					orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
-					orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
-					orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
-					orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
+						returnNote.setReturnNumber("T" + curStr
+								+ leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
 
-					orderGoods.setPrice(oGoods.getPrice());
-					orderGoods.setQuantity(oGoods.getQuantity());
+						// 添加订单信息
+						returnNote.setOrderNumber(subOrder.getOrderNumber());
+						// 支付方式
+						returnNote.setPayTypeId(subOrder.getPayTypeId());
+						returnNote.setPayTypeTitle(subOrder.getPayTypeTitle());
+						// 门店信息
+						if (null != subOrder.getDiySiteId()) {
+							TdDiySite diySite = tdDiySiteService.findOne(subOrder
+									.getDiySiteId());
+							returnNote.setDiySiteId(subOrder.getDiySiteId());
+							returnNote.setDiySiteTel(diySite.getServiceTele());
+							returnNote.setDiySiteTitle(diySite.getTitle());
+							returnNote.setDiySiteAddress(diySite.getAddress());
+						}
 
-					orderGoods.setDeliveredQuantity(oGoods
-							.getDeliveredQuantity());
-					orderGoods.setPoints(oGoods.getPoints());
-					// tdOrderGoodsService.save(orderGoods);
-					// 添加商品信息
-					orderGoodsList.add(orderGoods);
+						// 退货信息
+						returnNote.setUsername(subOrder.getUsername());
+						returnNote.setRemarkInfo("拒签退货");
 
-					// 订单商品设置退货为True
-					oGoods.setIsReturnApplied(true);
-					// 更新订单商品信息是否退货状态
-					tdOrderGoodsService.save(oGoods);
+						// 退货方式 物流取货
+						returnNote.setTurnType(2L);
+						
+						// 快递员为自己
+						returnNote.setDriver(user.getOpUser());
+						
+						// 待取货
+						returnNote.setStatusId(2L);
+
+						returnNote.setDeliverTypeTitle(subOrder.getDeliverTypeTitle());
+						returnNote.setOrderTime(new Date());
+
+						returnNote.setTurnPrice(subOrder.getTotalGoodsPrice());
+						List<TdOrderGoods> orderGoodsList = new ArrayList<>();
+						if (null != subOrder.getOrderGoodsList()) {
+							for (TdOrderGoods oGoods : subOrder.getOrderGoodsList()) {
+								TdOrderGoods orderGoods = new TdOrderGoods();
+
+								orderGoods.setBrandId(oGoods.getBrandId());
+								orderGoods.setBrandTitle(oGoods.getBrandTitle());
+								orderGoods.setGoodsId(oGoods.getGoodsId());
+								orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
+								orderGoods.setSku(oGoods.getSku());
+								orderGoods.setGoodsCoverImageUri(oGoods
+										.getGoodsCoverImageUri());
+								orderGoods.setGoodsColor(oGoods.getGoodsColor());
+								orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
+								orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
+								orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
+								orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
+
+								orderGoods.setPrice(oGoods.getPrice());
+								orderGoods.setQuantity(oGoods.getQuantity());
+
+								orderGoods.setDeliveredQuantity(oGoods
+										.getDeliveredQuantity());
+								orderGoods.setPoints(oGoods.getPoints());
+								// tdOrderGoodsService.save(orderGoods);
+								// 添加商品信息
+								orderGoodsList.add(orderGoods);
+
+								// 订单商品设置退货为True
+								oGoods.setIsReturnApplied(true);
+								// 更新订单商品信息是否退货状态
+								tdOrderGoodsService.save(oGoods);
+							}
+						}
+
+						returnNote.setReturnGoodsList(orderGoodsList);
+						tdOrderGoodsService.save(orderGoodsList);
+						// 保存退货单
+						tdReturnNoteService.save(returnNote);
+
+						subOrder.setStatusId(9L);
+						subOrder.setIsRefund(true);
+						subOrder = tdOrderService.save(subOrder);
+					}
 				}
 			}
-
-			returnNote.setReturnGoodsList(orderGoodsList);
-			tdOrderGoodsService.save(orderGoodsList);
-			// 保存退货单
-			tdReturnNoteService.save(returnNote);
-
-			order.setStatusId(9L);
-			order.setIsRefund(true);
-			tdOrderService.save(order);
-
-			res.put("code", 0);
-			res.put("message", "提交退货成功");
-			return res;
 		}
-
+		
 		res.put("code", 0);
 
 		return res;
@@ -702,30 +720,41 @@ public class TdDeliveryIndexController {
 			res.put("message", "订单不存在");
 			return res;
 		}
-
-		List<TdOwnMoneyRecord> recList = tdOwnMoneyRecordService
-				.findByOrderNumberIgnoreCase(order.getOrderNumber());
-
-		if (null != recList && recList.size() > 0) {
-			res.put("message", "该订单已申请了欠款");
-			return res;
+		
+		// 所有子单都确认收货
+		if (null != order.getMainOrderNumber())
+		{
+			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
+			
+			if (null != orderList)
+			{
+				for (TdOrder subOrder : orderList)
+				{
+					List<TdOwnMoneyRecord> recList = tdOwnMoneyRecordService
+							.findByOrderNumberIgnoreCase(subOrder.getOrderNumber());
+			
+					if (null != recList && recList.size() > 0) {
+						continue;
+					}
+			
+					subOrder.setActualPay(payed);
+					subOrder = tdOrderService.save(subOrder);
+			
+					TdOwnMoneyRecord rec = new TdOwnMoneyRecord();
+					rec.setCreateTime(new Date());
+					rec.setOrderNumber(subOrder.getOrderNumber());
+					rec.setDiyCode(subOrder.getDiySiteCode());
+					rec.setOwned(owned);
+					rec.setPayed(payed);
+					rec.setUsername(subOrder.getUsername());
+					rec.setIsEnable(false);
+					rec.setIsPayed(false);
+					rec.setSortId(99L);
+			
+					rec = tdOwnMoneyRecordService.save(rec);
+				}
+			}
 		}
-
-		order.setActualPay(payed);
-		order = tdOrderService.save(order);
-
-		TdOwnMoneyRecord rec = new TdOwnMoneyRecord();
-		rec.setCreateTime(new Date());
-		rec.setOrderNumber(order.getOrderNumber());
-		rec.setDiyCode(order.getDiySiteCode());
-		rec.setOwned(owned);
-		rec.setPayed(payed);
-		rec.setUsername(order.getUsername());
-		rec.setIsEnable(false);
-		rec.setIsPayed(false);
-		rec.setSortId(99L);
-
-		tdOwnMoneyRecordService.save(rec);
 
 		res.put("code", 0);
 
@@ -804,8 +833,21 @@ public class TdDeliveryIndexController {
 
 			TdOrder order = tdOrderService.findByOrderNumber(orderNumber);
 			if (null != order) {
-				order.setPhoto("/images/" + fileName);
-				tdOrderService.save(order);
+				
+				// 所有子单都确认收货
+				if (null != order.getMainOrderNumber())
+				{
+					List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
+					
+					if (null != orderList)
+					{
+						for (TdOrder subOrder : orderList)
+						{
+							subOrder.setPhoto("/images/" + fileName);
+							subOrder = tdOrderService.save(subOrder);
+						}
+					}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

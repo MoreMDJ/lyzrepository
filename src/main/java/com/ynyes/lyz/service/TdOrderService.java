@@ -423,4 +423,11 @@ public class TdOrderService {
 		}
 		return repository.findByOrderNumberContaining(orderNumber);
 	}
+	
+	public List<TdOrder> findByMainOrderNumberIgnoreCase(String mainOrderNumber) {
+		if (null == mainOrderNumber) {
+			return null;
+		}
+		return repository.findByMainOrderNumberIgnoreCase(mainOrderNumber);
+	}
 }

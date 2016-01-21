@@ -303,11 +303,7 @@ public class TdOrder {
 	// 主单号
 	@Column
 	private String mainOrderNumber;
-	
-	//实际支付预存款总额
-	@Column(scale = 2)
-	private Double allActualPay;
-	
+
 	public Double getRefund() {
 		return refund;
 	}
@@ -834,13 +830,5 @@ public class TdOrder {
 
 	public void setMainOrderNumber(String mainOrderNumber) {
 		this.mainOrderNumber = mainOrderNumber;
-	}
-
-	public Double getAllActualPay() {
-		return allActualPay;
-	}
-
-	public void setAllActualPay(Double allActualPay) {
-		this.allActualPay = allActualPay;
 	}
 }
