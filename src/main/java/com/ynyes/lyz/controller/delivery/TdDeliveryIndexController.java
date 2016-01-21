@@ -36,6 +36,7 @@ import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDiySiteService;
@@ -77,6 +78,9 @@ public class TdDeliveryIndexController {
 
 	@Autowired
 	private TdDeliveryInfoService tdDeliveryInfoService;
+	
+	@Autowired
+	private TdCommonService tdCommonService;
 
 	@RequestMapping
 	public String deliveryIndex(HttpServletRequest req) {
@@ -519,7 +523,10 @@ public class TdDeliveryIndexController {
 		returnNote.setStatusId(3L);
 		returnNote.setRecvTime(new Date());
 
-		tdReturnNoteService.save(returnNote);
+		returnNote = tdReturnNoteService.save(returnNote);
+		
+		// 自动通知WMS
+		tdCommonService.sendBackMsgToWMS(returnNote);
 
 		res.put("code", 0);
 
@@ -663,13 +670,9 @@ public class TdDeliveryIndexController {
 			// 保存退货单
 			tdReturnNoteService.save(returnNote);
 
-			// tdCommonService.sendBackMsgToWMS(returnNote);
-
 			order.setStatusId(9L);
 			order.setIsRefund(true);
 			tdOrderService.save(order);
-			
-			
 
 			res.put("code", 0);
 			res.put("message", "提交退货成功");

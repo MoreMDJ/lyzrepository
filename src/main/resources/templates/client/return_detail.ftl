@@ -147,7 +147,7 @@ function submitRecv(id)
     <#-- 引入等待提示样式 -->
     <#include "/client/common_wait.ftl">   
       <header>
-        <a class="back" href="javascript:history.go(-1);"></a>
+        <a class="back" href="/delivery/return"></a>
         <p>详情产看</p>
       </header>
       <!-- 头部 END -->
