@@ -14,4 +14,5 @@ public interface TdDeliveryInfoRepo
 	
 	List<TdDeliveryInfo> findByOpUser(String opUser);
 	
+	List<TdDeliveryInfo> findDistinctTaskNoByDriver(String driver);
 }

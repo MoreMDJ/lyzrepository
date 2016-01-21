@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGeoInfo;
@@ -36,6 +37,7 @@ import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
+import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
@@ -72,6 +74,9 @@ public class TdDeliveryIndexController {
 	
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
+	
+	@Autowired
+	private TdDeliveryInfoService tdDeliveryInfoService;
 
 	/**
 	 * 获取配送列表
@@ -160,13 +165,29 @@ public class TdDeliveryIndexController {
 
 		// 查看本配送员所有
 		List<String> orderNumberList = new ArrayList<String>();
+		
+		// 根据快递员编号找task_no
+		List<TdDeliveryInfo> deliveryInfoList = tdDeliveryInfoService.findDistinctTaskNoByDriver(user.getOpUser());
+		
+		if (null != deliveryInfoList && deliveryInfoList.size() > 0)
+		{
+			List<String> taskNoList = new ArrayList<String>();
+			
+			for (String taskNo : taskNoList)
+			{
+				taskNoList.add(taskNo);
+			}
+			
+			if (taskNoList.size() > 0)
 
-		List<TdDeliveryInfoDetail> detailList = tdDeliveryInfoDetailService.findByOpUser(user.getOpUser());
+			{
+				List<TdDeliveryInfoDetail> detailList = tdDeliveryInfoDetailService
+						.findDistinctSubOrderNumberByTaskNoIn(taskNoList);
 
-		if (null != detailList && detailList.size() > 0) {
-			for (TdDeliveryInfoDetail detail : detailList) {
-				if (null != detail.getSubOrderNumber() && !orderNumberList.contains(detail.getSubOrderNumber())) {
-					orderNumberList.add(detail.getSubOrderNumber());
+				if (null != detailList && detailList.size() > 0) {
+					for (TdDeliveryInfoDetail detail : detailList) {
+						orderNumberList.add(detail.getSubOrderNumber());
+					}
 				}
 			}
 		}

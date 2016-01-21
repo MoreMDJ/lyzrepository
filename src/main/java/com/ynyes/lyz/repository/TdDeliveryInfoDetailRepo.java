@@ -14,5 +14,7 @@ public interface TdDeliveryInfoDetailRepo
 	
 	List<TdDeliveryInfoDetail> findByOpUser(String opUser);
 	
+	List<TdDeliveryInfoDetail> findDistinctSubOrderNumberByTaskNoIn(List<String> taskNoList);
+	
 	List<TdDeliveryInfoDetail> findBySubOrderNumber(String subOrderNumber);
 }

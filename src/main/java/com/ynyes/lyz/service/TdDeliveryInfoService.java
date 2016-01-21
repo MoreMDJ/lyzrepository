@@ -96,6 +96,16 @@ public class TdDeliveryInfoService {
 		return repository.findByOpUser(opUser);
 	}
     
+    public List<TdDeliveryInfo> findDistinctTaskNoByDriver(String driver)
+    {
+		if (driver == null)
+		{
+			return null;
+		}
+		
+		return repository.findDistinctTaskNoByDriver(driver);
+	}
+    
     /**
      * 查找
      * 

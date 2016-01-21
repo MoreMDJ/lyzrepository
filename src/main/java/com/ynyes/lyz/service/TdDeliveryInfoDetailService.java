@@ -2,8 +2,6 @@ package com.ynyes.lyz.service;
 
 import java.util.List;
 
-import javax.swing.border.SoftBevelBorder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -97,6 +95,12 @@ public class TdDeliveryInfoDetailService {
 			return null;
 		}
 		return repository.findByOpUser(opUser);
+	}
+	public List<TdDeliveryInfoDetail> findDistinctSubOrderNumberByTaskNoIn(List<String> taskNoList) {
+		if (taskNoList == null) {
+			return null;
+		}
+		return repository.findDistinctSubOrderNumberByTaskNoIn(taskNoList);
 	}
 
 	/**
