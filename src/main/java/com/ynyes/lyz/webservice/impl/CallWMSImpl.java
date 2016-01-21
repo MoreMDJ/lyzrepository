@@ -45,12 +45,15 @@ import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdBackDetailService;
 import com.ynyes.lyz.service.TdBackMainService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
+import com.ynyes.lyz.service.TdPriceCountService;
+import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.webservice.ICallWMS;
 
 @WebService
@@ -73,6 +76,12 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdBackDetailService tdBackDetailService;
+	
+	@Autowired
+	private TdUserService tdUserService;
+	
+	@Autowired
+	private TdPriceCountService tdPriceCountService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -758,10 +767,13 @@ public class CallWMSImpl implements ICallWMS {
 				TdOrder order = tdOrderService.findByOrderNumber(c_po_no);
 				if (order != null)
 				{
-					if (order.getStatusId() == 9 || order.getStatusId() == 10 || order.getStatusId() == 11 || order.getStatusId() == 12) {
+					if (order.getStatusId() == 9 || order.getStatusId() == 10 || order.getStatusId() == 11 || order.getStatusId() == 12)
+					{
 						order.setStatusId(12L);
 						tdOrderService.save(order);
 					}
+					TdUser tdUser = tdUserService.findByUsername(order.getUsername());
+					tdPriceCountService.cashAndCouponBack(order, tdUser);
 				}
 				
 //				if (c_reserved1 != null) 
