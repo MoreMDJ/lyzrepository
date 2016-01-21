@@ -787,7 +787,7 @@ public class CallWMSImpl implements ICallWMS {
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
-		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_m"))// 退货入库单 详细
+		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_d"))// 退货入库单 详细
 		{
 			for (int i = 0; i < nodeList.getLength(); i++)
 			{
