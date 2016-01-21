@@ -1,22 +1,19 @@
 package com.ynyes.lyz.entity;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * 退货单
+ *  退货入库单 主档
  * 
  * @author Sharon
  *
@@ -30,84 +27,258 @@ public class TdBackMain {
 
 	// 仓库编号
 	@Column
-	private Long c_wh_no;
+	private String whNo;
 
 	// 委托业主
 	@Column
-	private Boolean c_owner_no;
+	private String ownerNo;
 
-	// 商品名称
+	// 返配验收单号
 	@Column
-	private String c_rec_no;
+	private String recNo;
 
-	// 商品标题
+	// 打印次数
 	@Column
-	private String c_print_times;
+	private Integer printTimes;
 
-	// 副标题
+	// 返配单号
 	@Column
-	private String c_back_no;
+	private String backNo;
 
-	// 封面图片
+	// 返配单类型（一般返配）
 	@Column
-	private String c_back_type;
+	private String backType;
 
-	// 封面图片宽度
+	// 返配单分类(存储型、越库型)
 	@Column
-	private Double c_back_class;
+	private String backClass;
 
-	// 封面图片高度
+	// 客户信息
 	@Column
-	private Double c_customer_no;
+	private String customerNo;
 
-	// 视频
+	// 月台
 	@Column
-	private String c_plat_no;
+	private String platNo;
 
-	// 轮播展示图片，多张图片以,隔开
+	// 验收人员
 	@Column
-	private String c_rec_user;
+	private String recUser;
 
-	// 促销
+	// 操作工具(表单,pda,电子标签)
 	@Column
-	private String c_op_tools;
+	private String opTools;
 
-	// 评价平均分
+	// 操作状态(初始、作业中、完成、结案)
 	@Column
-	private Double c_op_status;
+	private String opStatus;
 
-	// 商品配置
+	// 备注
 	@Column
-	private String c_note;
+	private String note;
 
-	// 商品服务
+	// 建立人员
 	@Column
-	private String c_mk_userno;
+	private String mkUserno;
 
-	// 配送区域
+	// 修改人员
 	@Column
-	private String c_modified_userno;
+	private String modifiedUserno;
 
-	// 商品详情
+	// 门店退单
 	@Column
-	private String c_po_no;
+	private String poNo;
 
-	// 上架时间
-	@Column
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date c_begin_dt;
-
-	// 创建日期
+	// 开始操作时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date c_end_dt;
+	private Date beginDt;
+
+	// 结束操作时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date endDt;
 	
-	// 创建日期
+	// 建立时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date c_mk_dt;
-		
+	private Date mkDt;
+	
+	// 修改时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date modifiedDt;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getWhNo() {
+		return whNo;
+	}
+
+	public void setWhNo(String whNo) {
+		this.whNo = whNo;
+	}
+
+	public String getOwnerNo() {
+		return ownerNo;
+	}
+
+	public void setOwnerNo(String ownerNo) {
+		this.ownerNo = ownerNo;
+	}
+
+	public String getRecNo() {
+		return recNo;
+	}
+
+	public void setRecNo(String recNo) {
+		this.recNo = recNo;
+	}
+
+	public Integer getPrintTimes() {
+		return printTimes;
+	}
+
+	public void setPrintTimes(Integer printTimes) {
+		this.printTimes = printTimes;
+	}
+
+	public String getBackNo() {
+		return backNo;
+	}
+
+	public void setBackNo(String backNo) {
+		this.backNo = backNo;
+	}
+
+	public String getBackType() {
+		return backType;
+	}
+
+	public void setBackType(String backType) {
+		this.backType = backType;
+	}
+
+	public String getBackClass() {
+		return backClass;
+	}
+
+	public void setBackClass(String backClass) {
+		this.backClass = backClass;
+	}
+
+	public String getCustomerNo() {
+		return customerNo;
+	}
+
+	public void setCustomerNo(String customerNo) {
+		this.customerNo = customerNo;
+	}
+
+	public String getPlatNo() {
+		return platNo;
+	}
+
+	public void setPlatNo(String platNo) {
+		this.platNo = platNo;
+	}
+
+	public String getRecUser() {
+		return recUser;
+	}
+
+	public void setRecUser(String recUser) {
+		this.recUser = recUser;
+	}
+
+	public String getOpTools() {
+		return opTools;
+	}
+
+	public void setOpTools(String opTools) {
+		this.opTools = opTools;
+	}
+
+	public String getOpStatus() {
+		return opStatus;
+	}
+
+	public void setOpStatus(String opStatus) {
+		this.opStatus = opStatus;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public String getMkUserno() {
+		return mkUserno;
+	}
+
+	public void setMkUserno(String mkUserno) {
+		this.mkUserno = mkUserno;
+	}
+
+	public String getModifiedUserno() {
+		return modifiedUserno;
+	}
+
+	public void setModifiedUserno(String modifiedUserno) {
+		this.modifiedUserno = modifiedUserno;
+	}
+
+	public String getPoNo() {
+		return poNo;
+	}
+
+	public void setPoNo(String poNo) {
+		this.poNo = poNo;
+	}
+
+	public Date getBeginDt() {
+		return beginDt;
+	}
+
+	public void setBeginDt(Date beginDt) {
+		this.beginDt = beginDt;
+	}
+
+	public Date getEndDt() {
+		return endDt;
+	}
+
+	public void setEndDt(Date endDt) {
+		this.endDt = endDt;
+	}
+
+	public Date getMkDt() {
+		return mkDt;
+	}
+
+	public void setMkDt(Date mkDt) {
+		this.mkDt = mkDt;
+	}
+
+	public Date getModifiedDt() {
+		return modifiedDt;
+	}
+
+	public void setModifiedDt(Date modifiedDt) {
+		this.modifiedDt = modifiedDt;
+	}
+	
 }

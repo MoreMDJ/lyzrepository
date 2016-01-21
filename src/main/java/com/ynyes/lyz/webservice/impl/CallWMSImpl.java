@@ -22,12 +22,9 @@ package com.ynyes.lyz.webservice.impl;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.jws.WebService;
 import javax.xml.parsers.DocumentBuilder;
@@ -42,17 +39,18 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.ynyes.lyz.entity.TdBackDetail;
+import com.ynyes.lyz.entity.TdBackMain;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.service.TdBackDetailService;
+import com.ynyes.lyz.service.TdBackMainService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
-import com.ynyes.lyz.service.TdInterfaceErrorLogService;
 import com.ynyes.lyz.service.TdOrderService;
-import com.ynyes.lyz.service.TdRequisitionGoodsService;
-import com.ynyes.lyz.service.TdRequisitionService;
 import com.ynyes.lyz.webservice.ICallWMS;
 
 @WebService
@@ -69,6 +67,12 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdOrderService tdOrderService;
+	
+	@Autowired
+	private TdBackMainService tdBackMainService;
+	
+	@Autowired
+	private TdBackDetailService tdBackDetailService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -478,6 +482,580 @@ public class CallWMSImpl implements ICallWMS {
 					tdGoods.setLeftNumber(tdGoods.getLeftNumber() - backquantity >= 0 ? tdGoods.getLeftNumber() - backquantity : 0);
 					tdGoodsService.save(tdGoods, "goods");
 				}
+			}
+			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
+		}
+		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_m"))// 退货入库单 主档
+		{
+			for (int i = 0; i < nodeList.getLength(); i++)
+			{
+				// 仓库编号
+				String c_wh_no = null;
+				// 委托业主
+				String c_owner_no = null;
+				// 返配验收单号
+				String c_rec_no = null;
+				// 打印次数
+				Integer c_print_times = null;
+				// 返配单号
+				String c_back_no = null;
+				// 返配单类型（一般返配）
+				String c_back_type = null;
+				// 返配单分类(存储型、越库型)
+				String c_back_class = null;
+				// 客户信息
+				String c_customer_no = null;
+				// 月台
+				String c_plat_no = null;
+				// 验收人员
+				String c_rec_user = null;
+				// 操作工具(表单,pda,电子标签)
+				String c_op_tools = null;
+				// 操作状态(初始、作业中、完成、结案)
+				String c_op_status = null;
+				// 备注
+				String c_note = null;
+				// 建立人员
+				String c_mk_userno = null;
+				// 修改人员
+				String c_modified_userno = null;
+				// 门店退单
+				String c_po_no = null;
+				// 开始操作时间
+				String c_begin_dt = null;
+				// 结束操作时间
+				String c_end_dt = null;
+				// 建立时间
+				String c_mk_dt = null;
+				// 修改时间
+				String c_modified_dt = null;
+				
+				Node node = nodeList.item(i);
+				NodeList childNodeList = node.getChildNodes();
+
+				for (int idx = 0; idx < childNodeList.getLength(); idx++)
+				{
+ 					Node childNode = childNodeList.item(idx);
+					
+					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
+					{
+						// 比较字段名
+						if (childNode.getNodeName().equalsIgnoreCase("c_wh_no"))
+						{
+							// 有值
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_wh_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+							// 空值
+							else
+							{
+								c_wh_no = null;
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_owner_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_owner_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_rec_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_rec_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_print_times"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_print_times = Integer.parseInt(childNode.getChildNodes().item(0).getNodeValue());
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_back_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_back_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_back_type"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_back_type = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_back_class"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_back_class = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_customer_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_customer_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_plat_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_plat_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_rec_user"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_rec_user = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_op_tools"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_op_tools = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_note"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_note =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_mk_userno"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_mk_userno =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_modified_userno =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_po_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_po_no =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_begin_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_begin_dt =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_end_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_end_dt =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_mk_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_mk_dt =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_modified_dt =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+					}
+				}
+				
+				//保存 修改
+				TdBackMain tdBackMain = tdBackMainService.findByRecNo(c_rec_no);
+				if (tdBackMain == null)
+				{
+					tdBackMain = new TdBackMain();
+					tdBackMain.setRecNo(c_rec_no);
+				}
+				tdBackMain.setOwnerNo(c_owner_no);
+				tdBackMain.setWhNo(c_wh_no);
+				tdBackMain.setPrintTimes(c_print_times);
+				tdBackMain.setBackClass(c_back_class);
+				tdBackMain.setBackNo(c_back_no);
+				tdBackMain.setBackType(c_back_type);
+				tdBackMain.setCustomerNo(c_customer_no);
+				tdBackMain.setPlatNo(c_plat_no);
+				tdBackMain.setRecUser(c_rec_user);
+				tdBackMain.setOpTools(c_op_tools);
+				tdBackMain.setOpStatus(c_op_status);
+				tdBackMain.setNote(c_note);
+				tdBackMain.setMkUserno(c_mk_userno);
+				tdBackMain.setModifiedUserno(c_modified_userno);
+				tdBackMain.setPoNo(c_po_no);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				if (c_begin_dt != null)
+				{
+					try
+					{
+						Date c_begin = sdf.parse(c_begin_dt);
+						tdBackMain.setBeginDt(c_begin);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				if (c_end_dt != null)
+				{
+					try 
+					{
+						Date enddate = sdf.parse(c_end_dt);
+						tdBackMain.setEndDt(enddate);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				if (c_mk_dt != null)
+				{
+					try 
+					{
+						Date c_mk = sdf.parse(c_mk_dt);
+						tdBackMain.setMkDt(c_mk);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				if (c_modified_dt != null)
+				{
+					try 
+					{
+						Date c_modified = sdf.parse(c_modified_dt);
+						tdBackMain.setModifiedDt(c_modified);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				tdBackMainService.save(tdBackMain);
+				
+				TdOrder order = tdOrderService.findByOrderNumber(c_po_no);
+				if (order != null)
+				{
+					if (order.getStatusId() == 9 || order.getStatusId() == 10 || order.getStatusId() == 11 || order.getStatusId() == 12) {
+						order.setStatusId(12L);
+						tdOrderService.save(order);
+					}
+				}
+				
+//				if (c_reserved1 != null) 
+//				{
+//					TdOrder tdOrder = tdOrderService.findByOrderNumber(c_reserved1);
+//					if (tdOrder != null && tdOrder.getStatusId() != null && tdOrder.getStatusId() == 3L) {
+//						tdOrder.setStatusId(4L);
+//						tdOrderService.save(tdOrder);
+//					}
+//				}
+			}
+			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
+		}
+		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_m"))// 退货入库单 详细
+		{
+			for (int i = 0; i < nodeList.getLength(); i++)
+			{
+				// 委托业主	
+				String ownerNo = null;
+
+				//  任务编号
+				String recNo = null;
+
+				// 任务id
+				String recId = null;
+
+				// 商品编号
+				String gcode = null;
+
+				// 包装数量
+				String packQty = null;
+
+				// 价格
+				String price = null;
+				
+				//验收赠品数量
+				String giftQty = null;
+
+				// 验收赠品不良品数量
+				String badQty = null;
+
+				// 验收数量
+				String recQty = null;
+
+				// 作业人员
+				String recUser = null;
+
+				//月台
+				String platNo = null;
+
+				// 操作工具(表单,pda,电子标签)
+				String opTools = null;
+
+				// 状态（初始、作业中、完成、结案）
+				String opStatus = null;
+
+				// 预留
+				String reserved1 = null;
+				
+				// 预留
+				String reserved2 = null;
+
+				// 预留
+				String reserved3 = null;
+
+				// 预留
+				String reserved4 = null;
+
+				// 预留
+				String reserved5 = null;
+					
+				// 备注
+				String note = null;
+
+				// 建立人员
+				String mkUserno = null;
+
+				// 修改人员
+				String modifiedUserno = null;
+
+				// 建立时间
+				String c_mk_dt = null;
+
+				// 修改时间
+				String c_modified_dt = null;
+				
+				Node node = nodeList.item(i);
+				NodeList childNodeList = node.getChildNodes();
+
+				for (int idx = 0; idx < childNodeList.getLength(); idx++)
+				{
+ 					Node childNode = childNodeList.item(idx);
+					
+					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
+					{
+						// 比较字段名
+						if (childNode.getNodeName().equalsIgnoreCase("c_owner_no"))
+						{
+							// 有值
+							if (null != childNode.getChildNodes().item(0))
+							{
+								ownerNo = childNode.getChildNodes().item(0).getNodeValue();
+							}
+							// 空值
+							else
+							{
+								ownerNo = null;
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_rec_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								recNo = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_rec_id"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								recId = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_gcode"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								gcode = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_pack_qty"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								packQty = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_price"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								price = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_gift_qty"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								giftQty = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_bad_qty"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								badQty = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_rec_qty"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								recQty = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_rec_user"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								recUser = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_plat_no"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								platNo = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_op_tools"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								opTools =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_op_status"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								opStatus =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_reserved1"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								reserved1 =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_reserved2"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								reserved2 =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_reserved3"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								reserved3 =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_reserved4"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								reserved4 =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_reserved5"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								reserved5 =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_note"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								note =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_mk_userno"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								mkUserno =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_mk_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_mk_dt =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_mk_dt =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_dt"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								c_modified_dt =  childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+					}
+				}
+				
+				//保存 修改
+				TdBackDetail tdBackDetail =  new TdBackDetail();
+				tdBackDetail.setOwnerNo(ownerNo);
+				tdBackDetail.setRecNo(recNo);
+				tdBackDetail.setRecId(recId);
+				tdBackDetail.setGcode(gcode);
+				tdBackDetail.setPackQty(packQty);
+				tdBackDetail.setPrice(price);
+				tdBackDetail.setGiftQty(giftQty);
+				tdBackDetail.setBadQty(badQty);
+				tdBackDetail.setRecQty(recQty);
+				tdBackDetail.setRecUser(recUser);
+				tdBackDetail.setPlatNo(platNo);
+				tdBackDetail.setOpTools(opTools);
+				tdBackDetail.setOpStatus(opStatus);
+				tdBackDetail.setReserved1(reserved1);
+				tdBackDetail.setReserved2(reserved2);
+				tdBackDetail.setReserved3(reserved3);
+				tdBackDetail.setReserved4(reserved4);
+				tdBackDetail.setReserved5(reserved5);
+				tdBackDetail.setNote(note);
+				tdBackDetail.setMkUserno(mkUserno);
+				tdBackDetail.setMkDt(c_mk_dt);
+				tdBackDetail.setModifiedUserno(modifiedUserno);
+				tdBackDetail.setModifiedDt(c_modified_dt);
+				tdBackDetailService.save(tdBackDetail);
+				
+				
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
