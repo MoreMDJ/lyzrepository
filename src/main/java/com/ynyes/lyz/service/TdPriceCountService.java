@@ -26,6 +26,9 @@ public class TdPriceCountService {
 	@Autowired
 	private TdSubdistrictService tdSubDistrictService;
 
+	@Autowired
+	private TdUserService tdUserService;
+
 	/**
 	 * 计算订单价格和能使用的最大的预存款的方法
 	 * 
@@ -350,5 +353,84 @@ public class TdPriceCountService {
 		}
 
 		return realUsed;
+	}
+
+	/**
+	 * 进行资金和优惠券退还的方法
+	 * 
+	 * @author dengxiao
+	 */
+	public void cashAndCouponBack(TdOrder order, TdUser user) {
+		// 如果参数为NULL，则没有继续的必要了
+		if (null == order || null == user) {
+			return;
+		}
+
+		Double balance = user.getBalance();
+		if (null == balance) {
+			balance = 0.00;
+		}
+		Double unCashBalanceUsed = order.getUnCashBalanceUsed();
+		if (null == unCashBalanceUsed) {
+			unCashBalanceUsed = 0.00;
+		}
+		Double cashBalanceUsed = order.getCashBalanceUsed();
+		if (null == cashBalanceUsed) {
+			cashBalanceUsed = 0.00;
+		}
+
+		// 获取订单中的产品券使用id记录
+		String productCouponId = order.getProductCouponId();
+		if (null == productCouponId) {
+			productCouponId = "";
+		}
+		// 获取订单中的现金券使用id记录
+		String cashCouponId = order.getCashCouponId();
+		if (null == cashCouponId) {
+			cashCouponId = "";
+		}
+
+		// 开始返还用户的总额
+		user.setBalance(user.getBalance() + unCashBalanceUsed + cashBalanceUsed);
+		// 开始返还用户的不可提现余额
+		user.setUnCashBalance(user.getUnCashBalance() + unCashBalanceUsed);
+		// 开始返还用户的可提现余额
+		user.setCashBalance(user.getCashBalance() + cashBalanceUsed);
+
+		tdUserService.save(user);
+
+		// 拆分使用的现金券的id
+		if (null != cashCouponId && !"".equals(cashCouponId)) {
+			String[] cashs = cashCouponId.split(",");
+			if (null != cashs && cashs.length > 0) {
+				for (String sId : cashs) {
+					if (null != sId) {
+						Long id = Long.valueOf(sId);
+						TdCoupon coupon = tdCouponService.findOne(id);
+						if (null != coupon) {
+							coupon.setIsUsed(false);
+							tdCouponService.save(coupon);
+						}
+					}
+				}
+			}
+		}
+
+		// 拆分使用的产品券
+		if (null != productCouponId && !"".equals(productCouponId)) {
+			String[] products = productCouponId.split(",");
+			if (null != products && products.length > 0) {
+				for (String sId : products) {
+					if (null != sId) {
+						Long id = Long.valueOf(sId);
+						TdCoupon coupon = tdCouponService.findOne(id);
+						if (null != coupon) {
+							coupon.setIsUsed(false);
+							tdCouponService.save(coupon);
+						}
+					}
+				}
+			}
+		}
 	}
 }
