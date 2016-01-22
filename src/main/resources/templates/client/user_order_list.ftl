@@ -61,8 +61,8 @@
             <p id="title">退货原因</p>
             <textarea name="remark"></textarea>
             <span>
-                    <input type="hidden" name="turnType" id="" value="1" />                   
               <#--
+                    <input type="hidden" name="turnType" id="" value="1" />                   
                 <section>
                     <input type="radio" name="turnType" id="" value="1" checked="checked"/>
                     <label>到店退货</label>
@@ -71,9 +71,10 @@
                     <input type="radio" name="turnType" id="" value="2" />                   
                     <label>物流取货</label>
                 </section>
+                <input onclick="win_no();" type="button" name="" id="" value="否" />
                 -->
                 <input type="submit" name="" id="" value="是" />
-                <input onclick="win_no();" type="button" name="" id="" value="否" />
+                <input onclick="javascript:win_no();" type="button" value="否" />
             </span>             
         </div>
         </form>

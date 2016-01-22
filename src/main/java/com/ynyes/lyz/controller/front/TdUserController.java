@@ -1217,6 +1217,23 @@ public class TdUserController {
 				}
 
 				returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
+				Date date = new Date();
+				
+				
+				//addMdj
+//				SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+//				java.sql.Date sDate=new java.sql.Date(date.getTime());
+//				String strDate=df.format(sDate);
+//				try 
+//				{
+//					Date startdate = sdf.parse(strDate);
+//					returnNote.setOrderTime(startdate);
+//				}
+//				catch (ParseException e) 
+//				{
+//					e.printStackTrace();
+//				}
+				
 				returnNote.setOrderTime(new Date());
 
 				returnNote.setTurnPrice(order.getTotalGoodsPrice());
@@ -1260,7 +1277,9 @@ public class TdUserController {
 				returnNote.setStatusId(3L);
 
 				returnNote =  tdReturnNoteService.save(returnNote);
-				tdCommonService.sendBackMsgToWMS(returnNote);
+				TdReturnNote note1 = tdReturnNoteService.findByReturnNumber(returnNote.getReturnNumber());
+				tdCommonService.sendBackMsgToWMS(note1);
+				System.out.println("MDJWMS:发送退后单：" +returnNote.getReturnNumber() + "成功！");
 				order.setStatusId(7L);
 				order.setIsRefund(true);
 				tdOrderService.save(order);
@@ -1492,7 +1511,17 @@ public class TdUserController {
 				returnNote.setRemarkInfo(remark);
 
 				// 退货方式
-				returnNote.setTurnType(turnType);
+				if ("门店自提".equals(order.getDeliverTypeTitle()))
+				{
+					returnNote.setTurnType(1L);
+					turnType = 1L;
+				}
+				else
+				{
+					returnNote.setTurnType(2L);
+					turnType = 2L;
+				}
+//				returnNote.setTurnType(turnType);
 				// 原订单配送方式
 				if ("门店自提".equals(order.getDeliverTypeTitle())) {
 					if (turnType == 1) {

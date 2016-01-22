@@ -110,6 +110,9 @@ public class TdCommonService {
 
 	@Autowired
 	private TdInterfaceErrorLogService tdInterfaceErrorLogService;
+	
+	@Autowired
+	private TdReturnNoteService tdReturnNoteService;
 
 	/**
 	 * 获取登陆用户信息的方法
@@ -1658,7 +1661,7 @@ public class TdCommonService {
 			TdRequisition requisition = (TdRequisition) object;
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisition.getId() + "</id>" + "<cancel_time></cancel_time>"
 					+ "<check_time></check_time>" + "<diy_site_address></diy_site_address>" + "<diy_site_id>"
-					+ requisition.getDiySiteId() + "</diy_site_id>" + "<diy_site_tel>" + requisition.getDiySiteTel()
+					+ requisition.getDiyCode() + "</diy_site_id>" + "<diy_site_tel>" + requisition.getDiySiteTel()
 					+ "</diy_site_tel>" + "<manager_remark_info></manager_remark_info>" + "<remark_info>"
 					+ requisition.getRemarkInfo() + "</remark_info>" + "<requisition_number></requisition_number>"
 					+ "<status_id></status_id>" + "<type_id>" + requisition.getTypeId() + "</type_id>"
@@ -1757,6 +1760,11 @@ public class TdCommonService {
 			// returnNote.getTurnType() + "</turn_type>"
 			// + "</TABLE>"
 			// + "</ERP>";
+			
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+			String date = sdf.format(returnNote.getOrderTime());
+
+			
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + returnNote.getId() + "</id>" + "<cancel_time>"
 					+ returnNote.getCancelTime() + "</cancel_time>" + "<check_time>" + returnNote.getCheckTime()
 					+ "</check_time>" + "<diy_site_address>" + returnNote.getDiySiteAddress() + "</diy_site_address>"
@@ -1764,7 +1772,7 @@ public class TdCommonService {
 					+ returnNote.getDiySiteTel() + "</diy_site_tel>" + "<diy_site_title>" + returnNote.getDiySiteTitle()
 					+ "</diy_site_title>" + "<manager_remark_info>" + returnNote.getManagerRemarkInfo()
 					+ "</manager_remark_info>" + "<order_number>" + returnNote.getOrderNumber() + "</order_number>"
-					+ "<order_time>" + returnNote.getOrderTime() + "</order_time>" + "<pay_type_id>"
+					+ "<order_time>" + date + "</order_time>" + "<pay_type_id>"
 					+ returnNote.getPayTypeId() + "</pay_type_id>" + "<pay_type_title>" + returnNote.getPayTypeTitle()
 					+ "</pay_type_title>" + "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>"
 					+ "<return_number>" + returnNote.getReturnNumber() + "</return_number>" + "<return_time>"
