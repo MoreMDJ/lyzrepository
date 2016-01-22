@@ -325,7 +325,7 @@
                         </th>
                         <td>
                             <div class="position">
-                                <#if turnType?? && turnType==1>
+                                <#if returnNote.turnType?? && returnNote.turnType==1>
                                     到店退货
                                 <#else>
                                     物流取货
