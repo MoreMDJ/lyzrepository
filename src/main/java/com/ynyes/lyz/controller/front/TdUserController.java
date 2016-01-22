@@ -1259,7 +1259,7 @@ public class TdUserController {
 				returnNote = tdReturnNoteService.save(returnNote);
 				returnNote.setStatusId(3L);
 
-				tdReturnNoteService.save(returnNote);
+				returnNote =  tdReturnNoteService.save(returnNote);
 				tdCommonService.sendBackMsgToWMS(returnNote);
 				order.setStatusId(7L);
 				order.setIsRefund(true);
