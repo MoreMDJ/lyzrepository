@@ -1257,13 +1257,10 @@ public class TdUserController {
 				tdOrderGoodsService.save(orderGoodsList);
 				// 保存退货单
 				returnNote = tdReturnNoteService.save(returnNote);
-
-				tdCommonService.sendBackMsgToWMS(returnNote);
-
 				returnNote.setStatusId(3L);
 
 				tdReturnNoteService.save(returnNote);
-
+				tdCommonService.sendBackMsgToWMS(returnNote);
 				order.setStatusId(7L);
 				order.setIsRefund(true);
 				tdOrderService.save(order);
