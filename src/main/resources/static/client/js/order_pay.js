@@ -61,6 +61,12 @@ function orderPay() {
 
 	// 获取当前用户使用的预存款额度
 	var usedBalance = $("#usedBalance").val();
+	
+	// add by Shawn 如果取消使用预存款，则不使用
+	if (false == userCash)
+	{
+		usedBalance = 0;
+	}
 
 	// 获取当前用户的余额
 	var userBalance = $("#userBalance").val();

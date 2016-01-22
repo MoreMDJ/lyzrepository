@@ -169,8 +169,10 @@ function __doPostBack(eventTarget, eventArgument) {
         
 <!--/列表-->
 <!--内容底部-->
+<#if order_page??>
 <#assign PAGE_DATA=order_page />
 <#include "/site_mag/list_footer.ftl" />
+</#if>
 <!--/内容底部-->
 </form>
 
