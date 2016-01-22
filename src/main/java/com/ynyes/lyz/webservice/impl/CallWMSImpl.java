@@ -58,6 +58,8 @@ import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.webservice.ICallWMS;
 
+import bsh.commands.dir;
+
 @WebService
 public class CallWMSImpl implements ICallWMS {
 	
@@ -499,7 +501,7 @@ public class CallWMSImpl implements ICallWMS {
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
-		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_m"))// 退货入库单 主档
+		else if (STRTABLE.equalsIgnoreCase("tbw_back_m"))// 退货入库单 主档
 		{
 			for (int i = 0; i < nodeList.getLength(); i++)
 			{
@@ -544,6 +546,9 @@ public class CallWMSImpl implements ICallWMS {
 				// 修改时间
 				String c_modified_dt = null;
 				
+				// 配送人员
+				String driver = null;
+				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
 
@@ -572,6 +577,13 @@ public class CallWMSImpl implements ICallWMS {
 							if (null != childNode.getChildNodes().item(0))
 							{
 								c_owner_no = childNode.getChildNodes().item(0).getNodeValue();
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_driver"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								driver = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
 						else if (childNode.getNodeName().equalsIgnoreCase("c_rec_no"))
@@ -718,6 +730,7 @@ public class CallWMSImpl implements ICallWMS {
 				tdBackMain.setMkUserno(c_mk_userno);
 				tdBackMain.setModifiedUserno(c_modified_userno);
 				tdBackMain.setPoNo(c_po_no);
+				tdBackMain.setDriver(driver);
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				if (c_begin_dt != null)
 				{
@@ -798,7 +811,7 @@ public class CallWMSImpl implements ICallWMS {
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
-		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_d"))// 退货入库单 详细
+		else if (STRTABLE.equalsIgnoreCase("tbw_back_d"))// 退货入库单 详细
 		{
 			for (int i = 0; i < nodeList.getLength(); i++)
 			{

@@ -101,6 +101,10 @@ public class TdBackMain {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDt;
 	
+	//配送人员
+	@Column
+	private String driver;
+	
 	// 建立时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -247,6 +251,14 @@ public class TdBackMain {
 
 	public void setPoNo(String poNo) {
 		this.poNo = poNo;
+	}
+	
+	public String getDriver() {
+		return driver;
+	}
+
+	public void setDriver(String driver) {
+		this.driver = driver;
 	}
 
 	public Date getBeginDt() {
