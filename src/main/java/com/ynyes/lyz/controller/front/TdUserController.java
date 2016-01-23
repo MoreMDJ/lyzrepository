@@ -1166,6 +1166,9 @@ public class TdUserController {
 				newOrderNumber += orderNumber.charAt(i);
 			}
 		}
+		
+		// add by Shawn
+		String mainOrderNumber = order.getMainOrderNumber();
 
 		if (null != order.getStatusId() && 3L == order.getStatusId()) {
 			// 生成退货单
@@ -1280,9 +1283,6 @@ public class TdUserController {
 				TdReturnNote note1 = tdReturnNoteService.findByReturnNumber(returnNote.getReturnNumber());
 				tdCommonService.sendBackMsgToWMS(note1);
 				System.out.println("MDJWMS:发送退后单：" +returnNote.getReturnNumber() + "成功！");
-				order.setStatusId(7L);
-				order.setIsRefund(true);
-				tdOrderService.save(order);
 			}
 		}
 
@@ -1300,6 +1300,7 @@ public class TdUserController {
 					}
 					subOrder.setStatusId(7L);
 					subOrder.setIsRefund(true);
+					tdOrderService.save(subOrder);
 				}
 			}
 		}

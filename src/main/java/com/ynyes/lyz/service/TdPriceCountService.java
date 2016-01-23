@@ -397,7 +397,7 @@ public class TdPriceCountService {
 		// 开始返还用户的可提现余额
 		user.setCashBalance(user.getCashBalance() + cashBalanceUsed);
 
-		tdUserService.save(user);
+		user = tdUserService.save(user);
 
 		// 拆分使用的现金券的id
 		if (null != cashCouponId && !"".equals(cashCouponId)) {

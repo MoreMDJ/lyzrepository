@@ -1437,8 +1437,8 @@ public class TdCommonService {
 		String PATH = System.getenv("Path");
 		System.err.println("MDJWS:PATH:" + PATH);
 		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-//		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
-		org.apache.cxf.endpoint.Client client = dcf.createClient("http://101.200.75.73:8999/WmsInterServer.asmx?wsdl");//正式
+		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
+//		org.apache.cxf.endpoint.Client client = dcf.createClient("http://101.200.75.73:8999/WmsInterServer.asmx?wsdl");//正式
 		// url为调用webService的wsdl地址
 		QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
@@ -1848,8 +1848,8 @@ public class TdCommonService {
 		String PATH = System.getenv("Path");
 		System.err.println("MDJWS:PATH:" + PATH);
 		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-//		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
-		org.apache.cxf.endpoint.Client client = dcf.createClient("http://101.200.75.73:8999/WmsInterServer.asmx?wsdl");//正式
+		org.apache.cxf.endpoint.Client client = dcf.createClient("http://182.92.160.220:8199/WmsInterServer.asmx?wsdl");
+//		org.apache.cxf.endpoint.Client client = dcf.createClient("http://101.200.75.73:8999/WmsInterServer.asmx?wsdl");//正式
 		// url为调用webService的wsdl地址
 		QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
