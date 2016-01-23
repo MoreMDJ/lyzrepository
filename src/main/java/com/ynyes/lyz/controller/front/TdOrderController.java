@@ -265,9 +265,15 @@ public class TdOrderController {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
-		order.setRemark(remark);
+		
+		if (null != order)
+		{
+			order.setRemark(remark);
+			tdOrderService.save(order);
+		}
+		
 		req.getSession().setAttribute("order_temp", order);
-		tdOrderService.save(order);
+		
 		res.put("status", 0);
 		return res;
 	}
