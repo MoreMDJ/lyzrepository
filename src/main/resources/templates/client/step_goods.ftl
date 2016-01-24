@@ -32,7 +32,7 @@
                                                     </#if>
                                                 </#if>
                                                 <a href="javascript:changeQuantity(${goods.id?c},'add');">+</a>
-                                                <input readonly="true" class="goodsSelectedQuantity" type="number" id="quantity${goods.id?c}" value="0">
+                                                <input min="0" class="goodsSelectedQuantity" type="number" id="quantity${goods.id?c}" value="0">
                                                 <a href="javascript:changeQuantity(${goods.id?c},'delete');">-</a>
                                             </div>
                                             <div class="fen_div02">

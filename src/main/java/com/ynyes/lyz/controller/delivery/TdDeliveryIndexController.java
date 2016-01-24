@@ -322,7 +322,10 @@ public class TdDeliveryIndexController {
 
 				if (null != detailList && detailList.size() > 0) {
 					for (TdDeliveryInfoDetail detail : detailList) {
-						orderNumberList.add(detail.getSubOrderNumber());
+						if (null != detail.getSubOrderNumber() && !detail.getSubOrderNumber().isEmpty())
+						{
+							orderNumberList.add(detail.getSubOrderNumber());
+						}
 					}
 				}
 			}

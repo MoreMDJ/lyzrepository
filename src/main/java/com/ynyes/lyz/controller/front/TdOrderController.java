@@ -1144,7 +1144,7 @@ public class TdOrderController {
 			balance = 0.00;
 		}
 
-		if (unCashBalance > userUsed) {
+		if (unCashBalance >= userUsed) {
 			user.setUnCashBalance(user.getUnCashBalance() - userUsed);
 			order_temp.setUnCashBalanceUsed(userUsed);
 		} else {

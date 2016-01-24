@@ -136,7 +136,7 @@
                                                         </#if>
                                                         <div>
                                                             <span onclick="changeQuantity(${goods.id?c},'delete')">-</span>
-                                                            <input readonly="true" class="goodsSelectedQuantity" type="number" id="quantity${goods.id?c}" value="0">
+                                                            <input class="goodsSelectedQuantity" min="0" type="number" id="quantity${goods.id?c}" value="0">
                                                             <span onclick="changeQuantity(${goods.id?c},'add')">+</span>
                                                         </div>
                                                     </dd>
