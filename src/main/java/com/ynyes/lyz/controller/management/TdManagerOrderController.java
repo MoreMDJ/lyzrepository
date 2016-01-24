@@ -207,7 +207,9 @@ public class TdManagerOrderController {
 			{
 				if (null == keywords) {
 					map.addAttribute("pay_type_page", tdPayTypeService.findAllOrderBySortIdAsc(page, size));
-				} else {
+				} 
+				else
+				{
 					map.addAttribute("pay_type_page", tdPayTypeService.searchAllOrderBySortIdAsc(keywords, page, size));
 				}
 
