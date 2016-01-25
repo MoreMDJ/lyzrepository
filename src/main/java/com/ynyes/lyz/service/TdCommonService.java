@@ -53,10 +53,10 @@ import com.ynyes.lyz.util.StringUtils;
 
 @Service
 public class TdCommonService {
-	
-	String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
-//	String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 
+	String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
+	// String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; //
+	// 测试
 
 	@Autowired
 	private TdUserService tdUserService;
@@ -114,7 +114,7 @@ public class TdCommonService {
 
 	@Autowired
 	private TdInterfaceErrorLogService tdInterfaceErrorLogService;
-	
+
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
 
@@ -256,6 +256,54 @@ public class TdCommonService {
 				}
 				map.addAttribute("goods_list" + i + "_" + j, putaway);
 			}
+		}
+	}
+
+	/**
+	 * 新方法获取二级分类
+	 * 
+	 * @author dengxiao
+	 */
+	public void getCategoryTemp(HttpServletRequest req, ModelMap map) {
+		// 查找到所有的一级分类
+		List<TdProductCategory> level_one_categories = tdProductCategoryService.findByParentIdIsNullOrderBySortIdAsc();
+		map.addAttribute("level_one_categories", level_one_categories);
+		// 遍历一级分类用于查找所有的二级分类
+		for (int i = 0; i < level_one_categories.size(); i++) {
+			// 获取指定的一级分类
+			TdProductCategory one_category = level_one_categories.get(i);
+			// 根据指定的一级分类查找到该分类下所有的二级分类
+			List<TdProductCategory> level_two_categories = tdProductCategoryService
+					.findByParentIdOrderBySortIdAsc(one_category.getId());
+			map.addAttribute("level_two_categories" + i, level_two_categories);
+		}
+	}
+
+	/**
+	 * 获取指定分类下的所有商品并且获取商品的价格
+	 * 
+	 * @author dengxiao
+	 */
+	public void getGoodsAndPrice(HttpServletRequest req, ModelMap map, Long cateGoryId) {
+		// 创建一个集合存储有价格的商品
+		List<TdGoods> actual_goods = new ArrayList<>();
+		// 查找指定二级分类下的所有商品
+		List<TdGoods> goods_list = tdGoodsService.findByCategoryIdAndIsOnSaleTrueOrderBySortIdAsc(cateGoryId);
+		for (int i = 0; i < goods_list.size(); i++) {
+			TdGoods goods = goods_list.get(i);
+			if (null != goods) {
+				// 查找指定商品的价格
+				TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
+				if (null != priceListItem) {
+					actual_goods.add(goods);
+					// 开始判断此件商品是否参加活动
+					priceListItem.setIsPromotion(this.isJoinActivity(req, goods));
+					map.addAttribute(i + "priceListitem", priceListItem);
+				} else {
+					actual_goods.add(null);
+				}
+			}
+			map.addAttribute("some_goods", actual_goods);
 		}
 	}
 
@@ -1557,10 +1605,10 @@ public class TdCommonService {
 			}
 
 			Double left = order.getAllTotalPay() - order.getAllActualPay();
-			
+
 			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
-			
-//			requisition.setLeftPrice(order.getAllActualPay());
+
+			// requisition.setLeftPrice(order.getAllActualPay());
 
 			// Add by Shawn
 			requisition.setProvince(order.getProvince());
@@ -1764,11 +1812,10 @@ public class TdCommonService {
 			// returnNote.getTurnType() + "</turn_type>"
 			// + "</TABLE>"
 			// + "</ERP>";
-			
-			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
 			String date = sdf.format(returnNote.getOrderTime());
 
-			
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + returnNote.getId() + "</id>" + "<cancel_time>"
 					+ returnNote.getCancelTime() + "</cancel_time>" + "<check_time>" + returnNote.getCheckTime()
 					+ "</check_time>" + "<diy_site_address>" + returnNote.getDiySiteAddress() + "</diy_site_address>"
@@ -1776,16 +1823,15 @@ public class TdCommonService {
 					+ returnNote.getDiySiteTel() + "</diy_site_tel>" + "<diy_site_title>" + returnNote.getDiySiteTitle()
 					+ "</diy_site_title>" + "<manager_remark_info>" + returnNote.getManagerRemarkInfo()
 					+ "</manager_remark_info>" + "<order_number>" + returnNote.getOrderNumber() + "</order_number>"
-					+ "<order_time>" + date + "</order_time>" + "<pay_type_id>"
-					+ returnNote.getPayTypeId() + "</pay_type_id>" + "<pay_type_title>" + returnNote.getPayTypeTitle()
-					+ "</pay_type_title>" + "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>"
-					+ "<return_number>" + returnNote.getReturnNumber() + "</return_number>" + "<return_time>"
-					+ returnNote.getReturnTime() + "</return_time>" + "<sort_id>" + returnNote.getSortId()
-					+ "</sort_id>" + "<status_id>" + returnNote.getStatusId() + "</status_id>" + "<username>"
-					+ returnNote.getUsername() + "</username>" + "<deliver_type_title>"
-					+ returnNote.getDeliverTypeTitle() + "</deliver_type_title>" + "<turn_price>"
-					+ returnNote.getTurnPrice() + "</turn_price>" + "<turn_type>" + returnNote.getTurnType()
-					+ "</turn_type>" + "</TABLE>" + "</ERP>";
+					+ "<order_time>" + date + "</order_time>" + "<pay_type_id>" + returnNote.getPayTypeId()
+					+ "</pay_type_id>" + "<pay_type_title>" + returnNote.getPayTypeTitle() + "</pay_type_title>"
+					+ "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>" + "<return_number>"
+					+ returnNote.getReturnNumber() + "</return_number>" + "<return_time>" + returnNote.getReturnTime()
+					+ "</return_time>" + "<sort_id>" + returnNote.getSortId() + "</sort_id>" + "<status_id>"
+					+ returnNote.getStatusId() + "</status_id>" + "<username>" + returnNote.getUsername()
+					+ "</username>" + "<deliver_type_title>" + returnNote.getDeliverTypeTitle()
+					+ "</deliver_type_title>" + "<turn_price>" + returnNote.getTurnPrice() + "</turn_price>"
+					+ "<turn_type>" + returnNote.getTurnType() + "</turn_type>" + "</TABLE>" + "</ERP>";
 
 			xmlStr = xmlStr.replace("null", "");
 			byte[] bs = xmlStr.getBytes();
