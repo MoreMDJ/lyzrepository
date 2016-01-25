@@ -1125,11 +1125,11 @@ public class TdCommonService {
 		}
 
 		// 开始拆分产品券
-		if (null != productCouponId && !"".equals(productCouponId)) {
+		if (null != productCouponId && !productCouponId.isEmpty()) {
 			String[] coupons = productCouponId.split(",");
 			if (null != coupons && coupons.length > 0) {
 				for (String sId : coupons) {
-					if (null != sId && !"".equals(sId)) {
+					if (null != sId && !sId.isEmpty()) {
 						Long id = Long.parseLong(sId);
 						if (null != id) {
 							TdCoupon coupon = tdCouponService.findOne(id);
@@ -1152,8 +1152,8 @@ public class TdCommonService {
 													}
 													order.setTotalPrice(order.getTotalPrice() - price);
 													order.setProductCoupon(
-															order.getProductCoupon() + (orderGoods.getGoodsTitle() + "【"
-																	+ orderGoods.getSku() + "】*1,"));
+															order.getProductCoupon() + (orderGoods.getGoodsTitle() + "["
+																	+ orderGoods.getSku() + "]*1,"));
 												}
 											}
 										}

@@ -88,7 +88,7 @@
                                         </#if>
                                     </#if>
                                     <a href="javascript:changeQuantity(${item.id?c},'add')">+</a>
-                                    <input readonly="true" type="text" class="goodsSelectedQuantity" id="quantity${item.id?c}" value="0" />
+                                    <input min="0" type="text" class="goodsSelectedQuantity" id="quantity${item.id?c}" value="0" />
                                     <a href="javascript:changeQuantity(${item.id?c},'delete');">-</a>
                                 </div>
                                 <div class="fen_div02">
