@@ -1018,6 +1018,14 @@ public class TdOrderController {
 		// 获取虚拟订单
 		System.err.println("开始获取虚拟订单");
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
+		
+		// add by Shawn
+		// 解决内存溢出的bug
+		if (null == order_temp)
+		{
+			res.put("message", "未找到虚拟订单");
+			return res;
+		}
 
 		System.err.println("获取虚拟订单中的地址信息");
 		String address = order_temp.getShippingAddress();
