@@ -107,13 +107,17 @@ public class TdOrderController {
 	@RequestMapping
 	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id) {
 		String username = (String) req.getSession().getAttribute("username");
+		
+		// 参数由调用函数检查
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		
 		if (null == user) {
 			return "redirect:/login";
 		}
+		
 		map.addAttribute("user", user);
 
-		TdOrder order_temp = new TdOrder();
+		TdOrder order_temp = null;
 
 		// 生成虚拟订单
 		if (null != id) {
@@ -128,6 +132,7 @@ public class TdOrderController {
 		}
 
 		order_temp = tdPriceCouintService.checkCouponIsUsed(order_temp);
+		
 
 		// 计算价格和最大优惠券使用金额
 		Map<String, Object> results = tdPriceCouintService.countPrice(order_temp, user);

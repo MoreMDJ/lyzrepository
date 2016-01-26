@@ -764,6 +764,7 @@ public class TdCommonService {
 		// 获取登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsername(username);
+		
 		if (null == user) {
 			user = new TdUser();
 		}

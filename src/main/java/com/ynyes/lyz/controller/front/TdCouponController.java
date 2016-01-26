@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdUser;
-import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdUserService;
 /**

@@ -80,13 +80,30 @@ public class TdManagerReturnNoteController {
 		}
 
 		if (null != __EVENTTARGET) {
-			if (__EVENTTARGET.equalsIgnoreCase("btnDelete")) {
+			if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+			{
 				btnDelete(type, listId, listChkId);
 
-				if (type.equalsIgnoreCase("returnNote")) {
+				if (type.equalsIgnoreCase("returnNote")) 
+				{
 					tdManagerLogService.addLog("delete", "删除退货单", req);
 				}
 
+			}
+			if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
+			{
+				if (__EVENTARGUMENT != null)
+				{
+					try
+					{
+						page = Integer.parseInt(__EVENTARGUMENT);
+					}
+					catch (Exception e) 
+					{
+						// TODO: handle exception
+						page = 0;
+					}
+				}
 			}
 
 		}
@@ -110,9 +127,12 @@ public class TdManagerReturnNoteController {
 		if (null != type) {
 			if (type.equalsIgnoreCase("returnNote")) //
 			{
-				if (null == keywords) {
+				if (null == keywords || keywords.equalsIgnoreCase("")) 
+				{
 					map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
-				} else {
+				}
+				else
+				{
 					map.addAttribute("returnNote_page", tdReturnNoteService.searchAll(keywords, page, size));
 				}
 
