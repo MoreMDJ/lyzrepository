@@ -128,7 +128,6 @@ public class TdCommonService {
 			map.addAttribute("username", username);
 			map.addAttribute("user", tdUserService.findByUsernameAndIsEnableTrue(username));
 		}
-
 	}
 
 	/**
@@ -264,8 +263,6 @@ public class TdCommonService {
 	 * @author dengxiao
 	 */
 	public void getCategoryTemp(HttpServletRequest req, ModelMap map) {
-		// 创建一个布尔类型变量，用于获取第一个不为空的一级分类的id
-		Boolean isGet = false;
 		// 查找到所有的一级分类
 		List<TdProductCategory> level_one_categories = tdProductCategoryService.findByParentIdIsNullOrderBySortIdAsc();
 		map.addAttribute("level_one_categories", level_one_categories);
@@ -273,10 +270,6 @@ public class TdCommonService {
 		for (int i = 0; i < level_one_categories.size(); i++) {
 			// 获取指定的一级分类
 			TdProductCategory one_category = level_one_categories.get(i);
-			if (null != one_category && !isGet) {
-				map.addAttribute("one_level_category_id", one_category.getId());
-				isGet = true;
-			}
 			// 根据指定的一级分类查找到该分类下所有的二级分类
 			List<TdProductCategory> level_two_categories = tdProductCategoryService
 					.findByParentIdOrderBySortIdAsc(one_category.getId());
@@ -295,7 +288,6 @@ public class TdCommonService {
 		// 查找指定二级分类下的所有商品
 		List<TdGoods> goods_list = tdGoodsService.findByCategoryIdAndIsOnSaleTrueOrderBySortIdAsc(cateGoryId);
 		for (int i = 0; i < goods_list.size(); i++) {
-
 			TdGoods goods = goods_list.get(i);
 			if (null != goods) {
 				// 查找指定商品的价格
@@ -309,8 +301,8 @@ public class TdCommonService {
 					actual_goods.add(null);
 				}
 			}
+			map.addAttribute("some_goods", actual_goods);
 		}
-		map.addAttribute("some_goods", actual_goods);
 	}
 
 	/**
