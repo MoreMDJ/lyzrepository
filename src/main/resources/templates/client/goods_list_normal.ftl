@@ -51,7 +51,7 @@
         
         function getGoods(id){
             var classes = $("#"+id+"div").attr("class");
-            if("empty"==classes){
+            if(classes.indexOf("empty") > -1){
                 <#-- 开启等待图标 -->
                 wait();
                 $.ajax({
@@ -70,12 +70,17 @@
                         $("#"+id+"div").html(res);
                         $("#"+id+"div").removeClass("empty");
                         $("#"+id+"div").addClass("unEmpty");
+                        $("#"+id+"div").addClass("visible");
                     }
                 });
             }else{
-                $("#"+id+"div").html("");
-                $("#"+id+"div").removeClass("unEmpty");
-                $("#"+id+"div").addClass("empty");
+                if(classes.indexOf("visible") > -1){
+                    $("#"+id+"div").css("display","none");
+                    $("#"+id+"div").removeClass("visible");
+                }else{
+                    $("#"+id+"div").css("display","block");
+                    $("#"+id+"div").addClass("visible");
+                }
             }
         }
     </script>
