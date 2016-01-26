@@ -159,7 +159,7 @@ public class TdOrderController {
 			}
 
 		}
-
+		
 		// 获取已选的所有品牌的id
 		List<Long> brandIds = tdCommonService.getBrandId(user.getId(), order_temp);
 
