@@ -54,9 +54,8 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
-	// String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; //
-	// 测试
+//	String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
+	 String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 
 	@Autowired
 	private TdUserService tdUserService;
@@ -1306,7 +1305,13 @@ public class TdCommonService {
 		// CallWMSImpl callWMSImpl = new CallWMSImpl();
 
 		// 抛单给WMS
-		sendMsgToWMS(orderList, order_temp.getOrderNumber());
+//		sendMsgToWMS(orderList, order_temp.getOrderNumber());
+		
+		//测试线程
+		SendRequisitionToWmsThread thread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
+		thread.start();
+		
+		
 	}
 
 	/**
@@ -1473,9 +1478,29 @@ public class TdCommonService {
 		}
 		return ip;
 	}
-
+	
+	/**
+	 *  多线程
+	 * @author mdj
+	 *
+	 */
+	class SendRequisitionToWmsThread extends Thread
+	{
+		List<TdOrder> orderList ;
+		String mainOrderNumber;
+		//构造函数
+		SendRequisitionToWmsThread(List<TdOrder> orderList ,String mainOrderNumber)
+		{
+			this.orderList = orderList;
+			this.mainOrderNumber = mainOrderNumber;
+		}
+		public void run()
+        {
+			sendMsgToWMS(orderList, mainOrderNumber);
+        }
+	}
 	// TODO Client
-	public void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {
+	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {
 		if (orderList.size() <= 0) {
 			return;
 		}
