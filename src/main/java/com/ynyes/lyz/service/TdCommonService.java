@@ -1498,7 +1498,7 @@ public class TdCommonService {
 			sendMsgToWMS(orderList, mainOrderNumber);
         }
 	}
-	// TODO Client
+	// TODO 要货单
 	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {
 		if (orderList.size() <= 0) {
 			return;
@@ -1518,19 +1518,26 @@ public class TdCommonService {
 		QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
 		Object[] objects = null;
-		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
-			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
+		if (requisition != null && null != requisition.getRequisiteGoodsList()) 
+		{
+			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) 
+			{
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
-				try {
+				try 
+				{
 					objects = client.invoke(name, "td_requisition_goods", "1", xmlGoodsEncode);
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
 					e.printStackTrace();
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
 					// return "发送异常";
 				}
 				String result = "";
-				if (objects != null) {
-					for (Object object : objects) {
+				if (objects != null) 
+				{
+					for (Object object : objects) 
+					{
 						result += object;
 					}
 				}
@@ -1544,30 +1551,27 @@ public class TdCommonService {
 
 				String messageStr = result.substring(msgBeginIndex + 9, msgEndIndex);
 				messageStr.trim();
-				if (!codeStr.equalsIgnoreCase("0")) {
+				if (!codeStr.equalsIgnoreCase("0")) 
+				{
 					writeErrorLog(mainOrderNumber, "无", messageStr);
 				}
-				// Map<String, String> resultMap = chectResult(result);
-				// if (resultMap.get("status").equalsIgnoreCase("Y"))
-				// {
-				// }
-				// else
-				// {
-				// writeErrorLog(mainOrderNumber,
-				// requisitionGoods.getSubOrderNumber(), resultMap.get("msg"));
-				// }
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
-			try {
+			try
+			{
 				objects = client.invoke(name, "td_requisition", "1", xmlEncode);
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				e.printStackTrace();
 				writeErrorLog(mainOrderNumber, "无", e.getMessage());
 				// return "发送异常";
 			}
 			String result = null;
-			if (objects != null) {
-				for (Object object : objects) {
+			if (objects != null) 
+			{
+				for (Object object : objects)
+				{
 					result += object;
 				}
 			}
@@ -1599,7 +1603,8 @@ public class TdCommonService {
 	 * @return
 	 */
 	private TdRequisition SaveRequisiton(List<TdOrder> orderList, String mainOrderNumber) {
-		if (orderList.size() <= 0) {
+		if (orderList.size() <= 0)
+		{
 			return null;
 		}
 		TdOrder order = orderList.get(0);
@@ -1891,7 +1896,6 @@ public class TdCommonService {
 		if (null == resultStr) {
 			return map;
 		}
-
 		// add by Shawn
 		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
 		Pattern pat = Pattern.compile(regEx);
@@ -1907,9 +1911,27 @@ public class TdCommonService {
 				return map;
 			}
 		}
-
 		return map;
 	}
+//	private String chectResult(String resultStr) 
+//	{
+//		// add by Shawn
+//		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
+//		Pattern pat = Pattern.compile(regEx);
+//		Matcher mat = pat.matcher(resultStr);
+//
+//		if (mat.find()) 
+//		{
+//			System.out.println("CODE is :" + mat.group(0));
+//			String code = mat.group(0).replace("<CODE>", "");
+//			code = code.replace("</CODE>", "").trim();
+//			if (Integer.parseInt(code) == 0)
+//			{
+//				
+//			}
+//		}
+//		return "";
+//	}
 
 	// TODO Client
 	public void sendBackMsgToWMS(TdReturnNote note) {

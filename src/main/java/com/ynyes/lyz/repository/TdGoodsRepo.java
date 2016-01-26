@@ -73,6 +73,8 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 
 	Page<TdGoods> findByTitleContainingOrSubTitleContainingOrDetailContainingOrderBySortIdAsc(String keywords1,
 			String keywords2, String keywords3, Pageable page);
+	Page<TdGoods> findByTitleContainingOrSubTitleContainingOrDetailContainingOrCodeContainingOrderBySortIdAsc(String keywords1,
+			String keywords2, String keywords3,String keywords4, Pageable page);
 
 	Page<TdGoods> findByTitleContainingOrSubTitleContainingOrDetailContainingAndIsOnSaleTrueOrderBySortIdAsc(
 			String keywords1, String keywords2, String keywords3, Pageable page);

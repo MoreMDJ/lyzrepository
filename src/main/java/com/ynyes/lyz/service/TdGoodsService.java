@@ -248,8 +248,8 @@ public class TdGoodsService {
 	public Page<TdGoods> searchAndOrderBySortIdAsc(String keywords, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByTitleContainingOrSubTitleContainingOrDetailContainingOrderBySortIdAsc(keywords,
-				keywords, keywords, pageRequest);
+		return repository.findByTitleContainingOrSubTitleContainingOrDetailContainingOrCodeContainingOrderBySortIdAsc(keywords,
+				keywords, keywords, keywords,pageRequest);
 	}
 
 	// 痛殴关键字搜索上架商品并按序号排序
