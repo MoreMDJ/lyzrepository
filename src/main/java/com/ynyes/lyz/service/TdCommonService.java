@@ -54,8 +54,9 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-//	String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
-	 String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
+	// String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //
+	// 正式
+	String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 
 	@Autowired
 	private TdUserService tdUserService;
@@ -661,6 +662,23 @@ public class TdCommonService {
 				for (TdActivityGift activityGift : activityGift_list) {
 					if (null != activityGift && !join.contains(activityGift)) {
 						join.add(activityGift);
+					}
+				}
+			}
+			TdProductCategory category = tdProductCategoryService.findOne(categoryId);
+			// 获取其父类id
+			if (null != category) {
+				Long parentId = category.getParentId();
+				// 根据分类id获取小辅料赠送活动
+				List<TdActivityGift> parent_list = tdActivityGiftService
+						.findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterOrderBySortIdAsc(parentId,
+								new Date());
+				// 将参加的活动添加到join中
+				if (null != parent_list) {
+					for (TdActivityGift activityGift : parent_list) {
+						if (null != activityGift && !join.contains(activityGift)) {
+							join.add(activityGift);
+						}
 					}
 				}
 			}
@@ -1304,13 +1322,12 @@ public class TdCommonService {
 		// CallWMSImpl callWMSImpl = new CallWMSImpl();
 
 		// 抛单给WMS
-//		sendMsgToWMS(orderList, order_temp.getOrderNumber());
-		
-		//测试线程
+		// sendMsgToWMS(orderList, order_temp.getOrderNumber());
+
+		// 测试线程
 		SendRequisitionToWmsThread thread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
 		thread.start();
-		
-		
+
 	}
 
 	/**
@@ -1477,27 +1494,28 @@ public class TdCommonService {
 		}
 		return ip;
 	}
-	
+
 	/**
-	 *  多线程
+	 * 多线程
+	 * 
 	 * @author mdj
 	 *
 	 */
-	class SendRequisitionToWmsThread extends Thread
-	{
-		List<TdOrder> orderList ;
+	class SendRequisitionToWmsThread extends Thread {
+		List<TdOrder> orderList;
 		String mainOrderNumber;
-		//构造函数
-		SendRequisitionToWmsThread(List<TdOrder> orderList ,String mainOrderNumber)
-		{
+
+		// 构造函数
+		SendRequisitionToWmsThread(List<TdOrder> orderList, String mainOrderNumber) {
 			this.orderList = orderList;
 			this.mainOrderNumber = mainOrderNumber;
 		}
-		public void run()
-        {
+
+		public void run() {
 			sendMsgToWMS(orderList, mainOrderNumber);
-        }
+		}
 	}
+
 	// TODO 要货单
 	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {
 		if (orderList.size() <= 0) {
@@ -1518,26 +1536,19 @@ public class TdCommonService {
 		QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
 		Object[] objects = null;
-		if (requisition != null && null != requisition.getRequisiteGoodsList()) 
-		{
-			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) 
-			{
+		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
+			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
-				try 
-				{
+				try {
 					objects = client.invoke(name, "td_requisition_goods", "1", xmlGoodsEncode);
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
 					// return "发送异常";
 				}
 				String result = "";
-				if (objects != null) 
-				{
-					for (Object object : objects) 
-					{
+				if (objects != null) {
+					for (Object object : objects) {
 						result += object;
 					}
 				}
@@ -1551,27 +1562,21 @@ public class TdCommonService {
 
 				String messageStr = result.substring(msgBeginIndex + 9, msgEndIndex);
 				messageStr.trim();
-				if (!codeStr.equalsIgnoreCase("0")) 
-				{
+				if (!codeStr.equalsIgnoreCase("0")) {
 					writeErrorLog(mainOrderNumber, "无", messageStr);
 				}
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
-			try
-			{
+			try {
 				objects = client.invoke(name, "td_requisition", "1", xmlEncode);
-			} 
-			catch (Exception e) 
-			{
+			} catch (Exception e) {
 				e.printStackTrace();
 				writeErrorLog(mainOrderNumber, "无", e.getMessage());
 				// return "发送异常";
 			}
 			String result = null;
-			if (objects != null) 
-			{
-				for (Object object : objects)
-				{
+			if (objects != null) {
+				for (Object object : objects) {
 					result += object;
 				}
 			}
@@ -1603,8 +1608,7 @@ public class TdCommonService {
 	 * @return
 	 */
 	private TdRequisition SaveRequisiton(List<TdOrder> orderList, String mainOrderNumber) {
-		if (orderList.size() <= 0)
-		{
+		if (orderList.size() <= 0) {
 			return null;
 		}
 		TdOrder order = orderList.get(0);
@@ -1913,25 +1917,25 @@ public class TdCommonService {
 		}
 		return map;
 	}
-//	private String chectResult(String resultStr) 
-//	{
-//		// add by Shawn
-//		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
-//		Pattern pat = Pattern.compile(regEx);
-//		Matcher mat = pat.matcher(resultStr);
-//
-//		if (mat.find()) 
-//		{
-//			System.out.println("CODE is :" + mat.group(0));
-//			String code = mat.group(0).replace("<CODE>", "");
-//			code = code.replace("</CODE>", "").trim();
-//			if (Integer.parseInt(code) == 0)
-//			{
-//				
-//			}
-//		}
-//		return "";
-//	}
+	// private String chectResult(String resultStr)
+	// {
+	// // add by Shawn
+	// String regEx = "<CODE>([\\s\\S]*?)</CODE>";
+	// Pattern pat = Pattern.compile(regEx);
+	// Matcher mat = pat.matcher(resultStr);
+	//
+	// if (mat.find())
+	// {
+	// System.out.println("CODE is :" + mat.group(0));
+	// String code = mat.group(0).replace("<CODE>", "");
+	// code = code.replace("</CODE>", "").trim();
+	// if (Integer.parseInt(code) == 0)
+	// {
+	//
+	// }
+	// }
+	// return "";
+	// }
 
 	// TODO Client
 	public void sendBackMsgToWMS(TdReturnNote note) {
