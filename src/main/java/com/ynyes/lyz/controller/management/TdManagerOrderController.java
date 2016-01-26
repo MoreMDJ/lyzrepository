@@ -467,7 +467,8 @@ public class TdManagerOrderController {
 			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 
-		if (null == username) {
+		if (null == username)
+		{
 			return "redirect:/Verwalter/login";
 		}
 
@@ -482,10 +483,6 @@ public class TdManagerOrderController {
 			return "redirect:/Verwalter/login";
 		}
 		
-		
-		
-		
-
 		if (null != __EVENTTARGET) {
 			if (__EVENTTARGET.equalsIgnoreCase("btnCancel")) {
 				btnCancel(listId, listChkId);
