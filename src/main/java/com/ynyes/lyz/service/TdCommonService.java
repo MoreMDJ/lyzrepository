@@ -1874,7 +1874,8 @@ public class TdCommonService {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("status", "n");
 
-		if (null == resultStr) {
+		if (null == resultStr)
+		{
 			return map;
 		}
 		// add by Shawn
