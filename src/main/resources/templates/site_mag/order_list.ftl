@@ -153,6 +153,14 @@ function __doPostBack(eventTarget, eventArgument) {
                             <span>已取消订单</span>
                         <#elseif 8==order.statusId>
                             <span>用户删除订单</span>
+                        <#elseif 9==order.statusId>
+                            <span>订单退货中</span>
+                        <#elseif 10==order.statusId>
+                            <span>退货确认</span>
+                        <#elseif 11==order.statusId>
+                            <span>订单退货取消</span>
+                        <#elseif 12==order.statusId>
+                            <span>退货完成</span>
                         </#if>
                     </#if>
                 </td>
