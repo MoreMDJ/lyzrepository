@@ -47,50 +47,36 @@
                     onOff=!onOff;
                 };
             };
-            
-            <#--
-            for(var i=0;i<aBox.length;i++){
-                go_go(aBox[i]);
-            };
-            function go_go(obj){
-                var oBtn = obj.children[0];
-                var aShow = obj.getElementsByTagName('dl'); 
-                var onOff = true;
-                oBtn.onclick = function(){
-                    if(onOff){
-                        for(var i=0;i<aShow.length;i++){
-                            aShow[i].style.display = 'block';
-                            
-                        };
-                    }else{
-                        for(var i=0;i<aShow.length;i++){
-                            aShow[i].style.display = 'none';
-                        };  
-                    };
-                    onOff=!onOff;
-                };
-            };
-            -->
         });
+        
         function getGoods(id){
-            <#-- 开启等待图标 -->
-            wait();
-            $.ajax({
-                url:"/goods/normal/get",
-                type:"post",
-                timeout:10000,
-                data:{
-                    categoryId:id
-                },
-                error:function(){
-                    close(1);
-                    warning("亲，您的网速不给力啊");
-                },
-                success:function(res){
-                    close(1);
-                    $("#"+id+"div").html(res);
-                }
-            });
+            var classes = $("#"+id+"div").attr("class");
+            if("empty"==classes){
+                <#-- 开启等待图标 -->
+                wait();
+                $.ajax({
+                    url:"/goods/normal/get",
+                    type:"post",
+                    timeout:10000,
+                    data:{
+                        categoryId:id
+                    },
+                    error:function(){
+                        close(1);
+                        warning("亲，您的网速不给力啊");
+                    },
+                    success:function(res){
+                        close(1);
+                        $("#"+id+"div").html(res);
+                        $("#"+id+"div").removeClass("empty");
+                        $("#"+id+"div").addClass("unEmpty");
+                    }
+                });
+            }else{
+                $("#"+id+"div").html("");
+                $("#"+id+"div").removeClass("unEmpty");
+                $("#"+id+"div").addClass("empty");
+            }
         }
     </script>
     <body>
@@ -126,7 +112,7 @@
                             <#list ("level_two_categories"+level_one_index)?eval as level_two>
                                 <div class="lei_box01">
                                     <div class="box01_title" onclick="getGoods(${level_two.id?c});">${level_two.title!''}</div>
-                                    <div id="${level_two.id?c}div">
+                                    <div id="${level_two.id?c}div" class="empty">
                                     </div>
                                 </div>
                             </#list>
