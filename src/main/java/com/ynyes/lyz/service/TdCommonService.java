@@ -298,7 +298,7 @@ public class TdCommonService {
 					actual_goods.add(goods);
 					// 开始判断此件商品是否参加活动
 					priceListItem.setIsPromotion(this.isJoinActivity(req, goods));
-					map.addAttribute(i + "priceListitem", priceListItem);
+					map.addAttribute("priceListitem" + i, priceListItem);
 				} else {
 					actual_goods.add(null);
 				}
