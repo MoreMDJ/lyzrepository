@@ -22,6 +22,9 @@
     	win_cla();//分类弹窗		
     	fen_scroll()
     	footer();
+    	<#if one_level_category_id??>
+    	   change(${one_level_category_id?c});
+    	</#if>
     };
     </script>
     <body>

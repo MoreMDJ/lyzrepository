@@ -122,11 +122,25 @@ public class TdGoodsController {
 		}
 
 		tdCommonService.setHeader(req, map);
-		tdCommonService.getCategory(req, map);
+		// tdCommonService.getCategory(req, map);
+		// 新的方法查找三级菜单
+		tdCommonService.getCategoryTemp(req, map);
 		Long number = tdCartGoodsService.countByUserId(user.getId());
 		// 将已选商品的数量（包括调色包）添加到ModelMap中
 		map.addAttribute("selected_number", number);
 		return "/client/goods_list_step";
+	}
+
+	/**
+	 * 步骤下单获取指定分类下所有商品的方法
+	 * 
+	 * @author dengxiao
+	 */
+	@RequestMapping(value = "/step/get")
+	public String stepGetGoods(HttpServletRequest req, ModelMap map, Long categoryId) {
+		// 获取指定id分类下的所有商品和其价格
+		tdCommonService.getGoodsAndPrice(req, map, categoryId);
+		return "/client/sub_step_goods";
 	}
 
 	/*
