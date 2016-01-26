@@ -54,8 +54,9 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-//	String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
-	 String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
+	// String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //
+	// 正式
+	String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 
 	@Autowired
 	private TdUserService tdUserService;
@@ -709,12 +710,25 @@ public class TdCommonService {
 				TdGoods goods = tdGoodsService.findOne(cartGoods.getGoodsId());
 				// 获取已选商品的分类id
 				Long categoryId = goods.getCategoryId();
-				// 判断是否已经添加进入到map中
-				if (null == group.get(categoryId)) {
-					group.put(categoryId, cartGoods.getQuantity());
-				} else {
-					group.put(categoryId, (group.get(categoryId) + cartGoods.getQuantity()));
+				// 获取指定的分类
+				TdProductCategory category = tdProductCategoryService.findOne(categoryId);
+				if (null != category) {
+					Long parentId = category.getParentId();
+					if (null != parentId) {
+						// 判断是否已经添加进入到map中
+						if (null == group.get(parentId)) {
+							group.put(parentId, cartGoods.getQuantity());
+						} else {
+							group.put(parentId, (group.get(parentId) + cartGoods.getQuantity()));
+						}
+					}
 				}
+				// if (null == group.get(categoryId)) {
+				// group.put(categoryId, cartGoods.getQuantity());
+				// } else {
+				// group.put(categoryId, (group.get(categoryId) +
+				// cartGoods.getQuantity()));
+				// }
 			}
 		}
 		return group;
@@ -746,7 +760,7 @@ public class TdCommonService {
 		// 获取登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsername(username);
-		
+
 		if (null == user) {
 			user = new TdUser();
 		}
@@ -1305,13 +1319,12 @@ public class TdCommonService {
 		// CallWMSImpl callWMSImpl = new CallWMSImpl();
 
 		// 抛单给WMS
-//		sendMsgToWMS(orderList, order_temp.getOrderNumber());
-		
-		//测试线程
+		// sendMsgToWMS(orderList, order_temp.getOrderNumber());
+
+		// 测试线程
 		SendRequisitionToWmsThread thread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
 		thread.start();
-		
-		
+
 	}
 
 	/**
@@ -1478,27 +1491,28 @@ public class TdCommonService {
 		}
 		return ip;
 	}
-	
+
 	/**
-	 *  多线程
+	 * 多线程
+	 * 
 	 * @author mdj
 	 *
 	 */
-	class SendRequisitionToWmsThread extends Thread
-	{
-		List<TdOrder> orderList ;
+	class SendRequisitionToWmsThread extends Thread {
+		List<TdOrder> orderList;
 		String mainOrderNumber;
-		//构造函数
-		SendRequisitionToWmsThread(List<TdOrder> orderList ,String mainOrderNumber)
-		{
+
+		// 构造函数
+		SendRequisitionToWmsThread(List<TdOrder> orderList, String mainOrderNumber) {
 			this.orderList = orderList;
 			this.mainOrderNumber = mainOrderNumber;
 		}
-		public void run()
-        {
+
+		public void run() {
 			sendMsgToWMS(orderList, mainOrderNumber);
-        }
+		}
 	}
+
 	// TODO 要货单
 	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {
 		if (orderList.size() <= 0) {
@@ -1519,26 +1533,19 @@ public class TdCommonService {
 		QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
 		Object[] objects = null;
-		if (requisition != null && null != requisition.getRequisiteGoodsList()) 
-		{
-			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) 
-			{
+		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
+			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
-				try 
-				{
+				try {
 					objects = client.invoke(name, "td_requisition_goods", "1", xmlGoodsEncode);
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
 					// return "发送异常";
 				}
 				String result = "";
-				if (objects != null) 
-				{
-					for (Object object : objects) 
-					{
+				if (objects != null) {
+					for (Object object : objects) {
 						result += object;
 					}
 				}
@@ -1549,21 +1556,16 @@ public class TdCommonService {
 				}
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
-			try
-			{
+			try {
 				objects = client.invoke(name, "td_requisition", "1", xmlEncode);
-			} 
-			catch (Exception e) 
-			{
+			} catch (Exception e) {
 				e.printStackTrace();
 				writeErrorLog(mainOrderNumber, "无", e.getMessage());
 				// return "发送异常";
 			}
 			String result = null;
-			if (objects != null) 
-			{
-				for (Object object : objects)
-				{
+			if (objects != null) {
+				for (Object object : objects) {
 					result += object;
 				}
 			}
@@ -1583,8 +1585,7 @@ public class TdCommonService {
 	 * @return
 	 */
 	private TdRequisition SaveRequisiton(List<TdOrder> orderList, String mainOrderNumber) {
-		if (orderList.size() <= 0)
-		{
+		if (orderList.size() <= 0) {
 			return null;
 		}
 		TdOrder order = orderList.get(0);
