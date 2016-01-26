@@ -226,7 +226,7 @@ function deleteSelectedColorPackage(id) {
 	var docElementId = "#colorPackage" + id;
 	// 获取节点元素
 	var ele = $(docElementId);
-	
+
 	// 开启等待图标
 	wait();
 	$.ajax({
@@ -245,7 +245,7 @@ function deleteSelectedColorPackage(id) {
 			close(1);
 			console.debug(id);
 			ele.remove();
-			
+
 			// 将已选数量正确显示到指定的位置
 			$("#select_num").text(res.selected_number);
 		}
@@ -260,7 +260,7 @@ function addCart() {
 			// 获取标签之后拼接参数变量
 			function(i) {
 				var my_value = $('.goodsSelectedQuantity').eq(i).val();
-				if (my_value > 0) {
+				if (!isNaN(my_value) && my_value > 0) {
 					params = params
 							+ $('.goodsSelectedQuantity').eq(i).attr("id")
 									.replace("quantity", "") + "+";
