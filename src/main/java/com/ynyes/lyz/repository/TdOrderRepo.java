@@ -25,6 +25,11 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	//根据门店id和订单状态
 	Page<TdOrder> findByDiySiteCodeAndStatusIdOrderByIdDesc(String diyCode,Long statusId,Pageable page);
 	
+	//根据门店id，订单号，用户账号
+	Page<TdOrder> findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(String diyCode,String orderNumbers,String diyCode1,String username,Pageable page);
+	
+	Page<TdOrder> findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(String orderNumbers,String username,Pageable page);
+	
 	
 	Page<TdOrder> findByStatusIdOrderByIdDesc(Long statusId, Pageable page);
 

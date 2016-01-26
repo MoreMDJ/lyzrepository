@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -115,6 +116,7 @@ public class TdOrderService {
 		return repository.findByDiySiteCode(diyCode, pageRequest);
 	}
 	
+	
 	public Page<TdOrder> findByDiyCodeAndStatusIdOrderByIdDesc(String diyCode ,Long statusId,Integer page,Integer size)
 	{
 		if (diyCode == null || statusId == null || page == null || size == null)
@@ -123,6 +125,26 @@ public class TdOrderService {
 		}
 		PageRequest pageRequest = new PageRequest(page, size);
 		return repository.findByDiySiteCodeAndStatusIdOrderByIdDesc(diyCode, statusId, pageRequest);
+	}
+	
+	public Page<TdOrder> findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(String diyCode,String orderNumbers,String username ,int page,int size)
+	{
+		if (diyCode == null || orderNumbers == null || username == null)
+		{
+			return null;
+		}
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(diyCode,orderNumbers,diyCode,username,pageRequest);
+	}
+	
+	public Page<TdOrder> findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(String orderNumbers,String username,int size,int page)
+	{
+		if (orderNumbers == null || username == null)
+		{
+			return null;
+		}
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(orderNumbers,username,pageRequest);
 	}
 
 	public Page<TdOrder> findByStatusIdOrderByIdDesc(long statusId, int page, int size) {

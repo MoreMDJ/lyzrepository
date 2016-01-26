@@ -446,7 +446,8 @@ public class TdManagerOrderController {
 	@RequestMapping(value = "/save")
 	public String orderEdit(TdOrder tdOrder, Long statusId, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
-		if (null == username) {
+		if (null == username)
+		{
 			return "redirect:/Verwalter/login";
 		}
 
@@ -483,23 +484,6 @@ public class TdManagerOrderController {
 			return "redirect:/Verwalter/login";
 		}
 		
-		if (null != __EVENTTARGET) {
-			if (__EVENTTARGET.equalsIgnoreCase("btnCancel")) {
-				btnCancel(listId, listChkId);
-				tdManagerLogService.addLog("cancel", "取消订单", req);
-			} else if (__EVENTTARGET.equalsIgnoreCase("btnConfirm")) {
-				btnConfirm(listId, listChkId);
-				tdManagerLogService.addLog("confirm", "确认订单", req);
-			} else if (__EVENTTARGET.equalsIgnoreCase("btnDelete")) {
-				btnDelete(listId, listChkId);
-				tdManagerLogService.addLog("delete", "删除订单", req);
-			} else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
-				if (null != __EVENTARGUMENT) {
-					page = Integer.parseInt(__EVENTARGUMENT);
-				}
-			}
-		}
-
 		if (null == page || page < 0) {
 			page = 0;
 		}
@@ -507,18 +491,64 @@ public class TdManagerOrderController {
 		if (null == size || size <= 0) {
 			size = SiteMagConstant.pageSize;
 		}
+		
+		if (null != __EVENTTARGET) {
+			if (__EVENTTARGET.equalsIgnoreCase("btnCancel"))
+			{
+				btnCancel(listId, listChkId);
+				tdManagerLogService.addLog("cancel", "取消订单", req);
+			} 
+			else if (__EVENTTARGET.equalsIgnoreCase("btnConfirm"))
+			{
+				btnConfirm(listId, listChkId);
+				tdManagerLogService.addLog("confirm", "确认订单", req);
+			}
+			else if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+			{
+				btnDelete(listId, listChkId);
+				tdManagerLogService.addLog("delete", "删除订单", req);
+			}
+			else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
+			{
+				if (null != __EVENTARGUMENT) 
+				{
+					page = Integer.parseInt(__EVENTARGUMENT);
+				}
+			}
+//			else if (__EVENTTARGET.equalsIgnoreCase("btnSearch")) 
+//			{
+//				if (null != keywords && !keywords.equalsIgnoreCase("")) 
+//				{
+//					if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
+//					{
+//						map.addAttribute("order_page",tdOrderService.findByDiySiteCodeAndOrderNumberContainingAndUsernameContainingOrderByIdDesc(tdManager.getDiyCode(), keywords, keywords, 0, 0));
+//					}
+//					else 
+//					{
+//						map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndUsernameContainingOrderByIdDesc(keywords, keywords, size, page));
+//					}
+//				}
+//			}
+		}
 
 		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
 		{
 			if (null != statusId) 
 			{
-				if (statusId.equals(0L)) // 全部订单
+				if (null != keywords && !keywords.equalsIgnoreCase("")) 
 				{
-					map.addAttribute("order_page", tdOrderService.findByDiyCode(tdManager.getDiyCode(), page, size));
+					map.addAttribute("order_page",tdOrderService.findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(tdManager.getDiyCode(), keywords, keywords, 0, 0));
 				}
 				else
 				{
-					map.addAttribute("order_page", tdOrderService.findByDiyCodeAndStatusIdOrderByIdDesc(tdManager.getDiyCode(), statusId, page, size));
+					if (statusId.equals(0L)) // 全部订单
+					{
+						map.addAttribute("order_page", tdOrderService.findByDiyCode(tdManager.getDiyCode(), page, size));
+					}
+					else
+					{
+						map.addAttribute("order_page", tdOrderService.findByDiyCodeAndStatusIdOrderByIdDesc(tdManager.getDiyCode(), statusId, page, size));
+					}
 				}
 			}
 		}
@@ -526,13 +556,20 @@ public class TdManagerOrderController {
 		{
 			if (null != statusId)
 			{
-				if (statusId.equals(0L)) // 全部订单
+				if (null != keywords && !keywords.equalsIgnoreCase("")) 
 				{
-					map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size));
-				} 
-				else 
+						map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(keywords, keywords, size, page));
+				}
+				else
 				{
-					map.addAttribute("order_page", tdOrderService.findByStatusIdOrderByIdDesc(statusId, page, size));
+					if (statusId.equals(0L)) // 全部订单
+					{
+						map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size));
+					} 
+					else 
+					{
+						map.addAttribute("order_page", tdOrderService.findByStatusIdOrderByIdDesc(statusId, page, size));
+					}
 				}
 			}
 		}

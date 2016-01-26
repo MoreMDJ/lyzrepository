@@ -1542,19 +1542,10 @@ public class TdCommonService {
 						result += object;
 					}
 				}
-				Integer startIndex = result.indexOf("<CODE>");
-				Integer endIndex = result.indexOf("</CODE>");
-				String codeStr = result.substring(startIndex + 6, endIndex);
-				codeStr = codeStr.trim();
-
-				Integer msgBeginIndex = result.indexOf("<MESSAGE>");
-				Integer msgEndIndex = result.indexOf("</MESSAGE>");
-
-				String messageStr = result.substring(msgBeginIndex + 9, msgEndIndex);
-				messageStr.trim();
-				if (!codeStr.equalsIgnoreCase("0")) 
+				String errorMsg = chectResult1(result);
+				if (errorMsg != null)
 				{
-					writeErrorLog(mainOrderNumber, "无", messageStr);
+					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), errorMsg);
 				}
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
@@ -1576,22 +1567,10 @@ public class TdCommonService {
 					result += object;
 				}
 			}
-			// Map<String, String> resultMap = chectResult(result);
-			// return
-			// "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
-
-			Integer startIndex = result.indexOf("<CODE>");
-			Integer endIndex = result.indexOf("</CODE>");
-			String codeStr = result.substring(startIndex + 6, endIndex);
-			codeStr = codeStr.trim();
-
-			Integer msgBeginIndex = result.indexOf("<MESSAGE>");
-			Integer msgEndIndex = result.indexOf("</MESSAGE>");
-
-			String messageStr = result.substring(msgBeginIndex + 9, msgEndIndex);
-			messageStr.trim();
-			if (!codeStr.equalsIgnoreCase("0")) {
-				writeErrorLog(mainOrderNumber, "无", messageStr);
+			String errorMsg = chectResult1(result);
+			if (errorMsg != null)
+			{
+				writeErrorLog(mainOrderNumber, "无", errorMsg);
 			}
 		}
 	}
@@ -1914,29 +1893,44 @@ public class TdCommonService {
 		}
 		return map;
 	}
-//	private String chectResult(String resultStr) 
-//	{
-//		// add by Shawn
-//		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
-//		Pattern pat = Pattern.compile(regEx);
-//		Matcher mat = pat.matcher(resultStr);
-//
-//		if (mat.find()) 
-//		{
-//			System.out.println("CODE is :" + mat.group(0));
-//			String code = mat.group(0).replace("<CODE>", "");
-//			code = code.replace("</CODE>", "").trim();
-//			if (Integer.parseInt(code) == 0)
-//			{
-//				
-//			}
-//		}
-//		return "";
-//	}
+	private String chectResult1(String resultStr) 
+	{
+		// "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
+		// add by Shawn
+		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
+		Pattern pat = Pattern.compile(regEx);
+		Matcher mat = pat.matcher(resultStr);
+
+		if (mat.find()) 
+		{
+			System.out.println("CODE is :" + mat.group(0));
+			String code = mat.group(0).replace("<CODE>", "");
+			code = code.replace("</CODE>", "").trim();
+			if (Integer.parseInt(code) == 0)
+			{
+				return null;
+			}
+			else
+			{
+				String errorMsg = "<MESSAGE>([\\s\\S]*?)</MESSAGE>";
+				pat = Pattern.compile(errorMsg);
+				mat = pat.matcher(resultStr);
+				if (mat.find())
+				{
+					String msg = mat.group(0).replace("<MESSAGE>", "");
+					msg = msg.replace("</MESSAGE>", "").trim();
+					return msg;
+				}
+			}
+		}
+		return null;
+	}
 
 	// TODO Client
-	public void sendBackMsgToWMS(TdReturnNote note) {
-		if (null == note) {
+	public void sendBackMsgToWMS(TdReturnNote note)
+	{
+		if (null == note) 
+		{
 			return;
 		}
 		String JAVA_PATH = System.getenv("JAVA_HOME");
@@ -1951,21 +1945,27 @@ public class TdCommonService {
 		Object[] objects = null;
 
 		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);
-		try {
+		try 
+		{
 			objects = client.invoke(name, "td_return_note", "1", xmlGoodsEncode);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 		String result = "";
-		if (objects != null) {
-			for (Object object : objects) {
+		if (objects != null) 
+		{
+			for (Object object : objects)
+			{
 				result += object;
 			}
 		}
-		Map<String, String> resultMap = chectResult(result);
+		String errorMsg = chectResult1(result);
 
-		if (resultMap.get("status").equalsIgnoreCase("Y")) {
-		} else {
+		if (errorMsg != null)
+		{
+			writeErrorLog(note.getOrderNumber(), "退货单", errorMsg);
 		}
 	}
 
