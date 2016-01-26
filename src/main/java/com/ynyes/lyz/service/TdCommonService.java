@@ -665,23 +665,6 @@ public class TdCommonService {
 					}
 				}
 			}
-			TdProductCategory category = tdProductCategoryService.findOne(categoryId);
-			// 获取其父类id
-			if (null != category) {
-				Long parentId = category.getParentId();
-				// 根据分类id获取小辅料赠送活动
-				List<TdActivityGift> parent_list = tdActivityGiftService
-						.findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterOrderBySortIdAsc(parentId,
-								new Date());
-				// 将参加的活动添加到join中
-				if (null != parent_list) {
-					for (TdActivityGift activityGift : parent_list) {
-						if (null != activityGift && !join.contains(activityGift)) {
-							join.add(activityGift);
-						}
-					}
-				}
-			}
 		}
 
 		// 进行内部排序
@@ -727,12 +710,25 @@ public class TdCommonService {
 				TdGoods goods = tdGoodsService.findOne(cartGoods.getGoodsId());
 				// 获取已选商品的分类id
 				Long categoryId = goods.getCategoryId();
-				// 判断是否已经添加进入到map中
-				if (null == group.get(categoryId)) {
-					group.put(categoryId, cartGoods.getQuantity());
-				} else {
-					group.put(categoryId, (group.get(categoryId) + cartGoods.getQuantity()));
+				// 获取指定的分类
+				TdProductCategory category = tdProductCategoryService.findOne(categoryId);
+				if (null != category) {
+					Long parentId = category.getParentId();
+					if (null != parentId) {
+						// 判断是否已经添加进入到map中
+						if (null == group.get(parentId)) {
+							group.put(parentId, cartGoods.getQuantity());
+						} else {
+							group.put(parentId, (group.get(parentId) + cartGoods.getQuantity()));
+						}
+					}
 				}
+				// if (null == group.get(categoryId)) {
+				// group.put(categoryId, cartGoods.getQuantity());
+				// } else {
+				// group.put(categoryId, (group.get(categoryId) +
+				// cartGoods.getQuantity()));
+				// }
 			}
 		}
 		return group;
@@ -764,7 +760,7 @@ public class TdCommonService {
 		// 获取登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsername(username);
-		
+
 		if (null == user) {
 			user = new TdUser();
 		}
