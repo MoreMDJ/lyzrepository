@@ -36,8 +36,8 @@
                     <li class="li1">
                         <label>订单号：<span>${order.orderNumber!''}</span></label>
                         <div class="species c-ff8e08">
-                            <#if order.status??>
-                                <#switch order.status>
+                            <#if order.statusId??>
+                                <#switch order.statusId>
                                     <#case 2>待付款<#break>
                                     <#case 3>待发货<#break>
                                     <#case 4>待签收<#break>
@@ -47,6 +47,11 @@
                                 </#switch>
                             </#if>
                         </div>
+                    </li>
+                    <li>
+                        <#if order.remarkInfo??>
+                            <label>提示：<span>${order.remarkInfo!''}</span></label>
+                        </#if>
                     </li>
                     <#if order.orderGoodsList??>
                         <#list order.orderGoodsList as item>
