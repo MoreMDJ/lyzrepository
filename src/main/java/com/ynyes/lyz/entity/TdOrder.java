@@ -114,7 +114,7 @@ public class TdOrder {
 	@Column
 	private String diySitePhone;
 
-	// 后台备注
+	// 物流备注
 	@Column
 	private String remarkInfo;
 
