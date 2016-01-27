@@ -31,6 +31,53 @@ public class TdLoginController {
 	public String index() {
 		return "/client/login";
 	};
+	
+	
+	public Boolean IsUserLogin(HttpServletRequest req, String username)
+	{
+		if (username == null)
+		{
+			return false;
+		}
+		
+		TdUser user = tdUserService.findByUsername(username);
+		
+		if (user == null)
+		{
+			return false;
+		}
+		
+		if (user.getIsLogin() != null && user.getIsLogin())
+		{
+			if (req == null)
+			{
+				return false;
+			}
+			String sessionId = req.getSession().getId();
+			if (user.getLoginSession() != null && user.getLoginSession().equalsIgnoreCase(sessionId))
+			{
+				return true;
+			}
+			else
+			{
+				Date date = user.getLastVisitTime();
+				Date now = new Date();
+				Long tempmin =  now.getTime() - date.getTime();
+				if (tempmin >= 1000 * 60 * 10)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
 
 	@RequestMapping(value = "/check")
 	@ResponseBody
@@ -38,29 +85,47 @@ public class TdLoginController {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 		TdUser user = tdUserService.findByUsernameAndPasswordAndIsEnableTrue(username, MD5.md5(password, 32));
-		if (null != user) {
-			res.put("status", 0);
-			user.setLastLoginTime(new Date());
-			// 设置session失效时间为一天
-			req.getSession().setMaxInactiveInterval((60 * 60 * 24));
-			req.getSession().setAttribute("username", username);
+			if (null != user) 
+			{
+				if (IsUserLogin(req, username))
+				{
+					res.put("status", 0);
+					user.setLastLoginTime(new Date());
+					// 设置session失效时间为一天
+					req.getSession().setMaxInactiveInterval((60 * 60 * 24));
+					req.getSession().setAttribute("username", username);
+					user.setLoginSession(req.getSession().getId());
+					user.setIsLogin(true);
+					user.setLastVisitTime(new Date());
+					tdUserService.save(user);
 
-			tdCommonService.clear(req);
-		}
-
-		if (null == user) {
-			TdUser user_by_username_is_enable = tdUserService.findByUsernameAndIsEnableTrue(username);
-			if (null == user_by_username_is_enable) {
-				TdUser user_by_username = tdUserService.findByUsername(username);
-				if (null == user_by_username) {
-					res.put("message", "该手机号码未注册");
-				} else {
-					res.put("message", "该账号已被冻结");
+					tdCommonService.clear(req);
 				}
-			} else {
-				res.put("message", "您输入的密码有误");
+				else
+				{
+					res.put("message", "该账号已在其他地方登陆");
+				}
 			}
-		}
+			else
+			{
+				TdUser user_by_username_is_enable = tdUserService.findByUsernameAndIsEnableTrue(username);
+				if (null == user_by_username_is_enable) 
+				{
+					TdUser user_by_username = tdUserService.findByUsername(username);
+					if (null == user_by_username) 
+					{
+						res.put("message", "该手机号码未注册");
+					}
+					else
+					{
+						res.put("message", "该账号已被冻结");
+					}
+				} 
+				else
+				{
+					res.put("message", "您输入的密码有误");
+				}
+			}
 		return res;
 	}
 
@@ -72,6 +137,16 @@ public class TdLoginController {
 	@RequestMapping(value = "/out")
 	public String loginout(HttpServletRequest req, ModelMap map) {
 		// 清空session中的用户信息
+		
+		String username = (String)req.getSession().getAttribute("username");
+		
+		if (username != null)
+		{
+			TdUser tdUser = tdUserService.findByUsername(username);
+			tdUser.setIsLogin(false);
+			tdUserService.save(tdUser);
+		}
+		
 		req.getSession().setAttribute("username", null);
 		return "redirect:/login";
 	}

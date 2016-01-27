@@ -41,7 +41,7 @@
                             password:$scope.user.password
                         },
                         error:function(XMLHttpRequest, textStatus, errorThrown){
-                           colse(1);
+                           close(1);
                            warning("亲，您的网速不给力啊");   
                         },
                         success:function(res){

@@ -1,7 +1,9 @@
 package com.ynyes.lyz.service;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ public class TdUserService {
 
 	@Autowired
 	private TdUserRepo repository;
+	private Date  date;
 
 	public TdUser save(TdUser user) {
 		if (null == user) {
@@ -40,7 +43,7 @@ public class TdUserService {
 		}
 		return repository.findOne(id);
 	}
-
+	
 	/**
 	 * 按username查找，自身除外
 	 * 
@@ -94,6 +97,9 @@ public class TdUserService {
 		if (null == username) {
 			return null;
 		}
+		TdUser user  = repository.findByUsernameAndIsEnableTrue(username);
+		user.setLastVisitTime(new Date());
+		repository.save(user);
 		return repository.findByUsernameAndIsEnableTrue(username);
 	}
 

@@ -42,7 +42,7 @@ public class TdCouponController {
 		String username =(String)req.getSession().getAttribute("username");
 		if(null == username)
 		{
-			return "redirect:/login"; 	
+			return "redirect:/login";
 		}
 		
 		// 查找可领取现金券

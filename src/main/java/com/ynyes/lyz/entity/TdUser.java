@@ -144,6 +144,43 @@ public class TdUser {
 	// 排序号
 	@Column
 	private Double sortId;
+	
+	// SessionId
+	@Column
+	private String loginSession;
+	
+	// 是否登陆
+	@Column
+	private Boolean isLogin;
+	
+	// 最后访问时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date lastVisitTime;
+	
+	public String getLoginSession() {
+		return loginSession;
+	}
+
+	public void setLoginSession(String loginSession) {
+		this.loginSession = loginSession;
+	}
+
+	public Boolean getIsLogin() {
+		return isLogin;
+	}
+
+	public void setIsLogin(Boolean isLogin) {
+		this.isLogin = isLogin;
+	}
+
+	public Date getLastVisitTime() {
+		return lastVisitTime;
+	}
+
+	public void setLastVisitTime(Date lastVisitTime) {
+		this.lastVisitTime = lastVisitTime;
+	}
 
 	public Double getSortId() {
 		return sortId;

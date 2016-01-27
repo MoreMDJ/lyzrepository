@@ -305,6 +305,17 @@ public class TdActivity {
 	public void setActivityImg(String activityImg) {
 		this.activityImg = activityImg;
 	}
+
+	@Override
+	public String toString() {
+		return "TdActivity [id=" + id + ", name=" + name + ", isCommendIndex=" + isCommendIndex + ", beginDate="
+		        + beginDate + ", finishDate=" + finishDate + ", sortId=" + sortId + ", goodsNumber=" + goodsNumber
+		        + ", giftNumber=" + giftNumber + ", cityId=" + cityId + ", cityName=" + cityName + ", siteName="
+		        + siteName + ", isPresented=" + isPresented + ", diySiteIds=" + diySiteIds + ", goodsNames="
+		        + goodsNames + ", giftNames=" + giftNames + ", totalGoods=" + totalGoods + ", totalGift=" + totalGift
+		        + ", totalDiySite=" + totalDiySite + ", giftList=" + giftList + ", combList=" + combList + ", siteList="
+		        + siteList + ", giftType=" + giftType + ", activityImg=" + activityImg + "]";
+	}
 	
 
 }
