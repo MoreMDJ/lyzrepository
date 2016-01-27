@@ -12,18 +12,19 @@ function submit() {
 	var limitDay = $("#limitDay").val();
 	var limitId = $("#limitId").val();
 	var limitTime = $("#limitTime").val();
-	
+
 	// 选择的日期不能少于最小日期
 	var time = new Date(date.replace("-", "/").replace("-", "/"));
 	var limit = new Date(limitDay.replace("-", "/").replace("-", "/"));
 
-	if (time < limit) {
+	if ((time - limit) < 0) {
 		warning("您能选择的最早时间为<br>" + limitTime);
 		return;
 	}
-	
-	if(time == limit){
-		if (parseInt(detailTime) < parseInt(limitId)) {
+
+	console.debug(time == limit);
+	if ((time - limit) == 0) {
+		if ((detailTime * 1 - limitId * 1) < 0) {
 			warning("您能选择的最早时间为<br>" + limitTime);
 			return;
 		}
