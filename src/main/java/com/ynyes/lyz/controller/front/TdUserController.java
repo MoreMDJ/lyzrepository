@@ -1166,7 +1166,7 @@ public class TdUserController {
 				newOrderNumber += orderNumber.charAt(i);
 			}
 		}
-		
+
 		// add by Shawn
 		String mainOrderNumber = order.getMainOrderNumber();
 
@@ -1221,22 +1221,22 @@ public class TdUserController {
 
 				returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
 				Date date = new Date();
-				
-				
-				//addMdj
-//				SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
-//				java.sql.Date sDate=new java.sql.Date(date.getTime());
-//				String strDate=df.format(sDate);
-//				try 
-//				{
-//					Date startdate = sdf.parse(strDate);
-//					returnNote.setOrderTime(startdate);
-//				}
-//				catch (ParseException e) 
-//				{
-//					e.printStackTrace();
-//				}
-				
+
+				// addMdj
+				// SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd
+				// HH:MM:ss");
+				// java.sql.Date sDate=new java.sql.Date(date.getTime());
+				// String strDate=df.format(sDate);
+				// try
+				// {
+				// Date startdate = sdf.parse(strDate);
+				// returnNote.setOrderTime(startdate);
+				// }
+				// catch (ParseException e)
+				// {
+				// e.printStackTrace();
+				// }
+
 				returnNote.setOrderTime(new Date());
 
 				returnNote.setTurnPrice(order.getTotalGoodsPrice());
@@ -1279,10 +1279,10 @@ public class TdUserController {
 				returnNote = tdReturnNoteService.save(returnNote);
 				returnNote.setStatusId(3L);
 
-				returnNote =  tdReturnNoteService.save(returnNote);
+				returnNote = tdReturnNoteService.save(returnNote);
 				TdReturnNote note1 = tdReturnNoteService.findByReturnNumber(returnNote.getReturnNumber());
 				tdCommonService.sendBackMsgToWMS(note1);
-				System.out.println("MDJWMS:发送退后单：" +returnNote.getReturnNumber() + "成功！");
+				System.out.println("MDJWMS:发送退后单：" + returnNote.getReturnNumber() + "成功！");
 			}
 		}
 
@@ -1299,6 +1299,7 @@ public class TdUserController {
 						tdPriceCountService.cashAndCouponBack(subOrder, user);
 					}
 					subOrder.setStatusId(7L);
+					subOrder.setCancelTime(new Date());
 					subOrder.setIsRefund(true);
 					tdOrderService.save(subOrder);
 				}
@@ -1306,6 +1307,7 @@ public class TdUserController {
 		}
 
 		order.setStatusId(7L);
+		order.setCancelTime(new Date());
 		order.setIsRefund(true);
 		tdOrderService.save(order);
 		res.put("status", 0);
@@ -1512,17 +1514,14 @@ public class TdUserController {
 				returnNote.setRemarkInfo(remark);
 
 				// 退货方式
-				if ("门店自提".equals(order.getDeliverTypeTitle()))
-				{
+				if ("门店自提".equals(order.getDeliverTypeTitle())) {
 					returnNote.setTurnType(1L);
 					turnType = 1L;
-				}
-				else
-				{
+				} else {
 					returnNote.setTurnType(2L);
 					turnType = 2L;
 				}
-//				returnNote.setTurnType(turnType);
+				// returnNote.setTurnType(turnType);
 				// 原订单配送方式
 				if ("门店自提".equals(order.getDeliverTypeTitle())) {
 					if (turnType == 1) {
