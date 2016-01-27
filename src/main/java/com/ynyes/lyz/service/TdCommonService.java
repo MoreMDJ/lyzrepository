@@ -1540,7 +1540,6 @@ public class TdCommonService {
 				} catch (Exception e) {
 					e.printStackTrace();
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
-					// return "发送异常";
 				}
 				String result = "";
 				if (objects != null) {
@@ -1747,7 +1746,7 @@ public class TdCommonService {
 
 			xmlStr = xmlStr.replace("null", "");
 
-			System.out.print("MDJWS: returnNote-->" + xmlStr);
+//			System.out.print("MDJWS: returnNote-->" + xmlStr);
 
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
@@ -1875,30 +1874,6 @@ public class TdCommonService {
 	 * @param resultStr
 	 * @return
 	 */
-	private Map<String, String> chectResult(String resultStr) {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("status", "n");
-
-		if (null == resultStr) {
-			return map;
-		}
-		// add by Shawn
-		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
-		Pattern pat = Pattern.compile(regEx);
-		Matcher mat = pat.matcher(resultStr);
-
-		if (mat.find()) {
-			System.out.println("CODE is :" + mat.group(0));
-			String code = mat.group(0).replace("<CODE>", "");
-			code = code.replace("</CODE>", "").trim();
-
-			if (Integer.parseInt(code) == 0) {
-				map.put("status", "y");
-				return map;
-			}
-		}
-		return map;
-	}
 
 	private String chectResult1(String resultStr) {
 		// "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
@@ -1907,17 +1882,22 @@ public class TdCommonService {
 		Pattern pat = Pattern.compile(regEx);
 		Matcher mat = pat.matcher(resultStr);
 
-		if (mat.find()) {
+		if (mat.find()) 
+		{
 			System.out.println("CODE is :" + mat.group(0));
 			String code = mat.group(0).replace("<CODE>", "");
 			code = code.replace("</CODE>", "").trim();
-			if (Integer.parseInt(code) == 0) {
+			if (Integer.parseInt(code) == 0) 
+			{
 				return null;
-			} else {
+			}
+			else
+			{
 				String errorMsg = "<MESSAGE>([\\s\\S]*?)</MESSAGE>";
 				pat = Pattern.compile(errorMsg);
 				mat = pat.matcher(resultStr);
-				if (mat.find()) {
+				if (mat.find())
+				{
 					String msg = mat.group(0).replace("<MESSAGE>", "");
 					msg = msg.replace("</MESSAGE>", "").trim();
 					return msg;

@@ -815,6 +815,13 @@
                     </tr>
                     <tr>
                         <th>
+                            订单使用预存款
+                        </th>
+                        <td>
+                            ${order.totalPrice?string("0.00")}元</td>
+                    </tr>
+                    <tr>
+                        <th>
                             订单总金额
                         </th>
                         <td>
