@@ -54,7 +54,7 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	// String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+//	String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 
 	@Autowired
@@ -1318,11 +1318,15 @@ public class TdCommonService {
 		// CallWMSImpl callWMSImpl = new CallWMSImpl();
 
 		// 抛单给WMS
-		// sendMsgToWMS(orderList, order_temp.getOrderNumber());
+		 sendMsgToWMS(orderList, order_temp.getOrderNumber());
 
 		// 测试线程
-		SendRequisitionToWmsThread thread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
-		thread.start();
+//		SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
+//		if (thread == null)
+//		{
+//			writeErrorLog(order_temp.getOrderNumber(), "线程为空", "线程为空，物流发送失败");
+//		}
+//		requsitThread.start();
 
 	}
 
@@ -1497,6 +1501,7 @@ public class TdCommonService {
 	 * @author mdj
 	 *
 	 */
+	// TODO 多线程
 	class SendRequisitionToWmsThread extends Thread {
 		List<TdOrder> orderList;
 		String mainOrderNumber;
@@ -1535,10 +1540,12 @@ public class TdCommonService {
 		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
 			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
+				System.err.println("MDJWS:Detail:invoke" + mainOrderNumber);
 				try {
 					objects = client.invoke(name, "td_requisition_goods", "1", xmlGoodsEncode);
 				} catch (Exception e) {
 					e.printStackTrace();
+					System.out.println("MDJWMS: " + mainOrderNumber + " 发送失败");
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
 				}
 				String result = "";
@@ -1553,6 +1560,7 @@ public class TdCommonService {
 				}
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
+			System.err.println("MDJWS:Main:invoke" + mainOrderNumber);
 			try {
 				objects = client.invoke(name, "td_requisition", "1", xmlEncode);
 			} catch (Exception e) {
@@ -1580,6 +1588,69 @@ public class TdCommonService {
 			}
 		}
 	}
+	
+	public void sendWmsMst(TdRequisition requisition)
+	{
+		String mainOrderNumber = "";
+		
+		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
+		org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
+		// url为调用webService的wsdl地址
+		QName name = new QName("http://tempuri.org/", "GetErpInfo");
+		// paramvalue为参数值
+		Object[] objects = null;
+		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
+			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
+				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
+				System.err.println("MDJWS:Detail:invoke" + mainOrderNumber);
+				try {
+					objects = client.invoke(name, "td_requisition_goods", "1", xmlGoodsEncode);
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("MDJWMS: " + mainOrderNumber + " 发送失败");
+					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
+				}
+				String result = "";
+				if (objects != null) {
+					for (Object object : objects) {
+						result += object;
+					}
+				}
+				String errorMsg = chectResult1(result);
+				if (errorMsg != null) {
+					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), errorMsg);
+				}
+			}
+			String xmlEncode = XMLMakeAndEncode(requisition, 1);
+			System.err.println("MDJWS:Main:invoke" + mainOrderNumber);
+			try {
+				objects = client.invoke(name, "td_requisition", "1", xmlEncode);
+			} catch (Exception e) {
+				e.printStackTrace();
+				writeErrorLog(mainOrderNumber, "无", e.getMessage());
+				// return "发送异常";
+			}
+			String result = null;
+			if (objects != null) {
+				for (Object object : objects) {
+					result += object;
+				}
+			}
+			String errorMsg = chectResult1(result);
+			if (errorMsg != null) {
+				writeErrorLog(mainOrderNumber, "无", errorMsg);
+			} else {
+				// 根据乐易装的要求，当成功将信息发送至WMS时，保留提示信息
+//				for (TdOrder subOrder : orderList) {
+//					if (null != subOrder) {
+//						subOrder.setRemarkInfo("物流已受理");
+//						tdOrderService.save(subOrder);
+//					}
+//				}
+			}
+		}
+	}
+	
 
 	/**
 	 * 保存要货单
@@ -1875,14 +1946,18 @@ public class TdCommonService {
 	 * @return
 	 */
 
-	private String chectResult1(String resultStr) {
+	public String chectResult1(String resultStr) {
 		// "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
 		// add by Shawn
+		if (!resultStr.contains("<CODE>") || !resultStr.contains("</CODE>") || !resultStr.contains("<MESSAGE>")|| !resultStr.contains("</MESSAGE>")) 
+		{
+			return "返回信息错误！";
+		}
 		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
 		Pattern pat = Pattern.compile(regEx);
 		Matcher mat = pat.matcher(resultStr);
 
-		if (mat.find()) 
+		if (mat.find())
 		{
 			System.out.println("CODE is :" + mat.group(0));
 			String code = mat.group(0).replace("<CODE>", "");
@@ -1898,6 +1973,7 @@ public class TdCommonService {
 				mat = pat.matcher(resultStr);
 				if (mat.find())
 				{
+					System.out.println("ERRORMSG is :" + mat.group(0));
 					String msg = mat.group(0).replace("<MESSAGE>", "");
 					msg = msg.replace("</MESSAGE>", "").trim();
 					return msg;

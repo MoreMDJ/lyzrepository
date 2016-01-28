@@ -818,7 +818,7 @@
                             订单使用预存款
                         </th>
                         <td>
-                            ${order.totalPrice?string("0.00")}元</td>
+                            ${order.cashBalanceUsed?string("0.00") + order.unCashBalanceUsed?string("0.00")}元</td>
                     </tr>
                     <tr>
                         <th>

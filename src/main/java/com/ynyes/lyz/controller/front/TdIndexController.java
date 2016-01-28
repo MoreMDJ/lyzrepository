@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdAd;
@@ -21,6 +22,7 @@ import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdNaviBarItem;
 import com.ynyes.lyz.entity.TdPriceListItem;
+import com.ynyes.lyz.entity.TdRequisition;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdAdService;
@@ -31,6 +33,7 @@ import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdNaviBarItemService;
 import com.ynyes.lyz.service.TdPriceListItemService;
+import com.ynyes.lyz.service.TdRequisitionService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.ClientConstant;
 
@@ -67,7 +70,26 @@ public class TdIndexController {
 
 	@Autowired
 	private TdGoodsService tdGoodsService;
+	
+	@Autowired
+	private TdRequisitionService tdRequisitionService;
 
+	
+	@RequestMapping("/sendRequisition")
+	@ResponseBody
+	public String testmathod(String aString)
+	{
+		String astring= "要货单不存在";
+		TdRequisition requisition = tdRequisitionService.findByOrderNumber(aString);
+		if (requisition != null)
+		{
+			astring = "要货单发送成功";
+			tdCommonService.sendWmsMst(requisition);
+		}
+		
+		return astring;
+	}
+	
 	@RequestMapping
 	public String index(HttpServletRequest req, ModelMap map) {
 		String username = (String) req.getSession().getAttribute("username");

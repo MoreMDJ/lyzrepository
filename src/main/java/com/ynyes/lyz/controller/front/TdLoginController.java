@@ -63,7 +63,7 @@ public class TdLoginController {
 				Date date = user.getLastVisitTime();
 				Date now = new Date();
 				Long tempmin =  now.getTime() - date.getTime();
-				if (tempmin >= 1000 * 60 * 10)
+				if (tempmin >= 1000 * 60 * 1)
 				{
 					return true;
 				}
