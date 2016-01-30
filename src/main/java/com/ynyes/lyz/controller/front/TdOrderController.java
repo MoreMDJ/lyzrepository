@@ -1161,8 +1161,8 @@ public class TdOrderController {
 			user.setUnCashBalance(user.getUnCashBalance() - userUsed);
 			order_temp.setUnCashBalanceUsed(userUsed);
 		} else {
-			user.setUnCashBalance(0.0);
 			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - userUsed);
+			user.setUnCashBalance(0.0);
 			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
 			order_temp.setCashBalanceUsed(userUsed - user.getUnCashBalance());
 		}
