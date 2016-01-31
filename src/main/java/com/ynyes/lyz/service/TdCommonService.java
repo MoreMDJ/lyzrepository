@@ -714,6 +714,7 @@ public class TdCommonService {
 				Long categoryId = goods.getCategoryId();
 				// 获取指定的分类
 				TdProductCategory category = tdProductCategoryService.findOne(categoryId);
+				//获取指定分类的父类
 				if (null != category) {
 					Long parentId = category.getParentId();
 					if (null != parentId) {

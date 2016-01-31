@@ -341,6 +341,8 @@ public class TdOrderController {
 		Long tempHour = hour + delay;
 		if (24 <= tempHour) {
 			tempHour -= 24;
+			limitDate = new Date(now.getTime() + (1000 * 60 * 60 * 24));
+			tempHour = 9L;
 		}
 
 		// 判断能否当天配送

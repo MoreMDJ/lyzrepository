@@ -1360,6 +1360,9 @@ public class TdUserController {
 			if (null != delivery_list && delivery_list.size() > 0) {
 				TdDeliveryInfoDetail detail = delivery_list.get(0);
 				if (null != detail) {
+					//查找配送员的一系列信息
+					TdUser opUser = tdUserService.findByOpUser(detail.getOpUser());
+					map.addAttribute("opUser", opUser);
 					List<TdGeoInfo> geoInfo_list = tdGeoInfoService.findByOpUserOrderByTimeDesc(detail.getOpUser());
 					TdUser tdUser = tdUserService.findByOpUser(detail.getOpUser());
 					if (null != geoInfo_list && geoInfo_list.size() > 0) {

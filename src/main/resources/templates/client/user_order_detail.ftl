@@ -91,6 +91,7 @@
                         </#list>
                     </#if>
                     <li class="li5">支付方式：${order.payTypeTitle!''}<div class="div1">实付款：<p>￥<span><#if order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if></span></p></div></li>
+                    <li class="li5">订单备注：${order.remark!''}</li>
                     <li class="li5">使用现金券：<div class="div1">券金额：<p>￥<span><#if order.cashCoupon??>${order.cashCoupon?string("0.00")}<#else>0.00</#if></span></p></div></li>
                     <li class="li6"><span>使用产品券：</span><div class="div1"><p>${order.productCoupon!''}</p></div></li>
                     <style type="text/css">
@@ -103,7 +104,7 @@
                         .li6 > span {width:30%;float:left;}
                         .li6 > .div1 {width:70%; float:left; color:#666;}
                     </style>
-                
+                    <li class="li5">配送人：<#if opUser??>${opUser.realName!''}</#if><#if opUser??&&opUser.username??>(<a href="tel:${opUser.username!''}"></a>)</#if></li>
                 </ol>   
             </article>
             <!-- 订单详情 END -->
