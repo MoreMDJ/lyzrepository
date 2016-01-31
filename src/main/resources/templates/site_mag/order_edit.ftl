@@ -818,7 +818,9 @@
                             订单使用预存款
                         </th>
                         <td>
-                            ${order.cashBalanceUsed?string("0.00") + order.unCashBalanceUsed?string("0.00")}元</td>
+                         可用预存款：<#if order.cashBalanceUsed??> ${order.cashBalanceUsed?string("0.00")}<#else>0.00</#if>元 | 
+                        不可用预存款：<#if order.unCashBalanceUsed??>${order.unCashBalanceUsed?string("0.00")}<#else>0.00</#if>元
+                            </td>
                     </tr>
                     <tr>
                         <th>

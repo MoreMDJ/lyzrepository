@@ -1,6 +1,7 @@
 package com.ynyes.lyz.controller.front;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,17 +78,18 @@ public class TdIndexController {
 	
 	@RequestMapping("/sendRequisition")
 	@ResponseBody
-	public String testmathod(String aString)
+	public Map<String, String> testmathod(String aString)
 	{
-		String astring= "要货单不存在";
 		TdRequisition requisition = tdRequisitionService.findByOrderNumber(aString);
+		Map<String, String> map = new HashMap<>();
+		map.put("结果", "要货单不存在");
 		if (requisition != null)
 		{
-			astring = "要货单发送成功";
-			tdCommonService.sendWmsMst(requisition);
+			map.put("结果", "要货单发送成功");
+			map = tdCommonService.sendWmsMst(requisition);
 		}
 		
-		return astring;
+		return map;
 	}
 	
 	@RequestMapping

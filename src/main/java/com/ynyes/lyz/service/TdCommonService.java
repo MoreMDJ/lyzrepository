@@ -53,9 +53,15 @@ import com.ynyes.lyz.util.StringUtils;
 
 @Service
 public class TdCommonService {
-
-	String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
-//	String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
+	
+	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+//	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
+	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
+	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
+	static QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
+	
+	@Autowired
+	private TdReturnNoteService tdReturnNoteService;
 
 	@Autowired
 	private TdUserService tdUserService;
@@ -113,9 +119,6 @@ public class TdCommonService {
 
 	@Autowired
 	private TdInterfaceErrorLogService tdInterfaceErrorLogService;
-
-	@Autowired
-	private TdReturnNoteService tdReturnNoteService;
 
 	/**
 	 * 获取登陆用户信息的方法
@@ -711,6 +714,7 @@ public class TdCommonService {
 				Long categoryId = goods.getCategoryId();
 				// 获取指定的分类
 				TdProductCategory category = tdProductCategoryService.findOne(categoryId);
+				//获取指定分类的父类
 				if (null != category) {
 					Long parentId = category.getParentId();
 					if (null != parentId) {
@@ -1317,16 +1321,13 @@ public class TdCommonService {
 
 		// CallWMSImpl callWMSImpl = new CallWMSImpl();
 
+		System.out.println("MDJWS:READY:WMS:" + orderList.get(0).getMainOrderNumber());
 		// 抛单给WMS
-		 sendMsgToWMS(orderList, order_temp.getOrderNumber());
+//		 sendMsgToWMS(orderList, order_temp.getOrderNumber());
 
-		// 测试线程
-//		SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
-//		if (thread == null)
-//		{
-//			writeErrorLog(order_temp.getOrderNumber(), "线程为空", "线程为空，物流发送失败");
-//		}
-//		requsitThread.start();
+		// 子线程 抛单给WMS
+		SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
+		requsitThread.start();
 
 	}
 
@@ -1518,10 +1519,15 @@ public class TdCommonService {
 	}
 
 	// TODO 要货单
-	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {
+	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber)
+	{
+		
 		if (orderList.size() <= 0) {
 			return;
 		}
+		
+		System.out.println("MDJWS:INTER:Order:" + orderList.get(0).getMainOrderNumber());
+		
 		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase("")) {
 			return;
 		}
@@ -1531,10 +1537,10 @@ public class TdCommonService {
 		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
 		String PATH = System.getenv("Path");
 		System.err.println("MDJWS:PATH:" + PATH);
-		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-		org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
+//		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
+//		org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
 		// url为调用webService的wsdl地址
-		QName name = new QName("http://tempuri.org/", "GetErpInfo");
+//		QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
 		Object[] objects = null;
 		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
@@ -1542,7 +1548,7 @@ public class TdCommonService {
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
 				System.err.println("MDJWS:Detail:invoke" + mainOrderNumber);
 				try {
-					objects = client.invoke(name, "td_requisition_goods", "1", xmlGoodsEncode);
+					objects = WMSClient.invoke(WMSName, "td_requisition_goods", "1", xmlGoodsEncode);
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.out.println("MDJWMS: " + mainOrderNumber + " 发送失败");
@@ -1562,7 +1568,7 @@ public class TdCommonService {
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
 			System.err.println("MDJWS:Main:invoke" + mainOrderNumber);
 			try {
-				objects = client.invoke(name, "td_requisition", "1", xmlEncode);
+				objects = WMSClient.invoke(WMSName, "td_requisition", "1", xmlEncode);
 			} catch (Exception e) {
 				e.printStackTrace();
 				writeErrorLog(mainOrderNumber, "无", e.getMessage());
@@ -1589,26 +1595,22 @@ public class TdCommonService {
 		}
 	}
 	
-	public void sendWmsMst(TdRequisition requisition)
+	public Map<String, String> sendWmsMst(TdRequisition requisition)
 	{
 		String mainOrderNumber = "";
 		
-		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-		org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
-		// url为调用webService的wsdl地址
-		QName name = new QName("http://tempuri.org/", "GetErpInfo");
-		// paramvalue为参数值
+		Map<String, String> map = new HashMap<>();
 		Object[] objects = null;
 		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
 			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
 				System.err.println("MDJWS:Detail:invoke" + mainOrderNumber);
 				try {
-					objects = client.invoke(name, "td_requisition_goods", "1", xmlGoodsEncode);
+					objects = WMSClient.invoke(WMSName, "td_requisition_goods", "1", xmlGoodsEncode);
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.out.println("MDJWMS: " + mainOrderNumber + " 发送失败");
-					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
+					map.put(requisitionGoods.getGoodsCode(),requisitionGoods.getOrderNumber() +	requisitionGoods.getSubOrderNumber() + "失败");
 				}
 				String result = "";
 				if (objects != null) {
@@ -1618,17 +1620,20 @@ public class TdCommonService {
 				}
 				String errorMsg = chectResult1(result);
 				if (errorMsg != null) {
-					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), errorMsg);
+					map.put(requisitionGoods.getGoodsCode(),requisitionGoods.getOrderNumber() + requisitionGoods.getSubOrderNumber() + "失败-code:" + errorMsg);
+				}
+				else
+				{
+					map.put(requisitionGoods.getGoodsCode(),requisitionGoods.getOrderNumber() + requisitionGoods.getSubOrderNumber() + "成功");
 				}
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
 			System.err.println("MDJWS:Main:invoke" + mainOrderNumber);
 			try {
-				objects = client.invoke(name, "td_requisition", "1", xmlEncode);
+				objects = WMSClient.invoke(WMSName, "td_requisition", "1", xmlEncode);
 			} catch (Exception e) {
 				e.printStackTrace();
-				writeErrorLog(mainOrderNumber, "无", e.getMessage());
-				// return "发送异常";
+				map.put(requisition.getOrderNumber(),"失败");
 			}
 			String result = null;
 			if (objects != null) {
@@ -1638,17 +1643,12 @@ public class TdCommonService {
 			}
 			String errorMsg = chectResult1(result);
 			if (errorMsg != null) {
-				writeErrorLog(mainOrderNumber, "无", errorMsg);
+				map.put(requisition.getOrderNumber(),"失败:" + errorMsg);
 			} else {
-				// 根据乐易装的要求，当成功将信息发送至WMS时，保留提示信息
-//				for (TdOrder subOrder : orderList) {
-//					if (null != subOrder) {
-//						subOrder.setRemarkInfo("物流已受理");
-//						tdOrderService.save(subOrder);
-//					}
-//				}
+				map.put(requisition.getOrderNumber(),"成功");
 			}
 		}
+		return map;
 	}
 	
 
@@ -1757,6 +1757,7 @@ public class TdCommonService {
 			requisition.setRequisiteGoodsList(requisitionGoodsList);
 			requisition = tdRequisitionService.save(requisition);
 		}
+		System.out.println("MDJ:WS:Requisition:" + requisition.getOrderNumber());
 		return requisition;
 	}
 
@@ -1992,16 +1993,16 @@ public class TdCommonService {
 		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
 		String PATH = System.getenv("Path");
 		System.err.println("MDJWS:PATH:" + PATH);
-		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-		org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
+//		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
+//		org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
 		// url为调用webService的wsdl地址
-		QName name = new QName("http://tempuri.org/", "GetErpInfo");
+//		QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
 		Object[] objects = null;
 
 		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);
 		try {
-			objects = client.invoke(name, "td_return_note", "1", xmlGoodsEncode);
+			objects = WMSClient.invoke(WMSName, "td_return_note", "1", xmlGoodsEncode);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

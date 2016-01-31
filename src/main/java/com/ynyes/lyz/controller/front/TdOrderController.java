@@ -341,6 +341,8 @@ public class TdOrderController {
 		Long tempHour = hour + delay;
 		if (24 <= tempHour) {
 			tempHour -= 24;
+			limitDate = new Date(now.getTime() + (1000 * 60 * 60 * 24));
+			tempHour = 9L;
 		}
 
 		// 判断能否当天配送
@@ -1161,8 +1163,8 @@ public class TdOrderController {
 			user.setUnCashBalance(user.getUnCashBalance() - userUsed);
 			order_temp.setUnCashBalanceUsed(userUsed);
 		} else {
-			user.setUnCashBalance(0.0);
 			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - userUsed);
+			user.setUnCashBalance(0.0);
 			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
 			order_temp.setCashBalanceUsed(userUsed - user.getUnCashBalance());
 		}
