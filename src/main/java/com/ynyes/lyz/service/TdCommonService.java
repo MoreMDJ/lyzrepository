@@ -54,8 +54,8 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 	
-	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
-//	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
+//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
 	static QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
@@ -2019,6 +2019,43 @@ public class TdCommonService {
 		if (errorMsg != null) {
 			writeErrorLog(note.getOrderNumber(), "退货单", errorMsg);
 		}
+	}
+	public Map<String, String> testSendBackMsgToWMS(TdReturnNote note) 
+	{
+		Map<String, String> map = new HashMap<>();
+		map.put("result", "失败");
+		if (null == note) 
+		{
+			return null;
+		}
+		Object[] objects = null;
+
+		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);
+		try {
+			objects = WMSClient.invoke(WMSName, "td_return_note", "1", xmlGoodsEncode);
+		} catch (Exception e) {
+			e.printStackTrace();
+			map.put(note.getOrderNumber() + "：errorMSG", "发送失败");
+		}
+		String result = "";
+		if (objects != null)
+		{
+			for (Object object : objects)
+			{
+				result += object;
+			}
+		}
+		String errorMsg = chectResult1(result);
+
+		if (errorMsg != null) {
+			map.put(note.getOrderNumber() + "：errorMSG", errorMsg);
+		}
+		else {
+			map.put(note.getOrderNumber() + "：MSG", "成功");
+		}
+		
+		map.put("result", "成功");
+		return map;
 	}
 
 }

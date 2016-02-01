@@ -24,6 +24,7 @@ import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdNaviBarItem;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdRequisition;
+import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdAdService;
@@ -35,6 +36,7 @@ import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdNaviBarItemService;
 import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdRequisitionService;
+import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.ClientConstant;
 
@@ -74,6 +76,9 @@ public class TdIndexController {
 	
 	@Autowired
 	private TdRequisitionService tdRequisitionService;
+	
+	@Autowired
+	private TdReturnNoteService tdReturnNoteService;
 
 	
 	@RequestMapping("/sendRequisition")
@@ -89,6 +94,21 @@ public class TdIndexController {
 			map = tdCommonService.sendWmsMst(requisition);
 		}
 		
+		return map;
+	}
+	
+	@RequestMapping("/tempBack")
+	@ResponseBody
+	public Map<String, String> tempBack(String number)
+	{
+		Map<String, String> map = new HashMap<>();
+		List<TdReturnNote> returnNotes = tdReturnNoteService.findByOrderNumberContaining(number);
+		if (returnNotes != null && returnNotes.size() >= 1)
+		{
+			for (TdReturnNote tdReturnNote : returnNotes) {
+				map = tdCommonService.testSendBackMsgToWMS(tdReturnNote);
+			}
+		}
 		return map;
 	}
 	

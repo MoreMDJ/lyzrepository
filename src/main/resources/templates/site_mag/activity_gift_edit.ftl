@@ -242,11 +242,11 @@ function del_goods_gift(obj) {
                             <#list activity_gift.giftList as gift>
                                 <tr class="td_c">
                                     <td>
-                                        <input name="giftList[${gift_index}].id" type="hidden" value="${gift.id!''}">
+                                        <input name="giftList[${gift_index}].id" type="hidden" value="${gift.id?c}">
                                         <input name="giftList[${gift_index}].coverImageUri" type="hidden" value="${gift.coverImageUri!''}">
                                         <input type="text" name="giftList[${gift_index}].sortId" class="td-input" value="${gift.sortId!''}" style="width:90%;">
                                     </td>
-                                    <td><input type="text" id="id" name="giftList[${gift_index}].goodsId" class="td-input" value="${gift.goodsId!''}" style="width:90%;"></td>
+                                    <td><input type="text" id="id" name="giftList[${gift_index}].goodsId" class="td-input" value="${gift.goodsId?c}" style="width:90%;"></td>
                                     <td>
                                         <input type="text" id="title" name="giftList[${gift_index}].goodsTitle" class="td-input" value="${gift.goodsTitle!''}" style="width:90%;">
                                     </td>

@@ -3,6 +3,7 @@ package com.ynyes.lyz.service;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.regexp.REUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -75,6 +76,15 @@ public class TdReturnNoteService {
 	 */
 	public List<TdReturnNote> findAll(Iterable<Long> ids) {
 		return (List<TdReturnNote>) repository.findAll(ids);
+	}
+	
+	public List<TdReturnNote> findByOrderNumberContaining(String orderNumber)
+	{
+		if (orderNumber == null)
+		{
+			return null;
+		}
+		return repository.findByOrderNumberContaining(orderNumber);
 	}
 
 	// zhangji 修改用户名所用
