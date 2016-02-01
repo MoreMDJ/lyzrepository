@@ -129,13 +129,13 @@ public class TdOrderController {
 		// 如果session中没有虚拟订单，则通过方法生成一个
 		if (null == order_temp) {
 			order_temp = tdCommonService.createVirtual(req);
-			return "redirect:/";
 		}
 
 		// 判断此单是否拥有商品
 		List<TdOrderGoods> goodsList = order_temp.getOrderGoodsList();
 		if (null == goodsList || !(goodsList.size() > 0)) {
 			tdOrderService.delete(order_temp);
+			return "redirect:/";
 		}
 
 		order_temp = tdPriceCouintService.checkCouponIsUsed(order_temp);
