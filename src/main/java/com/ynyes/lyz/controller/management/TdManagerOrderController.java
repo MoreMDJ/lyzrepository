@@ -320,7 +320,7 @@ public class TdManagerOrderController {
 					else if (statusId == 1)
 					{
 						map.remove("own_page");
-						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsEnableOrderByIdDesc(diyCode, false, page, size));
+						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsEnableOrderByIdDesc(diyCode, true, page, size));
 					}
 				}
 			}

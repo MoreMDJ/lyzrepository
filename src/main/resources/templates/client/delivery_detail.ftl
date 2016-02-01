@@ -150,7 +150,7 @@ function submitOwnMoney()
 	}
 	
 	$.ajax({ 
-		url: "/delivery/submitOwnMoney/1", 
+		url: "/delivery/submitOwnMoney/<#if td_order??>${td_order.id}<#else>0</#if>",
 		type: "post",
 		dataType: "json",
 		data: {"payed": payed, "owned": owned},
