@@ -107,14 +107,14 @@ public class TdOrderController {
 	@RequestMapping
 	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id) {
 		String username = (String) req.getSession().getAttribute("username");
-		
+
 		// 参数由调用函数检查
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
-		
+
 		if (null == user) {
 			return "redirect:/login";
 		}
-		
+
 		map.addAttribute("user", user);
 
 		TdOrder order_temp = null;
@@ -129,10 +129,16 @@ public class TdOrderController {
 		// 如果session中没有虚拟订单，则通过方法生成一个
 		if (null == order_temp) {
 			order_temp = tdCommonService.createVirtual(req);
+			return "redirect:/";
+		}
+
+		// 判断此单是否拥有商品
+		List<TdOrderGoods> goodsList = order_temp.getOrderGoodsList();
+		if (null == goodsList || !(goodsList.size() > 0)) {
+			tdOrderService.delete(order_temp);
 		}
 
 		order_temp = tdPriceCouintService.checkCouponIsUsed(order_temp);
-		
 
 		// 计算价格和最大优惠券使用金额
 		Map<String, Object> results = tdPriceCouintService.countPrice(order_temp, user);
@@ -159,7 +165,7 @@ public class TdOrderController {
 			}
 
 		}
-		
+
 		// 获取已选的所有品牌的id
 		List<Long> brandIds = tdCommonService.getBrandId(user.getId(), order_temp);
 
@@ -270,15 +276,14 @@ public class TdOrderController {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
-		
-		if (null != order)
-		{
+
+		if (null != order) {
 			order.setRemark(remark);
 			tdOrderService.save(order);
 		}
-		
+
 		req.getSession().setAttribute("order_temp", order);
-		
+
 		res.put("status", 0);
 		return res;
 	}
@@ -1026,11 +1031,10 @@ public class TdOrderController {
 		// 获取虚拟订单
 		System.err.println("开始获取虚拟订单");
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
-		
+
 		// add by Shawn
 		// 解决内存溢出的bug
-		if (null == order_temp)
-		{
+		if (null == order_temp) {
 			res.put("message", "未找到虚拟订单");
 			return res;
 		}
