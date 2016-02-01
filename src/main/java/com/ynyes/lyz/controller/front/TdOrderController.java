@@ -340,6 +340,7 @@ public class TdOrderController {
 
 		Long tempHour = hour + delay;
 		if (24 <= tempHour) {
+			limitDate = new Date(now.getTime() + (1000 * 60 * 60 * 24));
 			tempHour -= 24;
 		}
 
