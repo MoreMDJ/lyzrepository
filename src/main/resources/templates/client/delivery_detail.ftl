@@ -150,7 +150,7 @@ function submitOwnMoney()
 	}
 	
 	$.ajax({ 
-		url: "/delivery/submitOwnMoney/<#if td_order??>${td_order.id}<#else>0</#if>",
+		url: "/delivery/submitOwnMoney/<#if td_order??>${td_order.id?c}<#else>0</#if>",
 		type: "post",
 		dataType: "json",
 		data: {"payed": payed, "owned": owned},
@@ -207,7 +207,7 @@ function submitOwnMoney()
     <#include "/client/common_wait.ftl">   
       <header>
         <a class="back" href="/delivery/order"></a>
-        <p>详情产看</p>
+        <p>详情查看</p>
       </header>
       <!-- 头部 END -->
 

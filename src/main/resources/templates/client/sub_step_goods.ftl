@@ -1,3 +1,4 @@
+<#if some_goods??>
 <#list some_goods as goods>
     <#if goods??>
         <dl>
@@ -45,3 +46,4 @@
     </#if>
     <div class="index_test_box"></div>
 </#list>
+</#if>
