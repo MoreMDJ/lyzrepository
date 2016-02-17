@@ -30,10 +30,11 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	
 	Page<TdOrder> findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(String orderNumbers,String username,Pageable page);
 	
-	
 	Page<TdOrder> findByStatusIdOrderByIdDesc(Long statusId, Pageable page);
 
 	Page<TdOrder> findByUsernameOrderByIdDesc(String username, Pageable page);
+	
+	List<TdOrder> findByOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(Date begin,Date end);
 	
 	
 	

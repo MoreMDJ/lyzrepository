@@ -1,12 +1,26 @@
 package com.ynyes.lyz.controller.management;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.neo4j.cypher.internal.compiler.v2_1.commands.indexQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +32,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.mysql.fabric.xmlrpc.base.Data;
+import com.ynyes.lyz.entity.TdDeliveryInfo;
+import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
@@ -27,8 +44,11 @@ import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdShippingAddress;
+import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
+import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
+import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDeliveryTypeService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
@@ -110,6 +130,300 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdOwnMoneyRecordService tdOwnMoneyRecordService;
+	
+	@Autowired
+	private TdDeliveryInfoService tdDeliveryInfoService;
+	
+	@Autowired
+	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
+	
+	@RequestMapping(value = "/downdata",method = RequestMethod.GET)
+	@ResponseBody
+	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response)
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date1 = null;
+		Date date2 = null;
+		if(null !=begindata && !begindata.equals(""))
+		{
+			try {
+				date1 = sdf.parse(begindata);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		if(null !=enddata && !enddata.equals(""))
+		{
+			try {
+				date2 = sdf.parse(enddata);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		if (date2 == null)
+		{
+			date2 = new Date();
+		}
+		
+		// 第一步，创建一个webbook，对应一个Excel文件 
+        HSSFWorkbook wb = new HSSFWorkbook();  
+        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
+        HSSFSheet sheet = wb.createSheet("订单详情");  
+        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
+        HSSFRow row = sheet.createRow((int) 0); 
+        //列宽
+        sheet.setColumnWidth((short) 0 , 8*256);
+        sheet.setColumnWidth((short) 1 , 13*256);
+        sheet.setColumnWidth((short) 2 , 25*256);
+        sheet.setColumnWidth((short) 3 , 25*256);
+        sheet.setColumnWidth((short) 4 , 18*256);
+        sheet.setColumnWidth((short) 5 , 11*256);
+        sheet.setColumnWidth((short) 6 , 13*256);
+        sheet.setColumnWidth((short) 7 , 11*256);
+        sheet.setColumnWidth((short) 8 , 19*256);
+        sheet.setColumnWidth((short) 9 , 12*256);
+        sheet.setColumnWidth((short) 10 , 9*256);
+        sheet.setColumnWidth((short) 11 , 13*256);
+        sheet.setColumnWidth((short) 12 , 13*256);
+        sheet.setColumnWidth((short) 13 , 13*256);
+        sheet.setColumnWidth((short) 14 , 40*256);
+        sheet.setColumnWidth((short) 15 , 40*256);
+        
+        // 第四步，创建单元格，并设置值表头 设置表头居中  
+        HSSFCellStyle style = wb.createCellStyle();  
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
+        style.setWrapText(true);
+    	//门店、门店电话、单据、日期、预存款使用金额、代收款金额、实际代收款金额、欠款、配送人员、配送人电话、收货人、收货人电话、备注信息
+        HSSFCell cell = row.createCell((short) 0);  
+        cell.setCellValue("门店名称");
+        cell.setCellStyle(style);
+        
+        cell = row.createCell((short) 1);
+        cell.setCellValue("门店电话");  
+        cell.setCellStyle(style);  
+        cell = row.createCell((short) 2);  
+        cell.setCellValue("主单号");  
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 3);  
+        cell.setCellValue("分单号");  
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 4);  
+        cell.setCellValue("订单日期");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 5);  
+        cell.setCellValue("可提现金额");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 6);  
+        cell.setCellValue("不可体现金额");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 7);  
+        cell.setCellValue("代收款金额");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 8);  
+        cell.setCellValue("实际代收款金额");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 9);  
+        cell.setCellValue("欠款");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 10);  
+        cell.setCellValue("配送人员");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 11);  
+        cell.setCellValue("配送人电话");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 12);  
+        cell.setCellValue("收货人");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 13);  
+        cell.setCellValue("收货人电话");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 14);  
+        cell.setCellValue("收货人地址");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 15);  
+        cell.setCellValue("备注信息");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 16);
+        cell.setCellValue("现金卷额度");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 17);
+        cell.setCellValue("订单状态");
+        cell.setCellStyle(style);
+        // 第五步，设置值  
+        
+        List<TdOrder> orders = tdOrderService.findByBeginAndEndOrderByOrderTimeDesc(date1, date2);
+        Integer i = 0;
+        for (TdOrder tdOrder : orders)
+        {
+        	row = sheet.createRow((int) i + 1);
+        	if (null != tdOrder.getDiySiteName())
+        	{
+            	row.createCell((short) 0).setCellValue(tdOrder.getDiySiteName());
+    		}
+        	if (null != tdOrder.getDiySitePhone())
+        	{
+            	row.createCell((short) 1).setCellValue(tdOrder.getDiySitePhone());
+    		}
+        	if (null != tdOrder.getMainOrderNumber())
+        	{
+            	row.createCell((short) 2).setCellValue(tdOrder.getMainOrderNumber());
+    		}
+        	if (null != tdOrder.getOrderNumber())
+        	{
+            	row.createCell((short) 3).setCellValue(tdOrder.getOrderNumber());
+    		}
+        	if (null != tdOrder.getOrderTime())
+        	{
+        		Date orderTime = tdOrder.getOrderTime();
+        		String orderTimeStr = orderTime.toString();
+            	row.createCell((short) 4).setCellValue(orderTimeStr);
+    		}
+        	if (null != tdOrder.getCashBalanceUsed())
+        	{
+            	row.createCell((short) 5).setCellValue(tdOrder.getCashBalanceUsed());
+    		}
+        	if (null != tdOrder.getUnCashBalanceUsed())
+        	{
+            	row.createCell((short) 6).setCellValue(tdOrder.getUnCashBalanceUsed());
+    		}
+        	List<TdOwnMoneyRecord> records = tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(tdOrder.getOrderNumber());
+        	
+        	if (null != records && records.size() > 0)
+        	{
+            	row.createCell((short) 7).setCellValue((records.get(0).getPayed() == null ? 0 : records.get(0).getPayed()) + (records.get(0).getOwned()== null ? 0 : records.get(0).getOwned()));
+    		}
+        	if (null != records && records.size() > 0 && records.get(0).getPayed() != null)
+        	{
+            	row.createCell((short) 8).setCellValue(records.get(0).getPayed());
+    		}
+        	if (null != records && records.size() > 0 && records.get(0).getOwned() != null)
+        	{
+            	row.createCell((short) 9).setCellValue(records.get(0).getOwned());
+    		}
+        	
+        	List<TdDeliveryInfo> deliveryInfo = null;
+         	List<TdDeliveryInfoDetail> infoDetails = tdDeliveryInfoDetailService.findBySubOrderNumber(tdOrder.getOrderNumber());
+        	if (infoDetails != null && infoDetails.size() > 0) 
+        	{
+        	 	deliveryInfo = tdDeliveryInfoService.findDistinctTaskNoByTaskNo(infoDetails.get(0).getTaskNo());
+			}
+         	TdUser user = null;
+        	if (null != deliveryInfo && deliveryInfo.size() > 0)
+        	{
+        		String driver = deliveryInfo.get(0).getDriver();
+        		if (driver != null)
+        		{
+					user = tdUserService.findByOpUser(driver);
+				}
+            	
+    		}
+        	if (user != null)
+			{
+        		row.createCell((short) 10).setCellValue(user.getRealName());
+			}
+        	if (null != user)
+        	{
+            	row.createCell((short) 11).setCellValue(user.getUsername());
+    		}
+        	if (null != tdOrder.getShippingName())
+        	{
+            	row.createCell((short) 12).setCellValue(tdOrder.getShippingName());
+    		}
+        	if (null != tdOrder.getShippingPhone())
+        	{
+            	row.createCell((short) 13).setCellValue(tdOrder.getShippingPhone());
+    		}
+        	if (null != tdOrder.getShippingAddress())
+        	{
+            	row.createCell((short) 14).setCellValue(tdOrder.getShippingAddress());
+    		}
+        	if (null != tdOrder.getRemark())
+        	{
+            	row.createCell((short) 15).setCellValue(tdOrder.getRemark());
+    		}
+        	if (null != tdOrder.getCashCoupon())
+        	{
+				row.createCell((short) 16).setCellValue(tdOrder.getCashCoupon());
+			}
+        	if (null != tdOrder.getStatusId())
+        	{
+        		String statusStr = orderStatus(tdOrder.getStatusId());
+				row.createCell((short) 17).setCellValue(statusStr);
+			}
+        	
+        	i++;
+		}
+        
+        String exportAllUrl = SiteMagConstant.backupPath;
+        download(wb, exportAllUrl, response);
+        return "";
+	}
+	private String orderStatus(Long status)
+	{
+		// 订单状态 1:待审核 2:待付款 3:待出库 4:待签收 5: 待评价 6: 已完成 7: 已取消 8:用户删除 9:退货中 10：退货确认
+		// 11：退货取消 12 : 退货完成
+		Integer integerStatus = status.intValue();
+		switch (integerStatus) {
+			case 1:
+				return "待审核";
+			case 2:
+				return "待付款";
+			case 3:
+				return "待出库";
+			case 4:
+				return "待签收";
+			case 5:
+				return "待评价";
+			case 6:
+				return "已完成";
+			case 7:
+				return "已取消";
+			case 8:
+				return "用户删除";
+			case 9:
+				return "退货中";
+			case 10:
+				return "退货确认";
+			case 11:
+				return "退货取消";
+			case 12:
+				return "退货完成";
+				
+			default:
+				return "未知";
+		}
+	}
+	 /**
+	 * @author lc
+	 * @注释：下载
+	 */
+	public Boolean download(HSSFWorkbook wb, String exportUrl, HttpServletResponse resp){
+		try
+		{
+			OutputStream os;
+			try {
+				os = resp.getOutputStream();
+				try {
+					resp.reset();
+					resp.setHeader("Content-Disposition", "attachment; filename=" + "table.xls");
+					resp.setContentType("application/octet-stream; charset=utf-8");
+					wb.write(os);
+					os.flush();
+				}
+				finally {
+					if (os != null) {
+						os.close();
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}catch (Exception e)  
+		{  
+			e.printStackTrace();  
+		} 
+		return true;	
+	}
 
 	// 城市选择
 	@RequestMapping(value = "/city", method = RequestMethod.POST)

@@ -289,7 +289,7 @@ public class CallWMSImpl implements ICallWMS {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss SSS");
 				if (c_begin_dt != null)
 				{
-					try 
+					try
 					{
 						Date startdate = sdf.parse(c_begin_dt);
 						tdDeliveryInfo.setBeginDt(startdate);

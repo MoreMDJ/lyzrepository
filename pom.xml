@@ -222,6 +222,11 @@
             <artifactId>xercesImpl</artifactId>
             <version>2.9.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.3.1</version>
+        </dependency>
         <!-- end MDJ -->
         <dependency>
             <groupId>org.testng</groupId>

@@ -7,6 +7,7 @@
 <script type="text/javascript" src="/mag/js/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="/mag/js/lhgdialog.js"></script>
 <script type="text/javascript" src="/mag/js/layout.js"></script>
+<script type="text/javascript" src="/mag/js/WdatePicker.js"></script>
 <link href="/mag/style/pagination.css" rel="stylesheet" type="text/css">
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
 </head>
@@ -29,6 +30,26 @@ function __doPostBack(eventTarget, eventArgument) {
         theForm.__EVENTARGUMENT.value = eventArgument;
         theForm.submit();
     }
+}
+function downloaddate()
+{
+    var begain = $("#begain").val();
+    var end = $("#end").val();
+    location.href="/Verwalter/order/downdata?begindata="+ begain + "&enddata=" + end;
+    return; 
+    $.ajax({
+     type: "GET",
+     url: "/Verwalter/order/downdata",
+     data: {"begindata":begain, "enddata":end},
+     dataType: "json",
+     success: function(data){
+      alert("成功");
+      },
+     error:function(data){
+     alert(data);
+     }
+    });
+    
 }
 </script>
     <!--导航栏-->
@@ -81,6 +102,11 @@ function __doPostBack(eventTarget, eventArgument) {
                 </ul>
             </div>
             <div class="r-list">
+                开始时间
+                <input id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                结束时间
+                <input id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                <a style="color:black;" href="javascript:downloaddate();">下载</a>
                 <input name="keywords" type="text" class="keyword">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
             </div>

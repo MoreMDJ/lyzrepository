@@ -165,6 +165,15 @@ public class TdOrderService {
 		return repository.findByUsernameAndStatusIdNotOrderByIdDesc(username, StatusId, pageRequest);
 		// return repository.findByUsernameOrderByIdDesc(username, pageRequest);
 	}
+	
+	/**
+	 * 根据时间查找
+	 * @return
+	 */
+	public List<TdOrder> findByBeginAndEndOrderByOrderTimeDesc(Date begin,Date end)
+	{
+		return repository.findByOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(begin, end);
+	}
 
 	// zhangji
 	public Page<TdOrder> findByUsernameAndStatusIdOrUsernameAndStatusIdOrUsernameAndStatusIdOrderByIdDesc(

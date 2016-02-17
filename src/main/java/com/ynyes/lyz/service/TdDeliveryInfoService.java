@@ -86,6 +86,14 @@ public class TdDeliveryInfoService {
 		}
 		return repository.findByTaskNo(taskNo);
 	}
+    public List<TdDeliveryInfo> findDistinctTaskNoByTaskNo(String taskNo)
+    {
+    	if (taskNo == null)
+    	{
+			return null;
+		}
+    	return repository.findDistinctTaskNoByTaskNo(taskNo);
+    }
     
     public List<TdDeliveryInfo> findByOpUser(String opUser)
     {
