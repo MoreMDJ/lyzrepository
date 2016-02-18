@@ -40,6 +40,7 @@ import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceList;
@@ -137,10 +138,212 @@ public class TdManagerOrderController {
 	@Autowired
 	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
 	
+	
+	@RequestMapping(value = "/downdatagoods")
+	@ResponseBody
+	public String downdatagoods(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response)
+	{
+		String username = (String) req.getSession().getAttribute("manager");
+		if (null == username)
+		{
+			return "redirect:/Verwalter/login";
+		}
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (tdManager != null && tdManager.getRoleId() != null)
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		if (tdManagerRole == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date1 = null;
+		Date date2 = null;
+		if(null !=begindata && !begindata.equals(""))
+		{
+			try {
+				date1 = sdf.parse(begindata);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		if(null !=enddata && !enddata.equals(""))
+		{
+			try {
+				date2 = sdf.parse(enddata);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		if (date2 == null)
+		{
+			date2 = new Date();
+		}
+		
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		HSSFCellStyle style = workbook.createCellStyle();
+		style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		style.setWrapText(true);
+		
+		HSSFSheet sheet = workbook.createSheet("销售明细表");
+		HSSFRow row = sheet.createRow(0);
+		HSSFCell cell = row.createCell(0);
+		cell.setCellValue("门店名称");
+		cell.setCellStyle(style);
+		cell = row.createCell(1);
+		cell.setCellValue("主单号");
+		cell.setCellStyle(style);
+		cell = row.createCell(2);
+		cell.setCellValue("分单号");
+		cell.setCellStyle(style);
+		cell = row.createCell(3);
+		cell.setCellValue("下单时间");
+		cell.setCellStyle(style);
+		cell = row.createCell(4);
+		cell.setCellValue("订单状态");
+		cell.setCellStyle(style);
+		cell = row.createCell(5);
+		cell.setCellValue("会员电话");
+		cell.setCellStyle(style);
+		cell = row.createCell(6);
+		cell.setCellValue("客户名称");
+		cell.setCellStyle(style);
+		cell = row.createCell(7);
+		cell.setCellValue("产品编号");
+		cell.setCellStyle(style);
+		cell = row.createCell(8);
+		cell.setCellValue("产品名称");
+		cell.setCellStyle(style);
+		cell = row.createCell(9);
+		cell.setCellValue("数量");
+		cell.setCellStyle(style);
+		cell = row.createCell(10);
+		cell.setCellValue("单价");
+		cell.setCellStyle(style);
+		cell = row.createCell(11);
+		cell.setCellValue("使用可提现金额");
+		cell.setCellStyle(style);
+		cell = row.createCell(12);
+		cell.setCellValue("使用不可体现金额");
+		cell.setCellStyle(style);
+		cell = row.createCell(13);
+		cell.setCellValue("备注");
+		cell.setCellStyle(style);
+		
+		List<TdOrder> orderList = null;
+		if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
+		{
+			orderList = tdOrderService.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(tdManager.getDiyCode(),date1,date2);
+		}
+        else
+        {
+        	orderList = tdOrderService.findByBeginAndEndOrderByOrderTimeDesc(date1, date2);
+        }
+		
+		if (orderList != null)
+		{
+			Integer i = 1;
+			for (TdOrder tdOrder : orderList) {
+				if(null != tdOrder.getOrderGoodsList())
+				{
+					for (TdOrderGoods og : tdOrder.getOrderGoodsList())
+					{
+						row = sheet.createRow(i);
+						if (tdOrder.getDiySiteName() != null)
+						{
+							row.createCell(0).setCellValue(tdOrder.getDiySiteName());
+						}
+						if (tdOrder.getMainOrderNumber() != null)
+						{
+							row.createCell(1).setCellValue(tdOrder.getMainOrderNumber());
+						}
+						if (tdOrder.getOrderNumber() != null)
+						{
+							row.createCell(2).setCellValue(tdOrder.getOrderNumber());
+						}
+						if (tdOrder.getOrderTime() != null)
+						{
+							row.createCell(3).setCellValue(tdOrder.getOrderTime().toString());
+						}
+						if (tdOrder.getStatusId() != null)
+						{
+							row.createCell(4).setCellValue(orderStatus(tdOrder.getStatusId()));
+						}
+						if (tdOrder.getUsername() != null)
+						{
+							row.createCell(5).setCellValue(tdOrder.getUsername());
+						}
+						if (tdOrder.getShippingName() != null)
+						{
+							row.createCell(6).setCellValue(tdOrder.getShippingName());
+						}
+						if (og.getSku() != null)
+						{
+							row.createCell(7).setCellValue(og.getSku());
+						}
+						if (og.getGoodsTitle() != null)
+						{
+							row.createCell(8).setCellValue(og.getGoodsTitle());
+						}
+						if (og.getQuantity() != null)
+						{
+							row.createCell(9).setCellValue(og.getQuantity());
+						}
+						if (og.getPrice() != null)
+						{
+							row.createCell(10).setCellValue(og.getPrice());
+						}
+						if (null != tdOrder.getCashBalanceUsed())
+			        	{
+			            	row.createCell(11).setCellValue(tdOrder.getCashBalanceUsed());
+			    		}
+			        	if (null != tdOrder.getUnCashBalanceUsed())
+			        	{
+			            	row.createCell(12).setCellValue(tdOrder.getUnCashBalanceUsed());
+			    		}
+						if (tdOrder.getRemark() != null)
+						{
+							row.createCell(13).setCellValue(tdOrder.getRemark());
+						}
+						
+						i++;
+						System.out.println(i);
+					}
+				}
+			}
+		}
+		
+		download(workbook, "1", response);
+		return "";
+	}
+	
+	/*
+	 * 代收款报表
+	 */
 	@RequestMapping(value = "/downdata",method = RequestMethod.GET)
 	@ResponseBody
 	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response)
 	{
+		
+		String username = (String) req.getSession().getAttribute("manager");
+		if (null == username) {
+			return "redirect:/Verwalter/login";
+		}
+		
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		if (tdManagerRole == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date1 = null;
 		Date date2 = null;
@@ -168,9 +371,8 @@ public class TdManagerOrderController {
 		// 第一步，创建一个webbook，对应一个Excel文件 
         HSSFWorkbook wb = new HSSFWorkbook();  
         // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
-        HSSFSheet sheet = wb.createSheet("订单详情");  
+        HSSFSheet sheet = wb.createSheet("代收款报表");  
         // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
-        HSSFRow row = sheet.createRow((int) 0); 
         //列宽
         sheet.setColumnWidth((short) 0 , 8*256);
         sheet.setColumnWidth((short) 1 , 13*256);
@@ -194,10 +396,10 @@ public class TdManagerOrderController {
         style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
         style.setWrapText(true);
     	//门店、门店电话、单据、日期、预存款使用金额、代收款金额、实际代收款金额、欠款、配送人员、配送人电话、收货人、收货人电话、备注信息
+        HSSFRow row = sheet.createRow((int) 0); 
         HSSFCell cell = row.createCell((short) 0);  
         cell.setCellValue("门店名称");
         cell.setCellStyle(style);
-        
         cell = row.createCell((short) 1);
         cell.setCellValue("门店电话");  
         cell.setCellStyle(style);  
@@ -249,9 +451,22 @@ public class TdManagerOrderController {
         cell = row.createCell((short) 17);
         cell.setCellValue("订单状态");
         cell.setCellStyle(style);
+        cell = row.createCell((short) 18);
+        cell.setCellValue("仓库名称");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 19);
+        cell.setCellValue("订单总金额");
+        cell.setCellStyle(style);
         // 第五步，设置值  
-        
-        List<TdOrder> orders = tdOrderService.findByBeginAndEndOrderByOrderTimeDesc(date1, date2);
+        List<TdOrder> orders = null;
+        if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
+		{
+        	orders = tdOrderService.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(tdManager.getDiyCode(),date1,date2);
+		}
+        else
+        {
+        	orders = tdOrderService.findByBeginAndEndOrderByOrderTimeDesc(date1, date2);
+        }
         Integer i = 0;
         for (TdOrder tdOrder : orders)
         {
@@ -317,6 +532,10 @@ public class TdManagerOrderController {
 				}
             	
     		}
+        	if (deliveryInfo != null && deliveryInfo.size() > 0)
+        	{
+        		row.createCell((short) 18).setCellValue(changeName(deliveryInfo.get(0).getWhNo()));
+			}
         	if (user != null)
 			{
         		row.createCell((short) 10).setCellValue(user.getRealName());
@@ -350,6 +569,10 @@ public class TdManagerOrderController {
         		String statusStr = orderStatus(tdOrder.getStatusId());
 				row.createCell((short) 17).setCellValue(statusStr);
 			}
+        	if (null != tdOrder.getTotalPrice())
+        	{
+				row.createCell((short)19).setCellValue(tdOrder.getTotalPrice());
+			}
         	
         	i++;
 		}
@@ -357,6 +580,47 @@ public class TdManagerOrderController {
         String exportAllUrl = SiteMagConstant.backupPath;
         download(wb, exportAllUrl, response);
         return "";
+	}
+	private String changeName(String name)
+	{
+//		郑州公司	11	总仓
+//		天荣中转仓	1101	分仓
+//		五龙口中转仓	1102	分仓
+//		东大中转仓	1103	分仓
+//		百姓中转仓	1104	分仓
+//		主仓库	1105	分仓
+		if (name == null || name.equalsIgnoreCase(""))
+		{
+			return "未知";
+		}
+		if (name.equalsIgnoreCase("11"))
+		{
+			return "郑州公司";
+		}
+		else if (name.equalsIgnoreCase("1101"))
+		{
+			return "天荣中转仓";
+		}
+		else if (name.equalsIgnoreCase("1102"))
+		{
+			return "五龙口中转仓";
+		}
+		else if (name.equalsIgnoreCase("1103"))
+		{
+			return "东大中转仓";
+		}
+		else if (name.equalsIgnoreCase("1104"))
+		{
+			return "百姓中转仓";
+		}
+		else if (name.equalsIgnoreCase("1105"))
+		{
+			return "主仓库";
+		}
+		else
+		{
+			return "未知编号：" + name;
+		}
 	}
 	private String orderStatus(Long status)
 	{

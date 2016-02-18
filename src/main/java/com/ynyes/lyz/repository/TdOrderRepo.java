@@ -6,9 +6,12 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.ynyes.lyz.entity.TdOrder;
+
+import groovy.time.BaseDuration.From;
 
 /**
  * TdOrder 实体数据库操作接口
@@ -36,6 +39,10 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	
 	List<TdOrder> findByOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(Date begin,Date end);
 	
+	List<TdOrder> findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String diyCode,Date begin,Date end);
+	
+//	@Query("select g from TdOrder o join o.orderGoodsList og where o.statusId = ?1 order by orderTime desc")
+	List<TdOrder> findByStatusIdOrderByOrderTimeDesc(Long statusid);
 	
 	
 	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);

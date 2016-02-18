@@ -286,7 +286,7 @@ public class CallWMSImpl implements ICallWMS {
 				tdDeliveryInfo.setWhNo(c_wh_no);
 				tdDeliveryInfo.setDriver(c_Driver);
 				
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss SSS");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				if (c_begin_dt != null)
 				{
 					try

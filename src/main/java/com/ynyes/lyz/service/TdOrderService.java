@@ -174,6 +174,11 @@ public class TdOrderService {
 	{
 		return repository.findByOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(begin, end);
 	}
+	
+	public List<TdOrder> findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String diyCode,Date begin,Date end)
+	{
+		return repository.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(diyCode,begin,end);
+	}
 
 	// zhangji
 	public Page<TdOrder> findByUsernameAndStatusIdOrUsernameAndStatusIdOrUsernameAndStatusIdOrderByIdDesc(
@@ -460,5 +465,14 @@ public class TdOrderService {
 			return null;
 		}
 		return repository.findByMainOrderNumberIgnoreCase(mainOrderNumber);
+	}
+	
+	public List<TdOrder> findByStatusIdOrderByOrderTimeDesc(Long statusId)
+	{
+		if(null == statusId)
+		{
+			return null;
+		}
+		return repository.findByStatusIdOrderByOrderTimeDesc(statusId);
 	}
 }

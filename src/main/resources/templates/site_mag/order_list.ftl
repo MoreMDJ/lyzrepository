@@ -31,11 +31,27 @@ function __doPostBack(eventTarget, eventArgument) {
         theForm.submit();
     }
 }
-function downloaddate()
+function downloaddate(type)
 {
     var begain = $("#begain").val();
     var end = $("#end").val();
+    if(begain == "")
+    {
+        alert("请选择开始时间！");
+        return;
+    }
+    if(type == 0)
+    {
     location.href="/Verwalter/order/downdata?begindata="+ begain + "&enddata=" + end;
+    }
+    else if (type == 1)
+    {
+    location.href="/Verwalter/order/downdatagoods?begindata="+ begain + "&enddata=" + end;
+    }
+    else
+    {
+    return;
+    }
     return; 
     $.ajax({
      type: "GET",
@@ -106,7 +122,8 @@ function downloaddate()
                 <input id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                 结束时间
                 <input id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
-                <a style="color:black;" href="javascript:downloaddate();">下载</a>
+                <a style="color:black;" href="javascript:downloaddate(0);">代收款报表下载</a>
+                <a style="color:black;" href="javascript:downloaddate(1);">销售明细表下载</a>
                 <input name="keywords" type="text" class="keyword">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
             </div>
