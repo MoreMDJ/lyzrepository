@@ -1321,7 +1321,7 @@ public class TdCommonService {
 
 		// CallWMSImpl callWMSImpl = new CallWMSImpl();
 
-		System.out.println("MDJWS:READY:WMS:" + orderList.get(0).getMainOrderNumber());
+//		System.out.println("MDJWS:READY:WMS:" + orderList.get(0).getMainOrderNumber());
 		// 抛单给WMS
 //		 sendMsgToWMS(orderList, order_temp.getOrderNumber());
 
