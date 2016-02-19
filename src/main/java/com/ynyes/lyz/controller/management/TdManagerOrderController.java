@@ -457,6 +457,12 @@ public class TdManagerOrderController {
         cell = row.createCell((short) 19);
         cell.setCellValue("订单总金额");
         cell.setCellStyle(style);
+        cell = row.createCell((short) 20);
+        cell.setCellValue("预约配送时间");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 21);
+        cell.setCellValue("实际配送时间");
+        cell.setCellStyle(style);
         // 第五步，设置值  
         List<TdOrder> orders = null;
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
@@ -572,6 +578,16 @@ public class TdManagerOrderController {
         	if (null != tdOrder.getTotalPrice())
         	{
 				row.createCell((short)19).setCellValue(tdOrder.getTotalPrice());
+			}
+        	if (null != tdOrder.getDeliveryDate()) 
+        	{
+        		String dayTime = tdOrder.getDeliveryDate();
+    			dayTime = dayTime + " " + tdOrder.getDeliveryDetailId() + ":30";
+				row.createCell(20).setCellValue(dayTime);
+			}
+        	if (null != tdOrder.getDeliveryTime()) 
+        	{
+				row.createCell(21).setCellValue(tdOrder.getDeliveryTime().toString());
 			}
         	
         	i++;
