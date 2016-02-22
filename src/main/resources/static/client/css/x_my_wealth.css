@@ -188,9 +188,10 @@
 }
 .tab-content li section div.div2 {
 	position: absolute;
-	left: 38px;
+	left: 15px;
 	top: 20px;
 	color: #fea710;
+	font-size: 12px;
 }
 .tab-content li section div.div2 span {
 	font-size: 3em;

@@ -136,14 +136,14 @@
     <dl>
       <dt>所属城市</dt>
       <dd>
-        <input type="text" id="txtItemZengPin_Price" class="input normal"> 元
-        <span class="Validform_checktip">*</span>
+        <input type="text" id="txtItemZengPin_Price" class="input normal">
+        <span class="Validform_checktip"></span>
       </dd>
     </dl>
     <dl>
       <dt>描述</dt>
       <dd>
-        <input type="text" id="txtItemZengPin_CurrentPrice" class="input normal"> 件
+        <input type="text" id="txtItemZengPin_CurrentPrice" class="input normal"> 
         <span class="Validform_checktip"></span>
       </dd>
     </dl>

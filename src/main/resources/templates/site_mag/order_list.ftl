@@ -124,7 +124,7 @@ function downloaddate(type)
                 <input id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                 <a style="color:black;" href="javascript:downloaddate(0);">代收款报表下载</a>
                 <a style="color:black;" href="javascript:downloaddate(1);">销售明细表下载</a>
-                <input name="keywords" type="text" class="keyword">
+                <#--<span>订单号：</span>--><input name="keywords" type="text" class="keyword">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
             </div>
         </div>

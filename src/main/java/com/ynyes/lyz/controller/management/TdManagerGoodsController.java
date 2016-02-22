@@ -618,16 +618,25 @@ public class TdManagerGoodsController {
 
 		Page<TdGoods> goodsPage = null;
 
-		if (null == categoryId) {
-			if (null == keywords || "".equalsIgnoreCase(keywords)) {
+		if (null == categoryId)
+		{
+			if (null == keywords || "".equalsIgnoreCase(keywords)) 
+			{
 				goodsPage = tdGoodsService.findAllOrderBySortIdAsc(page, size);
-			} else {
+			}
+			else
+			{
 				goodsPage = tdGoodsService.searchAndOrderBySortIdAsc(keywords, page, size);
 			}
-		} else {
-			if (null == keywords || "".equalsIgnoreCase(keywords)) {
+		}
+		else
+		{
+			if (null == keywords || "".equalsIgnoreCase(keywords)) 
+			{
 				goodsPage = tdGoodsService.findByCategoryIdTreeContainingOrderBySortIdAsc(categoryId, page, size);
-			} else {
+			}
+			else
+			{
 				goodsPage = tdGoodsService.searchAndFindByCategoryIdOrderBySortIdAsc(keywords, categoryId, page, size);
 			}
 		}

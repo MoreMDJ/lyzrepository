@@ -232,6 +232,15 @@ public class TdManagerOrderController {
 		cell = row.createCell(13);
 		cell.setCellValue("备注");
 		cell.setCellStyle(style);
+		cell = row.createCell(14);
+		cell.setCellValue("中转仓");
+		cell.setCellStyle(style);
+		cell = row.createCell(15);
+		cell.setCellValue("配送人员");
+		cell.setCellStyle(style);
+		cell = row.createCell(16);
+		cell.setCellValue("配送人员电话");
+		cell.setCellStyle(style);
 		
 		List<TdOrder> orderList = null;
 		if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
@@ -309,8 +318,35 @@ public class TdManagerOrderController {
 							row.createCell(13).setCellValue(tdOrder.getRemark());
 						}
 						
+						List<TdDeliveryInfo> deliveryInfo = null;
+			         	List<TdDeliveryInfoDetail> infoDetails = tdDeliveryInfoDetailService.findBySubOrderNumber(tdOrder.getOrderNumber());
+			        	if (infoDetails != null && infoDetails.size() > 0) 
+			        	{
+			        	 	deliveryInfo = tdDeliveryInfoService.findDistinctTaskNoByTaskNo(infoDetails.get(0).getTaskNo());
+						}
+						TdUser user = null;
+			        	if (null != deliveryInfo && deliveryInfo.size() > 0)
+			        	{
+			        		String driver = deliveryInfo.get(0).getDriver();
+			        		if (driver != null)
+			        		{
+								user = tdUserService.findByOpUser(driver);
+							}
+			    		}
+			        	if (deliveryInfo != null && deliveryInfo.size() > 0)
+			        	{
+			        		row.createCell(14).setCellValue(changeName(deliveryInfo.get(0).getWhNo()));
+						}
+			        	if (user != null)
+						{
+			        		row.createCell(15).setCellValue(user.getRealName());
+						}
+			        	if (null != user)
+			        	{
+			            	row.createCell(16).setCellValue(user.getUsername());
+			    		}
+						
 						i++;
-						System.out.println(i);
 					}
 				}
 			}
@@ -446,7 +482,7 @@ public class TdManagerOrderController {
         cell.setCellValue("备注信息");
         cell.setCellStyle(style);
         cell = row.createCell((short) 16);
-        cell.setCellValue("现金卷额度");
+        cell.setCellValue("现金券额度");
         cell.setCellStyle(style);
         cell = row.createCell((short) 17);
         cell.setCellValue("订单状态");
