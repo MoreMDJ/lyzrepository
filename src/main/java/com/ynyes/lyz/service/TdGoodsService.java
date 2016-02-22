@@ -268,8 +268,8 @@ public class TdGoodsService {
 		String catIdStr = "[" + categoryId + "]";
 
 		return repository
-				.findByCategoryIdTreeContainingAndTitleContainingOrCategoryIdTreeContainingAndSubTitleContainingOrCategoryIdTreeContainingAndDetailContainingOrderBySortIdAsc(
-						catIdStr, keywords, catIdStr, keywords, catIdStr, keywords, pageRequest);
+				.findByCategoryIdTreeContainingAndTitleContainingOrCategoryIdTreeContainingAndSubTitleContainingOrCategoryIdTreeContainingAndDetailContainingOrCategoryIdTreeContainingAndCodeContainingOrderBySortIdAsc(
+						catIdStr, keywords, catIdStr, keywords, catIdStr, keywords,catIdStr,keywords,pageRequest);
 	}
 
 	// 搜索特定类别的上架商品并按序号排序

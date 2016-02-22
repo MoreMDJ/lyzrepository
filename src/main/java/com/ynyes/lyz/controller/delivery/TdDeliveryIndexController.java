@@ -427,6 +427,15 @@ public class TdDeliveryIndexController {
 				
 				map.addAttribute("sub_order_list", orderList);
 			}
+			if (null != order && null != order.getOrderNumber())
+			{
+				List<TdOwnMoneyRecord> records = tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(order.getOrderNumber());
+				if (records != null && records.size() > 0)
+				{
+					TdOwnMoneyRecord record = records.get(0);
+					map.addAttribute("ownrecord",record);
+				}
+			}
 			map.addAttribute("td_order", order);
 		}
 
