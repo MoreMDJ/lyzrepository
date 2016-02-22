@@ -669,7 +669,7 @@ public class TdOrderController {
 					res.put("message", "未找到指定优惠券的信息");
 					return res;
 				}
-				if ((permits[1] + coupon.getPrice()) > permits[0]) {
+				if (permits[1] < permits[0]) {
 					if (0.00 == permits[0].doubleValue()) {
 						res.put("message", "本单不能使用" + brand.getTitle() + "公司<br>的优惠券");
 					} else {

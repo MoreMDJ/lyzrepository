@@ -378,7 +378,7 @@
 	-webkit-box-sizing: border-box;
 					box-sizing: border-box;
 }
-.btn-send-code {
+#btn-send-code {
 	float: right;
 	padding: 0 5px;
 	margin-top: 5px;
@@ -386,8 +386,9 @@
 	height: 30px;
 	line-height: 30px;
 	font-size: 0.9em;
-	color: #cc1421;
-	border: 1px solid #cc1421;
+	border-style:solid;
+	border-width:1px;
+	background:#fff;
 	border-radius: 3px;
 	-webkit-box-sizing: border-box;
 					box-sizing: border-box;

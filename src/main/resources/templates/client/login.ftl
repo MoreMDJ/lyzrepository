@@ -79,7 +79,7 @@
                     <dt><input type="text" name="username" ng-model="user.username" ng-pattern="/^1\d{10}$/" placeholder="手机号码" ng-required="true" /></dt>
                     <dt><input type="password" name="password" ng-model="user.password" ng-minlength="6" placeholder="用户密码" ng-maxlength="20"  ng-required="true"/></dt>
                     <dd><input type="submit" ng-class="{'valid':loginForm.$valid,'invalid':loginForm.$invalid}" ng-disabled="loginForm.$invalid" value="登陆" /></dd>
-                    <dd><a>忘记密码</a><span></span></dd>
+                    <dd><a href="/return/password">忘记密码</a><span></span></dd>
                     <dd><a href="/regist">注册</a></dd>
                 </dl>                       
             </form>
