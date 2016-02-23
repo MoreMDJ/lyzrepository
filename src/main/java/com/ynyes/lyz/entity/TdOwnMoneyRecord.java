@@ -61,6 +61,19 @@ public class TdOwnMoneyRecord {
     // 门店编码
     @Column
     private String diyCode;
+    
+    // 是否审核 0:不同过，1：通过
+    @Column
+    private Boolean ispassed;
+    
+
+	public Boolean getIspassed() {
+		return ispassed;
+	}
+
+	public void setIspassed(Boolean ispassed) {
+		this.ispassed = ispassed;
+	}
 
 	public String getDiyCode() {
 		return diyCode;

@@ -486,6 +486,14 @@ public class TdManagerActivityCotroller
 		return "/site_mag/dialog_diysite_list";
 	}
 	
+	@RequestMapping(value = "/diysite/list",method = RequestMethod.POST)
+	public String showDiysiteList(Long regionId,ModelMap map)
+	{
+		Page<TdDiySite> diySitePage = TdDiySiteService.findByCityIdAndIsEnableTrueOrderBySortIdAsc(regionId, 0, 100000);
+		map.addAttribute("diysite_list", diySitePage.getContent());
+		return "/site_mag/activity_diysite_list_Detail";
+	}
+	
 	@RequestMapping(value = "/check/name" , method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, String> checkName(String param)

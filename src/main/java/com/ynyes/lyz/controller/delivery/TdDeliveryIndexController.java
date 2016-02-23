@@ -748,8 +748,8 @@ public class TdDeliveryIndexController {
 					if (null != recList && recList.size() > 0) {
 						continue;
 					}
-			
-					subOrder.setActualPay(payed);
+					
+					subOrder.setActualPay(subOrder.getActualPay() + payed);
 					subOrder = tdOrderService.save(subOrder);
 			
 					TdOwnMoneyRecord rec = new TdOwnMoneyRecord();

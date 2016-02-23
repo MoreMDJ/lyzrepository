@@ -32,6 +32,17 @@ $(function () {
         allowFileManager: true
     });
     
+    //根据城市选择门店
+    $("#cityId").change(function(){
+        $.ajax({
+            url : '/Verwalter/activity/diysite/list?regionId='+$(this).val(),
+            type : 'POST',
+            success : function(res) {
+                $("#id-param-sec").html(res);
+            }
+        });
+    });
+    
     //初始化上传控件
     $(".upload-img").each(function () {
         $(this).InitSWFUpload({ 
@@ -341,7 +352,7 @@ function del_goods_comb(obj) {
                         </#if>
                         <#if city_list??> 
                             <#list city_list as c>
-                                <option value="${c.id!""}" <#if activity?? && activity.cityId==c.id>selected="selected"</#if>>${c.cityName!''}</option>
+                                <option value="${c.id?c}" <#if activity?? && activity.cityId==c.id>selected="selected"</#if>>${c.cityName!''}</option>
                             </#list>
                         </#if>
                     </select>
@@ -384,6 +395,11 @@ function del_goods_comb(obj) {
                 <span class="Validform_checktip"></span>
             </dd>
         </dl>
+        <div id="id-param-sec">
+            <#if goods??>
+                <#include "/site_mag/goods_category_param_list.ftl" />
+            </#if>
+        </div>
         <dl>
             <dt>门店</dt>
             <dd>

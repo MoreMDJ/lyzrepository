@@ -956,6 +956,13 @@ public class TdManagerOrderController {
 					btnEnale(listChkId);
 				}
 			}
+			else if (__EVENTTARGET.equalsIgnoreCase("btnNotEnable")) 
+			{
+				if (null != listChkId)
+				{
+					btnNotEnale(listChkId);
+				}
+			}
 			else if (__EVENTTARGET.equalsIgnoreCase("payLeft")) 
 			{
 				if (null != payLeft)
@@ -1647,6 +1654,24 @@ public class TdManagerOrderController {
 				if (ownMoneyRecord != null)
 				{
 					ownMoneyRecord.setIsEnable(true);
+					ownMoneyRecord.setIspassed(true);
+					tdOwnMoneyRecordService.save(ownMoneyRecord);
+				}
+			}
+		}
+	}
+	private void btnNotEnale(Long[] chkIds) {
+		if ( null == chkIds || chkIds.length < 1) {
+			return;
+		}
+
+		for (Long chkId : chkIds) {
+			if (chkId >= 0) {
+				TdOwnMoneyRecord ownMoneyRecord = tdOwnMoneyRecordService.findOne(chkId);
+				if (ownMoneyRecord != null)
+				{
+					ownMoneyRecord.setIsEnable(true);
+					ownMoneyRecord.setIspassed(false);
 					tdOwnMoneyRecordService.save(ownMoneyRecord);
 				}
 			}
