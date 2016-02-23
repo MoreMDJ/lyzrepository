@@ -669,12 +669,14 @@ public class TdOrderController {
 					res.put("message", "未找到指定优惠券的信息");
 					return res;
 				}
-				if (permits[1] < permits[0]) {
-					if (0.00 == permits[0].doubleValue()) {
-						res.put("message", "本单不能使用" + brand.getTitle() + "公司<br>的优惠券");
-					} else {
-						res.put("message", "您所能使用的" + brand.getTitle() + "公司<br>的优惠券最大限额为" + permits[1] + "元");
-					}
+				// 第一种情况，不能使用优惠券（限额为0）
+				if (0.00 == permits[0].doubleValue()) {
+					res.put("message", "本单不能使用" + brand.getTitle() + "公司<br>的优惠券");
+					return res;
+				}
+				// 第二种情况，不能使用优惠券（使用额已经大于限额）
+				if (permits[1] > permits[0]) {
+					res.put("message", "您所能使用的" + brand.getTitle() + "公司<br>的优惠券最大限额为" + permits[0] + "元");
 					return res;
 				} else {
 					// 创建一个布尔变量用于判断该张券是否在当前订单使用过，以应对网络条件不好的情况下，同一张券在一张订单中多次使用的情况
@@ -1088,6 +1090,7 @@ public class TdOrderController {
 								TdCoupon coupon = tdCouponService.findOne(id);
 								if (null != coupon) {
 									coupon.setIsUsed(true);
+									coupon.setUseTime(new Date());
 									tdCouponService.save(coupon);
 								}
 							}
@@ -1104,6 +1107,7 @@ public class TdOrderController {
 								TdCoupon coupon = tdCouponService.findOne(id);
 								if (null != coupon) {
 									coupon.setIsUsed(true);
+									coupon.setUseTime(new Date());
 									tdCouponService.save(coupon);
 								}
 							}
@@ -1123,6 +1127,7 @@ public class TdOrderController {
 							TdCoupon coupon = tdCouponService.findOne(id);
 							if (null != coupon) {
 								coupon.setIsUsed(true);
+								coupon.setUseTime(new Date());
 								tdCouponService.save(coupon);
 							}
 						}
@@ -1139,6 +1144,7 @@ public class TdOrderController {
 							TdCoupon coupon = tdCouponService.findOne(id);
 							if (null != coupon) {
 								coupon.setIsUsed(true);
+								coupon.setUseTime(new Date());
 								tdCouponService.save(coupon);
 							}
 						}

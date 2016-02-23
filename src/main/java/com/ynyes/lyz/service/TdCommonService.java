@@ -1216,8 +1216,8 @@ public class TdCommonService {
 													}
 													order.setTotalPrice(order.getTotalPrice() - price);
 													order.setProductCoupon(
-															order.getProductCoupon() + (orderGoods.getGoodsTitle() + "["
-																	+ orderGoods.getSku() + "]*1,"));
+															order.getProductCoupon() + (orderGoods.getGoodsTitle() + "【"
+																	+ orderGoods.getSku() + "】*1,"));
 												}
 											}
 										}

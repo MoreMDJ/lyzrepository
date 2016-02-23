@@ -40,7 +40,7 @@
                 <ul class="title-1">
                     <li class="active"><a>未使用(<span><#if no_product_unused_list??>${no_product_unused_list?size}<#else>0</#if></span>)</a></li>
                     <li><a>已过期(<span><#if no_product_out_date_list??>${no_product_out_date_list?size}<#else>0</#if></span>)</a></li>
-                    <li><a>已使用(<span><#if no_product_out_date_list??>${no_product_out_date_list?size}<#else>0</#if></span>)</a></li>
+                    <li><a>已使用(<span><#if no_product_used_list??>${no_product_used_list?size}<#else>0</#if></span>)</a></li>
                 </ul>
                 <ul class="tab-content" style="display:block;">
                     <!-- 未使用 -->
