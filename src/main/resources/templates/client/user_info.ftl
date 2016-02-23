@@ -51,16 +51,25 @@
                 <div class="message">
                     <label>头像</label>
                     <div class="editable-info">
-                        <a href="javascript:;">
+                        <a href="javascript:;" style="background:none">
                             <img width="60" height="60" class="head-pic" src="${user.headImageUri!''}" alt="头像">
                         </a>
                     </div>
                 </div>
             </section>
-            <!-- 用户名 -->
+            <!-- 姓名 -->
             <section class="common-info">
                 <div class="messagebox">
-                    <label>用户名</label>
+                    <label>姓名</label>
+                    <div class="editable-info no-icon-next">
+                        <span>${user.realName!''}</span>
+                    </div>
+                </div>
+            </section>
+            <!-- 用户名（手机） -->
+            <section class="common-info">
+                <div class="messagebox">
+                    <label>手机</label>
                     <div class="editable-info no-icon-next">
                         <span>${user.username!''}</span>
                     </div>

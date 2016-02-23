@@ -28,6 +28,7 @@ import com.ynyes.lyz.entity.TdBalanceLog;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
+import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDistrict;
 import com.ynyes.lyz.entity.TdDiySite;
@@ -54,6 +55,7 @@ import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
+import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGeoInfoService;
@@ -157,6 +159,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdPriceCountService tdPriceCountService;
+
+	@Autowired
+	private TdDeliveryInfoService tdDeliveryInfoService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -944,6 +949,7 @@ public class TdUserController {
 		if (null != site && (site.getStatus() == 2)) {
 			map.addAttribute("isSelected", false);
 		}
+		
 		// 获取用户所在城市的所有行政区划
 		TdCity city = tdCityService.findBySobIdCity(user.getCityId());
 		List<TdDistrict> district_list = tdDistrictService.findByCityIdOrderBySortIdAsc(city.getId());
@@ -1358,17 +1364,21 @@ public class TdUserController {
 			String orderNumber = order.getOrderNumber();
 			List<TdDeliveryInfoDetail> delivery_list = tdDeliveryInfoDetailService.findBySubOrderNumber(orderNumber);
 			if (null != delivery_list && delivery_list.size() > 0) {
-				TdDeliveryInfoDetail detail = delivery_list.get(0);
-				if (null != detail) {
-					//查找配送员的一系列信息
-					TdUser opUser = tdUserService.findByOpUser(detail.getOpUser());
-					map.addAttribute("opUser", opUser);
-					List<TdGeoInfo> geoInfo_list = tdGeoInfoService.findByOpUserOrderByTimeDesc(detail.getOpUser());
-					TdUser tdUser = tdUserService.findByOpUser(detail.getOpUser());
-					if (null != geoInfo_list && geoInfo_list.size() > 0) {
-						TdGeoInfo geoInfo = geoInfo_list.get(0);
-						map.addAttribute("geoInfo", geoInfo);
-						map.addAttribute("tdUser", tdUser);
+				List<TdDeliveryInfo> deliveryInfo = tdDeliveryInfoService
+						.findDistinctTaskNoByTaskNo(delivery_list.get(0).getTaskNo());
+				if (null != deliveryInfo && deliveryInfo.size() > 0) {
+					TdDeliveryInfo info = deliveryInfo.get(0);
+					if (null != info) {
+						// 查找配送员的一系列信息
+						TdUser opUser = tdUserService.findByOpUser(info.getDriver());
+						map.addAttribute("opUser", opUser);
+						List<TdGeoInfo> geoInfo_list = tdGeoInfoService.findByOpUserOrderByTimeDesc(info.getDriver());
+						TdUser tdUser = tdUserService.findByOpUser(info.getDriver());
+						if (null != geoInfo_list && geoInfo_list.size() > 0) {
+							TdGeoInfo geoInfo = geoInfo_list.get(0);
+							map.addAttribute("geoInfo", geoInfo);
+							map.addAttribute("tdUser", tdUser);
+						}
 					}
 				}
 			}

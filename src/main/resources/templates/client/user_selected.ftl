@@ -24,7 +24,7 @@
         <header>
             <a class="back" href="javascript:history.go(-1);"></a>
             <p>我的已选</p>
-            <a class="btn-edit">编辑</a>
+            <a id="info" class="btn-edit">编辑</a>
         </header>
         <!-- 头部 END -->
         

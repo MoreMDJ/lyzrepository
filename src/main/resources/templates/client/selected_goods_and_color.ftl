@@ -89,9 +89,11 @@ $(function touch(){
         
         $bEdit.click(function(){
             if(onOff){
+            	$("#info").html("完成");
                 $move.addClass("selected");
                 $bSpace.css("right","0px");       
             }else{
+            	$("#info").html("编辑");
                 $move.removeClass("selected");
                 $bSpace.css("right","-80px");
             }

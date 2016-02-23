@@ -9,8 +9,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 
-import scala.annotation.meta.param;
-
 /**
  * TdOwnMoneyRecord 实体数据库操作接口
  * 
