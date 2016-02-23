@@ -111,7 +111,12 @@ var theForm = document.forms['form1'];
                         <b class="answer" title="待审批">待审批</b>
                     </#if>
                     <#if !consult.isEnable?? || consult.isEnable==true>
-                        <b class="answer" title="已审批">已审批</b>
+                        <#if !consult.ispassed?? ||consult.ispassed == true>
+                        <b class="answer" title="已审批">审批通过</b>
+                        </#if>
+                        <#if !consult.ispassed?? ||consult.ispassed == false>
+                        <b class="answer" title="已审批">审批未通过</b>
+                        </#if>
                     </#if>
                     <#if !consult.isPayed?? || consult.isPayed==false>
                         <b class="answer" title="未还清">未还清</b>

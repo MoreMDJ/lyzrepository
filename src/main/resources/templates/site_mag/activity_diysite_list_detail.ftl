@@ -17,12 +17,12 @@ $(function () {
 </script>
 <#if diysite_list?? && diysite_list?size gt 0>
 <dl>
-    <dt>所属产品</dt>
+    <dt>门店</dt>
     <dd>
-        <div class="rule-multi-radio">
+        <div class="rule-multi-checkbox">
             <span>
                 <#list diysite_list as product>
-                    <input type="radio" class="productIdRadio" name="productId" value="${product.id!""}" datatype="*0-255" <#if goods?? && goods.productId?? && goods.productId==product.id>checked="checked"</#if>>
+                    <input type="checkbox" class="productIdRadio" name="diySiteIds" value="${product.id!""}" datatype="*" <#if activity?? && activity.diySiteIds?? && activity.diySiteIds?contains(product.id?c)>checked="checked"</#if>>
                     <label>${product.title!""}</label>
                 </#list>
             </span>

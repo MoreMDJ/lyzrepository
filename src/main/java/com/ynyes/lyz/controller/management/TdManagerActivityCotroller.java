@@ -1,5 +1,6 @@
 package com.ynyes.lyz.controller.management;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +18,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteList;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdGoodsCombination;
 import com.ynyes.lyz.entity.TdGoodsGift;
 import com.ynyes.lyz.service.TdActivityGiftService;
 import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdCityService;
+import com.ynyes.lyz.service.TdDiySiteListService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -53,6 +56,9 @@ public class TdManagerActivityCotroller
 	
 	@Autowired
 	private TdGoodsService tdGoodsService;
+	
+	@Autowired
+	private TdDiySiteListService tdDiySiteListService;
 	
 	@RequestMapping("/list")
 	public String activityList(Integer page, Integer size, Long categoryId,String saleType, String property, String __EVENTTARGET,
@@ -162,6 +168,8 @@ public class TdManagerActivityCotroller
 			{
 				map.addAttribute("activity", tActivity);
 				map.addAttribute("city_list", tdCityService.findAll());
+				Page<TdDiySite> diySitePage = TdDiySiteService.findByCityIdAndIsEnableTrueOrderBySortIdAsc(tActivity.getCityId(), 0, 100000);
+				map.addAttribute("diysite_list", diySitePage.getContent());
 			}
 		}
 
@@ -173,7 +181,7 @@ public class TdManagerActivityCotroller
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(TdActivity  tdActivity, String[] hid_photo_name_show360, String __EVENTTARGET, String __EVENTARGUMENT,
+	public String save(TdActivity  tdActivity, Long[] diySiteIds, String __EVENTTARGET, String __EVENTARGUMENT,
 			String __VIEWSTATE, String menuId, String channelId, ModelMap map, Boolean isRecommendIndex,
 			Boolean isRecommendType, Boolean isHot, Boolean isNew, Boolean isSpecialPrice, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -185,6 +193,23 @@ public class TdManagerActivityCotroller
 		String type = null;
 		String goodsAndNumber = "";
 		String giftAndNumber = "";
+		
+		if (diySiteIds != null)
+		{
+			List<TdDiySiteList> siteLists = new ArrayList();
+			for (Long id : diySiteIds)
+			{
+				TdDiySiteList siteList = new TdDiySiteList();
+				TdDiySite diySite = TdDiySiteService.findOne(id);
+				siteList.setSiteId(id.toString());
+				siteList.setTitle(diySite.getTitle());
+//				siteList.setCity(tdCityService.findBySobIdCity(diySite.getCityId()).getCityName());
+				siteList.setInfo(diySite.getInfo());
+				tdDiySiteListService.save(siteList);
+				siteLists.add(siteList);
+			}
+			tdActivity.setSiteList(siteLists);
+		}
 		List<TdGoodsCombination> comb_List = tdActivity.getCombList();
 		for (TdGoodsCombination tdGoodsCombination : comb_List)
 		{

@@ -396,11 +396,11 @@ function del_goods_comb(obj) {
             </dd>
         </dl>
         <div id="id-param-sec">
-            <#if goods??>
-                <#include "/site_mag/goods_category_param_list.ftl" />
+            <#if diysite_list??>
+                <#include "/site_mag/activity_diysite_list_detail.ftl" />
             </#if>
         </div>
-        <dl>
+        <#--<dl>
             <dt>门店</dt>
             <dd>
                 <a id="addDiySite" class="icon-btn add"><i></i><span>添加门店</span></a>
@@ -457,7 +457,7 @@ function del_goods_comb(obj) {
                     </tbody>
                 </table>
             </dd>
-        </dl>
+        </dl>-->
         <dl>
             <dt>活动商品</dt>
             <dd>
@@ -501,7 +501,7 @@ function del_goods_comb(obj) {
                                         <input name="combList[${comb_index}].coverImageUri" type="hidden" value="${comb.coverImageUri!''}">
                                         <input type="text" name="combList[${comb_index}].sortId" class="td-input" value="${comb.sortId!''}" style="width:90%;">
                                     </td>
-                                    <td><input type="text" id="id" name="combList[${comb_index}].goodsId" class="td-input" value="${comb.goodsId!''}" style="width:90%;"></td>
+                                    <td><input type="text" id="id" name="combList[${comb_index}].goodsId" class="td-input" value="${comb.goodsId?c}" style="width:90%;"></td>
                                     <td>
                                         <input type="text" id="title" name="combList[${comb_index}].goodsTitle" class="td-input" value="${comb.goodsTitle!''}" style="width:90%;">
                                     </td>
@@ -566,7 +566,7 @@ function del_goods_comb(obj) {
                                         <input name="giftList[${item_index}].coverImageUri" type="hidden" value="${item.coverImageUri!''}">
                                         <input type="text" name="giftList[${item_index}].sortId" class="td-input" value="${item.sortId!''}" style="width:90%;">
                                     </td>
-                                    <td><input type="text" id="id" name="giftList[${item_index}].goodsId" class="td-input" value="${item.goodsId!''}" style="width:90%;"></td>
+                                    <td><input type="text" id="id" name="giftList[${item_index}].goodsId" class="td-input" value="${item.goodsId?c}" style="width:90%;"></td>
                                     <td>
                                         <input type="text" id="title" name="giftList[${item_index}].goodsTitle" class="td-input" value="${item.goodsTitle!''}" style="width:90%;">
                                     </td>
