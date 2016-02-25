@@ -595,13 +595,6 @@ public class TdCommonService {
 			Long quantity = activity.getBuyNumber();
 			// 判断是否满足条件
 			if (null != group.get(categoryId) && group.get(categoryId) >= quantity) {
-				// 定义一个Long值表示赠送的倍数
-				Long mutipul = 1L;
-
-				mutipul = group.get(categoryId) / quantity;
-
-				// 消减数量
-				group.put(categoryId, group.get(categoryId) - (quantity * categoryId));
 
 				// 添加小辅料赠品
 				List<TdActivityGiftList> giftList = activity.getGiftList();
@@ -613,7 +606,7 @@ public class TdCommonService {
 						goods.setBrandId(tdGoods.getBrandId());
 						goods.setBrandTitle(tdGoods.getBrandTitle());
 						goods.setPrice(0.00);
-						goods.setQuantity(gift.getNumber() * mutipul);
+						goods.setQuantity(gift.getNumber());
 						goods.setGoodsTitle(tdGoods.getTitle());
 						goods.setGoodsSubTitle(tdGoods.getSubTitle());
 						goods.setGoodsId(tdGoods.getId());
