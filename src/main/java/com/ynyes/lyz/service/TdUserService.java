@@ -98,8 +98,11 @@ public class TdUserService {
 			return null;
 		}
 		TdUser user  = repository.findByUsernameAndIsEnableTrue(username);
-		user.setLastVisitTime(new Date());
-		repository.save(user);
+		if (user != null)
+		{
+			user.setLastVisitTime(new Date());
+			repository.save(user);
+		}
 		return repository.findByUsernameAndIsEnableTrue(username);
 	}
 
