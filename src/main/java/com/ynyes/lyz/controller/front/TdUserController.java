@@ -77,6 +77,8 @@ import com.ynyes.lyz.service.TdUserSuggestionService;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.MD5;
 
+import scala.testing.Show;
+
 @Controller
 @RequestMapping(value = "/user")
 public class TdUserController {
@@ -1387,6 +1389,46 @@ public class TdUserController {
 		return "/client/user_order_detail";
 	}
 
+	
+	@RequestMapping("/order/map")
+	public String showTheSender(ModelMap map,HttpServletRequest request,Long oid)
+	{
+		String username = (String) request.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
+		TdOrder order = null;
+		TdUser tdUser = null;
+		if (oid != null)
+		{
+			order = tdOrderService.findOne(oid);
+		}
+		if (order != null && order.getMainOrderNumber() != null)
+		{
+			List<TdDeliveryInfo> deliveryInfos = tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+			if (deliveryInfos != null && deliveryInfos.size() > 0)
+			{
+				TdDeliveryInfo deliveryInfo = deliveryInfos.get(0);
+				if (deliveryInfo != null && deliveryInfo.getDriver() != null)
+				{
+					tdUser = tdUserService.findByOpUser(deliveryInfo.getDriver());
+					
+				}
+			}
+		}
+		if (tdUser != null)
+		{
+			List<TdGeoInfo> geoInfos = tdGeoInfoService.findByOpUserOrderByTimeDesc(tdUser.getOpUser());
+			if (geoInfos != null && geoInfos.size() > 0)
+			{
+				map.addAttribute("map_x", geoInfos.get(0).getLatitude());
+				map.addAttribute("map_y", geoInfos.get(0).getLongitude());
+			}
+		}
+		return "/client/user_order_detail_map";
+	}
+	
 	/**
 	 * 用户修改归属门店并且保存的方法
 	 * 

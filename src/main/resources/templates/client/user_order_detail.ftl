@@ -112,7 +112,10 @@
             <!-- 配送信息 -->
             <article class="delivery-info">
                 <#if order.statusId==4>
-                <div class="title">配送信息</div>
+                <div class="title">
+                    <span>配送信息</span>
+                    <a href="/user/order/map?oid=${order.id?c}" style="float:right;margin-right:10px;font:1em;color:#999999;" >查看地图</a>
+                </div>
                 <!-- 物流信息 -->
                 <#--<div class="estimated-time">预计到达时间：2015-11-30</div>-->
                     <ul class="delivery-pro">
