@@ -381,6 +381,94 @@ public class TdOrderController {
 	}
 
 	/**
+	 * 根据当前选择的门店查找销售顾问和店长的方法(新增的一个控制器，异步刷新2016-2-26)
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/get/seller")
+	public String getSeller(HttpServletRequest request, ModelMap map, Long diyId) {
+		// 获取指定的门店信息
+		TdDiySite diySite = tdDiySiteService.findOne(diyId);
+		if (null != diySite) {
+			Long cityId = diySite.getRegionId();
+			Long customerId = diySite.getCustomerId();
+			// 根据地区id和客户id查找销售顾问和店长
+			List<TdUser> employer_list = tdUserService
+					.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(cityId, customerId);
+			map.addAttribute("employer_list", employer_list);
+		}
+		return null;
+	}
+
+	/**
+	 * 根据销顾名称模糊查找销顾(新增的一个控制器，异步刷新2016-2-26)
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/search/seller")
+	public String searchSeller(HttpServletRequest req, ModelMap map, String keywords) {
+		// 获取当前登录用户
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser loginUser = tdUserService.findByUsernameAndIsEnableTrue(username);
+		List<TdUser> employer_list = tdUserService
+				.findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(
+						loginUser.getCityId(), keywords);
+		map.addAttribute("employer_list", employer_list);
+		return null;
+	}
+
+	/**
+	 * 确定销顾的方法(新增的一个控制器2016-2-26)
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/select/seller")
+	@ResponseBody
+	public Map<String, Object> selectSeller(HttpServletRequest req, Long userId) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+		// 判断参数是否传递正确
+		if (null == userId) {
+			res.put("message", "获取信息失败，请稍后重试");
+			return res;
+		}
+
+		// 根据id查找到指定的销售顾问
+		TdUser user = tdUserService.findOne(userId);
+		// 判断指定销顾是否存在
+		if (null == user) {
+			res.put("message", "获取信息失败，请稍后重试");
+			return res;
+		}
+
+		// 获取虚拟订单的信息
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+
+		// 如果销顾存在，那么就需要改变该笔订单的销顾信息和门店信息了
+		order.setSellerId(user.getId());
+		order.setSellerUsername(user.getUsername());
+		order.setSellerRealName(user.getRealName());
+
+		// 获取指定销顾所属的门店
+		TdDiySite diySite = tdDiySiteService.findByRegionIdAndCustomerId(user.getCityId(), user.getCustomerId());
+		if (null == diySite) {
+			res.put("message", "获取信息失败，请稍后重试");
+			return res;
+		}
+
+		order.setDiySiteCode(diySite.getStoreCode());
+		order.setDiySiteId(diySite.getId());
+		order.setDiySiteName(diySite.getTitle());
+		order.setDiySitePhone(diySite.getServiceTele());
+		tdOrderService.save(order);
+		req.getSession().setAttribute("order_temp", order);
+
+		res.put("diySiteId", diySite.getId());
+		res.put("status", 0);
+		return res;
+	}
+
+	/**
 	 * 存储新的配送方式的信息的方法
 	 * 
 	 * @author dengxiao

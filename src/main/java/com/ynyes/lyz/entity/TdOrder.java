@@ -174,7 +174,7 @@ public class TdOrder {
 	private Date refundTime;
 
 	// 订单状态 1:待审核 2:待付款 3:待出库 4:待签收 5: 待评价 6: 已完成 7: 已取消 8:用户删除 9:退货中 10：退货确认
-	// 11：退货取消  12: 退货完成
+	// 11：退货取消 12: 退货完成
 	@Column
 	private Long statusId;
 
@@ -311,7 +311,19 @@ public class TdOrder {
 	// 实际总单金额
 	@Column(scale = 2)
 	private Double allTotalPay;
-	
+
+	// 销售顾问的id
+	@Column
+	private Long sellerId;
+
+	// 销售顾问的用户名
+	@Column
+	private String sellerUsername;
+
+	// 销售顾问的真实姓名
+	@Column
+	private String sellerRealName;
+
 	public Double getRefund() {
 		return refund;
 	}
@@ -854,5 +866,29 @@ public class TdOrder {
 
 	public void setAllActualPay(Double allActualPay) {
 		this.allActualPay = allActualPay;
+	}
+
+	public Long getSellerId() {
+		return sellerId;
+	}
+
+	public void setSellerId(Long sellerId) {
+		this.sellerId = sellerId;
+	}
+
+	public String getSellerUsername() {
+		return sellerUsername;
+	}
+
+	public void setSellerUsername(String sellerUsername) {
+		this.sellerUsername = sellerUsername;
+	}
+
+	public String getSellerRealName() {
+		return sellerRealName;
+	}
+
+	public void setSellerRealName(String sellerRealName) {
+		this.sellerRealName = sellerRealName;
 	}
 }

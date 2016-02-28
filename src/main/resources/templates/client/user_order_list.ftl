@@ -175,6 +175,7 @@
                                                 <#break>
                                                 <#case 6>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                                    <a href="javascript:;" onclick="order_return(${item.id?c})">申请退货</a>
                                                     <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                                                 <#break>
                                                 <#case 7>
