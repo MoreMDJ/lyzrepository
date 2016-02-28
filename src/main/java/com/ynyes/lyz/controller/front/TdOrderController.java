@@ -381,40 +381,159 @@ public class TdOrderController {
 	}
 
 	/**
-	 * 根据当前选择的门店查找销售顾问和店长的方法(新增的一个控制器，异步刷新2016-2-26)
+	 * 获取销顾信息或者门店信息的方法
 	 * 
 	 * @author DengXiao
 	 */
-	@RequestMapping(value = "/get/seller")
-	public String getSeller(HttpServletRequest request, ModelMap map, Long diyId) {
-		// 获取指定的门店信息
-		TdDiySite diySite = tdDiySiteService.findOne(diyId);
-		if (null != diySite) {
-			Long cityId = diySite.getRegionId();
-			Long customerId = diySite.getCustomerId();
-			// 根据地区id和客户id查找销售顾问和店长
-			List<TdUser> employer_list = tdUserService
-					.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(cityId, customerId);
-			map.addAttribute("employer_list", employer_list);
+	@RequestMapping(value = "/get/info")
+	public String orderGetInfo(HttpServletRequest req, ModelMap map, Long type) {
+		// 获取登陆用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null != user) {
+			// 获取用户的所在城市
+			Long cityId = user.getCityId();
+			if (0L == type.longValue()) {
+				// 查找该地区下所有的门店
+				List<TdDiySite> info_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(cityId);
+				map.addAttribute("info_list", info_list);
+			} else if (1L == type.longValue()) {
+				List<TdUser> info_list = tdUserService
+						.findByCityIdAndUserTypeOrCityIdAndUserTypeOrderBySortIdAsc(cityId);
+				map.addAttribute("info_list", info_list);
+			}
 		}
-		return null;
+		map.addAttribute("operation_type", type);
+		return "/client/order_delivery_list";
 	}
 
 	/**
-	 * 根据销顾名称模糊查找销顾(新增的一个控制器，异步刷新2016-2-26)
+	 * 根据关键词搜说销顾或者门店的方法
 	 * 
 	 * @author DengXiao
 	 */
-	@RequestMapping(value = "/search/seller")
-	public String searchSeller(HttpServletRequest req, ModelMap map, String keywords) {
-		// 获取当前登录用户
+	@RequestMapping(value = "/search/info")
+	public String orderSearchInfo(HttpServletRequest req, ModelMap map, String keywords, Long type) {
+		// 获取当前登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
-		TdUser loginUser = tdUserService.findByUsernameAndIsEnableTrue(username);
-		List<TdUser> employer_list = tdUserService
-				.findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(
-						loginUser.getCityId(), keywords);
-		map.addAttribute("employer_list", employer_list);
-		return null;
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null != user) {
+			// 获取用户的所在城市
+			Long cityId = user.getCityId();
+			if (0L == type.longValue()) {
+				List<TdDiySite> info_list = tdDiySiteService.findByRegionIdAndTitleContainingOrderBySortIdAsc(cityId,
+						keywords);
+				map.addAttribute("info_list", info_list);
+			} else if (1L == type.longValue()) {
+				List<TdUser> info_list = tdUserService
+						.findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(cityId,
+								keywords);
+				map.addAttribute("info_list", info_list);
+			}
+		}
+		map.addAttribute("operation_type", type);
+		return "/client/seller_diy_info";
+	}
+
+	/**
+	 * 选择销顾或者门店的方法
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/select/info")
+	@ResponseBody
+	public Map<String, Object> orderSelectInfo(HttpServletRequest req, Long id, Long type) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+
+		// 获取当前登陆用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			res.put("message", "信息获取失败，请稍后重试");
+			return res;
+		}
+
+		// 获取虚拟订单的信息
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+
+		if (null == id || null == type) {
+			res.put("message", "信息获取失败，请稍后重试");
+			return res;
+		}
+
+		if (0L == type.longValue()) {
+			// 查找指定的门店
+			TdDiySite diySite = tdDiySiteService.findOne(id);
+			if (null == diySite) {
+				res.put("message", "获取信息失败，请稍后重试");
+				return res;
+			}
+			order.setDiySiteCode(diySite.getStoreCode());
+			order.setDiySiteId(diySite.getId());
+			order.setDiySiteName(diySite.getTitle());
+			order.setDiySitePhone(diySite.getServiceTele());
+
+			// 判断此店是不是用户的默认门店
+			Long upperDiySiteId = user.getUpperDiySiteId();
+			if (null != upperDiySiteId && upperDiySiteId == diySite.getId()) {
+				// 销顾自动变更为用户的默认导购
+				order.setSellerId(user.getSellerId());
+				order.setSellerRealName(user.getRealName());
+				order.setSellerUsername(user.getUsername());
+				res.put("sellerName", user.getRealName());
+			} else {
+				// 默认为所有销顾中的第一个
+				List<TdUser> seller_list = tdUserService
+						.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(diySite.getRegionId(),
+								diySite.getCustomerId());
+				if (null != seller_list && seller_list.size() > 0) {
+					TdUser the_seller = seller_list.get(0);
+					order.setSellerId(the_seller.getId());
+					order.setSellerUsername(the_seller.getUsername());
+					order.setSellerRealName(the_seller.getRealName());
+					res.put("sellerName", the_seller.getRealName());
+				}
+			}
+			tdOrderService.save(order);
+			req.getSession().setAttribute("order_temp", order);
+			
+			res.put("diyTitle", diySite.getTitle());
+			res.put("diyId", diySite.getId());
+		} else if (1L == type.longValue()) {
+			// 根据id查找到指定的销售顾问
+			TdUser seller = tdUserService.findOne(id);
+			// 判断指定销顾是否存在
+			if (null == seller) {
+				res.put("message", "获取信息失败，请稍后重试");
+				return res;
+			}
+			// 如果销顾存在，那么就需要改变该笔订单的销顾信息和门店信息了
+			order.setSellerId(seller.getId());
+			order.setSellerUsername(seller.getUsername());
+			order.setSellerRealName(seller.getRealName());
+
+			// 获取指定销顾所属的门店
+			TdDiySite diySite = tdDiySiteService.findByRegionIdAndCustomerId(seller.getCityId(),
+					seller.getCustomerId());
+			if (null == diySite) {
+				res.put("message", "获取信息失败，请稍后重试");
+				return res;
+			}
+			order.setDiySiteCode(diySite.getStoreCode());
+			order.setDiySiteId(diySite.getId());
+			order.setDiySiteName(diySite.getTitle());
+			order.setDiySitePhone(diySite.getServiceTele());
+			tdOrderService.save(order);
+			req.getSession().setAttribute("order_temp", order);
+
+			res.put("diyTitle", diySite.getTitle());
+			res.put("sellerName", seller.getRealName());
+			res.put("diyId", diySite.getId());
+		}
+
+		res.put("status", 0);
+		return res;
 	}
 
 	/**

@@ -101,10 +101,11 @@ public class TdDiySiteService {
 
 		return repository.findByRegionIdAndIsEnableTrueOrderBySortIdAsc(regionId, pageRequest);
 	}
+
 	public Page<TdDiySite> findByCityIdAndIsEnableTrueOrderBySortIdAsc(Long cityId, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByCityIdAndIsEnableTrueOrderBySortIdAsc(cityId,pageRequest);
+		return repository.findByCityIdAndIsEnableTrueOrderBySortIdAsc(cityId, pageRequest);
 	}
 
 	public List<TdDiySite> findByIsEnableTrue() {
@@ -192,5 +193,17 @@ public class TdDiySiteService {
 			return null;
 		}
 		return repository.findByRegionIdOrderBySortIdAsc(regionId);
+	}
+
+	/**
+	 * 根据regionId和门店名称查找指定的门店（模糊查询）
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdDiySite> findByRegionIdAndTitleContainingOrderBySortIdAsc(Long regionId, String keywords) {
+		if (null == regionId || null == keywords) {
+			return null;
+		}
+		return repository.findByRegionIdAndTitleContainingOrderBySortIdAsc(regionId, keywords);
 	}
 }

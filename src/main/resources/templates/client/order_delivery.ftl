@@ -21,6 +21,10 @@
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
         <#include "/client/common_wait.ftl">
+        <#-- 引入资源弹窗 -->
+        <div id="info_window">
+            <#include "/client/order_delivery_list.ftl">
+        </div>
         <!-- 头部 -->
         <header>
             <a class="back" href="/order"></a>
@@ -74,7 +78,7 @@
                 <li>
                     <div class="div11">
                         <label id="diyLabel"><#if deliveryId??&&deliveryId==1>归属门店<#elseif deliveryId??&&deliveryId==2>提货门店</#if></label>
-                        <a class="target"><#if diySite??>${diySite.title!''}</#if></a>
+                        <a class="target" id="diySite_info" href="javascript:getInfo(0);"><#if diySite??>${diySite.title!''}</#if></a>
                     </div>
                     <#--
                     <#if diy_list??>
@@ -97,7 +101,7 @@
                 <li>
                     <div class="div11">
                         <label id="diyLabel">服务导购</label>
-                        <a class="target"><#if order??>${order.sellerName!''}</#if></a>
+                        <a class="target" id="seller_info" style="height:100%;width:70%;" href="javascript:getInfo(1);"><#if order??>${order.sellerName!'暂无'}</#if></a>
                     </div> 
                 </li>
             </ol>
@@ -110,6 +114,31 @@
                 $("#diySite").val(id);
                 $(this).siblings().find("img.visi").attr("src","/client/images/x_icon_check.png");
             });
+            
+            <#-- 获取门店信息或者导购信息的方法 -->
+            function getInfo(type){
+                wait();
+                console.log(1);
+                <#-- type的值为0，代表获取的门店的信息，type的值为1，代表获取的导购的信息 -->
+                $.ajax({
+                    url:"/order/get/info",
+                    timeout:10000,
+                    type:"POST",
+                    data:{
+                        type:type
+                    },
+                    error:function(){
+                        close(1);
+                        warning("亲，您的网速不给力啊");
+                    },
+                    success:function(res){
+                        close(1);
+                        <#-- 实现异步刷新 -->
+                        $("#info_window").html(res);
+                        win_yes();
+                    }
+                });
+            }
            </script>
             <!-- 配送方式 END -->
             <script type="text/javascript">

@@ -189,4 +189,16 @@ public class TdUserService {
 		return repository.findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(cityId,
 				keywords, 1L, cityId, keywords, 2L);
 	}
+
+	/**
+	 * 根据指定的城市查找所有的销顾和店长
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdUser> findByCityIdAndUserTypeOrCityIdAndUserTypeOrderBySortIdAsc(Long cityId) {
+		if (null == cityId) {
+			return null;
+		}
+		return repository.findByCityIdAndUserTypeOrCityIdAndUserTypeOrderBySortIdAsc(cityId, 0L, cityId, 1L);
+	}
 }

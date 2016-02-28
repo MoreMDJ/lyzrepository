@@ -34,15 +34,13 @@
         background: #cc1421;
     }
     .win_yn .my_left .btn_no{
-        position: absolute;
-        bottom:10px;
+    margin:auto;
         border: none;
         outline: none;
         color: white;
         width: 60px;
         height: 26px;
         border-radius: 4px;
-        right: 30px;
         background: #cc1421;
     }
     .win_yn .swiper-slide{
@@ -65,6 +63,7 @@
     .my_left .swiper-container {
         width: 100%;
         height: 230px;
+        overflow:hidden;
     }
     .searchBox{
         overflow: hidden;
@@ -105,55 +104,30 @@
         $('.win_yn').animate({height:0})
     };
 </script>
-<div class="win_yn">
+<div class="win_yn" style="z-index:99">
     <div class="my_left">
         <div class="searchBox">
-            <input placeholder="请输入搜索内容" type="text" name="" id="" value="" />
-            <input type="submit" name="" id="" value="搜索" />
+            <input placeholder="请输入搜索内容" type="text" name="" id="info_keywords" value="" />
+            <input type="button" name="" id="" value="搜索" onclick="javascript:searchSomeInfo();" />
         </div>
-        <input class="sub" type="submit" name="" id="" value="确定" onclick="win_no()" />
-        <input class="btn_no" type="button" name="" id="" value="取消" onclick="win_no()" />
+        <#--
+            <input class="sub" type="submit" name="" id="" value="确定" onclick="win_no()" />
+        -->
+        <div style="position:absolute;bottom:8px;left:0px;width:100%;text-align:center;"> 
+            <input class="btn_no" type="button" name="" id="" value="关闭" onclick="win_no()" />
+        </div>
         <div class="swiper-container">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="box">
-                        <h3>标题</h3>
-                        <p>这是内容</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div>
-                        <h3>标题</h3>
-                        <p>这是内容</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div>
-                        <h3>标题</h3>
-                        <p>这是内容</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div>
-                        <h3>标题</h3>
-                        <p>这是内容</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div>
-                        <h3>标题</h3>
-                        <p>这是内容</p>
-                    </div>
-                </div>
+            <div class="swiper-wrapper" id="changeInfo">
+                <#include "/client/seller_diy_info.ftl">
             </div>
         </div>
-        <script src="js/swiper.min.js"></script>
+        <script src="/client/js/swiper.min.js"></script>
         <script>
             var swiper = new Swiper('.my_left .swiper-container', {
                 pagination: '.my_left .swiper-pagination',
                 paginationClickable: true,
                 direction: 'vertical',
-                slidesPerView: 4
+                slidesPerView: 6
             });
         </script>
     </div>

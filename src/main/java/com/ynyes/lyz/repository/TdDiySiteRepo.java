@@ -38,8 +38,8 @@ public interface TdDiySiteRepo
 	List<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId);
 
 	Page<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId, Pageable page);
-	
-	Page<TdDiySite> findByCityIdAndIsEnableTrueOrderBySortIdAsc(Long cityId,Pageable page);
+
+	Page<TdDiySite> findByCityIdAndIsEnableTrueOrderBySortIdAsc(Long cityId, Pageable page);
 
 	TdDiySite findByTitleAndIsEnableTrue(String title);
 
@@ -70,4 +70,11 @@ public interface TdDiySiteRepo
 	 * @author dengxiao
 	 */
 	List<TdDiySite> findByRegionIdOrderBySortIdAsc(Long regionId);
+
+	/**
+	 * 根据regionId和门店名称查找指定的门店（模糊查询）
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdDiySite> findByRegionIdAndTitleContainingOrderBySortIdAsc(Long regionId, String keywords);
 }

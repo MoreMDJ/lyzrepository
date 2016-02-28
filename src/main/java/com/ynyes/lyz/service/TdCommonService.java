@@ -787,6 +787,9 @@ public class TdCommonService {
 		// 获取用户的导购
 		Long id = user.getSellerId();
 		TdUser seller = tdUserService.findOne(id);
+		if(null == seller){
+			seller = new TdUser();
+		}
 
 		// 默认的配送日期：第二天的的上午11:30——12:30
 		Calendar cal = Calendar.getInstance();
@@ -866,7 +869,9 @@ public class TdCommonService {
 		virtual.setDeliveryDetailId(order_deliveryDeatilId);
 		virtual.setDeliverFee(fee);
 		
-		virtual.sets
+		virtual.setSellerId(seller.getId());
+		virtual.setSellerRealName(seller.getRealName());
+		virtual.setSellerUsername(seller.getUsername());
 
 		// 遍历所有的已选商品，生成虚拟订单
 		for (TdCartGoods cart : select_goods) {
@@ -1083,6 +1088,10 @@ public class TdCommonService {
 				order.setPayTypeTitle(order_temp.getPayTypeTitle());
 				order.setOrderTime(order_temp.getOrderTime());
 				order.setRemark(order_temp.getRemark());
+				//设置销顾信息
+				order.setSellerId(order_temp.getSellerId());
+				order.setSellerRealName(order_temp.getSellerRealName());
+				order.setSellerUsername(order_temp.getSellerUsername());
 				// 设置主单号
 				order.setMainOrderNumber(order_temp.getOrderNumber());
 				// 设置实际总支付的预存款额度
