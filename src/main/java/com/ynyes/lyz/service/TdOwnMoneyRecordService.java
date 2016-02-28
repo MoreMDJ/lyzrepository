@@ -108,7 +108,7 @@ public class TdOwnMoneyRecordService {
     
     public Page<TdOwnMoneyRecord> findAllOrderBySortIdAsc(int page, int size)
     {
-        PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
+        PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "createTime"));
         
         return repository.findAll(pageRequest);
     }

@@ -121,6 +121,13 @@ $(function () {
         </dd>
     </dl>
     <dl>
+        <dt>门店编码</dt>
+        <dd>
+            <input name="diyCode" type="text" value="<#if tdManager??>${tdManager.diyCode!""}</#if>" class="input normal" datatype="n0-100" sucmsg=" ">
+            <span class="Validform_checktip">仅是门店的时候才填写！</span>
+        </dd>
+    </dl>
+    <dl>
         <dt>排序数字</dt>
         <dd>
             <input name="sortId" type="text" value="<#if tdManager??>${tdManager.sortId!""}<#else>99</#if>" class="input txt100" datatype="/^(([1-9]\d{0,1})|0)((\.\d{2})|(\.\d{1}))?$/" sucmsg=" " errormsg="请输入不超过100的2位小数">

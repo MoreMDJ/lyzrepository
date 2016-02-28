@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ynyes.lyz.entity.TdActivityGiftList;
-import com.ynyes.lyz.entity.TdGoodsGift;
 import com.ynyes.lyz.repository.TdActivityGiftListRepo;
 
 @Service

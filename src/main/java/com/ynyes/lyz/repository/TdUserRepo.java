@@ -1,5 +1,7 @@
 package com.ynyes.lyz.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -29,4 +31,20 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 			Long userLevelId, String keywords3, Long userLevelId2, Pageable page);
 
 	TdUser findByOpUser(String opUser);
+
+	/**
+	 * 根据指定的门店查找销售顾问和店长
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdUser> findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(Long cityId1, Long customerId1,
+			Long userType1, Long cityId2, Long customerId2, Long userType2);
+
+	/**
+	 * 根据关键字查找销售顾问和店长
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdUser> findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(Long cityId1,
+			String keywords1, Long userType1, Long cityId2, String keywords2, Long userType2);
 }

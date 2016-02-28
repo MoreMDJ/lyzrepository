@@ -142,6 +142,15 @@ public class TdDeliveryInfoService {
         return (List<TdDeliveryInfo>) repository.findAll(new Sort(Direction.ASC, "sortId"));
     }
     
+    public List<TdDeliveryInfo> findByOrderNumberOrderByBeginDtDesc(String orderNumber)
+    {
+    	if (orderNumber == null)
+    	{
+			return null;
+		}
+    	return repository.findByOrderNumberOrderByBeginDtDesc(orderNumber);
+    }
+    
     /**
      * 保存
      * 
