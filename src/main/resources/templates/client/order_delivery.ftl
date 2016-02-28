@@ -73,10 +73,10 @@
             <ol>
                 <li>
                     <div class="div11">
-                    <label id="diyLabel"><#if deliveryId??&&deliveryId==1>归属门店<#elseif deliveryId??&&deliveryId==2>提货门店</#if></label>
-                    <a class="target"><#if diySite??>${diySite.title!''}</#if></a>
+                        <label id="diyLabel"><#if deliveryId??&&deliveryId==1>归属门店<#elseif deliveryId??&&deliveryId==2>提货门店</#if></label>
+                        <a class="target"><#if diySite??>${diySite.title!''}</#if></a>
                     </div>
-                    <!-- 门店列表 -->
+                    <#--
                     <#if diy_list??>
                         <article class="stores-select">
                             <#list diy_list as item>
@@ -90,6 +90,15 @@
                             </#list>
                         </article>
                     </#if>
+                    -->
+                </li>
+            </ol>
+            <ol>
+                <li>
+                    <div class="div11">
+                        <label id="diyLabel">服务导购</label>
+                        <a class="target"><#if order??>${order.sellerName!''}</#if></a>
+                    </div> 
                 </li>
             </ol>
             <script type="text/javascript">   

@@ -112,6 +112,14 @@ public class TdUser {
 	// 归属销顾电话（推荐人电话）
 	@Column
 	private String referPhone;
+	
+	//归属导购id
+	@Column
+	private Long sellerId;
+	
+	//归属导购姓名
+	@Column
+	private String sellerName;
 
 	// 首单优惠是否可用
 	@Column
@@ -430,5 +438,19 @@ public class TdUser {
 		this.opUser = opUser;
 	}
 
-	
+	public Long getSellerId() {
+		return sellerId;
+	}
+
+	public void setSellerId(Long sellerId) {
+		this.sellerId = sellerId;
+	}
+
+	public String getSellerName() {
+		return sellerName;
+	}
+
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
+	}
 }

@@ -53,13 +53,14 @@ import com.ynyes.lyz.util.StringUtils;
 
 @Service
 public class TdCommonService {
-	
-//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+
+	// static String wmsUrl =
+	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
 	static QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
-	
+
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
 
@@ -714,7 +715,7 @@ public class TdCommonService {
 				Long categoryId = goods.getCategoryId();
 				// 获取指定的分类
 				TdProductCategory category = tdProductCategoryService.findOne(categoryId);
-				//获取指定分类的父类
+				// 获取指定分类的父类
 				if (null != category) {
 					Long parentId = category.getParentId();
 					if (null != parentId) {
@@ -789,6 +790,10 @@ public class TdCommonService {
 		String delivery = "送货上门";
 		// 默认门店为用户的归属门店
 		TdDiySite defaultDiy = this.getDiySite(req);
+
+		// 获取用户的导购
+		Long id = user.getSellerId();
+		TdUser seller = tdUserService.findOne(id);
 
 		// 默认的配送日期：第二天的的上午11:30——12:30
 		Calendar cal = Calendar.getInstance();
@@ -867,6 +872,8 @@ public class TdCommonService {
 		virtual.setDeliveryDate(order_deliveryDate);
 		virtual.setDeliveryDetailId(order_deliveryDeatilId);
 		virtual.setDeliverFee(fee);
+		
+		virtual.sets
 
 		// 遍历所有的已选商品，生成虚拟订单
 		for (TdCartGoods cart : select_goods) {
@@ -1321,12 +1328,14 @@ public class TdCommonService {
 
 		// CallWMSImpl callWMSImpl = new CallWMSImpl();
 
-//		System.out.println("MDJWS:READY:WMS:" + orderList.get(0).getMainOrderNumber());
+		// System.out.println("MDJWS:READY:WMS:" +
+		// orderList.get(0).getMainOrderNumber());
 		// 抛单给WMS
-//		 sendMsgToWMS(orderList, order_temp.getOrderNumber());
+		// sendMsgToWMS(orderList, order_temp.getOrderNumber());
 
 		// 子线程 抛单给WMS
-		SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
+		SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList,
+				order_temp.getOrderNumber());
 		requsitThread.start();
 
 	}
@@ -1519,15 +1528,14 @@ public class TdCommonService {
 	}
 
 	// TODO 要货单
-	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber)
-	{
-		
+	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {
+
 		if (orderList.size() <= 0) {
 			return;
 		}
-		
+
 		System.out.println("MDJWS:INTER:Order:" + orderList.get(0).getMainOrderNumber());
-		
+
 		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase("")) {
 			return;
 		}
@@ -1537,10 +1545,11 @@ public class TdCommonService {
 		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
 		String PATH = System.getenv("Path");
 		System.err.println("MDJWS:PATH:" + PATH);
-//		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-//		org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
+		// JaxWsDynamicClientFactory dcf =
+		// JaxWsDynamicClientFactory.newInstance();
+		// org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
 		// url为调用webService的wsdl地址
-//		QName name = new QName("http://tempuri.org/", "GetErpInfo");
+		// QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
 		Object[] objects = null;
 		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
@@ -1594,11 +1603,10 @@ public class TdCommonService {
 			}
 		}
 	}
-	
-	public Map<String, String> sendWmsMst(TdRequisition requisition)
-	{
+
+	public Map<String, String> sendWmsMst(TdRequisition requisition) {
 		String mainOrderNumber = "";
-		
+
 		Map<String, String> map = new HashMap<>();
 		Object[] objects = null;
 		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
@@ -1610,7 +1618,8 @@ public class TdCommonService {
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.out.println("MDJWMS: " + mainOrderNumber + " 发送失败");
-					map.put(requisitionGoods.getGoodsCode(),requisitionGoods.getOrderNumber() +	requisitionGoods.getSubOrderNumber() + "失败");
+					map.put(requisitionGoods.getGoodsCode(),
+							requisitionGoods.getOrderNumber() + requisitionGoods.getSubOrderNumber() + "失败");
 				}
 				String result = "";
 				if (objects != null) {
@@ -1620,11 +1629,11 @@ public class TdCommonService {
 				}
 				String errorMsg = chectResult1(result);
 				if (errorMsg != null) {
-					map.put(requisitionGoods.getGoodsCode(),requisitionGoods.getOrderNumber() + requisitionGoods.getSubOrderNumber() + "失败-code:" + errorMsg);
-				}
-				else
-				{
-					map.put(requisitionGoods.getGoodsCode(),requisitionGoods.getOrderNumber() + requisitionGoods.getSubOrderNumber() + "成功");
+					map.put(requisitionGoods.getGoodsCode(), requisitionGoods.getOrderNumber()
+							+ requisitionGoods.getSubOrderNumber() + "失败-code:" + errorMsg);
+				} else {
+					map.put(requisitionGoods.getGoodsCode(),
+							requisitionGoods.getOrderNumber() + requisitionGoods.getSubOrderNumber() + "成功");
 				}
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
@@ -1633,7 +1642,7 @@ public class TdCommonService {
 				objects = WMSClient.invoke(WMSName, "td_requisition", "1", xmlEncode);
 			} catch (Exception e) {
 				e.printStackTrace();
-				map.put(requisition.getOrderNumber(),"失败");
+				map.put(requisition.getOrderNumber(), "失败");
 			}
 			String result = null;
 			if (objects != null) {
@@ -1643,14 +1652,13 @@ public class TdCommonService {
 			}
 			String errorMsg = chectResult1(result);
 			if (errorMsg != null) {
-				map.put(requisition.getOrderNumber(),"失败:" + errorMsg);
+				map.put(requisition.getOrderNumber(), "失败:" + errorMsg);
 			} else {
-				map.put(requisition.getOrderNumber(),"成功");
+				map.put(requisition.getOrderNumber(), "成功");
 			}
 		}
 		return map;
 	}
-	
 
 	/**
 	 * 保存要货单
@@ -1818,7 +1826,7 @@ public class TdCommonService {
 
 			xmlStr = xmlStr.replace("null", "");
 
-//			System.out.print("MDJWS: returnNote-->" + xmlStr);
+			// System.out.print("MDJWS: returnNote-->" + xmlStr);
 
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
@@ -1950,30 +1958,25 @@ public class TdCommonService {
 	public String chectResult1(String resultStr) {
 		// "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
 		// add by Shawn
-		if (!resultStr.contains("<CODE>") || !resultStr.contains("</CODE>") || !resultStr.contains("<MESSAGE>")|| !resultStr.contains("</MESSAGE>")) 
-		{
+		if (!resultStr.contains("<CODE>") || !resultStr.contains("</CODE>") || !resultStr.contains("<MESSAGE>")
+				|| !resultStr.contains("</MESSAGE>")) {
 			return "返回信息错误！";
 		}
 		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
 		Pattern pat = Pattern.compile(regEx);
 		Matcher mat = pat.matcher(resultStr);
 
-		if (mat.find())
-		{
+		if (mat.find()) {
 			System.out.println("CODE is :" + mat.group(0));
 			String code = mat.group(0).replace("<CODE>", "");
 			code = code.replace("</CODE>", "").trim();
-			if (Integer.parseInt(code) == 0) 
-			{
+			if (Integer.parseInt(code) == 0) {
 				return null;
-			}
-			else
-			{
+			} else {
 				String errorMsg = "<MESSAGE>([\\s\\S]*?)</MESSAGE>";
 				pat = Pattern.compile(errorMsg);
 				mat = pat.matcher(resultStr);
-				if (mat.find())
-				{
+				if (mat.find()) {
 					System.out.println("ERRORMSG is :" + mat.group(0));
 					String msg = mat.group(0).replace("<MESSAGE>", "");
 					msg = msg.replace("</MESSAGE>", "").trim();
@@ -1993,10 +1996,11 @@ public class TdCommonService {
 		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
 		String PATH = System.getenv("Path");
 		System.err.println("MDJWS:PATH:" + PATH);
-//		JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-//		org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
+		// JaxWsDynamicClientFactory dcf =
+		// JaxWsDynamicClientFactory.newInstance();
+		// org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
 		// url为调用webService的wsdl地址
-//		QName name = new QName("http://tempuri.org/", "GetErpInfo");
+		// QName name = new QName("http://tempuri.org/", "GetErpInfo");
 		// paramvalue为参数值
 		Object[] objects = null;
 
@@ -2007,10 +2011,8 @@ public class TdCommonService {
 			e.printStackTrace();
 		}
 		String result = "";
-		if (objects != null)
-		{
-			for (Object object : objects)
-			{
+		if (objects != null) {
+			for (Object object : objects) {
 				result += object;
 			}
 		}
@@ -2020,12 +2022,11 @@ public class TdCommonService {
 			writeErrorLog(note.getOrderNumber(), "退货单", errorMsg);
 		}
 	}
-	public Map<String, String> testSendBackMsgToWMS(TdReturnNote note) 
-	{
+
+	public Map<String, String> testSendBackMsgToWMS(TdReturnNote note) {
 		Map<String, String> map = new HashMap<>();
 		map.put("result", "失败");
-		if (null == note) 
-		{
+		if (null == note) {
 			return null;
 		}
 		Object[] objects = null;
@@ -2038,10 +2039,8 @@ public class TdCommonService {
 			map.put(note.getOrderNumber() + "：errorMSG", "发送失败");
 		}
 		String result = "";
-		if (objects != null)
-		{
-			for (Object object : objects)
-			{
+		if (objects != null) {
+			for (Object object : objects) {
 				result += object;
 			}
 		}
@@ -2049,11 +2048,10 @@ public class TdCommonService {
 
 		if (errorMsg != null) {
 			map.put(note.getOrderNumber() + "：errorMSG", errorMsg);
-		}
-		else {
+		} else {
 			map.put(note.getOrderNumber() + "：MSG", "成功");
 		}
-		
+
 		map.put("result", "成功");
 		return map;
 	}
