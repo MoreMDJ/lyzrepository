@@ -286,7 +286,12 @@ public class TdManagerUserController {
 			// 获取所有的门店
 			map.addAttribute("site_list", site_list);
 		}
-
+		else
+		{
+			List<TdCity> cities = tdCityService.findAll();
+			map.addAttribute("city_list",cities);
+		}
+		
 		return "/site_mag/user_edit";
 	}
 
