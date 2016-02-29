@@ -57,6 +57,27 @@ $(function () {
     
     $("#btnEditRemark").click(function () { EditOrderRemark(); });    //修改积分备注 
     
+    $("#cityId").change(function(){
+    var cid = $("#cityId").val();
+        $.ajax({
+		url: "/Verwalter/user/change_city", 
+		type: "post",
+		dataType: "json",
+		data: {"cid": cid},
+		error: function (XMLHttpRequest, textStatus, errorThrown) {
+                },
+		success: function(data)
+		{	
+			 $("#upperDiySiteId").empty();
+			 $("#upperDiySiteId").append("<option value=''>请选择门店</option>");
+        	 $.each(data.site_list, function(i,val){
+        	 $("#upperDiySiteId").append("<option value='"+val.id+"'>"+val.title+"</option>");      
+             });
+        	 
+  		}
+	});
+        $("#diySiteId").css("display","block");
+    });
 });   
 
  //修改粮草备注
@@ -229,13 +250,13 @@ $(function () {
   <dl id="diySiteId" style="display:none;">
     <dt>归属门店</dt>
     <dd>
-        <select name="upperDiySiteId" datatype="n">
+        <select name="upperDiySiteId" id="upperDiySiteId" datatype="n">
             <#if !user??>
                 <option value="">请选择门店</option>
             </#if>
             <#if site_list??>
                 <#list site_list as item>
-                    <option <#if user.upperDiySiteId?? && item.id==user.upperDiySiteId>selected="selected"</#if> value="${item.id?c}">${item.title!''}</option>
+                    <option value="${item.id?c}">${item.title!''}</option>
                 </#list>
             </#if>
         </select>
