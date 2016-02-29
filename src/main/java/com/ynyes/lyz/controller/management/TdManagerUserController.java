@@ -252,6 +252,16 @@ public class TdManagerUserController {
 		return "/site_mag/user_list";
 	}
 
+	@RequestMapping(value = "/change_city", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changeCity(Long cid){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("code", 0);
+		List<TdDiySite> site_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(cid);
+		map.put("site_list", site_list);
+		return map;
+	}
+	
 	@RequestMapping(value = "/edit")
 	public String userEdit(Long id, Long roleId, String action, String __VIEWSTATE, ModelMap map,
 			HttpServletRequest req) {
