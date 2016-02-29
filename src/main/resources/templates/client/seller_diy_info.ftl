@@ -5,7 +5,7 @@
                 <p>
                     <#if operation_type??&&operation_type==0>
                         ${item.title!''}
-                    <#elseif operation_type??&&operation_type==1>
+                    <#elseif operation_type??&&operation_type==1&&item.realName??&&""!=item.realName>
                         ${item.realName!''}
                     </#if>
                 </p>

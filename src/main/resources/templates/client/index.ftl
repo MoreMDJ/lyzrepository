@@ -19,7 +19,7 @@
     window.onload = function(){
             you_draf($('.index_scroll_goods'),$('.index_scroll_goods a'),$(window));
             my_hei();
-            scroll_news();//滚动新闻                //index  00         
+            scroll_news();//滚动新闻                        
             footer();//底部居中
         };
     </script>
