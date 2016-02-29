@@ -172,25 +172,6 @@ $(function () {
       <span class="Validform_checktip">*禁用账户无法登录</span>
     </dd>
   </dl>
-  <#--
-    <dl>
-        <dt>用户名：</dt>
-         【备注人】张季 2016年1月8日10:18:05 【原版】用户名不可修改
-        <dd>
-            <#if user??>
-                <span>${user.username!""}</span>
-            <#else>
-                <input name="username" type="text" maxlength="200" class="input normal" datatype="s6-20" ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id}</#if>" sucmsg=" " minlength="2">
-            </#if>
-            
-       <dd>
-            <input name="username" type="text" value="<#if user??>${user.username!''}</#if>" maxlength="200" class="input normal" datatype="m|/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/" ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id}</#if>" sucmsg=" " minlength="2">
-       		<input name="oldUsername" type="hidden" value="<#if user??>${user.username!''}</#if>" />
-       </dd>
-            <span class="Validform_checktip">
-        </span></dd>
-    </dl>
-    -->
     <dl>
         <dt>用户名：</dt>
         <dd>
@@ -281,67 +262,6 @@ $(function () {
   <#if user??>
   	<input name="oldPassword" type="hidden" value="${user.password!''}" />
   </#if>
-  <#--
-  <dl>
-    <dt>邮箱账号</dt>
-    <dd><input name="email" type="text" value="<#if user??>${user.email!""}</#if>" id="txtEmail" class="input normal" ignore="ignore" datatype="e" sucmsg=" " > <span class="Validform_checktip">*取回密码时用到</span></dd>
-  </dl>
-  <dl>
-    <dt>手机号码</dt>
-    <dd><input name="mobile" type="text" value="<#if user??>${user.mobile!""}</#if>" class="input normal" ignore="ignore" datatype="m" sucmsg=" " ></dd>
-  </dl> 
-  <dl>
-    <dt>累计消费额</dt>
-    <dd><span><#if user??>${user.totalSpendCash!""}</#if></span></dd>
-  </dl>
- <dl>
-    <dt>用户等级</dt>
-    <dd><input name="userLevelId" type="text" value="<#if user??>${user.userLevelId!""}</#if>" class="input normal" datatype="n0-2" errormsg="请输入正确的等级" sucmsg=" " > <span class="Validform_checktip">*数字表示的用户等级，从1开始，熟悉越高等级越高</span></dd>
-  </dl> 
-  <dl>
-    <dt>用户等级</dt>
-    <dd>
-         <div class="rule-single-select">
-              <select name="userLevelId" id="userLevelId" >
-                   <#if !user??>
-                        <option value="">请选择类别...</option>
-                    </#if>
-                    <#if user_level_list??>
-                         <#list user_level_list as level>
-                             <option value="${level.id!""}" <#if user?? && user.userLevelId?? && user.userLevelId==level.id>selected="selected"</#if>>${level.title!""}</option>
-                         </#list>
-                    </#if>
-              </select>
-         </div>
-    </dd>
-  </dl>
-  <dl>
-    <dt>用户等级名称</dt>
-    <dd><span><#if user??>${user.userLevelTitle!""}</#if></span></dd>
-  </dl>
-  <dl>
-    <dt>用户积分</dt>
-    <dd><span><#if user??>${user.totalPoints!""}</#if></span></dd>
-  </dl>
-  <dl>
-    <dt>修改用户积分</dt>
-    <dd>
-        <input name="totalPoints1" id="totalPoints" type="text" class="input" value="<#if user?? && user.totalPoints??>${user.totalPoints?c}<#else>0</#if>">
-        <input name="btnEditRemark" type="button" id="btnEditRemark" class="ibtn" value="确认修改" style="margin-top: -3px;">
-    </dd>
-  </dl>  
-  <dl>
-    <dt>咨询总数</dt>
-    <dd><span><#if user??>${user.totalConsults!""}</#if></span></dd>
-  </dl>
-  <dl>
-    <dt>评论总数</dt>
-    <dd><span><#if user??>${user.totalComments!""}</#if></span></dd>
-  </dl>
-  <dl>
-    <dt>退换货总数</dt>
-    <dd><span><#if user??>${user.totalReturns!""}</#if></span></dd>
-  </dl>-->
 </div>
 <!--/安全设置-->
 
@@ -375,60 +295,7 @@ $(function () {
     <dd><input name="cashRewardsFrozen" type="text" id="txtPay_Password" class="input normal"sucmsg=" " value="<#if user?? && user.cashRewardsFrozen??>${user.cashRewardsFrozen?c}</#if>"> <span class="Validform_checktip"></span></dd>
   </dl>
   </#if>
-  <#--
-  <dl>
-    <dt>银行卡号</dt>
-    <dd><input name="bankCardCode" type="text" id="txtPay_Password" class="input normal"  sucmsg=" " value="<#if user??>${user.bankCardCode!""}</#if>"> <span class="Validform_checktip"></span></dd>
-  </dl>
-  <dl>
-    <dt>银行名称</dt>
-    <dd><input name="bankTitle" type="text" id="txtPay_Password" class="input normal"  sucmsg=" " value="<#if user??>${user.bankTitle!""}</#if>"> <span class="Validform_checktip"></span></dd>
-  </dl>
- <dl>
-    <dt>银行卡已验证</dt>
-    <dd><input name="txtPay_Password" type="text" id="txtPay_Password" class="input normal" nullmsg="请设置支付密码" errormsg="支付密码范围在6-20位之间" sucmsg=" " value="<#if user??>${user.totalReturns!""}</#if>"> <span class="Validform_checktip"></span></dd>
-  </dl>
-  <dl>
-    <dt>银行卡验证</dt>
-    <dd>
-      <div class="rule-multi-radio multi-radio">
-        <span>
-            <input type="radio" name="isBankCardVerified" value="1"  <#if user?? && user.isBankCardVerified?? && user.isBankCardVerified==1>checked="checked"</#if>><label>已验证</label>
-            <input type="radio" name="isBankCardVerified" value="0"  <#if user?? && user.isBankCardVerified?? && user.isBankCardVerified==0>checked="checked"</#if>><label>未验证</label>
-        </span>
-      </div>
-      <span class="Validform_checktip"></span>
-    </dd>
-  </dl> 
-  
-  <#if !user?? || user?? && user.userType?? && user.userType == 2>
-  <dl>
-    <dt>虚拟币余额</dt>
-    <dd><input name="virtualCurrency" type="text" id="" class="input normal"  sucmsg=" " value="<#if user??>${user.virtualCurrency!""}</#if>"> <span class="Validform_checktip"></span></dd>
-  </dl>
-  <dl>
-    <dt>冻结金额</dt>
-    <dd><input name="frozenCapital" type="text" id="" class="input normal"  sucmsg=" " value="<#if user??>${user.frozenCapital!""}</#if>"> <span class="Validform_checktip"></span></dd>
-  </dl>
-  <dl>
-  </#if>
-  -->
 </div> 
-
-<!--/账户信息-->
-
-
-<!--借款标的-->
-
-<!--/借款标的-->
-
-<!--投资标的-->
-
-<!--/投资标的-->
-
-<!--资金明细-->
-
-<!--/资金明细-->
 
 <!--工具栏-->
 <div class="page-footer">
