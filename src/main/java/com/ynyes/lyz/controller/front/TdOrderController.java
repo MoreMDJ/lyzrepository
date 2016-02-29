@@ -369,6 +369,7 @@ public class TdOrderController {
 		// 获取默认门店
 		TdDiySite diySite = tdDiySiteService.findOne(diySiteId);
 
+		map.addAttribute("seller", order.getSellerRealName());
 		map.addAttribute("diySite", diySite);
 		map.addAttribute("diy_list", diy_list);
 		map.addAttribute("earlyDate", earlyDate);
@@ -497,7 +498,7 @@ public class TdOrderController {
 			}
 			tdOrderService.save(order);
 			req.getSession().setAttribute("order_temp", order);
-			
+
 			res.put("diyTitle", diySite.getTitle());
 			res.put("diyId", diySite.getId());
 		} else if (1L == type.longValue()) {
@@ -1248,6 +1249,12 @@ public class TdOrderController {
 			return res;
 		}
 
+		if (null == order_temp.getSellerId() || null == order_temp.getSellerRealName()
+				|| null == order_temp.getSellerUsername()) {
+			res.put("message", "请在\"配送方式\"中选择服务导购");
+			return res;
+		}
+
 		System.err.println("获取虚拟订单中的地址信息");
 		String address = order_temp.getShippingAddress();
 		String shippingName = order_temp.getShippingName();
@@ -1403,7 +1410,6 @@ public class TdOrderController {
 	 */
 	@RequestMapping(value = "/pay")
 	public String orderPay(HttpServletRequest req) {
-		System.err.println("进入确认下单的方法");
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {

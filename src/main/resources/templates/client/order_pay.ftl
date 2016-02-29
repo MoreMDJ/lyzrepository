@@ -83,6 +83,11 @@
                     <label>发票信息</label>
                     <div>${order.diySiteName!''}（${order.diySitePhone!''}）</div>
                 </section>
+                <!-- 发票信息 -->
+                <section class="invoice-info">
+                    <label>服务导购</label>
+                    <div>${order.sellerName!'暂无'}</div>
+                </section>
                 <!-- 留言 -->
                 <section class="leave-message">
                     <input id="remark" onblur="userRemark('${order.remark!''}');" type="text" maxlength="50" value="${order.remark!''}" placeholder="给商家留言">
