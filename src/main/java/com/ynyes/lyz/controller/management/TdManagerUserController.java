@@ -280,6 +280,11 @@ public class TdManagerUserController {
 				}
 			}
 		}
+		else
+		{
+			List<TdCity> cities = tdCityService.findAll();
+			map.addAttribute("city_list",cities);
+		}
 		
 		return "/site_mag/user_edit";
 	}

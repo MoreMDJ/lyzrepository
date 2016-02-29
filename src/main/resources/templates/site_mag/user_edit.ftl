@@ -56,6 +56,11 @@ $(function () {
     }); 
     
     $("#btnEditRemark").click(function () { EditOrderRemark(); });    //修改积分备注 
+    
+    $("#cityId").change(function(){
+        
+        $("#diySiteId").css("display","block");
+    });
 });   
 
  //修改粮草备注
@@ -145,7 +150,7 @@ $(function () {
   <dl>
     <dt>用户类型</dt>
     <dd>
-      <div class="rule-multi-radio multi-radio">
+      <div class="rule-multi-radio multi-radio" >
         <span>
             <input type="radio" name="userType" value="0" datatype="n" <#if user?? && user.userType?? && user.userType==0>checked="checked"</#if>><label>普通会员</label>
             <input type="radio" name="userType" value="1" datatype="n" <#if user?? && user.userType?? && user.userType==1>checked="checked"</#if>><label>销售顾问</label>
@@ -193,6 +198,7 @@ $(function () {
     	<span class="Validform_checktip">仅配送员填写</span>
     </dd>
   </dl>
+  <#if user??>
   <dl>
     <dt>归属门店</dt>
     <dd>
@@ -208,6 +214,38 @@ $(function () {
         </select>
     </dd>
   </dl>
+  <#else>
+  <dl>
+    <dt>所属城市</dt>
+    <dd>
+        <select name="cityId" id="cityId" datatype="n">
+            <#if !user??>
+                <option value="">请选择城市</option>
+            </#if>
+            <#if city_list??>
+                <#list city_list as item>
+                    <option value="${item.sobIdCity?c}">${item.cityName!''}</option>
+                </#list>
+            </#if>
+        </select>
+    </dd>
+  </dl>
+  <dl id="diySiteId" style="display:none;">
+    <dt>归属门店</dt>
+    <dd>
+        <select name="upperDiySiteId" datatype="n">
+            <#if !user??>
+                <option value="">请选择门店</option>
+            </#if>
+            <#if site_list??>
+                <#list site_list as item>
+                    <option <#if user.upperDiySiteId?? && item.id==user.upperDiySiteId>selected="selected"</#if> value="${item.id?c}">${item.title!''}</option>
+                </#list>
+            </#if>
+        </select>
+    </dd>
+  </dl>
+  </#if>
   <dl>
     <dt>上传头像</dt>
     <dd>
