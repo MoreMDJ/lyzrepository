@@ -882,7 +882,7 @@ public class TdOrderController {
 					return res;
 				}
 				// 第二种情况，不能使用优惠券（使用额已经大于限额）
-				if (permits[1] > permits[0]) {
+				if (permits[1] > permits[0] || permits[1] + coupon.getPrice() > permits[0]) {
 					res.put("message", "您所能使用的" + brand.getTitle() + "公司<br>的优惠券最大限额为" + permits[0] + "元");
 					return res;
 				} else {

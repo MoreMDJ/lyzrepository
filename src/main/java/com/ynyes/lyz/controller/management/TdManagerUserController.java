@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -279,13 +281,13 @@ public class TdManagerUserController {
 					map.addAttribute("site_list", site_list);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			List<TdCity> cities = tdCityService.findAll();
 			map.addAttribute("city_list",cities);
+			List<TdDiySite> site_list = tdDiySiteService.findAll();
+			// 获取所有的门店
+			map.addAttribute("site_list", site_list);
 		}
-		
 		return "/site_mag/user_edit";
 	}
 

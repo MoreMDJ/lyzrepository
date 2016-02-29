@@ -199,6 +199,6 @@ public class TdUserService {
 		if (null == cityId) {
 			return null;
 		}
-		return repository.findByCityIdAndUserTypeOrCityIdAndUserTypeOrderBySortIdAsc(cityId, 0L, cityId, 1L);
+		return repository.findByCityIdAndUserTypeOrCityIdAndUserTypeOrderBySortIdAsc(cityId, 1L, cityId, 2L);
 	}
 }

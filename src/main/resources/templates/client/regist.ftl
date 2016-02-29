@@ -137,6 +137,7 @@
                     var cityInfo = $("#my_box").html();
                     var config = {};
                     wait();
+                    console.log($scope.infos.password);
                     $.ajax({
                         url:"/regist/save",
                         type:"post",
