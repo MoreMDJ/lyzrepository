@@ -235,7 +235,7 @@ $(function () {
             </#if>
             <#if site_list??>
                 <#list site_list as item>
-                    <option <#if user.upperDiySiteId?? && item.id==user.upperDiySiteId>selected="selected"</#if> value="${item.id?c}">${item.title!''}</option>
+                    <option value="${item.id?c}">${item.title!''}</option>
                 </#list>
             </#if>
         </select>
