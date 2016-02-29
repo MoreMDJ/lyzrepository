@@ -206,4 +206,8 @@ public class TdDiySiteService {
 		}
 		return repository.findByRegionIdAndTitleContainingOrderBySortIdAsc(regionId, keywords);
 	}
+	
+	public List<TdDiySite> findAll(){
+		return (List<TdDiySite>) repository.findAll();
+	}
 }
