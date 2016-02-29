@@ -57,10 +57,6 @@ $(function () {
     
     $("#btnEditRemark").click(function () { EditOrderRemark(); });    //修改积分备注 
     
-    $("#cityId").change(function(){
-        
-        $("#diySiteId").css("display","block");
-    });
 });   
 
  //修改粮草备注
