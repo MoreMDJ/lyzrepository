@@ -86,7 +86,7 @@
                 <!-- 发票信息 -->
                 <section class="invoice-info">
                     <label>服务导购</label>
-                    <div>${order.sellerName!'暂无'}</div>
+                    <div>${order.sellerRealName!'暂无'}</div>
                 </section>
                 <!-- 留言 -->
                 <section class="leave-message">
