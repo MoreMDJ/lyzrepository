@@ -1097,6 +1097,30 @@ public class TdUserController {
 		}
 		return "/client/user_recharge";
 	}
+	
+	/**
+	 * 跳转到现金卷使用说明页面
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value = "/coupon/cash/guide")
+	public String toCashCouponGuide(ModelMap map){
+		TdSetting setting = tdSettingService.findTopBy();
+		map.addAttribute("cashCouponGuide", setting.getCashCouponGuide());
+		return "/client/user_cash_coupon_guide";
+	}
+	
+	/**
+	 * 跳转到产品卷使用说明页面
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value = "/coupon/goods/guide")
+	public String toGoodsCouponGuide(ModelMap map){
+		TdSetting setting = tdSettingService.findTopBy();
+		map.addAttribute("goodsCouponGuide", setting.getGoodsCouponGuide());
+		return "/client/user_goods_coupon_guide";
+	}
 
 	/**
 	 * 跳转到用户指定优惠券的方法

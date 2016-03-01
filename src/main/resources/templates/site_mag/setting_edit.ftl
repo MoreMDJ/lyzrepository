@@ -104,7 +104,8 @@ $(function () {
                 <li><a href="javascript:;" onclick="tabs(this);" class="selected">网站基本信息</a></li>
                 <li><a href="javascript:;" onclick="tabs(this);">功能权限设置</a></li>
                 <li><a href="javascript:;" onclick="tabs(this);">网站奖励设置</a></li>
-                <li><a href="javascript:;" onclick="tabs(this);">注册用户协议</a></li>
+                <li><a href="javascript:;" onclick="tabs(this);">产品卷使用说明</a></li>
+                <li><a href="javascript:;" onclick="tabs(this);">现金卷使用说明</a></li>
             </ul>
         </div>
     </div>
@@ -333,9 +334,17 @@ $(function () {
 </div>    
 <div class="tab-content" style="display: none;">
     <dl>
-        <dt>用户注册协议</dt>
+        <dt>产品卷使用说明</dt>
         <dd>
-            <textarea name="registerNego" class="editor"><#if setting??>${setting.registerNego!""}</#if></textarea>
+            <textarea name="goodsCouponGuide" class="editor"><#if setting??>${setting.goodsCouponGuide!""}</#if></textarea>
+        </dd>
+    </dl>
+</div>
+<div class="tab-content" style="display: none;">
+    <dl>
+        <dt>现金卷使用说明</dt>
+        <dd>
+            <textarea name="cashCouponGuide" class="editor"><#if setting??>${setting.cashCouponGuide!""}</#if></textarea>
         </dd>
     </dl>
 </div>  
