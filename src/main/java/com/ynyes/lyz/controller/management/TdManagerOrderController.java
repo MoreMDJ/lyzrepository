@@ -1,13 +1,17 @@
 package com.ynyes.lyz.controller.management;
 
+import static org.apache.commons.lang3.StringUtils.leftPad;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,10 +43,12 @@ import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceList;
+import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
+import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDeliveryTypeService;
@@ -52,11 +58,13 @@ import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdManagerRoleService;
 import com.ynyes.lyz.service.TdManagerService;
+import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.service.TdProductCategoryService;
+import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
@@ -132,6 +140,15 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
+	
+	@Autowired
+	private TdOrderGoodsService tdOrderGoodsService;
+	
+	@Autowired
+	private TdCommonService tdCommonService;
+	
+	@Autowired
+	private TdReturnNoteService tdReturnNoteService;
 	
 	
 	@RequestMapping(value = "/downdatagoods")
@@ -1467,6 +1484,101 @@ public class TdManagerOrderController {
 				{
 					order.setStatusId(7L);
 					order.setCancelTime(new Date());
+					if (null != order) {
+						TdReturnNote returnNote = new TdReturnNote();
+
+						// 退货单编号
+						Date current = new Date();
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+						String curStr = sdf.format(current);
+						Random random = new Random();
+
+						returnNote.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+
+						// 添加订单信息
+						returnNote.setOrderNumber(order.getOrderNumber());
+						// 支付方式
+						returnNote.setPayTypeId(order.getPayTypeId());
+						returnNote.setPayTypeTitle(order.getPayTypeTitle());
+						// 门店信息
+						if (null != order.getDiySiteId()) {
+							TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
+							returnNote.setDiySiteId(order.getDiySiteId());
+							returnNote.setDiySiteTel(diySite.getServiceTele());
+							returnNote.setDiySiteTitle(diySite.getTitle());
+							returnNote.setDiySiteAddress(diySite.getAddress());
+						}
+
+						// 退货信息
+						returnNote.setUsername(order.getUsername());
+						returnNote.setRemarkInfo("取消订单退货");
+
+						Long turnType = 2L;
+						// 退货方式
+						returnNote.setTurnType(turnType);
+						// 原订单配送方式
+						if ("门店自提".equals(order.getDeliverTypeTitle())) {
+							if (turnType.equals(1L)) {
+								returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
+							} else {
+								returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
+							}
+						} else {
+							if (turnType.equals(1L)) {
+								returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
+							} else {
+								returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
+							}
+						}
+
+						returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
+						Date date = new Date();
+						returnNote.setOrderTime(new Date());
+
+						returnNote.setTurnPrice(order.getTotalGoodsPrice());
+						List<TdOrderGoods> orderGoodsList = new ArrayList<>();
+						if (null != order.getOrderGoodsList()) {
+							for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
+								TdOrderGoods orderGoods = new TdOrderGoods();
+
+								orderGoods.setBrandId(oGoods.getBrandId());
+								orderGoods.setBrandTitle(oGoods.getBrandTitle());
+								orderGoods.setGoodsId(oGoods.getGoodsId());
+								orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
+								orderGoods.setSku(oGoods.getSku());
+								orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
+								orderGoods.setGoodsColor(oGoods.getGoodsColor());
+								orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
+								orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
+								orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
+								orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
+
+								orderGoods.setPrice(oGoods.getPrice());
+								orderGoods.setQuantity(oGoods.getQuantity());
+
+								orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
+								orderGoods.setPoints(oGoods.getPoints());
+								// tdOrderGoodsService.save(orderGoods);
+								// 添加商品信息
+								orderGoodsList.add(orderGoods);
+
+								// 订单商品设置退货为True
+								oGoods.setIsReturnApplied(true);
+								// 更新订单商品信息是否退货状态
+								tdOrderGoodsService.save(oGoods);
+							}
+						}
+
+						returnNote.setReturnGoodsList(orderGoodsList);
+						tdOrderGoodsService.save(orderGoodsList);
+						// 保存退货单
+						returnNote = tdReturnNoteService.save(returnNote);
+						returnNote.setStatusId(3L);
+
+						returnNote = tdReturnNoteService.save(returnNote);
+						TdReturnNote note1 = tdReturnNoteService.findByReturnNumber(returnNote.getReturnNumber());
+						tdCommonService.sendBackMsgToWMS(note1);
+					}
 				}
 			}
 
