@@ -30,7 +30,7 @@
         <header>
             <a class="back" href="javascript:history.go(-1);"></a>
             <p>我的产品劵</p>
-            <a class="save" href="#">使用说明</a>
+            <a class="save" href="/user/coupon/goods/guide">使用说明</a>
         </header>
         <!-- 头部 END -->
         <!-- 我的产品劵 -->

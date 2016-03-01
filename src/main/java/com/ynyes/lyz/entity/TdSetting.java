@@ -97,6 +97,12 @@ public class TdSetting {
     @Column
     private String registerNego;
     
+    @Column
+    private String cashCouponGuide;
+    
+    @Column
+    private String goodsCouponGuide;
+    
     // 注册成功奖励积分
     @Column
     private Long registerSuccessPoints;
@@ -363,6 +369,22 @@ public class TdSetting {
 
 	public void setCancelTime(Long cancelTime) {
 		this.cancelTime = cancelTime;
+	}
+
+	public String getCashCouponGuide() {
+		return cashCouponGuide;
+	}
+
+	public void setCashCouponGuide(String cashCouponGuide) {
+		this.cashCouponGuide = cashCouponGuide;
+	}
+
+	public String getGoodsCouponGuide() {
+		return goodsCouponGuide;
+	}
+
+	public void setGoodsCouponGuide(String goodsCouponGuide) {
+		this.goodsCouponGuide = goodsCouponGuide;
 	}
     
 }
