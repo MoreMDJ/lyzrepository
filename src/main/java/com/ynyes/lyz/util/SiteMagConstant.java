@@ -26,8 +26,8 @@ public class SiteMagConstant {
 		Properties props = System.getProperties();
 		String operation = props.getProperty("os.name");
 		if(operation.contains("Linux")){
-			backupPath = "/root/backup/";
-			imagePath = "/root/images/goods";
+			backupPath = "/mnt/root/backup/";
+			imagePath = "/mnt/root/images/goods";
 		}else{
 			backupPath = "src/main/resources/backup/";
 			imagePath = "src/main/resources/static/images";

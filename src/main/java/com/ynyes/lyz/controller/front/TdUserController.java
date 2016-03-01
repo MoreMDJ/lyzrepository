@@ -1312,7 +1312,7 @@ public class TdUserController {
 				returnNote = tdReturnNoteService.save(returnNote);
 				TdReturnNote note1 = tdReturnNoteService.findByReturnNumber(returnNote.getReturnNumber());
 				tdCommonService.sendBackMsgToWMS(note1);
-				System.out.println("MDJWMS:发送退货单：" + returnNote.getReturnNumber() + "成功！");
+//				System.out.println("MDJWMS:发送退货单：" + returnNote.getReturnNumber() + "成功！");
 			}
 		}
 
