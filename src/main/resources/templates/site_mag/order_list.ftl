@@ -144,6 +144,9 @@ function downloaddate(type)
         <th align="left" width="12%">
             会员账号
         </th>
+        <th align="left" width="12%">
+            会员名
+        </th>
         <#--<th align="left" width="8%">
             收货人
         </th>-->
@@ -179,6 +182,7 @@ function downloaddate(type)
                 <td>
                     <a href="/Verwalter/order/edit?id=${order.id?c}&statusId=${statusId!'0'}">${order.orderNumber!""}</a></td>
                 <td>${order.username!""}</td>
+                <td><#if name_map??>${name_map[order.username]}</#if></td>
                 <#--<td>${order.shippingName!""}</td>-->
                 <td>${order.payTypeTitle!""}</td>
                 <td>${order.deliverTypeTitle!""}</td>

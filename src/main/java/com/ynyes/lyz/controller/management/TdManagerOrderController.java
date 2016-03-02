@@ -1229,10 +1229,10 @@ public class TdManagerOrderController {
 		if (orders1 != null)
 		{
 			List<TdOrder> orderlist = orders1.getContent();
-			List<String> nameList = getUserRealNameFormTdOder(orderlist);
-			if (nameList != null)
+			Map<String,String> nameMap = getUserRealNameFormTdOder(orderlist);
+			if (nameMap != null)
 			{
-				map.addAttribute("name_list",nameList);
+				map.addAttribute("name_map",nameMap);
 			}
 		}
 		// 参数注回
@@ -1802,27 +1802,25 @@ public class TdManagerOrderController {
 		}
 	}
 	
-	private List<String> getUserRealNameFormTdOder(List<TdOrder> orders)
+	private Map<String,String> getUserRealNameFormTdOder(List<TdOrder> orders)
 	{
+		
 		Map<String, String> map = new HashMap<>();
-		List<String> strings = new ArrayList<>();
-		List<String> nameStrings = new ArrayList<>();
 		for (TdOrder tdOrder : orders)
 		{
 			String username = tdOrder.getUsername();
 			if(map.containsKey(username))
 			{
-				nameStrings.add(map.get(username));
+				continue;
 			}
 			else
 			{
 				TdUser tdUser = tdUserService.findByUsername(username);
 				map.put(username, tdUser.getRealName());
-				nameStrings.add(tdUser.getRealName());
 			}
 		}
 		
 		
-		return strings;
+		return map;
 	}
 }
