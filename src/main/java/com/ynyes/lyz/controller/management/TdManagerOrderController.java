@@ -22,6 +22,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.w3c.dom.ls.LSException;
 
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
@@ -1222,7 +1224,17 @@ public class TdManagerOrderController {
 				}
 			}
 		}
-
+		
+		Page<TdOrder> orders1 = (Page<TdOrder>)map.get("order_page");
+		if (orders1 != null)
+		{
+			List<TdOrder> orderlist = orders1.getContent();
+			List<String> nameList = getUserRealNameFormTdOder(orderlist);
+			if (nameList != null)
+			{
+				map.addAttribute("name_list",nameList);
+			}
+		}
 		// 参数注回
 		map.addAttribute("page", page);
 		map.addAttribute("size", size);
@@ -1788,5 +1800,29 @@ public class TdManagerOrderController {
 				}
 			}
 		}
+	}
+	
+	private List<String> getUserRealNameFormTdOder(List<TdOrder> orders)
+	{
+		Map<String, String> map = new HashMap<>();
+		List<String> strings = new ArrayList<>();
+		List<String> nameStrings = new ArrayList<>();
+		for (TdOrder tdOrder : orders)
+		{
+			String username = tdOrder.getUsername();
+			if(map.containsKey(username))
+			{
+				nameStrings.add(map.get(username));
+			}
+			else
+			{
+				TdUser tdUser = tdUserService.findByUsername(username);
+				map.put(username, tdUser.getRealName());
+				nameStrings.add(tdUser.getRealName());
+			}
+		}
+		
+		
+		return strings;
 	}
 }

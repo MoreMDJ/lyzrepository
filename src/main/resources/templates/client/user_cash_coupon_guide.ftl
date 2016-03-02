@@ -24,7 +24,7 @@
        
         <!-- 头部 -->
         <header>
-            <a class="back" href="/user/coupon/0"></a>
+            <a class="back" href="javascript:history.go(-1)"></a>
             <p>现金卷使用说明</p>
         </header>
         <!-- 头部 END -->

@@ -200,7 +200,7 @@ $(function () {
     <dl>
         <dt>管理员邮箱</dt>
         <dd>
-            <input name="adminEmail" type="text" value="<#if setting??>${setting.adminEmail!""}</#if>" class="input normal" datatype="n0-100" sucmsg=" ">
+            <input name="adminEmail" type="text" value="<#if setting??>${setting.adminEmail!""}</#if>" class="input normal" datatype="e" sucmsg=" ">
             <span class="Validform_checktip"></span>
         </dd>
     </dl>

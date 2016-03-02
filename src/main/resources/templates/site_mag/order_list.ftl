@@ -144,6 +144,9 @@ function downloaddate(type)
         <th align="left" width="12%">
             会员账号
         </th>
+        <#--<th align="left" width="8%">
+            收货人
+        </th>-->
         <th align="left" width="10%">
             支付方式
         </th>
@@ -156,7 +159,7 @@ function downloaddate(type)
         <th width="10%">
             总金额
         </th>
-        <th align="left" width="16%">
+        <th align="left" width="10%">
             下单时间
         </th>
         <th width="8%">
@@ -176,6 +179,7 @@ function downloaddate(type)
                 <td>
                     <a href="/Verwalter/order/edit?id=${order.id?c}&statusId=${statusId!'0'}">${order.orderNumber!""}</a></td>
                 <td>${order.username!""}</td>
+                <#--<td>${order.shippingName!""}</td>-->
                 <td>${order.payTypeTitle!""}</td>
                 <td>${order.deliverTypeTitle!""}</td>
                 <td align="center">
