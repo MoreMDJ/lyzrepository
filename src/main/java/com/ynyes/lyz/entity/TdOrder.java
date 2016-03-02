@@ -213,6 +213,10 @@ public class TdOrder {
 	// 商品总金额
 	@Column(scale = 2)
 	private Double totalGoodsPrice;
+	
+	//使用预存款总也
+	@Column(scale = 2)
+	private Double userUsed;
 
 	// 使用可提现预存款金额
 	@Column(scale = 2)
@@ -890,5 +894,13 @@ public class TdOrder {
 
 	public void setSellerRealName(String sellerRealName) {
 		this.sellerRealName = sellerRealName;
+	}
+
+	public Double getUserUsed() {
+		return userUsed;
+	}
+
+	public void setUserUsed(Double userUsed) {
+		this.userUsed = userUsed;
 	}
 }

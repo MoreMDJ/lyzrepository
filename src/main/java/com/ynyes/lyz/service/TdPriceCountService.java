@@ -28,6 +28,9 @@ public class TdPriceCountService {
 
 	@Autowired
 	private TdUserService tdUserService;
+	
+	@Autowired
+	private TdOrderService tdOrderService;
 
 	/**
 	 * 计算订单价格和能使用的最大的预存款的方法
@@ -118,55 +121,67 @@ public class TdPriceCountService {
 		// 将运费的费用添加到订单总额中
 		order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
 
-		// 开始计算使用的现金券的价值
-		String cashCouponId = order.getCashCouponId();
-		if (null == order.getCashCoupon()) {
-			order.setCashCoupon(0.00);
+		// 判断能否使用预存款和优惠券（支付方式为到店支付的情况下不能够使用预存款和优惠券）
+		String payTypeTitle = order.getPayTypeTitle();
+		if (null != payTypeTitle && payTypeTitle.equalsIgnoreCase("到店支付")) {
+			canUseBalance = false;
 		}
-		// 拆分现金券
-		if (null != cashCouponId && !"".equals(cashCouponId)) {
-			String[] coupons = cashCouponId.split(",");
-			if (null != coupons && coupons.length > 0) {
-				for (String sCouponId : coupons) {
-					Long id = Long.parseLong(sCouponId);
-					// 获取该张优惠券实体信息
-					TdCoupon coupon = tdCouponService.findOne(id);
-					// 如果该张优惠券存在，具有金额，同时没有过期，没有使用，则有效
-					if (null != coupon && null != coupon.getPrice() && null != coupon.getIsOutDate()
-							&& null != coupon.getIsUsed() && !coupon.getIsOutDate() && !coupon.getIsUsed()) {
-						Double price = coupon.getPrice();
-						order.setTotalPrice(order.getTotalPrice() - price);
-						order.setCashCoupon(order.getCashCoupon() + price);
+
+		if (canUseBalance) {
+			// 开始计算使用的现金券的价值
+			String cashCouponId = order.getCashCouponId();
+			if (null == order.getCashCoupon()) {
+				order.setCashCoupon(0.00);
+			}
+			// 拆分现金券
+			if (null != cashCouponId && !"".equals(cashCouponId)) {
+				String[] coupons = cashCouponId.split(",");
+				if (null != coupons && coupons.length > 0) {
+					for (String sCouponId : coupons) {
+						Long id = Long.parseLong(sCouponId);
+						// 获取该张优惠券实体信息
+						TdCoupon coupon = tdCouponService.findOne(id);
+						// 如果该张优惠券存在，具有金额，具有真实使用价值，同时没有过期，没有使用，则有效
+						if (null != coupon && null != coupon.getPrice() && null != coupon.getRealPrice()
+								&& null != coupon.getIsOutDate() && null != coupon.getIsUsed() && !coupon.getIsOutDate()
+								&& !coupon.getIsUsed()) {
+							Double price = coupon.getRealPrice();
+							order.setTotalPrice(order.getTotalPrice() - price);
+							order.setCashCoupon(order.getCashCoupon() + price);
+						}
 					}
 				}
 			}
-		}
 
-		// 开始计算产品券产品券的价值
-		String productCouponId = order.getProductCouponId();
-		// 拆分产品券
-		if (null != productCouponId && !"".equals(productCouponId)) {
-			String[] coupons = productCouponId.split(",");
-			if (null != coupons && coupons.length > 0) {
-				for (String sCouponId : coupons) {
-					Long id = Long.parseLong(sCouponId);
-					// 获取该张优惠券的实体信息
-					TdCoupon coupon = tdCouponService.findOne(id);
-					// 如果该张优惠券存在，具有指定商品，同时没有过期，没有使用，则有效
-					if (null != coupon && null != coupon.getGoodsId() && null != coupon.getIsOutDate()
-							&& null != coupon.getIsUsed() && !coupon.getIsOutDate() && !coupon.getIsUsed()) {
-						Long goodsId = coupon.getGoodsId();
-						// 遍历所有的已选商品，查找与优惠券对应的商品，获取其价格
-						for (TdOrderGoods orderGoods : goodsList) {
-							if (null != orderGoods) {
-								Long the_id = orderGoods.getGoodsId();
-								// 如果商品的id相同，则表示找到了指定的商品，可以获得商品的价格
-								if (null != the_id && the_id.longValue() == goodsId.longValue()) {
-									Double price = orderGoods.getPrice();
-									if (null == price) {
-										price = 0.00;
+			// 开始计算产品券产品券的价值
+			String productCouponId = order.getProductCouponId();
+			// 拆分产品券
+			if (null != productCouponId && !"".equals(productCouponId)) {
+				String[] coupons = productCouponId.split(",");
+				if (null != coupons && coupons.length > 0) {
+					for (String sCouponId : coupons) {
+						Long id = Long.parseLong(sCouponId);
+						// 获取该张优惠券的实体信息
+						TdCoupon coupon = tdCouponService.findOne(id);
+						// 如果该张优惠券存在，具有指定商品，同时没有过期，没有使用，则有效
+						if (null != coupon && null != coupon.getGoodsId() && null != coupon.getIsOutDate()
+								&& null != coupon.getIsUsed() && !coupon.getIsOutDate() && !coupon.getIsUsed()) {
+							Long goodsId = coupon.getGoodsId();
+							// 遍历所有的已选商品，查找与优惠券对应的商品，获取其价格
+							for (TdOrderGoods orderGoods : goodsList) {
+								if (null != orderGoods) {
+									Long the_id = orderGoods.getGoodsId();
+									// 如果商品的id相同，则表示找到了指定的商品，可以获得商品的价格
+									if (null != the_id && the_id.longValue() == goodsId.longValue()) {
+										Double price = orderGoods.getPrice();
+										if (null == price) {
+											price = 0.00;
+										}
+										order.setTotalPrice(order.getTotalPrice() - price);
+										// 设置产品券的实际使用价值
+										coupon.setRealPrice(price);
+										tdCouponService.save(coupon);
 									}
-									order.setTotalPrice(order.getTotalPrice() - price);
 								}
 							}
 						}
@@ -192,6 +207,13 @@ public class TdPriceCountService {
 		} else {
 			max_use = 0.00;
 		}
+
+		// 根据当前预存款使用额，判断当前订单的金额
+		if (canUseBalance) {
+			order.setTotalPrice(order.getTotalPrice() - order.getUserUsed());
+		}
+		
+		tdOrderService.save(order);
 
 		results.put("result", order);
 		results.put("max", max_use);
