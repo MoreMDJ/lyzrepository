@@ -266,7 +266,7 @@ $(function () {
   <dl>
     <dt>上传头像</dt>
     <dd>
-        <input id="txtImgUrl" name="headImageUri" type="text" value="<#if user??>${user.headImageUri!""}</#if>" class="input normal upload-path">
+        <input id="txtImgUrl" name="headImageUri" type="text" value="<#if user??>${user.headImageUri!"/client/images/per_titleimg01.png"}<#else>/client/images/per_titleimg01.png</#if>" class="input normal upload-path">
         <div class="upload-box upload-img"></div>
         <div class="photo-list thumb_ImgUrl_show">
             <ul>

@@ -1822,7 +1822,6 @@ public class TdManagerOrderController {
 			}
 		}
 		
-		
 		return strings;
 	}
 }

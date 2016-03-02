@@ -82,41 +82,6 @@ public class TdManagerCouponController {
     @Autowired
     private TdUserService tdUseService;
     
-//    @RequestMapping(value="/check", method = RequestMethod.POST)
-//    @ResponseBody
-//    public Map<String, String> validateForm(String param, Long id) {
-//        Map<String, String> res = new HashMap<String, String>();
-//        
-//        res.put("status", "n");
-//        
-//        if (null == param || param.isEmpty())
-//        {
-//            res.put("info", "该字段不能为空");
-//            return res;
-//        }
-//        
-//        if (null == id)
-//        {
-//            if (null != tdSiteService.findByTitle(param))
-//            {
-//                res.put("info", "已存在同名站点");
-//                return res;
-//            }
-//        }
-//        else
-//        {
-//            if (null != tdSiteService.findByTitleAndIdNot(param, id))
-//            {
-//                res.put("info", "已存在同名站点");
-//                return res;
-//            }
-//        }
-//        
-//        res.put("status", "y");
-//        
-//        return res;
-//    }
-    
     @RequestMapping(value="/type/list")
     public String couponType(String __EVENTTARGET,
                           String __EVENTARGUMENT,
@@ -131,7 +96,7 @@ public class TdManagerCouponController {
         if (null == username) {
             return "redirect:/Verwalter/login";
         }
-      //管理员角色
+        //管理员角色
         TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
         TdManagerRole tdManagerRole = null;
         
@@ -140,7 +105,8 @@ public class TdManagerCouponController {
             tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
         }
         
-        if (null != tdManagerRole) {
+        if (null != tdManagerRole) 
+        {
 			map.addAttribute("tdManagerRole", tdManagerRole);
 		}
         
@@ -408,139 +374,6 @@ public class TdManagerCouponController {
         	typeId =0L;
         }
         
-//        Page<TdCoupon> couponPage = null;
-        
-//        if (null == keywords) {//无搜索
-//			if (diysiteId.equals(0L)) {//全部同盟店
-//				if (isUsed.equals(0L)) {//两种核销状态
-//					if(typeId.equals(0L)){//类型
-//						couponPage = tdCouponService.findByIsDistributtedTrueAndIsEnableTrueOrderByIdDesc(page, size);			        
-//						map.addAttribute("coupon_page", couponPage);
-//					}
-//					else{
-//						couponPage = tdCouponService.findByTypeIdAndIsDistributtedTrueAndIsEnableTrueOrderByIdDesc(typeId,page,size);
-//						map.addAttribute("coupon_page", couponPage);
-//					}
-//				}
-//				else{
-//					if (isUsed.equals(1L)) {//已核销
-//						if(typeId.equals(0L)){//类型
-//							couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedTrueAndIsEnableTrueOrderByIdDesc(page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//						else{
-//							couponPage = tdCouponService.findByTypeIdAndIsDistributtedTrueAndIsUsedTrueAndIsEnableTrueOrderByIdDesc(typeId,page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//					}
-//					if (isUsed.equals(2L)) {
-//						if(typeId.equals(0L)){//类型
-//							couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedFalseAndIsEnableTrueOrderByIdDesc(page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//						else{
-//							couponPage = tdCouponService.findByTypeIdAndIsDistributtedTrueAndIsUsedFalseAndIsEnableTrueOrderByIdDesc(typeId,page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//					}
-//				}
-//			}
-//			else{
-//				if (isUsed.equals(0L)) {//两种核销状态	
-//					if(typeId.equals(0L)){//类型
-//						couponPage = tdCouponService.findByIsDistributtedTrueAndDiySiteIdAndIsEnableTrueOrderByIdDesc(diysiteId, page, size);			        
-//						map.addAttribute("coupon_page", couponPage);
-//					}else{
-//						couponPage = tdCouponService.findBytypeIdAndIsDistributtedTrueAndDiySiteIdAndIsEnableTrueOrderByIdDesc(typeId,diysiteId, page, size);			        
-//						map.addAttribute("coupon_page", couponPage);
-//					}
-//				}
-//				else{
-//					if (isUsed.equals(1L)) {//已核销
-//						if(typeId.equals(0L)){//类型
-//							couponPage = tdCouponService.findByIsDistributtedTrueAndDiySiteIdAndIsUsedTrueAndIsEnableTrueOrderByIdDesc(diysiteId, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}else{
-//							couponPage = tdCouponService.findBytypeIdAndIsDistributtedTrueAndDiySiteIdAndIsUsedTrueAndIsEnableTrueOrderByIdDesc(typeId,diysiteId, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//					}
-//					if (isUsed.equals(2L)) {
-//						if(typeId.equals(0L)){//类型
-//							couponPage = tdCouponService.findByIsDistributtedTrueAndDiySiteIdAndIsUsedFalseAndIsEnableTrueOrderByIdDesc(diysiteId, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}else{
-//							couponPage = tdCouponService.findBytypeIdAndIsDistributtedTrueAndDiySiteIdAndIsUsedFalseAndIsEnableTrueOrderByIdDesc(typeId,diysiteId, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//					}
-//				}
-//			}
-//		}
-//        else{//↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-//        	if (diysiteId.equals(0L)) {//全部同盟店
-//				if (isUsed.equals(0L)) {
-//					if(typeId.equals(0L)){//类型
-//						couponPage = tdCouponService.findByIsDistributtedTrueAndIsEnableTrueAndContainingKeywords(keywords, page, size);			        
-//						map.addAttribute("coupon_page", couponPage);
-//					}else{
-//						couponPage = tdCouponService.findBytypeIdAndIsDistributtedTrueAndIsEnableTrueAndContainingKeywords(typeId,keywords, page, size);			        
-//						map.addAttribute("coupon_page", couponPage);
-//					}
-//				}
-//				else{
-//					if (isUsed.equals(1L)) {//已核销
-//						if(typeId.equals(0L)){//类型
-//							couponPage = tdCouponService.findByIsDistributtedTrueAndIsEnableTrueAndIsUsedTrueAndContainingKeywords(keywords, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}else{
-//							couponPage = tdCouponService.findBytypeIdAndIsDistributtedTrueAndIsEnableTrueAndIsUsedTrueAndContainingKeywords(typeId,keywords, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//					}
-//					if (isUsed.equals(2L)) {
-//						if(typeId.equals(0L)){//类型
-//							couponPage = tdCouponService.findByIsDistributtedTrueAndIsEnableTrueAndIsUsedFalseAndContainingKeywords(keywords, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}else{
-//							couponPage = tdCouponService.findBytypeIdAndIsDistributtedTrueAndIsEnableTrueAndIsUsedFalseAndContainingKeywords(typeId,keywords, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//					}
-//				}
-//			}
-//			else{
-//				if (isUsed.equals(0L)) {//两种核销状态	
-//					if(typeId.equals(0L)){//类型
-//						couponPage = tdCouponService.findByIsDistributtedTrueAndIsEnableTrueAndDiySiteIdAndContainingKeywordsOrderBySortIdAsc(diysiteId,keywords, page, size);			        
-//						map.addAttribute("coupon_page", couponPage);
-//					}else{
-//						couponPage = tdCouponService.findBytypeIdAndIsDistributtedTrueAndIsEnableTrueAndDiySiteIdAndContainingKeywordsOrderBySortIdAsc(typeId,diysiteId,keywords, page, size);			        
-//				        map.addAttribute("coupon_page", couponPage);
-//					}
-//				}
-//				else{
-//					if (isUsed.equals(1L)) {//已核销
-//						if(typeId.equals(0L)){//类型
-//							couponPage = tdCouponService.findByIsDistributtedTrueAndIsEnableTrueAndAndIsUsedTrueAndDiySiteIdAndContainingKeywordsOrderBySortIdAsc(diysiteId,keywords, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}else{
-//							couponPage = tdCouponService.findBytypeIdAndIsDistributtedTrueAndIsEnableTrueAndAndIsUsedTrueAndDiySiteIdAndContainingKeywordsOrderBySortIdAsc(typeId,diysiteId,keywords, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//					}
-//					if (isUsed.equals(2L)) {
-//						if(typeId.equals(0L)){
-//							couponPage = tdCouponService.findByIsDistributtedTrueAndIsEnableTrueAndAndIsUsedFalseAndDiySiteIdAndContainingKeywordsOrderBySortIdAsc(diysiteId,keywords, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}else{
-//							couponPage = tdCouponService.findBytypeIdAndIsDistributtedTrueAndIsEnableTrueAndAndIsUsedFalseAndDiySiteIdAndContainingKeywordsOrderBySortIdAsc(typeId,diysiteId,keywords, page, size);
-//							map.addAttribute("coupon_page", couponPage);
-//						}
-//					}
-//				}
-//			}
-//        }
         map.addAttribute("page", page);
         map.addAttribute("size", size);
         map.addAttribute("diysiteId", diysiteId);
