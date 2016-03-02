@@ -1100,8 +1100,7 @@ public class TdUserController {
 	
 	/**
 	 * 跳转到现金卷使用说明页面
-	 * @param map
-	 * @return
+	 * @author tangjunmao
 	 */
 	@RequestMapping(value = "/coupon/cash/guide")
 	public String toCashCouponGuide(ModelMap map){
@@ -1112,8 +1111,7 @@ public class TdUserController {
 	
 	/**
 	 * 跳转到产品卷使用说明页面
-	 * @param map
-	 * @return
+	 * @author tangjunmao
 	 */
 	@RequestMapping(value = "/coupon/goods/guide")
 	public String toGoodsCouponGuide(ModelMap map){
