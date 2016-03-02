@@ -136,15 +136,7 @@
                             <#if isCoupon??&&isCoupon==false>
                                                                                 禁止使用
                             <#else>
-                                <#if no_product_coupon_list??&&no_product_coupon_list?size gt 0>
-                                    <#if no_product_used??>
-                                        ${no_product_used}张
-                                    <#else>
-                                                                                               0.00
-                                    </#if>
-                                <#else>
-                                                                                    0.00
-                                </#if>
+                                <#if order??&&order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if>
                             </#if>
                         </a>
                     </div>
