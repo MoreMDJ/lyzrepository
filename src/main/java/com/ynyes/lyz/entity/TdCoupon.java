@@ -73,6 +73,10 @@ public class TdCoupon {
 	// 金额
 	@Column(scale = 2)
 	private Double price;
+	
+	//实际使用金额
+	@Column
+	private Double realPrice;
 
 	// 是否已领用
 	@Column
@@ -341,6 +345,12 @@ public class TdCoupon {
 	public void setAddTime(Date addTime) {
 		this.addTime = addTime;
 	}
-	
-	
+
+	public Double getRealPrice() {
+		return realPrice;
+	}
+
+	public void setRealPrice(Double realPrice) {
+		this.realPrice = realPrice;
+	}
 }

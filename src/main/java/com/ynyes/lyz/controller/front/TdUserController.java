@@ -77,8 +77,6 @@ import com.ynyes.lyz.service.TdUserSuggestionService;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.MD5;
 
-import scala.testing.Show;
-
 @Controller
 @RequestMapping(value = "/user")
 public class TdUserController {
