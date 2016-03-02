@@ -883,7 +883,7 @@ public class TdOrderController {
 					return res;
 				}
 				// 第二种情况，不能使用优惠券（使用额已经大于限额）
-				if (permits[1] > permits[0] || permits[1] + coupon.getPrice() > permits[0]) {
+				if (permits[1] > permits[0]) {
 					res.put("message", "您所能使用的" + brand.getTitle() + "公司<br>的优惠券最大限额为" + permits[0] + "元");
 					return res;
 				} else {
@@ -911,6 +911,14 @@ public class TdOrderController {
 						req.getSession().setAttribute("order_temp", order);
 						tdOrderService.save(order);
 					}
+
+					// 计算当前现金券的实际使用价值
+					if (permits[1] + coupon.getPrice() > permits[0]) {
+						coupon.setRealPrice(permits[0] - permits[1]);
+					} else {
+						coupon.setRealPrice(coupon.getPrice());
+					}
+					tdCouponService.save(coupon);
 				}
 			}
 			if (1L == status) {
@@ -1001,6 +1009,9 @@ public class TdOrderController {
 							couponNumber = 0L;
 						} else {
 							orderGoods.setCouponNumber(orderGoods.getCouponNumber() - 1L);
+							// 存储产品券的实际使用价值
+							coupon.setRealPrice(orderGoods.getPrice());
+							tdCouponService.save(coupon);
 						}
 						tdOrderGoodsService.save(orderGoods);
 						if (!"".equals(productCouponId)) {

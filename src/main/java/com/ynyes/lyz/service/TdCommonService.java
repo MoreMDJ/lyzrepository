@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 
-import org.apache.cassandra.thrift.Cassandra.AsyncProcessor.add;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.apache.geronimo.mail.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +60,6 @@ public class TdCommonService {
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
 	static QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
 
-	@Autowired
-	private TdReturnNoteService tdReturnNoteService;
-	
 	@Autowired
 	private TdUserService tdUserService;
 
@@ -495,89 +491,6 @@ public class TdCommonService {
 	}
 
 	/**
-	 * 获取所有参加的活动的赠品的方法（非小辅料赠送活动）
-	 * 
-	 * @param presented表示活动赠送的赠品
-	 * @param selected代表已选商品
-	 * @return 表示活动赠送的赠品
-	 */
-	// public List<TdCartGoods> getPresent(HttpServletRequest req,
-	// List<TdCartGoods> selected,
-	// List<TdCartGoods> presented) {
-	// // 获取当前已选能够参加的活动
-	// List<TdActivity> activities = this.getActivityBySelected(req);
-	// // 创建一个布尔类型变量表示能否是否还能参加活动（用于跳出递归）
-	// Boolean isActivity = false;
-	// // 遍历活动集合，按照活动执行顺序判断所获取的赠品
-	// for (TdActivity activity : activities) {
-	// if (null != activity) {
-	// // 创建一个布尔变量表示已选商品能否参加指定的活动
-	// Boolean isJoin = true;
-	// // 获取该活动所需要的商品及其数量的列表
-	// String goodsAndNumber = activity.getGoodsNumber();
-	// if (null != goodsAndNumber) {
-	// // 拆分列表，使其成为【商品id_数量】的个体
-	// String[] item = goodsAndNumber.split(",");
-	// if (null != item) {
-	// for (String each_item : item) {
-	// if (null != each_item) {
-	// // 拆分个体以获取id和数量的属性
-	// String[] param = each_item.split("_");
-	// // 当个体不为空且长度为2的时候才是正确的数据
-	// if (null != param && param.length == 2) {
-	// Long id = Long.parseLong(param[0]);
-	// Long quantity = Long.parseLong(param[1]);
-	// // 遍历selected（已选商品）
-	// for (int i = 0; i < selected.size(); i++) {
-	// TdCartGoods cartGoods = selected.get(i);
-	// if (cartGoods.getGoodsId() == id && cartGoods.getQuantity() < quantity) {
-	// isJoin = false;
-	// }
-	// }
-	// }
-	// }
-	// }
-	// // 如果循环结束，isJoin的值还是true，则代表该活动可以参加
-	// if (isJoin) {
-	// isActivity = true;
-	// // 获取活动的赠品
-	// String giftAndNumber = activity.getGiftNumber();
-	// // 拆分得到赠品的【id_数量】个体
-	// if (null != giftAndNumber) {
-	// String[] singles = giftAndNumber.split(",");
-	// for (String single : singles) {
-	// // 拆分个体，获取赠品的id和数量属性
-	// if (null != single) {
-	// String[] param = single.split("_");
-	// Long id = Long.parseLong(param[0]);
-	// Long quantity = Long.parseLong(param[1]);
-	// // 创建一个商品的已选项存储赠品，其价格为0
-	// TdCartGoods gift = new TdCartGoods();
-	// // 查找到指定的商品
-	// TdGoods goods = tdGoodsService.findOne(id);
-	// gift.setGoodsTitle(goods.getTitle());
-	// gift.setGoodsId(id);
-	// gift.setQuantity(quantity);
-	// gift.setPrice(0.00);
-	// presented.add(gift);
-	// }
-	// }
-	// }
-	// // 如果本次有活动参加，则去除参加活动的已选商品，继续查看是否有其他活动可以参加
-	// if (isActivity) {
-	// selected = this.getLeftCartGoods(selected, activity);
-	// presented = this.getPresent(req, selected, presented);
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	//
-	// return presented;
-	// }
-
-	/**
 	 * 获取已选商品能够得到的小辅料
 	 * 
 	 * @author dengxiao
@@ -872,6 +785,8 @@ public class TdCommonService {
 		virtual.setSellerId(seller.getId());
 		virtual.setSellerRealName(seller.getRealName());
 		virtual.setSellerUsername(seller.getUsername());
+		
+		virtual.setUserUsed(0.00);
 
 		// 遍历所有的已选商品，生成虚拟订单
 		for (TdCartGoods cart : select_goods) {
