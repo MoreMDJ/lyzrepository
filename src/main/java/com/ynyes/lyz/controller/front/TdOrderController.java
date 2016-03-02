@@ -1,5 +1,6 @@
 package com.ynyes.lyz.controller.front;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ibm.icu.math.BigDecimal;
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
@@ -1435,4 +1435,52 @@ public class TdOrderController {
 		return "redirect:/user/order/0";
 	}
 
+	/**
+	 * 跳转到使用预存款的界面的方法
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/user/balance")
+	public String orderUserBalance(HttpServletRequest req, ModelMap map, Double max) {
+		// 获取登录用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
+		// 获取当前订单信息
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		map.addAttribute("order", order);
+		map.addAttribute("user", user);
+		map.addAttribute("max", max);
+		return "/client/order_balance";
+	}
+
+	/**
+	 * 确定使用预存款的方法
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/balance/confirm")
+	public String orderBalanceConfirm(HttpServletRequest req, ModelMap map, Double used) {
+		// 获取登录用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
+		
+		//获取虚拟订单
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		
+		// 四舍五入used
+		if (null != used) {
+			BigDecimal b = new BigDecimal(used);
+			used = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+			order.setActualPay(used);
+			req.getSession().setAttribute("order_temp", order);
+			tdOrderService.save(order);
+		}
+		return "redirect:/order";
+	}
 }

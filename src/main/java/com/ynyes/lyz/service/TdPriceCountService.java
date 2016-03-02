@@ -55,7 +55,7 @@ public class TdPriceCountService {
 		// 每次重新计算的时候，清空优惠券的使用说明
 		order.setCashCoupon(0.00);
 		order.setProductCoupon("");
-
+		
 		List<TdOrderGoods> goodsList = order.getOrderGoodsList();
 		// 如果订单里面没有商品，则也没有计算的必要
 		if (null == goodsList || goodsList.size() <= 0) {
@@ -207,11 +207,23 @@ public class TdPriceCountService {
 		} else {
 			max_use = 0.00;
 		}
-
+		
 		// 根据当前预存款使用额，判断当前订单的金额
 		if (canUseBalance) {
-			order.setTotalPrice(order.getTotalPrice() - order.getUserUsed());
+			if(null == order.getActualPay()){
+				//默认使用了最大限额
+				order.setActualPay(0.00);
+			}
+		}else{
+			order.setActualPay(0.00);
 		}
+		
+		//判断是否使用的预存款大于了订单的总金额
+		if(order.getActualPay() > order.getTotalPrice()){
+			order.setActualPay(order.getTotalPrice());
+		}
+		
+		order.setTotalPrice(order.getTotalPrice() - order.getActualPay());
 		
 		tdOrderService.save(order);
 
