@@ -145,6 +145,17 @@ public class TdReturnNoteService {
 		return repository.findByDiySiteTitleOrOrderNumberOrReturnNumberOrUsername(keywords, keywords, keywords,
 				keywords, pageRequest);
 	}
+	
+	public Page<TdReturnNote> findByDiySiteTitleAndOrderNumberOrReturnNumberOrUsername(String title, String keyword,
+			int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+		return repository.findByDiySiteTitleOrOrderNumberOrReturnNumberOrUsername(title, keyword, keyword, keyword,
+				pageRequest);
+	}
+	
+	public String findSiteTitleByUserName(String username){
+		return repository.findSiteTitleByUserName(username);
+	}
 
 	/**
 	 * 保存

@@ -10,6 +10,7 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -127,20 +128,32 @@ public class TdManagerReturnNoteController {
 		if (null != type) {
 			if (type.equalsIgnoreCase("returnNote")) //
 			{
-				if (null == keywords || keywords.equalsIgnoreCase("")) 
-				{
+				String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
+				siteName = StringUtils.isNotBlank(siteName) ? siteName : keywords;
+				String keyword = StringUtils.isNotBlank(keywords) ? keywords : "";
+				if (StringUtils.isNotBlank(siteName)){
+					map.addAttribute("returnNote_page", tdReturnNoteService
+							.findByDiySiteTitleAndOrderNumberOrReturnNumberOrUsername(siteName, keyword, page, size));
+				}else if (StringUtils.isNotBlank(keyword)){
+					map.addAttribute("returnNote_page", tdReturnNoteService
+							.searchAll(keyword, page, size));
+				}else{
 					map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
 				}
-				else
-				{
-					map.addAttribute("returnNote_page", tdReturnNoteService.searchAll(keywords, page, size));
-				}
-
 				return "/site_mag/returnNote_list";
 			}
 
 		}
 		return "/site_mag/returnNote_list";
+	}
+	
+	/**
+	 * 查询
+	 * @param user
+	 * @return
+	 */
+	private String findSiteTitle(String user){
+		return "";
 	}
 
 	@RequestMapping(value = "/{type}/edit")
