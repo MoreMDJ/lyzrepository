@@ -1819,8 +1819,7 @@ public class TdManagerOrderController {
 				map.put(username, tdUser.getRealName());
 			}
 		}
-		
-		
+
 		return map;
 	}
 }

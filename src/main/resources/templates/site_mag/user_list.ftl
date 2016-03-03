@@ -144,6 +144,7 @@ var theForm = document.forms['form1'];
                 			<#case 2>店长<#break>
                 			<#case 3>店主<#break>
                 			<#case 4>区域经理<#break>
+                			<#case 5>配送员<#break>
                 			<#default>会员
                 		</#switch>
                 </td>

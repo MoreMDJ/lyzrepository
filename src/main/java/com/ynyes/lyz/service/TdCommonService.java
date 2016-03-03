@@ -786,8 +786,8 @@ public class TdCommonService {
 		virtual.setSellerRealName(seller.getRealName());
 		virtual.setSellerUsername(seller.getUsername());
 		
-		virtual.setUserUsed(0.00);
-
+		virtual.setIsUsedBalance(true);
+		
 		// 遍历所有的已选商品，生成虚拟订单
 		for (TdCartGoods cart : select_goods) {
 			TdOrderGoods goods = new TdOrderGoods();
@@ -1101,7 +1101,7 @@ public class TdCommonService {
 										if (null == coupon.getPrice()) {
 											coupon.setPrice(0.00);
 										}
-										order.setCashCoupon(order.getCashCoupon() + coupon.getPrice());
+										order.setCashCoupon(order.getCashCoupon() + coupon.getRealPrice());
 										order.setTotalPrice(order.getTotalPrice() - coupon.getPrice());
 									}
 								}

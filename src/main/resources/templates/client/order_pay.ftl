@@ -130,39 +130,17 @@
                             </#if>
                         </a>
                     </div>
-                    <div class="div2">
-                        <label>预存余额：</label>
-                        <div class="wallet-balance">
-                            <div class="first">共￥<span id="all_balance"><#if user??&&user.balance??>${user.balance?string("0.00")}<#else>0.00</#if></span></div>
-                        </div>
-                    </div>
-                    <div class="div2">
-                        <label>本次使用</label>
-                        <div class="wallet-balance">
-                            <div class="first"><span><input id="usedBalance" style="border:#dddddd 1px solid;line-height:20px;padding-left:20px;" type="text" value="<#if max??>${max?string("0.00")}<#else>0.00</#if>"></span></div>
-                            <div id="isUserCash" class="checked <#if !(isCoupon??&&isCoupon==false)>active</#if>"></div>
-                            <#-- <#if max??>${max?string("0.00")}<#else>0.00</#if> -->
-                            <input type="hidden" id="userBalance" value="<#if user.balance??>${user.balance?string("0.00")}<#else>0.00</#if>">
-                        </div>
+                    <div class="div1">
+                        <label>预存款</label>
+                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(no_product_coupon_list??&&no_product_coupon_list?size gt 0)>href="/order/user/balance?max=${max!'0.00'}"</#if>>
+                            <#if isCoupon??&&isCoupon==false>
+                                                                                禁止使用
+                            <#else>
+                                <#if order??&&order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if>
+                            </#if>
+                        </a>
                     </div>
                 </section>
-                <script type="text/javascript">
-                    $(document).ready(function(){
-                        var onOff = true;
-                        $(".checked").click(function(){
-                            <#if !(isCoupon??&&isCoupon==false)>
-                                if(onOff){
-                                    $(this).addClass("active");
-                                }else{
-                                    $(this).removeClass("active");
-                                }
-                                onOff = !onOff;
-                            <#else>
-                                warning("\"到店支付\"不能使用预存款");;
-                            </#if>
-                        });
-                    });
-                </script>
                 <!-- 商品费用 -->
                 <section class="pro-price">
                     <div class="div1">
