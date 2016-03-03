@@ -14,11 +14,24 @@ $(function () {
         });
     });
 });
+function checkDiy(object){
+    if ($(object).val() == "全选") {
+        $(object).val("取消");
+        $(".productIdRadio:enabled").prop("checked", true);
+    } else {
+        $(object).val("全选");
+        $(".productIdRadio:enabled").prop("checked", false);
+    }
+}
 </script>
 <#if diysite_list?? && diysite_list?size gt 0>
 <dl>
     <dt>门店</dt>
     <dd>
+        <div>
+            <input type="button" value="全选" onclick="checkDiy(this);">
+            <input type="button" value="反全选">
+        </div>
         <div class="rule-multi-checkbox">
             <span>
                 <#list diysite_list as product>
