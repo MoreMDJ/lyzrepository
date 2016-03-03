@@ -147,15 +147,6 @@ public class TdManagerReturnNoteController {
 		return "/site_mag/returnNote_list";
 	}
 	
-	/**
-	 * 查询
-	 * @param user
-	 * @return
-	 */
-	private String findSiteTitle(String user){
-		return "";
-	}
-
 	@RequestMapping(value = "/{type}/edit")
 	public String edit(@PathVariable String type, Long id, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
