@@ -369,6 +369,12 @@ public class TdOrderController {
 		// 获取默认门店
 		TdDiySite diySite = tdDiySiteService.findOne(diySiteId);
 
+		// 判断能否更改门店或销顾（如果当前登录账号为销顾或者店长，则代表本单位代下单，则不能更改门店或销顾）
+		Long userType = user.getUserType();
+		if (null != userType && (userType.longValue() == 1L || userType.longValue() == 2L)) {
+			map.addAttribute("canChangeSeller", false);
+		}
+
 		map.addAttribute("seller", order.getSellerRealName());
 		map.addAttribute("diySite", diySite);
 		map.addAttribute("diy_list", diy_list);
@@ -1236,7 +1242,7 @@ public class TdOrderController {
 	 */
 	@RequestMapping(value = "/check")
 	@ResponseBody
-	public Map<String, Object> checkOrder(HttpServletRequest req, Boolean userCash, Double userUsed, ModelMap map) {
+	public Map<String, Object> checkOrder(HttpServletRequest req, ModelMap map, Long id) {
 		System.err.println("进入支付控制器");
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
@@ -1258,6 +1264,16 @@ public class TdOrderController {
 		if (null == order_temp) {
 			res.put("message", "未找到虚拟订单");
 			return res;
+		}
+
+		// 判断用户是否为销顾或者店长
+		Long userType = user.getUserType();
+		if (1L == userType.longValue() || 2L == userType.longValue()) {
+			TdUser buyer = tdUserService.findOne(id);
+			if (null != buyer) {
+				order_temp.setUsername(buyer.getUsername());
+				order_temp.setUserId(buyer.getId());
+			}
 		}
 
 		if (null == order_temp.getSellerId() || null == order_temp.getSellerRealName()
@@ -1292,17 +1308,16 @@ public class TdOrderController {
 		String cashCouponId = order_temp.getCashCouponId();
 		String productCouponId = order_temp.getProductCouponId();
 
-		System.err.println("开始忽略小数点后2位之后的数字");
-		BigDecimal b = new BigDecimal(order_temp.getTotalPrice());
-		order_temp.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
-		order_temp.setActualPay(userUsed);
-
 		if (isOnline) {
 			// 判断是否还有未支付的金额
-			if (userUsed < order_temp.getTotalPrice()) {
+			if (order_temp.getTotalPrice() > 0) {
 				// 跳转第三方
 				// res.put("url", payType.get);
-				res.put("message", "您的余额不足");
+				// 支付失败将订单用户还原
+				order_temp.setUsername(user.getUsername());
+				order_temp.setUserId(user.getId());
+				tdOrderService.save(order_temp);
+				res.put("message", "支付失败");
 				return res;
 			} else {
 				// 将选择的现金券和产品券设置为已使用
@@ -1311,8 +1326,8 @@ public class TdOrderController {
 					if (null != cashs) {
 						for (String sId : cashs) {
 							if (null != sId && !"".equals(sId)) {
-								Long id = Long.valueOf(sId);
-								TdCoupon coupon = tdCouponService.findOne(id);
+								Long coupon_id = Long.valueOf(sId);
+								TdCoupon coupon = tdCouponService.findOne(coupon_id);
 								if (null != coupon) {
 									coupon.setIsUsed(true);
 									coupon.setUseTime(new Date());
@@ -1328,8 +1343,8 @@ public class TdOrderController {
 					if (null != products) {
 						for (String sId : products) {
 							if (null != sId && !"".equals(sId)) {
-								Long id = Long.valueOf(sId);
-								TdCoupon coupon = tdCouponService.findOne(id);
+								Long coupon_id = Long.valueOf(sId);
+								TdCoupon coupon = tdCouponService.findOne(coupon_id);
 								if (null != coupon) {
 									coupon.setIsUsed(true);
 									coupon.setUseTime(new Date());
@@ -1348,8 +1363,8 @@ public class TdOrderController {
 				if (null != cashs) {
 					for (String sId : cashs) {
 						if (null != sId) {
-							Long id = Long.valueOf(sId);
-							TdCoupon coupon = tdCouponService.findOne(id);
+							Long coupon_id = Long.valueOf(sId);
+							TdCoupon coupon = tdCouponService.findOne(coupon_id);
 							if (null != coupon) {
 								coupon.setIsUsed(true);
 								coupon.setUseTime(new Date());
@@ -1365,8 +1380,8 @@ public class TdOrderController {
 				if (null != products) {
 					for (String sId : products) {
 						if (null != sId) {
-							Long id = Long.valueOf(sId);
-							TdCoupon coupon = tdCouponService.findOne(id);
+							Long coupon_id = Long.valueOf(sId);
+							TdCoupon coupon = tdCouponService.findOne(coupon_id);
 							if (null != coupon) {
 								coupon.setIsUsed(true);
 								coupon.setUseTime(new Date());
@@ -1395,18 +1410,19 @@ public class TdOrderController {
 			balance = 0.00;
 		}
 
-		if (unCashBalance >= userUsed) {
-			user.setUnCashBalance(user.getUnCashBalance() - userUsed);
-			order_temp.setUnCashBalanceUsed(userUsed);
+		if (unCashBalance >= order_temp.getActualPay()) {
+			user.setUnCashBalance(user.getUnCashBalance() - order_temp.getActualPay());
+			order_temp.setUnCashBalanceUsed(order_temp.getActualPay());
 		} else {
-			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - userUsed);
+			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - order_temp.getActualPay());
 			user.setUnCashBalance(0.0);
 			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
-			order_temp.setCashBalanceUsed(userUsed - user.getUnCashBalance());
+			order_temp.setCashBalanceUsed(order_temp.getActualPay() - user.getUnCashBalance());
 		}
-		user.setBalance(user.getBalance() - userUsed);
+		user.setBalance(user.getBalance() - order_temp.getActualPay());
 		tdUserService.save(user);
 
+		req.getSession().setAttribute("order_temp", order_temp);
 		tdOrderService.save(order_temp);
 
 		res.put("status", 0);
@@ -1469,10 +1485,10 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-		
-		//获取虚拟订单
+
+		// 获取虚拟订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
-		
+
 		// 四舍五入used
 		if (null != used) {
 			BigDecimal b = new BigDecimal(used);
@@ -1482,5 +1498,95 @@ public class TdOrderController {
 			tdOrderService.save(order);
 		}
 		return "redirect:/order";
+	}
+
+	/**
+	 * 去支付的方法
+	 * 
+	 * @author DengXiao
+	 */
+	// @RequestMapping(value = "/user/payment")
+	// public String orderUserPayment(HttpServletRequest req, ModelMap map) {
+	// //获取登录用户的信
+	// }
+
+	/**
+	 * 验证用户是否是店长或者销顾的方法
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/check/user/status")
+	@ResponseBody
+	public Map<String, Object> checkUserStatus(HttpServletRequest req, ModelMap map) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+
+		// 获取登录用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			res.put("message", "获取信息失败");
+			return res;
+		}
+
+		// 获取登录用户的身份状态
+		Long userType = user.getUserType();
+		if (null == userType) {
+			res.put("message", "获取信息失败");
+			return res;
+		}
+
+		// 判断用户是否为会员用户
+		if (0L == userType.longValue()) {
+			res.put("check", true);
+		} else {
+			res.put("check", false);
+		}
+
+		res.put("status", 0);
+		return res;
+	}
+
+	/**
+	 * 获取登录用户所在门店的所有会员（异步刷新）
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/get/user/infomation")
+	public String getUserInfomation(HttpServletRequest req, ModelMap map) {
+		// 获取登录用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (null != user) {
+			user.getCityId();
+			user.getCustomerId();
+			List<TdUser> user_list = tdUserService
+					.findByCityIdAndCustomerIdAndUserTypeOrderBySortIdAsc(user.getCityId(), user.getCustomerId());
+			map.addAttribute("user_list", user_list);
+		}
+		return "/client/order_user_info";
+	}
+
+	/**
+	 * 根据关键词搜索用户的方法
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/change/user/info")
+	public String orderChangeUserInfo(HttpServletRequest req, ModelMap map, String keywords) {
+		// 获取登录用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (null != user) {
+			user.getCityId();
+			user.getCustomerId();
+			List<TdUser> user_list = tdUserService
+					.findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(user.getCityId(),
+							user.getCustomerId(), keywords);
+			map.addAttribute("user_list", user_list);
+		}
+		return "/client/order_user_info";
 	}
 }

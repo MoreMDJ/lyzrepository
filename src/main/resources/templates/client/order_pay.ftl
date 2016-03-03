@@ -20,6 +20,10 @@
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
         <#include "/client/common_wait.ftl"> 
+        <#-- 引入会员信息列表 -->
+        <div id="info_window">
+            <#include "/client/order_user_list.ftl">
+        </div>
         <!-- 头部 -->
         <header>
             <a class="back" href="/"></a>
@@ -164,9 +168,8 @@
                 <span id="order_total_price"><#if order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span>
             </div>
             <#--<a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>-->
-            <a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>
+            <a class="btn-clearing" id="buyNow" href="javascript:checkUserStatus();">去支付</a>
         </footer>
         <!-- 底部 END -->
-        
     </body>
 </html>

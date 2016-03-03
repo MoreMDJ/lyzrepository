@@ -77,7 +77,11 @@
 		<ul class="my_add">
 			<li class="li01">
 				<label>预存款总额</label>
-				<span><#if user??&&user.balance??>${user.balance?string("0.00")}<#else>0.00</#if></span>
+				<span>￥<#if user??&&user.balance??>${user.balance?string("0.00")}<#else>0.00</#if></span>
+			</li>
+			<li class="li01">
+				<label>本单可使用</label>
+				<span>￥<#if max??>${max?string("0.00")}<#else>0.00</#if></span>
 			</li>
 			<li class="li02">
 				<label>当前使用</label>

@@ -78,7 +78,7 @@
                 <li>
                     <div class="div11">
                         <label id="diyLabel"><#if deliveryId??&&deliveryId==1>归属门店<#elseif deliveryId??&&deliveryId==2>提货门店</#if></label>
-                        <a class="target" id="diySite_info" href="javascript:getInfo(0);"><#if diySite??>${diySite.title!''}</#if></a>
+                        <a class="target" id="diySite_info" <#if !(canChangeSeller??&&canChangeSeller==false)>href="javascript:getInfo(0);"</#if>><#if diySite??>${diySite.title!''}</#if></a>
                     </div>
                     <#--
                     <#if diy_list??>
@@ -101,7 +101,7 @@
                 <li>
                     <div class="div11">
                         <label id="diyLabel">服务导购</label>
-                        <a class="target" id="seller_info" style="height:100%;width:70%;" href="javascript:getInfo(1);">${seller!'暂无'}</a>
+                        <a class="target" id="seller_info" style="height:100%;width:70%;" <#if !(canChangeSeller??&&canChangeSeller==false)>href="javascript:getInfo(1);"</#if>>${seller!'暂无'}</a>
                     </div> 
                 </li>
             </ol>

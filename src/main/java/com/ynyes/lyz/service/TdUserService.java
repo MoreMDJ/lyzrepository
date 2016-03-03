@@ -201,4 +201,30 @@ public class TdUserService {
 		}
 		return repository.findByCityIdAndUserTypeOrCityIdAndUserTypeOrderBySortIdAsc(cityId, 1L, cityId, 2L);
 	}
+
+	/**
+	 * 查询指定门店下的所有用户
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdUser> findByCityIdAndCustomerIdAndUserTypeOrderBySortIdAsc(Long cityId, Long customerId) {
+		if (null == cityId || null == customerId) {
+			return null;
+		}
+		return repository.findByCityIdAndCustomerIdAndUserTypeOrderBySortIdAsc(cityId, customerId, 0L);
+	}
+
+	/**
+	 * 根据关键词查询指定门店下的所有用户
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdUser> findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(Long cityId,
+			Long customerId, String keywords) {
+		if (null == cityId || null == customerId || null == keywords) {
+			return null;
+		}
+		return repository.findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(cityId, customerId,
+				0L, keywords);
+	}
 }

@@ -54,7 +54,8 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+	// static String wmsUrl =
+	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -697,11 +698,17 @@ public class TdCommonService {
 		// 默认门店为用户的归属门店
 		TdDiySite defaultDiy = this.getDiySite(req);
 
+		TdUser seller = null;
 		// 获取用户的导购
-		Long id = user.getSellerId();
-		TdUser seller = tdUserService.findOne(id);
-		if(null == seller){
-			seller = new TdUser();
+		if (1L == user.getUserType().longValue() || 2L == user.getUserType().longValue()) {
+			// 如果当前登录账户是销顾或者店长，则改单的seller是他自己
+			seller = user;
+		} else {
+			Long id = user.getSellerId();
+			seller = tdUserService.findOne(id);
+			if (null == seller) {
+				seller = new TdUser();
+			}
 		}
 
 		// 默认的配送日期：第二天的的上午11:30——12:30
@@ -781,13 +788,13 @@ public class TdCommonService {
 		virtual.setDeliveryDate(order_deliveryDate);
 		virtual.setDeliveryDetailId(order_deliveryDeatilId);
 		virtual.setDeliverFee(fee);
-		
+
 		virtual.setSellerId(seller.getId());
 		virtual.setSellerRealName(seller.getRealName());
 		virtual.setSellerUsername(seller.getUsername());
-		
+
 		virtual.setIsUsedBalance(true);
-		
+
 		// 遍历所有的已选商品，生成虚拟订单
 		for (TdCartGoods cart : select_goods) {
 			TdOrderGoods goods = new TdOrderGoods();
@@ -998,12 +1005,12 @@ public class TdCommonService {
 				order.setProductCouponId("");
 				order.setStatusId(3L);
 				order.setUserId(order_temp.getUserId());
-				order.setUsername(username);
+				order.setUsername(order_temp.getUsername());
 				order.setPayTypeId(order_temp.getPayTypeId());
 				order.setPayTypeTitle(order_temp.getPayTypeTitle());
 				order.setOrderTime(order_temp.getOrderTime());
 				order.setRemark(order_temp.getRemark());
-				//设置销顾信息
+				// 设置销顾信息
 				order.setSellerId(order_temp.getSellerId());
 				order.setSellerRealName(order_temp.getSellerRealName());
 				order.setSellerUsername(order_temp.getSellerUsername());

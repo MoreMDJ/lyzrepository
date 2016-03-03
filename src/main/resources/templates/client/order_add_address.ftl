@@ -83,7 +83,7 @@
                     <label>详细地址：</label>
                     <input type="text" id="detail">
                 </div>
-                <input class="btn-submit-save" type="button" onclick="saveAddress();" value="保存">
+                <input style="background-color:#cc1421;" class="btn-submit-save" type="button" onclick="saveAddress();" value="保存">
             </form>
         </article>
     <!-- 添加收货地址 END -->

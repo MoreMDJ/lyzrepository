@@ -45,80 +45,77 @@ function userRemark(old_remark) {
 }
 
 /**
- * 去支付的方法
+ * 获取本店所有会员信息的方法
  * 
- * @author dengxiao
+ * @author DengXiao
  */
-function orderPay() {
-	var userCash = false;
-	var isUserCash = $("#isUserCash");
-	var classes = isUserCash.attr("class");
-	if (classes.indexOf("active") != -1) {
-		userCash = true;
-	}
-
-	var reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/;
-
-	// 获取当前用户使用的预存款额度
-	var usedBalance = $("#usedBalance").val();
-	
-	// add by Shawn 如果取消使用预存款，则不使用
-	if (false == userCash)
-	{
-		usedBalance = 0;
-	}
-
-	// 获取当前用户的余额
-	var userBalance = $("#userBalance").val();
-
-	if (!reg.test(usedBalance)) {
-		warning("亲，预存款一栏中输入正确的数字（必须为大于或等于0的数字且不超过小数点后2位）");
-		return;
-	}
-
-	if (parseFloat(usedBalance) > parseFloat(userBalance)) {
-		warning("亲，您输入的预存款使<br>用额大于了您的存款总额");
-		return;
-	}
-
-	// 获取订单总额
-	var order_total_price = $("#order_total_price").html();
-	console.debug(order_total_price);
-
-	if (parseFloat(usedBalance) > parseFloat(order_total_price)) {
-		warning("亲，您输入的预存款使<br>用额大于了订单总额");
-		return;
-	}
-
-	// 开启等待图标
+function getUserInfo() {
 	wait();
-
-	// 发送异步请求
 	$.ajax({
-		url : "/order/check",
+		url : "/order/get/user/infomation",
+		timeout : 20000,
 		type : "post",
-		timeout : 10000,
-		data : {
-			userCash : userCash,
-			userUsed : usedBalance
-		},
 		error : function() {
-			// 关闭等待图标
 			close(1);
-			warning("您的网速不给力啊");
+			warning("亲，您的网速不给力啊");
 		},
 		success : function(res) {
-			// 关闭等待图标
-			close(100);
-			$("#buyNow").attr("href", "javascript:void(0);")
-			warning(res.message);
+			close(1);
+			$("#changeInfo").html(res);
+			win_yes();
+		}
+	});
+}
+
+/**
+ * 验证用户是否是店长或销顾的方法
+ * 
+ * @author DengXiao
+ */
+function checkUserStatus() {
+	wait();
+	$.ajax({
+		url : "/order/check/user/status",
+		timeout : 20000,
+		type : "post",
+		error : function() {
+			close(1);
+			warning("亲，您的网速不给力啊");
+		},
+		success : function(res) {
 			if (-1 == res.status) {
-				$("#buyNow").attr("href", "javascript:orderPay();")
+				close(1);
+				warning(res.message);
+				return;
 			}
 			if (0 == res.status) {
-				setTimeout(function() {
-					window.location.href = "/order/pay";
-				}, 1000)
+				if (false === res.check) {
+					// 如果不是会员用户，则代表本单属于代下单，需要获取本店的会员信息
+					getUserInfo();
+				}
+
+				if (true === res.check) {
+					// 发起异步请求验证结算
+					$.ajax({
+						type : "post",
+						timeout : 20000,
+						url : "/order/check",
+						error : function() {
+							close(1);
+							warning("亲，您的网速不给力啊");
+						},
+						success : function(res) {
+							close(1);
+							if (-1 == res.status) {
+								warning(res.message);
+								return;
+							}
+							if (0 == res.status) {
+								window.location.href = "/order/pay";
+							}
+						}
+					})
+				}
 			}
 		}
 	});

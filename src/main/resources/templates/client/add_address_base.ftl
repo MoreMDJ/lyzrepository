@@ -48,7 +48,7 @@
                     <label>详细地址：</label>
                     <input type="text" id="detailAddress" value="${address.detailAddress!''}">
                 </div>
-                <input class="btn-submit-save" type="button" value="保存" onclick="saveAddress();">
+                <input style="background-color:#cc1421;" class="btn-submit-save" type="button" value="保存" onclick="saveAddress();">
             </form>
         </article>
         <!-- 添加收货地址 END -->
