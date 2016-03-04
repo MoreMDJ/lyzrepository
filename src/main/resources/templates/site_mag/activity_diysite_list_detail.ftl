@@ -2,35 +2,60 @@
 <script type="text/javascript" src="/mag/js/layout.js"></script>
 </#if>
 <script type="text/javascript">
-$(function () {
-    // 根据选择的产品载入筛选项
-    $(".productIdRadio").click(function(){
-        $.ajax({
-            url : '/Verwalter/product/parameter/'+$(this).val() <#if goods??>+"?goodsId=${goods.id?c}"</#if>,
-            type : 'GET',
-            success : function(res) {
-                $("#productSelectDiv").html(res);
-            }
-        });
-    });
-});
 function checkDiy(object){
     if ($(object).val() == "全选") {
         $(object).val("取消");
-        $(".productIdRadio:enabled").prop("checked", true);
+       
+        var checkbox1 = $(".productIdRadio:enabled").first();
+        var labels = checkbox1.siblings("label");
+        var MDJnumber = 0;
+        labels.each(function(){
+            var val = $(this).html();
+            var indexNum =$(this).index();
+            $(".rule-multi-checkbox").find(':checkbox').eq(MDJnumber++).prop("checked",true);
+            $("a:contains('"+val+"')").addClass("selected");
+            
+        });
     } else {
         $(object).val("全选");
-        $(".productIdRadio:enabled").prop("checked", false);
+        var checkbox1 = $(".productIdRadio:enabled").first();
+        var labels = checkbox1.siblings("label");
+        var MDJnumber = 0;
+        labels.each(function(){
+            var val = $(this).html();
+            var indexNum =$(this).index();
+            $(".rule-multi-checkbox").find(':checkbox').eq(MDJnumber++).prop("checked",false);
+            $("a:contains('"+val+"')").removeClass("selected");
+        });
     }
+}
+function UncheckDiy(object)
+{
+    var checkbox1 = $(".productIdRadio:enabled").first();
+    var labels = checkbox1.siblings("label");
+    var MDJnumber = 0;
+    labels.each(function(){
+        var val = $(this).html();
+        var checkOne = $(".rule-multi-checkbox").find(':checkbox').eq(MDJnumber++);
+        if(checkOne.prop("checked") == true)
+        {
+            checkOne.prop("checked",false);
+        }
+        else
+        {
+            checkOne.prop("checked",true);
+        }
+        $("a:contains('"+val+"')").trigger("click");
+    });
 }
 </script>
 <#if diysite_list?? && diysite_list?size gt 0>
 <dl>
     <dt>门店</dt>
     <dd>
-        <div>
+        <#----><div>
             <input type="button" value="全选" onclick="checkDiy(this);">
-            <input type="button" value="反全选">
+            <input type="button" value="反全选" onclick="UncheckDiy(this);">
         </div>
         <div class="rule-multi-checkbox">
             <span>
