@@ -70,7 +70,7 @@
                                     <!-- 图片原始尺寸 992*386 -->
                                     <img src="/client/images/bg1_cash_volume.png" alt="现金劵">
                                     <div class="div1">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy-MM-dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd")}</#if></span></div>
-                                    <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}</#if></span></div>
+                                    <div class="div2"></div>
                                     <div class="div3">${item.goodsName!''}</div>
                                     <img class="product-pic" src="${item.picUri!''}" alt="产品图片">
                                 </a>
@@ -89,7 +89,7 @@
                                     <!-- 图片原始尺寸 992*386 -->
                                     <img src="/client/images/bg1_cash_volume.png" alt="现金劵">
                                     <div class="div1">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy-MM-dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd")}</#if></span></div>
-                                    <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}</#if></span></div>
+                                    <div class="div2"></div>
                                     <div class="div3">${item.goodsName!''}</div>
                                     <img class="product-pic" src="${item.picUri!''}" alt="产品图片">
                                 </a>
