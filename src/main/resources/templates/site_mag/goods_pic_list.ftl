@@ -205,7 +205,7 @@ function confirmCopy(id)
             </div>
             <i class="absbg"></i>
             </#if>
-            <h1><span><a href="/Verwalter/goods/edit?cid=${cid!""}&mid=${mid!""}&id=<#if content.id??>${content.id?c}</#if>&__VIEWSTATE=${__VIEWSTATE!""}">${content.title!""}</a></span></h1>
+            <h1><span><a href="/Verwalter/goods/edit?cid=${cid!""}&mid=${mid!""}&id=<#if content.id??>${content.id?c}</#if>&__VIEWSTATE=${__VIEWSTATE!""}">${content.title!""}${content.code!""}</a></span></h1>
             <div class="remark">${content.subTitle!""}</div>
             <div class="tools">
                 

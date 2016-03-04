@@ -617,7 +617,7 @@
             <dl>
                 <dt>签收照片</dt>
                 <dd>
-                    <img src="${order.photo!''}">
+                    <img width="98%" style="min-width: 600px;" src="${order.photo!''}">
                 </dd>
             </dl>
         </#if>
