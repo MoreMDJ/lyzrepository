@@ -1014,6 +1014,12 @@ public class TdCommonService {
 				order.setSellerId(order_temp.getSellerId());
 				order.setSellerRealName(order_temp.getSellerRealName());
 				order.setSellerUsername(order_temp.getSellerUsername());
+				// 设置真实用户信息
+				order.setIsSellerOrder(order_temp.getIsSellerOrder());
+				order.setHaveSeller(order_temp.getHaveSeller());
+				order.setRealUserId(order_temp.getRealUserId());
+				order.setRealUserRealName(order_temp.getRealUserRealName());
+				order.setRealUserUsername(order_temp.getRealUserUsername());
 				// 设置主单号
 				order.setMainOrderNumber(order_temp.getOrderNumber());
 				// 设置实际总支付的预存款额度

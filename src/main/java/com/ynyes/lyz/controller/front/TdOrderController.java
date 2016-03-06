@@ -105,7 +105,7 @@ public class TdOrderController {
 	 * @author dengxiao
 	 */
 	@RequestMapping
-	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id) {
+	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id, Long realUserId) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		// 参数由调用函数检查
@@ -139,6 +139,30 @@ public class TdOrderController {
 		}
 
 		order_temp = tdPriceCouintService.checkCouponIsUsed(order_temp);
+
+		if (null != realUserId) {
+			order_temp.setIsSellerOrder(true);
+		}
+
+		// 获取真实用户
+		TdUser realUser = tdUserService.findOne(realUserId);
+		// 判断具有真实用户的情况，导购和门店默认为真实用户的归属导购和门店
+		if (null != realUser) {
+			order_temp.setRealUserRealName(realUser.getRealName());
+			order_temp.setRealUserId(realUser.getId());
+			order_temp.setRealUserUsername(realUser.getUsername());
+			// 获取真实用户的归属导购（在此不需要获取真实用户的门店，因为真实用户的门店和当前登录的销顾的门店肯定一致）
+			Long sellerId = realUser.getSellerId();
+			if (null != sellerId) {
+				TdUser seller = tdUserService.findOne(sellerId);
+				if (null != seller) {
+					order_temp.setHaveSeller(true);
+					order_temp.setSellerId(seller.getId());
+					order_temp.setSellerRealName(seller.getRealName());
+					order_temp.setSellerUsername(seller.getUsername());
+				}
+			}
+		}
 
 		// 计算价格和最大优惠券使用金额
 		Map<String, Object> results = tdPriceCouintService.countPrice(order_temp, user);
@@ -222,6 +246,7 @@ public class TdOrderController {
 
 		// 将虚拟订单添加到session中
 		req.getSession().setAttribute("order_temp", order_temp);
+		tdOrderService.save(order_temp);
 
 		// 清空已选
 		if (null == id) {
@@ -369,9 +394,8 @@ public class TdOrderController {
 		// 获取默认门店
 		TdDiySite diySite = tdDiySiteService.findOne(diySiteId);
 
-		// 判断能否更改门店或销顾（如果当前登录账号为销顾或者店长，则代表本单位代下单，则不能更改门店或销顾）
-		Long userType = user.getUserType();
-		if (null != userType && (userType.longValue() == 1L || userType.longValue() == 2L)) {
+		// 判断能否更改门店或销顾（如果当前订单的haveSeller为true，则不能修改）
+		if (null != order && null != order.getHaveSeller() && order.getHaveSeller()) {
 			map.addAttribute("canChangeSeller", false);
 		}
 
@@ -1266,14 +1290,10 @@ public class TdOrderController {
 			return res;
 		}
 
-		// 判断用户是否为销顾或者店长
-		Long userType = user.getUserType();
-		if (1L == userType.longValue() || 2L == userType.longValue()) {
-			TdUser buyer = tdUserService.findOne(id);
-			if (null != buyer) {
-				order_temp.setUsername(buyer.getUsername());
-				order_temp.setUserId(buyer.getId());
-			}
+		// 判断是否为代下单
+		if (null != order_temp && null != order_temp.getIsSellerOrder() && order_temp.getIsSellerOrder()) {
+			order_temp.setUsername(order_temp.getRealUserUsername());
+			order_temp.setUserId(order_temp.getRealUserId());
 		}
 
 		if (null == order_temp.getSellerId() || null == order_temp.getSellerRealName()
@@ -1499,16 +1519,6 @@ public class TdOrderController {
 		}
 		return "redirect:/order";
 	}
-
-	/**
-	 * 去支付的方法
-	 * 
-	 * @author DengXiao
-	 */
-	// @RequestMapping(value = "/user/payment")
-	// public String orderUserPayment(HttpServletRequest req, ModelMap map) {
-	// //获取登录用户的信
-	// }
 
 	/**
 	 * 验证用户是否是店长或者销顾的方法

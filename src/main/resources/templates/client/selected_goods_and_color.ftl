@@ -41,7 +41,7 @@
 </#if>
 <div class="select-total-money">总额：<strong id="all_price">￥<#if totalPrice??>${totalPrice?string("0.00")}<#else>0.00</#if><strong></div>
 <#-- 创建一个隐藏标签用于存储当前已选有多少商品（整合后） -->
-<input id="number" type="hidden" value="${selected_number!'0'}">
+<span id="select_num" style="display:none">${selected_number!'0'}</span>
 <script type="text/javascript">
 $(function touch(){
    

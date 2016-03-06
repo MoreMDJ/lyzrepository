@@ -14,12 +14,15 @@
         <!-- js -->
         <script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
         <script src="/client/js/user_selected.js" type="text/javascript"></script>
+        <script src="/client/js/seller_order.js" type="text/javascript"></script>
     </head>
     <body class="bgc-f3f4f6">
         <#-- 引入警告提示样式 -->
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
         <#include "/client/common_wait.ftl">
+        <#-- 引入会员用户信息列表 -->
+        <#include "/client/order_user_list.ftl">
         <!-- 头部 -->
         <header>
             <a class="back" href="javascript:history.go(-1);"></a>
@@ -36,7 +39,7 @@
         <div class="clear h50"></div>
         <!-- 底部 -->
         <footer>
-            <a class="btn-clearing" href="javascript:clearing();">去结算</a>
+            <a class="btn-clearing" href="javascript:seller.checkCart();">去结算</a>
         </footer>
         <!-- 底部 END -->
     </body>

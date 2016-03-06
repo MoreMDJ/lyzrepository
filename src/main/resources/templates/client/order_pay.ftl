@@ -168,7 +168,7 @@
                 <span id="order_total_price"><#if order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span>
             </div>
             <#--<a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>-->
-            <a class="btn-clearing" id="buyNow" href="javascript:checkUserStatus();">去支付</a>
+            <a class="btn-clearing" id="buyNow" href="javascript:pay();">去支付</a>
         </footer>
         <!-- 底部 END -->
     </body>

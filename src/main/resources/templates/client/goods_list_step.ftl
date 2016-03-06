@@ -16,6 +16,7 @@
     <script src="/client/js/index.js" type="text/javascript"></script>
     <script src="/client/js/goods_list.js" type="text/javascript"></script>
     <script src="/client/js/goods_list_step.js" text="text/javascript"></script>
+    <script src="/client/js/seller_order.js" type="text/javascript"></script>
     </head>
     <script type="text/javascript">
     window.onload = function(){
@@ -32,6 +33,8 @@
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
         <#include "/client/common_wait.ftl">
+        <#-- 引入会员用户信息列表 -->
+        <#include "/client/order_user_list.ftl">
         <div>
             <#include "/client/common_shopping_type.ftl">
             <!--
@@ -60,11 +63,10 @@
                 </div>
             </section>
             
-            
             <div class="go_buy">
                 <p onclick="window.location.href='/user/selected'">查看已选(<span id="select_num">${selected_number!'0'}</span>)</p>
                 <a style="background:#ffaa00;" href="javascript:addCart();">加入已选</a>
-                <a href="javascript:clearing();">去结算</a>
+                <a href="javascript:seller.checkCart();">去结算</a>
             </div>
             <#include "/client/common_footer.ftl">
         </div>		

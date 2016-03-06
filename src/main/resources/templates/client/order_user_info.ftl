@@ -1,6 +1,6 @@
 <#if user_list??>
     <#list user_list as item>
-        <div class="swiper-slide" onclick="userInfo.selectInfo(${item.id?c});">
+        <div class="swiper-slide" onclick="seller.selectInfo(${item.id?c});">
             <div class="box">
                 <p>
                 	<#if item??&&item.realName??&&item.realName!="">${item.realName!''}<#else>暂无姓名</#if>
