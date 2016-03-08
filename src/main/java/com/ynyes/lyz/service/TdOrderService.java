@@ -98,6 +98,11 @@ public class TdOrderService {
 		return repository.findAll(pageRequest);
 	}
 	
+	public List<TdOrder> findByCompleteOrder()
+	{
+		return repository.findByStatusIdAndCashCouponIdNotNullOrStatusIdAndCashCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrderByOrderTimeDesc(5L, 6L,5L,6L);
+	}
+	
 	/**
 	 * 根据门店查询订单
 	 * @param diyCode
