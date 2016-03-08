@@ -15,7 +15,7 @@
         padding: 0 5%;
         padding-bottom: 40px;
         padding-top: 52px;
-        height: 230px;
+        height: 180px;
         margin: auto;
         border-radius: 8px;
         background:white;
@@ -108,7 +108,7 @@
     <div class="my_left">
         <div class="searchBox">
             <input placeholder="请输入搜索内容" type="text" name="" id="keywords" value="" />
-            <input type="button" name="" id="" value="搜索" onclick="userInfo.searchInfo();" />
+            <input type="button" name="" id="" value="搜索" onclick="seller.searchInfo();" />
         </div>
         <#--
             <input class="sub" type="submit" name="" id="" value="确定" onclick="win_no()" />
@@ -123,56 +123,3 @@
         </div>
     </div>
 </div>
-<script>
-	var userInfo = {
-		keywords : "",
-		getE : function(id){
-			return document.getElementById(id);
-		},
-		searchInfo : function(){
-			this.keywords = this.getE("keywords").value;
-			wait();
-			$.ajax({
-				url : "/order/change/user/info",
-				type : "post",
-				timeout : 20000,
-				data : {
-					keywords : this.keywords
-				},
-				error : function(){
-					close(1);
-					warning("亲，您的网速不给力啊");
-				},
-				success : function(res){
-					close(1);
-					$("#changeInfo").html(res);
-				}
-			});
-		},
-		selectInfo : function(id){
-			wait();
-			$.ajax({
-				url : "/order/check",
-				type : "post",
-				timeout : 20000,
-				data : {
-					id : id
-				},
-				error : function(){
-					close(1);
-					warning("亲，您的网速不给力啊");
-				},
-				success : function(res){
-					close(1);
-					if(-1 == res.status){
-						warning(res.message);
-						return;
-					}
-					if(0 == res.status){
-						window.location.href = "/order/pay";
-					}
-				}
-			});
-		}
-	}
-</script>

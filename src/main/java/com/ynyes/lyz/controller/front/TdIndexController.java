@@ -135,7 +135,8 @@ public class TdIndexController {
 			return "redirect:/login";
 		}
 
-		if (null != user.getUserType() && user.getUserType().equals(0L)) {
+		if (null != user.getUserType()
+				&& (user.getUserType().equals(0L) || user.getUserType().equals(1L) || user.getUserType().equals(2L))) {
 			tdCommonService.setHeader(req, map);
 
 			// 查找指定用户所属的门店

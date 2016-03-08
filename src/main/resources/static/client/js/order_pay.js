@@ -72,50 +72,25 @@ function getUserInfo() {
  * 
  * @author DengXiao
  */
-function checkUserStatus() {
+function pay() {
 	wait();
+	// 发起异步请求验证结算
 	$.ajax({
-		url : "/order/check/user/status",
-		timeout : 20000,
 		type : "post",
+		timeout : 20000,
+		url : "/order/check",
 		error : function() {
 			close(1);
 			warning("亲，您的网速不给力啊");
 		},
 		success : function(res) {
+			close(1);
 			if (-1 == res.status) {
-				close(1);
 				warning(res.message);
 				return;
 			}
 			if (0 == res.status) {
-				if (false === res.check) {
-					// 如果不是会员用户，则代表本单属于代下单，需要获取本店的会员信息
-					getUserInfo();
-				}
-
-				if (true === res.check) {
-					// 发起异步请求验证结算
-					$.ajax({
-						type : "post",
-						timeout : 20000,
-						url : "/order/check",
-						error : function() {
-							close(1);
-							warning("亲，您的网速不给力啊");
-						},
-						success : function(res) {
-							close(1);
-							if (-1 == res.status) {
-								warning(res.message);
-								return;
-							}
-							if (0 == res.status) {
-								window.location.href = "/order/pay";
-							}
-						}
-					})
-				}
+				window.location.href = "/order/pay";
 			}
 		}
 	});

@@ -111,6 +111,14 @@ public class TdReturnNote {
 	@Column
 	private String deliverTypeTitle;
 	
+	// 原订单配送地址
+	@Column
+	private String shoppingAddress;
+	
+	// 销售顾问名字
+    @Column
+    private String sellerRealName;
+    
 	// 退货金额
 	@Column(scale=2)
 	private Double turnPrice;
@@ -121,6 +129,22 @@ public class TdReturnNote {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getShoppingAddress() {
+		return shoppingAddress;
+	}
+
+	public void setShoppingAddress(String shoppingAddress) {
+		this.shoppingAddress = shoppingAddress;
+	}
+
+	public String getSellerRealName() {
+		return sellerRealName;
+	}
+
+	public void setSellerRealName(String sellerRealName) {
+		this.sellerRealName = sellerRealName;
 	}
 
 	public void setId(Long id) {

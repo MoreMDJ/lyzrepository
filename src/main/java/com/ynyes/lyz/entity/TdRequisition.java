@@ -115,7 +115,19 @@ public class TdRequisition {
     @Column
     private String diyCode;
     
+    // 销售顾问名字
+    @Column
+    private String sellerRealName;
     
+    
+	public String getSellerRealName() {
+		return sellerRealName;
+	}
+
+	public void setSellerRealName(String sellerRealName) {
+		this.sellerRealName = sellerRealName;
+	}
+
 	public String getDiyCode() {
 		return diyCode;
 	}

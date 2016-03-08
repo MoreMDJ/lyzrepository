@@ -323,10 +323,30 @@ public class TdOrder {
 	// 销售顾问的真实姓名
 	@Column
 	private String sellerRealName;
-	
-	//是否使用预存款
+
+	// 是否使用预存款
 	@Column
 	private Boolean isUsedBalance;
+
+	// 订单用户是否绑定导购
+	@Column
+	private Boolean haveSeller;
+
+	// 是否是代下单
+	@Column
+	private Boolean isSellerOrder;
+
+	// 真实用户名
+	@Column
+	private String realUserUsername;
+
+	// 真实用户id
+	@Column
+	private Long realUserId;
+
+	// 真实用户的真实姓名
+	@Column
+	private String realUserRealName;
 
 	public Double getRefund() {
 		return refund;
@@ -902,5 +922,45 @@ public class TdOrder {
 
 	public void setIsUsedBalance(Boolean isUsedBalance) {
 		this.isUsedBalance = isUsedBalance;
+	}
+
+	public Boolean getHaveSeller() {
+		return haveSeller;
+	}
+
+	public void setHaveSeller(Boolean haveSeller) {
+		this.haveSeller = haveSeller;
+	}
+
+	public Boolean getIsSellerOrder() {
+		return isSellerOrder;
+	}
+
+	public void setIsSellerOrder(Boolean isSellerOrder) {
+		this.isSellerOrder = isSellerOrder;
+	}
+
+	public String getRealUserUsername() {
+		return realUserUsername;
+	}
+
+	public void setRealUserUsername(String realUserUsername) {
+		this.realUserUsername = realUserUsername;
+	}
+
+	public Long getRealUserId() {
+		return realUserId;
+	}
+
+	public void setRealUserId(Long realUserId) {
+		this.realUserId = realUserId;
+	}
+
+	public String getRealUserRealName() {
+		return realUserRealName;
+	}
+
+	public void setRealUserRealName(String realUserRealName) {
+		this.realUserRealName = realUserRealName;
 	}
 }
