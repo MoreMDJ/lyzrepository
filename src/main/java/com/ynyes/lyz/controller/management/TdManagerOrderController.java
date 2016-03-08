@@ -1546,7 +1546,13 @@ public class TdManagerOrderController {
 						returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
 						Date date = new Date();
 						returnNote.setOrderTime(new Date());
-
+						
+						
+						//add MDJ
+						returnNote.setShoppingAddress(order.getShippingAddress());
+						returnNote.setSellerRealName(order.getSellerRealName());
+						//end add MDJ
+						
 						returnNote.setTurnPrice(order.getTotalGoodsPrice());
 						List<TdOrderGoods> orderGoodsList = new ArrayList<>();
 						if (null != order.getOrderGoodsList()) {

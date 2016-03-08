@@ -34,13 +34,7 @@ $(function () {
     
     //根据城市选择门店
     $("#cityId").change(function(){
-        $.ajax({
-            url : '/Verwalter/activity/diysite/list?regionId='+$(this).val(),
-            type : 'POST',
-            success : function(res) {
-                $("#id-param-sec").html(res);
-            }
-        });
+        getDiySiteList(this);
     });
     
     //初始化上传控件
@@ -51,20 +45,6 @@ $(function () {
         });
     });
     
-    $(".upload-show360").each(function () {
-        $(this).InitSWFUpload_show360({ 
-            btntext: "批量上传", 
-            btnwidth: 66, 
-            single: false, 
-            water: true, 
-            thumbnail: true, 
-            filesize: "5120", 
-            sendurl: "/Verwalter/upload", 
-            flashurl: "/mag/js/swfupload.swf", 
-            filetypes: "*.jpg;*.jpge;*.png;*.gif;" 
-        });
-    });
-
     //（缩略图）
     var txtPic = $("#txtImgUrl").val();
     if (txtPic == "" || txtPic == null) {
@@ -105,7 +85,6 @@ $(function () {
     //创建促销赠品窗口
     function showDialogGift(obj) {
         var objNum = arguments.length;
-        
         var giftDialog = $.dialog({
             id: 'giftDialogId',
             lock: true,
@@ -207,8 +186,24 @@ $(function () {
             $(this).val("0");
         }
     });
-    
+    function getDiySiteList(object)
+    {
+        $.ajax({
+                url : '/Verwalter/activity/diysite/list/show?regionId='+$(object).val(),
+                type : 'POST',
+                success : function(res) 
+                {
+                    $("#id-param-sec").html(res);
+                },
+                error: function(res)
+                {
+                    alert("error code : -1 + " + res);
+                }
+        });
+    }
 });
+
+
 
 //创建促销赠品窗口
 function show_goods_gift_dialog(obj) {

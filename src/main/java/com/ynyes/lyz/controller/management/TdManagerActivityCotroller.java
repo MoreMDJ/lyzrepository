@@ -77,10 +77,9 @@ public class TdManagerActivityCotroller
 			page = 0;
 		}
 
-		if (null == size || size <= 0) 
+		if (null == size || size <= 0)
 		{
 			size = SiteMagConstant.pageSize;
-			;
 		}
 
 		if (null != keywords)
@@ -92,33 +91,33 @@ public class TdManagerActivityCotroller
 		{
 			switch (__EVENTTARGET)
 			{
-			case "lbtnViewTxt":
-			case "lbtnViewImg":
-				__VIEWSTATE = __EVENTTARGET;
-				break;
+				case "lbtnViewTxt":
+				case "lbtnViewImg":
+					__VIEWSTATE = __EVENTTARGET;
+					break;
 
-			case "btnSave":
-				btnSave(listId, listSortId, username);
-				tdManagerLogService.addLog("edit", "用户修改商品", req);
-				break;
+				case "btnSave":
+					btnSave(listId, listSortId, username);
+					tdManagerLogService.addLog("edit", "用户修改商品", req);
+					break;
 
-			case "btnDelete":
-				btnDelete(listId, listChkId);
-				tdManagerLogService.addLog("delete", "用户删除商品", req);
-				break;
+				case "btnDelete":
+					btnDelete(listId, listChkId);
+					tdManagerLogService.addLog("delete", "用户删除商品", req);
+					break;
 
-			case "btnPage":
-				if (null != __EVENTARGUMENT)
-				{
-					page = Integer.parseInt(__EVENTARGUMENT);
-				}
-				break;
-				
+				case "btnPage":
+					if (null != __EVENTARGUMENT)
+					{
+						page = Integer.parseInt(__EVENTARGUMENT);
+					}
+					break;
 			}
 		}
 
 		if (null != __EVENTTARGET && __EVENTTARGET.equalsIgnoreCase("lbtnViewTxt")
-				|| null != __EVENTTARGET && __EVENTTARGET.equalsIgnoreCase("lbtnViewImg")) {
+				|| null != __EVENTTARGET && __EVENTTARGET.equalsIgnoreCase("lbtnViewImg"))
+		{
 			__VIEWSTATE = __EVENTTARGET;
 		}
 
@@ -511,12 +510,12 @@ public class TdManagerActivityCotroller
 		return "/site_mag/dialog_diysite_list";
 	}
 	
-	@RequestMapping(value = "/diysite/list",method = RequestMethod.POST)
-	public String showDiysiteList(Long regionId,ModelMap map)
+	@RequestMapping(value = "/diysite/list/show",method = RequestMethod.POST)
+	public String showDiysiteList(Long regionId,ModelMap map,HttpServletRequest request)
 	{
 		Page<TdDiySite> diySitePage = TdDiySiteService.findByCityIdAndIsEnableTrueOrderBySortIdAsc(regionId, 0, 100000);
 		map.addAttribute("diysite_list", diySitePage.getContent());
-		return "/site_mag/activity_diysite_list_Detail";
+		return "/site_mag/activity_diysite_list_detail";
 	}
 	
 	@RequestMapping(value = "/check/name" , method = RequestMethod.POST)
@@ -536,6 +535,7 @@ public class TdManagerActivityCotroller
 		
 		return map;
 	}
+	
 	/**
 	 * 修改商品
 	 * 
