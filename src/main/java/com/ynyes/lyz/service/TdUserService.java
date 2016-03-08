@@ -227,4 +227,15 @@ public class TdUserService {
 		return repository.findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(cityId, customerId,
 				0L, keywords);
 	}
+	/**
+	 * 根据真实姓名查询用户
+	 * @param realName
+	 * @return
+	 */
+	public TdUser findByRealName(String realName){
+		if (null == realName) {
+			return null;
+		}
+		return repository.findByRealName(realName);
+	}
 }

@@ -69,4 +69,10 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 * @author DengXiao
 	 */
 	List<TdUser> findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(Long cityId, Long customerId, Long userType,String keywords);
+	/**
+	 * 根据真实姓名查询用户
+	 * @param realName
+	 * @return
+	 */
+	TdUser findByRealName(String realName);
 }

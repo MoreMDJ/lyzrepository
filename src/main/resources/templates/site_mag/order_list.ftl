@@ -10,6 +10,31 @@
 <script type="text/javascript" src="/mag/js/WdatePicker.js"></script>
 <link href="/mag/style/pagination.css" rel="stylesheet" type="text/css">
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+.criteria_list{
+float: left;
+width: 300px;
+height: 37px;
+}
+.criteria{
+clear: both;
+width: 100%;
+height: auto;
+margin-top: 40px;
+}
+.criteria_list input{
+    margin: 0;
+    padding: 0 5px;
+    width: 170px;
+    height: 30px;
+    line-height: 28px;
+    font-size: 12px;
+    border: 1px solid #dbdbdb;
+    color: #444;
+}
+
+
+</style>
 </head>
 <body class="mainbody">
 <form name="form1" method="post" action="/Verwalter/order/list/${statusId!"0"}" id="form1">
@@ -119,13 +144,46 @@ function downloaddate(type)
             </div>
             <div class="r-list">
                 开始时间
-                <input id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                <input name="orderStartTime" id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                 结束时间
-                <input id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                <input name="orderEndTime" id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                 <a style="color:black;" href="javascript:downloaddate(0);">代收款报表下载</a>
                 <a style="color:black;" href="javascript:downloaddate(1);">销售明细表下载</a>
-                <#--<span>订单号：</span>--><input name="keywords" type="text" class="keyword">
+                <span style="float:left;line-height: 32px; ">订单号：</span><input name="keywords" type="text" class="keyword">
+                
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
+            </div>
+             <div class="criteria">
+                <div class="criteria_list"><span>会员姓名：</span><input name="realName" type="text" class="keyword"></div>
+                <div class="criteria_list"><span>收货人电话：</span><input name="shippingPhone" type="text" class="keyword"></div>
+                <div class="criteria_list"><span>收货地址：</span><input name="shippingAddress" type="text" class="keyword"></div>
+                <div class="criteria_list"><span>导购姓名：</span><input name="sellerRealName" type="text" class="keyword"></div>
+                
+                <div class="criteria_list"><span>预约送货时间：</span><input name="deliveryTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
+                <div class="criteria_list"><span>会员电话：</span><input name="userPhone" type="text" class="keyword"></div>
+                <div class="criteria_list"><span>收货人姓名：</span><input name="shippingName" type="text" class="keyword"></div>
+                
+                <!--<div class="criteria_list"><span>送货状态：</span>
+                	<div class="rule-single-select">
+                        <select name="orderStatusId">
+                            <option value="0" >请选择</option>                           
+                            <option value="1" >待确定订单</option>
+                            <option value="2" >代付款订单</option> 
+                            <option value="3" >待发货订单</option>                           
+                            <option value="4" >待收货订单</option>
+                            <option value="5" >待评价订单</option>
+                            <option value="6" >已完成订单</option>                           
+                            <option value="7" >已取消订单</option>
+                            <option value="8" >用户删除订单</option>
+                            <option value="9" >订单退货中</option>                           
+                            <option value="10" >退货确认</option>
+                            <option value="11" >订单退货取消</option>  
+                            <option value="12" >退货完成</option>                          
+                        </select>
+            		</div>
+            	</div>
+                <div class="criteria_list"><span>中转仓库：</span><input name="tt" type="text" class="keyword"></div>-->
+                <div class="criteria_list"><span>实际送货时间：</span><input  name="sendTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
             </div>
         </div>
     </div>

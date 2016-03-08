@@ -30,6 +30,16 @@ function __doPostBack(eventTarget, eventArgument) {
         theForm.submit();
     }
 }
+function downloaddate()
+{
+    var begain = $("#begain").val();
+    var end = $("#end").val();
+    
+    location.href="/Verwalter/coupon/downdata";
+   
+    return; 
+    
+}
 </script>
 <!--导航栏-->
 <div class="location">
@@ -57,11 +67,32 @@ function __doPostBack(eventTarget, eventArgument) {
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>      
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除</span></a></li>
       </ul>
+      <div class="menu-list">
+      		<div class="rule-single-select">
+                        <select name="typeId" onchange="javascript:setTimeout(__doPostBack('changeType',''), 0)">
+                            <option value="0" <#if !typeId?? || typeId==0>selected="selected"</#if>>所有类型</option>
+                            <#if couponType_list??>
+                                <#list couponType_list as cou>
+                                    <option value="${cou.id?c}" <#if typeId?? && typeId==cou.id>selected="selected"</#if>>${cou.title!''}</option>
+                                </#list>
+                            </#if>                             
+                     	</select>
+            </div>
+            <div class="rule-single-select">
+                        <select name="isUsed" onchange="javascript:setTimeout(__doPostBack('',''), 0)">
+                            <option value="0" <#if !isUsed?? || isUsed==0>selected="selected"</#if>>是否使用</option>                           
+                            <option value="1" <#if !isUsed?? || isUsed==1>selected="selected"</#if>>已使用</option>
+                            <option value="2" <#if !isUsed?? || isUsed==2>selected="selected"</#if>>未使用</option>                             
+                        </select>
+            </div>
+      </div>
+    </div>
       <div class="r-list">
                 <input name="keywords" type="text" class="keyword" value="<#if keywords??>${keywords!''}</#if>">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
+                <a style="color:black;line-height: 30px;margin-left: 20px;" href="javascript:downloaddate();">领用记录报表下载</a>
       </div>
-    </div>
+   
   </div>
 </div>
 <!--/工具栏-->
@@ -72,16 +103,7 @@ function __doPostBack(eventTarget, eventArgument) {
   <tbody>
   <tr class="odd_bg">
     <th width="8%">选择</th>
-    <th align="left"><div class="rule-single-select">
-                        <select name="typeId" onchange="javascript:setTimeout(__doPostBack('changeType',''), 0)">
-                            <option value="0" <#if !typeId?? || typeId==0>selected="selected"</#if>>所有类型</option>
-                            <#if couponType_list??>
-                                <#list couponType_list as cou>
-                                    <option value="${cou.id?c}" <#if typeId?? && typeId==cou.id>selected="selected"</#if>>${cou.title!''}</option>
-                                </#list>
-                            </#if>                             
-                        </select>
-                    </div>
+    <th align="left">所有类型
                     </th>
     <#--<th align="left" width="10%"><div class="rule-single-select">
                         <select name="diysiteId" onchange="javascript:setTimeout(__doPostBack('changeDiysite',''), 0)">
@@ -101,13 +123,7 @@ function __doPostBack(eventTarget, eventArgument) {
     <th align="left" width="15%">领用时间</th>
     <th align="left" width="17%">有效截止时间</th>
     <#--<th align="left" width="8%">消费密码</th>-->
-    <th align="left" width="8%"><div class="rule-single-select">
-                        <select name="isUsed" onchange="javascript:setTimeout(__doPostBack('',''), 0)">
-                            <option value="0" <#if !isUsed?? || isUsed==0>selected="selected"</#if>>是否使用</option>                           
-                            <option value="1" >已使用</option>
-                            <option value="2" >未使用</option>                             
-                        </select>
-                    </div>
+    <th align="left" width="8%">是否使用
                     </th>
     <#--
     <th align="left" width="12%">排序</th>
@@ -126,22 +142,14 @@ function __doPostBack(eventTarget, eventArgument) {
                 </td>
                 <td>${item.typeTitle!""}</td>
                 <td>
-	                <#switch item.typeCategoryId>
-		                <#case 0>
-		                	全场通用券
-		                	<#break>	
-		                <#case 1>
-		                	电信活动券
-		                	<#break>	
-		                <#case 2>
-		                	注册优惠券
-		                	<#break>	
-		                <#default>
-		                	无类别	
-	                </#switch>	
+                
+                	<#list couponType_list as cou>
+                       <#if item.typeCategoryId?? && item.typeCategoryId==cou.id>${cou.title!''}</#if>
+                    </#list>
+	                
                 </td>
                 <#--<td>${item.diySiteTitle!""}</td>-->
-                <td>${item.username!""}</td>
+                <#--<td>${item.username!""}</td>-->
                 <td>${item.mobile!""}</td>
                 <#--<td>${item.carCode!""}</td>-->
                 <td><#if item.getTime??>${item.getTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
