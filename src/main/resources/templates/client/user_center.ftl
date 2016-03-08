@@ -40,6 +40,7 @@
 						</dt>
 						<dd>
 							<p>${user.username!''}</p>
+							<p>${user.realName!''}</p>
 							<div>
 								<img src="/client/images/per_titlewarp.png" />
 								<#if level??>

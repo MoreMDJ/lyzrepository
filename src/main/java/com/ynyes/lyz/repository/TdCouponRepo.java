@@ -157,5 +157,62 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	// Max 根据类别和发放类型查找未过期 优惠券
 	List<TdCoupon> findByTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(Long typeId,Long cateId,Date date);
 	
+	/**
+	 * 查询已领取的优惠券,根据领取时间排序
+	 * @param page
+	 * @return
+	 */
+	Page<TdCoupon> findByIsDistributtedTrueOrderByGetTimeDesc(Pageable page);
 	
+	/**
+	 * 模糊查询优惠券名称,已领取,根据领取时间排序
+	 * @param keywords
+	 * @param page
+	 * @return
+	 */
+	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueOrderByGetTimeDesc(String keywords,Pageable page);
+	
+	/**
+	 * 查询已领取,已使用或未使用,根据领取时间排序
+	 * @param page
+	 * @return
+	 */
+	Page<TdCoupon> findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(Boolean isUsed,Pageable page);
+	/**
+	 * 模糊查询优惠券名称,已领取,已使用或未使用,根据领取时间排序
+	 * @param keywords
+	 * @param isUsed
+	 * @param page
+	 * @return
+	 */
+	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(String keywords,Boolean isUsed,Pageable page);
+	/**
+	 * 查询已领取,类型筛选,根据领取时间排序
+	 * @param page
+	 * @return
+	 */
+	Page<TdCoupon> findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(Long typeCategoryId,Pageable page);
+	
+	/**
+	 * 模糊查询优惠券名称,已领取,类型筛选,根据领取时间排序
+	 * @param keywords
+	 * @param page
+	 * @return
+	 */
+	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Long typeCategoryId,Pageable page);
+	
+	/**
+	 * 查询已领取,已使用或未使用,类型筛选,根据领取时间排序
+	 * @param page
+	 * @return
+	 */
+	Page<TdCoupon> findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(Boolean isUsed,Long typeCategoryId,Pageable page);
+	/**
+	 * 模糊查询优惠券名称,已领取,已使用或未使用,类型筛选,根据领取时间排序
+	 * @param keywords
+	 * @param isUsed
+	 * @param page
+	 * @return
+	 */
+	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Boolean isUsed,Long typeCategoryId,Pageable page);
 }

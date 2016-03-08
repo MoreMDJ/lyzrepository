@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.w3c.dom.ls.LSException;
 
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
@@ -1116,7 +1115,8 @@ public class TdManagerOrderController {
 	@RequestMapping(value = "/list/{statusId}")
 	public String goodsListDialog(String keywords, @PathVariable Long statusId, Integer page, Integer size,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
-			ModelMap map, HttpServletRequest req) {
+			ModelMap map, HttpServletRequest req,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
+			String deliveryTime,String userPhone,Long orderStatusId,String shippingName,String sendTime) {
 		String username = (String) req.getSession().getAttribute("manager");
 
 		if (null == username)
@@ -1207,9 +1207,47 @@ public class TdManagerOrderController {
 		{
 			if (null != statusId)
 			{
-				if (null != keywords && !keywords.equalsIgnoreCase("")) 
+				/** 1:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）
+				 * 2:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、会员姓名
+				 * 3:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、送货状态
+				 * 4:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、送货状态、会员姓名
+				 * 5:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、预约送货时间
+				 * 6:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、实际送货时间
+				 * 7:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、导购姓名
+				 */
+				int searchCondition= judgeSearchCondition(keywords,orderStartTime,orderEndTime, realName, sellerRealName, shippingAddress, shippingPhone,
+						 deliveryTime, userPhone, orderStatusId, shippingName, sendTime);
+				
+				if (searchCondition!=0) 
 				{
-						map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(keywords, keywords, size, page));
+					//设置初始值 查询全部
+					Date date1 = StringToDate(orderStartTime,null);
+					Date date2 = StringToDate(orderEndTime,null);
+					if(date1==null){
+						date1=StringToDate("1991-01-01 00:00:00",null);
+					}
+					if (date2 == null)
+					{
+						date2 = new Date();
+					}
+					
+						//判断按照那个条件查询
+						if(searchCondition==1){
+							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress, size, page));
+						}else if(searchCondition==2){
+							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndUserIdOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,tdUserService.findByRealName(realName).getId(), size, page));
+						}else if(searchCondition==5){
+							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndDeliveryTimeOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,StringToDate(deliveryTime, null), size, page));
+						}else if(searchCondition==6){
+							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,StringToDate(sendTime, null), size, page));
+						}else if(searchCondition==7){
+							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSellerRealNameContainingOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,sellerRealName, size, page));
+						}else{//正常情况不会进入   3,4,5暂时查询全部 
+							map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size)); 
+						}
+					
+					
+						
 				}
 				else
 				{
@@ -1821,5 +1859,90 @@ public class TdManagerOrderController {
 		}
 
 		return map;
+	}
+	/**
+	 * 判断是否按条件查询
+	 * @return 0-7 0查询全部
+	 * 1:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）
+	 * 2:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、会员姓名
+	 * 3:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、送货状态
+	 * 4:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、送货状态、会员姓名
+	 * 5:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、预约送货时间
+	 * 6:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、实际送货时间
+	 * 7:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、导购姓名
+	 */
+	private int judgeSearchCondition(String keywords,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
+			String deliveryTime,String userPhone,Long orderStatusId,String shippingName,String sendTime){
+		int searchCondition=0;
+		if(null != keywords && !keywords.equalsIgnoreCase("")){
+			searchCondition=1;
+		}
+		if(null !=orderStartTime && !orderStartTime.equals("")){
+			searchCondition=1;
+			
+		}
+		if(null !=orderEndTime && !orderEndTime.equals("")){
+			searchCondition=1;
+		}
+		
+		if(null !=userPhone && !"".equals(userPhone)){
+				searchCondition=1;
+		}
+		if(null !=shippingName && !"".equals(shippingName)){
+			searchCondition=1;
+		}
+		if(null !=shippingPhone && !"".equals(shippingPhone)){
+			searchCondition=1;
+		}
+		if(null !=shippingAddress && !"".equals(shippingAddress)){
+			searchCondition=1;
+		}
+		
+		if(null !=realName && !"".equals(realName)){
+			TdUser user= tdUserService.findByRealName(realName);
+			if(null != user){
+				searchCondition=2;
+			}
+		}
+		
+		if(null !=orderStatusId && orderStatusId !=0 ){
+			if(searchCondition==2){
+				searchCondition=4;
+			}else{
+				searchCondition=3;
+			}
+		}
+		
+		if(null !=deliveryTime && !deliveryTime.equals("")){
+			searchCondition=5;
+			
+		}
+		if(null !=sendTime && !sendTime.equals("")){
+				searchCondition=6;
+		}
+		if(null !=sellerRealName  && !"".equals(sellerRealName )){
+			searchCondition=7;
+		}
+		return searchCondition;
+	}
+	/**
+	 * 字符串转换时间默认格式yyyy-MM-dd HH:mm:ss
+	 * @return
+	 */
+	private Date StringToDate(String time,String dateFormat){
+		if(null==dateFormat || "".equals(dateFormat)){
+			dateFormat="yyyy-MM-dd HH:mm:ss";
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		Date date = null;
+		if(null !=time && !time.equals(""))
+		{
+			try {
+				date = sdf.parse(time);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		return date;
 	}
 }

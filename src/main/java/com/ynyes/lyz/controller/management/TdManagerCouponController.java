@@ -1,5 +1,9 @@
 package com.ynyes.lyz.controller.management;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,7 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -373,6 +383,71 @@ public class TdManagerCouponController {
         {
         	typeId =0L;
         }
+        
+       
+        Page<TdCoupon> couponPage = null;
+        
+        if(typeId.equals(0L)){
+        	if(isUsed.equals(0L)){
+        		if(null != keywords && !keywords.equalsIgnoreCase("")){
+        			//模糊查询优惠券名称,已领取的优惠券,根据领取时间排序
+        			couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueOrderByGetTimeDesc(keywords,page, size);
+        		}else{
+        			//查询已领取的优惠券,根据领取时间排序
+        			couponPage = tdCouponService.findByIsDistributtedTrueOrderByGetTimeDesc(page, size);
+        		}
+        	}else{
+        		if(null != keywords && !keywords.equalsIgnoreCase("")){
+        			if(isUsed.equals(1L)){
+        				//模糊查询优惠券名称,已领取,已使用的优惠券,根据领取时间排序
+        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,true,page, size);
+        			}else{
+        				//模糊查询优惠券名称,已领取,未使用的优惠券,根据领取时间排序
+        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,false,page, size);
+        			}
+        		}else{
+        			if(isUsed.equals(1L)){
+        				//已领取,已使用的优惠券,根据领取时间排序
+        				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(true,page, size);
+        			}else{
+        				//已领取,未使用的优惠券,根据领取时间排序
+        				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(false,page, size);
+        			}
+        		}
+        	}
+        }else{
+        	if(isUsed.equals(0L)){
+        		if(null != keywords && !keywords.equalsIgnoreCase("")){
+        			//模糊查询优惠券名称,已领取的优惠券,类型筛选,根据领取时间排序
+        			couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(keywords,typeId,page, size);
+        		}else{
+        			//查询领取的优惠券,类型筛选,根据领取时间排序
+        			couponPage = tdCouponService.findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(typeId,page, size);
+        		}
+        	}else{
+        		if(null != keywords && !keywords.equalsIgnoreCase("")){
+        			if(isUsed.equals(1L)){
+        				//模糊查询优惠券名称,已领取,已使用,类型筛选,根据领取时间排序
+        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,true,typeId,page, size);
+        			}else{
+        				//模糊查询优惠券名称,已领取,未使用,类型筛选,根据领取时间排序
+        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,false,typeId,page, size);
+        			}
+        		}else{
+        			if(isUsed.equals(1L)){
+        				//查询已领取,已使用,类型筛选,根据领取时间排序
+        				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(true,typeId,page, size);
+        			}else{
+        				//查询已领取,已使用,类型筛选,根据领取时间排序
+        				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(false,typeId,page, size);
+        			}
+        		}
+        	}
+        	
+        }
+        
+		
+		map.addAttribute("coupon_page", couponPage);
         
         map.addAttribute("page", page);
         map.addAttribute("size", size);
@@ -957,4 +1032,186 @@ public class TdManagerCouponController {
             }
         }
     }
+    /*
+	 * 领用记录报表
+	 */
+	@RequestMapping(value = "/downdata",method = RequestMethod.GET)
+	@ResponseBody
+	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response)
+	{
+		
+		String username = (String) req.getSession().getAttribute("manager");
+		if (null == username) {
+			return "redirect:/Verwalter/login";
+		}
+		
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		if (tdManagerRole == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date1 = null;
+		Date date2 = null;
+		if(null !=begindata && !begindata.equals(""))
+		{
+			try {
+				date1 = sdf.parse(begindata);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		if(null !=enddata && !enddata.equals(""))
+		{
+			try {
+				date2 = sdf.parse(enddata);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		if (date2 == null)
+		{
+			date2 = new Date();
+		}
+		
+		// 第一步，创建一个webbook，对应一个Excel文件 
+        HSSFWorkbook wb = new HSSFWorkbook();  
+        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
+        HSSFSheet sheet = wb.createSheet("领用记录报表");  
+        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
+        //列宽
+        sheet.setColumnWidth((short) 0 , 25*256);
+        sheet.setColumnWidth((short) 1 , 13*256);
+        sheet.setColumnWidth((short) 2 , 25*256);
+        sheet.setColumnWidth((short) 3 , 25*256);
+        sheet.setColumnWidth((short) 4 , 18*256);
+        sheet.setColumnWidth((short) 5 , 11*256);
+        sheet.setColumnWidth((short) 6 , 13*256);
+        sheet.setColumnWidth((short) 7 , 11*256);
+        sheet.setColumnWidth((short) 8 , 19*256);
+        sheet.setColumnWidth((short) 9 , 12*256);
+        sheet.setColumnWidth((short) 10 , 9*256);
+        sheet.setColumnWidth((short) 11 , 13*256);
+        sheet.setColumnWidth((short) 12 , 13*256);
+        sheet.setColumnWidth((short) 13 , 13*256);
+        sheet.setColumnWidth((short) 14 , 40*256);
+        sheet.setColumnWidth((short) 15 , 40*256);
+        
+        // 第四步，创建单元格，并设置值表头 设置表头居中  
+        HSSFCellStyle style = wb.createCellStyle();  
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
+        style.setWrapText(true);
+    	//优惠券名称、金额、领卷时间、领用用户、是否使用、使用的时间、使用订单号
+        HSSFRow row = sheet.createRow((int) 0); 
+        HSSFCell cell = row.createCell((short) 0);  
+        cell.setCellValue("优惠券名称");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 1);
+        cell.setCellValue("金额");  
+        cell.setCellStyle(style);  
+        cell = row.createCell((short) 2);  
+        cell.setCellValue("领卷时间");  
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 3);  
+        cell.setCellValue("领用用户");  
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 4);  
+        cell.setCellValue("是否使用");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 5);  
+        cell.setCellValue("使用时间");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 6);  
+        cell.setCellValue("使用订单号");
+        cell.setCellStyle(style);
+        cell = row.createCell((short) 7);  
+       
+        // 第五步，设置值  
+        List<TdCoupon> coupon = null;
+        coupon=tdCouponService.findByIsDistributtedTrueOrderByIdDesc();
+        		
+        Integer i = 0;
+        for (TdCoupon tdCoupon : coupon)
+        {
+        	row = sheet.createRow((int) i + 1);
+        	if (null != tdCoupon.getTypeTitle())
+        	{
+            	row.createCell((short) 0).setCellValue(tdCoupon.getTypeTitle());
+    		}
+        	if (null != tdCoupon.getPrice())
+        	{
+            	row.createCell((short) 1).setCellValue(tdCoupon.getPrice());
+    		}
+        	if (null != tdCoupon.getGetTime())
+        	{
+        		Date getTime = tdCoupon.getGetTime();
+        		String couponTimeStr = getTime.toString();
+            	row.createCell((short) 2).setCellValue(couponTimeStr);
+    		}
+        	if (null != tdCoupon.getUsername())
+        	{
+            	row.createCell((short) 3).setCellValue(tdCoupon.getUsername());
+    		}
+        	if (null != tdCoupon.getIsUsed())
+        	{
+        		if(tdCoupon.getIsUsed()){
+        			row.createCell((short) 4).setCellValue("是");
+        			String couponUserTimeStr="";
+        			if (null != tdCoupon.getUseTime()){
+        				Date userTime = tdCoupon.getUseTime();
+        				couponUserTimeStr = userTime.toString();
+        			}
+        			
+        			row.createCell((short) 5).setCellValue(couponUserTimeStr);
+        			row.createCell((short) 6).setCellValue(tdCoupon.getOrderNumber());
+        		}else{
+        			row.createCell((short) 4).setCellValue("否");
+        		}
+            	
+    		}
+        	
+        	i++;
+		}
+        
+        String exportAllUrl = SiteMagConstant.backupPath;
+        download(wb, exportAllUrl, response);
+        return "";
+	}
+	/**
+	 * @author lc
+	 * @注释：下载
+	 */
+	public Boolean download(HSSFWorkbook wb, String exportUrl, HttpServletResponse resp){
+		try
+		{
+			OutputStream os;
+			try {
+				os = resp.getOutputStream();
+				try {
+					resp.reset();
+					resp.setHeader("Content-Disposition", "attachment; filename=" + "table.xls");
+					resp.setContentType("application/octet-stream; charset=utf-8");
+					wb.write(os);
+					os.flush();
+				}
+				finally {
+					if (os != null) {
+						os.close();
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}catch (Exception e)  
+		{  
+			e.printStackTrace();  
+		} 
+		return true;	
+	}
 }

@@ -462,4 +462,88 @@ public class TdCouponService {
 		}
 		return repository.findByTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(typeId, cateId, date);
 	}
+	/**
+	 * 查询领取的优惠券,根据领取时间排序
+	 * @param page
+	 * @return
+	 */
+	public Page<TdCoupon> findByIsDistributtedTrueOrderByGetTimeDesc(int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByIsDistributtedTrueOrderByGetTimeDesc(pageRequest);
+	}
+	/**
+	 * 模糊查询优惠券名称,已领取,根据领取时间排序
+	 * @param keywords
+	 * @param page
+	 * @return
+	 */
+	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueOrderByGetTimeDesc(String keywords,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByTypeTitleContainingAndIsDistributtedTrueOrderByGetTimeDesc(keywords,pageRequest);
+	}
+	/**
+	 * 查询已领取,已使用或未使用,根据领取时间排序
+	 * @param isUsed
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public Page<TdCoupon> findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(Boolean isUsed,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(isUsed,pageRequest);
+	}
+	/**
+	 * 模糊查询优惠券名称,已领取,已使用或未使用,根据领取时间排序
+	 * @param keywords
+	 * @param isUsed
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(String keywords,Boolean isUsed,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,isUsed,pageRequest);
+	}
+	/**
+	 * 查询领取的优惠券,类型筛选,根据领取时间排序
+	 * @param page
+	 * @return
+	 */
+	public Page<TdCoupon> findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(Long typeCategoryId,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(typeCategoryId,pageRequest);
+	}
+	/**
+	 * 模糊查询优惠券名称,已领取,类型筛选,根据领取时间排序
+	 * @param keywords
+	 * @param page
+	 * @return
+	 */
+	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Long typeCategoryId,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(keywords,typeCategoryId,pageRequest);
+	}
+	/**
+	 * 查询已领取,已使用或未使用,类型筛选,根据领取时间排序
+	 * @param isUsed
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public Page<TdCoupon> findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(Boolean isUsed,Long typeCategoryId,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(isUsed,typeCategoryId,pageRequest);
+	}
+	/**
+	 * 模糊查询优惠券名称,已领取,已使用或未使用,类型筛选,根据领取时间排序
+	 * @param keywords
+	 * @param isUsed
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Boolean isUsed,Long typeCategoryId,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,isUsed,typeCategoryId,pageRequest);
+	}
 }
