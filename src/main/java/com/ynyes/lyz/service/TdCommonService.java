@@ -1781,7 +1781,7 @@ public class TdCommonService {
 				return "FAILED";
 			}
 		}
-		if (type == 2) {
+		else if (type == 2) {
 			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods) object;
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisitionGoods.getId() + "</id>" + "<goods_code>"
 					+ requisitionGoods.getGoodsCode() + "</goods_code>" + "<goods_title>"
@@ -1801,7 +1801,7 @@ public class TdCommonService {
 			}
 		}
 
-		if (type == 3) {
+		else if (type == 3) {
 			TdReturnNote returnNote = (TdReturnNote) object;
 			// String xmlStr = "<ERP>"
 			// + "<TABLE>"
@@ -1951,12 +1951,6 @@ public class TdCommonService {
 		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
 		String PATH = System.getenv("Path");
 		System.err.println("MDJWS:PATH:" + PATH);
-		// JaxWsDynamicClientFactory dcf =
-		// JaxWsDynamicClientFactory.newInstance();
-		// org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
-		// url为调用webService的wsdl地址
-		// QName name = new QName("http://tempuri.org/", "GetErpInfo");
-		// paramvalue为参数值
 		Object[] objects = null;
 
 		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);
