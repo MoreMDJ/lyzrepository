@@ -211,7 +211,7 @@ function submitOwnMoney()
       </header>
       <!-- 头部 END -->
 
-	<#if td_order??>
+<#if td_order??>
   <!-- 详情查看 -->
   <article class="look-details">
     <!-- 配送详情 -->
@@ -271,9 +271,9 @@ function submitOwnMoney()
     <section>
       <div class="title">收款信息</div>
       <div class="content">
-      	<div class="mesg">订单总金额：${td_order.allTotalPay!'0'}元</div>
-        <div class="mesg">代收款实收金额：${td_order.allActualPay!'0'}元</div>
-        <div class="mesg">代收款欠款：<#if td_order.allTotalPay?? && td_order.allActualPay??>${td_order.allTotalPay-td_order.allActualPay}<#else>0</#if>元</div>
+      	<div class="mesg">订单总金额：<#if td_order.allTotalPay??>${td_order.allTotalPay?c}<#else>0.00</#if>元</div>
+        <div class="mesg">需代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.owned??>${ownrecord.owned?c}<#else>0.00</#if><#else><#if td_order.allTotalPay?? && td_order.allActualPay??>${td_order.allTotalPay-td_order.allActualPay}<#else>0</#if></#if>元</div>
+        <div class="mesg">实代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.payed??>${ownrecord.payed?c}<#else>0.00</#if><#else><#if td_order.allActualPay??>${td_order.allActualPay?c}<#else>0.00</#if></#if>元</div>
       </div>
     </section>
     <#if td_order.statusId == 4>
@@ -282,7 +282,7 @@ function submitOwnMoney()
     <a class="btn-submit-save bgc-ff8e08" <#if td_order.photo??>href="javascript:;" style="background:#999"<#else>href="javascript:photo();"</#if> >拍照上传</a>
     <a class="btn-submit-save bgc-ff8e08" <#if ownrecord??>href="javascript:;" style="background:#999"</#if> href="javascript:;" <#if !ownrecord??>onclick="pupopen()"</#if>><#if ownrecord?? && ownrecord.isEnable??><#if ownrecord.isEnable == true><#if ownrecord.ispassed == true>审核通过<#else>未通过审核</#if><#else>等待审核</#if><#else>申请欠款</#if></a>
     </#if>
-    <div style="display:none">
+    <div style="display:none;">
         <form id="imgUpload" action="/delivery/img" enctype="multipart/form-data" method="post">
             <input type="file" onchange="upload()" name="Filedata" id="clickFile">
             <input type="text" name="orderNumber"  value="${td_order.orderNumber!''}">
@@ -314,7 +314,7 @@ function submitOwnMoney()
     </script>
   </article>
   <!-- 详情查看 END -->
-  </#if>
+</#if>
 
   <div class="clear h66"></div>
 

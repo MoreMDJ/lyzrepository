@@ -1213,6 +1213,12 @@ public class TdUserController {
 
 				// 添加订单信息
 				returnNote.setOrderNumber(order.getOrderNumber());
+				
+				//add MDJ
+				returnNote.setShoppingAddress(order.getShippingAddress());
+				returnNote.setSellerRealName(order.getSellerRealName());
+				//end add MDJ
+				
 				// 支付方式
 				returnNote.setPayTypeId(order.getPayTypeId());
 				returnNote.setPayTypeTitle(order.getPayTypeTitle());
@@ -1572,6 +1578,12 @@ public class TdUserController {
 
 				// 添加订单信息
 				returnNote.setOrderNumber(order.getOrderNumber());
+				
+				//add MDJ
+				returnNote.setShoppingAddress(order.getShippingAddress());
+				returnNote.setSellerRealName(order.getSellerRealName());
+				//end add MDJ
+				
 				// 支付方式
 				returnNote.setPayTypeId(order.getPayTypeId());
 				returnNote.setPayTypeTitle(order.getPayTypeTitle());

@@ -37,6 +37,7 @@ import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
+import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdCouponService;
@@ -46,6 +47,7 @@ import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdManagerRoleService;
 import com.ynyes.lyz.service.TdManagerService;
+import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.ClientConstant;
@@ -86,11 +88,75 @@ public class TdManagerCouponController {
     private TdGoodsService tdGoodsService;
     
     @Autowired
-    TdManagerService tdManagerService;
+    private TdManagerService tdManagerService;
     
     // Max
     @Autowired
     private TdUserService tdUseService;
+    
+    @Autowired
+    private TdOrderService tdOrderService;
+    
+    
+    @RequestMapping(value = "/down/order/use")
+    public void couponUseDetail()
+    {
+    	HSSFWorkbook workbook = new HSSFWorkbook();
+    	HSSFCellStyle cellStyle = workbook.createCellStyle();
+    	cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+    	cellStyle.setWrapText(true);
+    	
+    	HSSFSheet sheet = workbook.createSheet("券的使用");
+    	HSSFRow row = sheet.createRow(0);
+    	HSSFCell cell = row.createCell(0);
+    	cell.setCellStyle(cellStyle);
+    	cell.setCellValue("订单号");
+    	cell = row.createCell(1);
+    	cell.setCellStyle(cellStyle);
+    	cell.setCellValue("使用时间");
+    	cell = row.createCell(2);
+    	cell.setCellStyle(cellStyle);
+    	cell.setCellValue("门店名称");
+    	cell = row.createCell(3);
+    	cell.setCellStyle(cellStyle);
+    	cell.setCellValue("券名称");
+    	cell = row.createCell(4);
+    	cell.setCellStyle(cellStyle);
+    	cell.setCellValue("用户名");
+    	cell = row.createCell(5);
+    	cell.setCellStyle(cellStyle);
+    	cell.setCellValue("产品分类");
+    	List<TdOrder> orders = tdOrderService.findByCompleteOrder();
+    	Integer rowNumber = 1;
+    	for (TdOrder tdOrder : orders) 
+    	{
+			if (tdOrder.getCashCouponId() != null && !tdOrder.getCashCouponId().equalsIgnoreCase("") && tdOrder.getCashCoupon() != null)
+			{
+				row = sheet.createRow(rowNumber);
+				cell = row.createCell(0);
+		    	cell.setCellStyle(cellStyle);
+		    	cell.setCellValue("订单号");
+		    	cell = row.createCell(1);
+		    	cell.setCellStyle(cellStyle);
+		    	cell.setCellValue("使用时间");
+		    	cell = row.createCell(2);
+		    	cell.setCellStyle(cellStyle);
+		    	cell.setCellValue("门店名称");
+		    	cell = row.createCell(3);
+		    	cell.setCellStyle(cellStyle);
+		    	cell.setCellValue("券名称");
+		    	cell = row.createCell(4);
+		    	cell.setCellStyle(cellStyle);
+		    	cell.setCellValue("用户名");
+		    	cell = row.createCell(5);
+		    	cell.setCellStyle(cellStyle);
+		    	cell.setCellValue("产品分类");
+				rowNumber++;
+			}
+		}
+    	
+    }
+    
     
     @RequestMapping(value="/type/list")
     public String couponType(String __EVENTTARGET,

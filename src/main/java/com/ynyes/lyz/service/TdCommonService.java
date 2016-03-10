@@ -54,8 +54,7 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	// static String wmsUrl =
-	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -1471,16 +1470,6 @@ public class TdCommonService {
 		}
 		TdRequisition requisition = SaveRequisiton(orderList, mainOrderNumber);
 
-		String JAVA_PATH = System.getenv("JAVA_HOME");
-		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
-		String PATH = System.getenv("Path");
-		System.err.println("MDJWS:PATH:" + PATH);
-		// JaxWsDynamicClientFactory dcf =
-		// JaxWsDynamicClientFactory.newInstance();
-		// org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
-		// url为调用webService的wsdl地址
-		// QName name = new QName("http://tempuri.org/", "GetErpInfo");
-		// paramvalue为参数值
 		Object[] objects = null;
 		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
 			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
@@ -1781,7 +1770,7 @@ public class TdCommonService {
 				return "FAILED";
 			}
 		}
-		if (type == 2) {
+		else if (type == 2) {
 			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods) object;
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisitionGoods.getId() + "</id>" + "<goods_code>"
 					+ requisitionGoods.getGoodsCode() + "</goods_code>" + "<goods_title>"
@@ -1801,7 +1790,7 @@ public class TdCommonService {
 			}
 		}
 
-		if (type == 3) {
+		else if (type == 3) {
 			TdReturnNote returnNote = (TdReturnNote) object;
 			// String xmlStr = "<ERP>"
 			// + "<TABLE>"
@@ -1947,16 +1936,6 @@ public class TdCommonService {
 		if (null == note) {
 			return;
 		}
-		String JAVA_PATH = System.getenv("JAVA_HOME");
-		System.err.println("MDJWS:JAVA_PATH:" + JAVA_PATH);
-		String PATH = System.getenv("Path");
-		System.err.println("MDJWS:PATH:" + PATH);
-		// JaxWsDynamicClientFactory dcf =
-		// JaxWsDynamicClientFactory.newInstance();
-		// org.apache.cxf.endpoint.Client client = dcf.createClient(wmsUrl);
-		// url为调用webService的wsdl地址
-		// QName name = new QName("http://tempuri.org/", "GetErpInfo");
-		// paramvalue为参数值
 		Object[] objects = null;
 
 		String xmlGoodsEncode = XMLMakeAndEncode(note, 3);

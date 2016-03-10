@@ -154,20 +154,21 @@ function downloaddate(type)
                 <input name="orderEndTime" id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
                </div>
                
-                
+
                
                 <div  class="odiv"><span class="span1">会员姓名：</span><input name="realName" type="text" class="input"></div>
                 <div  class="odiv"><span class="span1">收货人电话：</span><input name="shippingPhone" type="text" class="input"></div>
                 <div class="odiv" ><span class="span1">收货地址：</span><input name="shippingAddress" type="text" class="input"></div>
                 <div class="odiv" ><span class="span1">导购姓名：</span><input name="sellerRealName" type="text" class="input"></div>
-                
+
+
                 <div class="odiv" ><span class="span1">预约送货时间：</span><input name="deliveryTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
                 <div class="odiv" ><span class="span1">会员电话：</span><input name="userPhone" type="text" class="input"></div>
                 <div class="odiv" ><span class="span1">收货人姓名：</span><input name="shippingName" type="text" class="input"></div>
                 
-     <!--           <div class="odiv" style="float:left;width:310px;"><span class="span1">送货状态：</span>
-                	 <div class="rule-single-select "style="float:left;">
-                        <select name="orderStatusId" style="position:absolute;left:0;top:0;z-index:999;width:90px;height:32px;">
+     			<!--<div class="odiv" style="float:left;width:310px;"><span class="span1">送货状态：</span>
+                	<div class="rule-single-select">
+                        <select name="orderStatusId">
                             <option value="0" >请选择</option>                           
                             <option value="1" >待确定订单</option>
                             <option value="2" >代付款订单</option> 

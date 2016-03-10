@@ -123,6 +123,8 @@ public class TdLoginController {
 				} 
 				else
 				{
+					user_by_username_is_enable.setIsLogin(false);
+					tdUserService.save(user_by_username_is_enable);
 					res.put("message", "您输入的密码有误");
 				}
 			}

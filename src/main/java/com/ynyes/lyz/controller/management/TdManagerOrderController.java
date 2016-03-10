@@ -1207,47 +1207,55 @@ public class TdManagerOrderController {
 		{
 			if (null != statusId)
 			{
-				/** 1:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）
-				 * 2:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、会员姓名
-				 * 3:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、送货状态
-				 * 4:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、送货状态、会员姓名
-				 * 5:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、预约送货时间
-				 * 6:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、实际送货时间
-				 * 7:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、导购姓名
-				 */
-				int searchCondition= judgeSearchCondition(keywords,orderStartTime,orderEndTime, realName, sellerRealName, shippingAddress, shippingPhone,
-						 deliveryTime, userPhone, orderStatusId, shippingName, sendTime);
-				
-				if (searchCondition!=0) 
+				if (null != keywords && !keywords.equalsIgnoreCase("")) 
 				{
-					//设置初始值 查询全部
-					Date date1 = StringToDate(orderStartTime,null);
-					Date date2 = StringToDate(orderEndTime,null);
-					if(date1==null){
-						date1=StringToDate("1991-01-01 00:00:00",null);
-					}
-					if (date2 == null)
-					{
-						date2 = new Date();
-					}
-						//判断按照那个条件查询
-						if(searchCondition==1){
-							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress, size, page));
-						}else if(searchCondition==2){
-							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndUserIdOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,tdUserService.findByRealName(realName).getId(), size, page));
-						}else if(searchCondition==5){
-							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndDeliveryTimeOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,StringToDate(deliveryTime, null), size, page));
-						}else if(searchCondition==6){
-							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,StringToDate(sendTime, null), size, page));
-						}else if(searchCondition==7){
-							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSellerRealNameContainingOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,sellerRealName, size, page));
-						}else{//正常情况不会进入   3,4,5暂时查询全部 
-							map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size)); 
-						}
-					
-					
-						
+
+						map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(keywords, keywords, size, page));
+
 				}
+				
+//				/** 1:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）
+//				 * 2:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、会员姓名
+//				 * 3:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、送货状态
+//				 * 4:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、送货状态、会员姓名
+//				 * 5:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、预约送货时间
+//				 * 6:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、实际送货时间
+//				 * 7:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、导购姓名
+//				 */
+//				int searchCondition= judgeSearchCondition(keywords,orderStartTime,orderEndTime, realName, sellerRealName, shippingAddress, shippingPhone,
+//						 deliveryTime, userPhone, orderStatusId, shippingName, sendTime);
+//				
+//				if (searchCondition!=0) 
+//				{
+//					//设置初始值 查询全部
+//					Date date1 = StringToDate(orderStartTime,null);
+//					Date date2 = StringToDate(orderEndTime,null);
+//					if(date1==null){
+//						date1=StringToDate("1991-01-01 00:00:00",null);
+//					}
+//					if (date2 == null)
+//					{
+//						date2 = new Date();
+//					}
+//					
+//						//判断按照那个条件查询
+//						if(searchCondition==1){
+//							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress, size, page));
+//						}else if(searchCondition==2){
+//							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndUserIdOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,tdUserService.findByRealName(realName).getId(), size, page));
+//						}else if(searchCondition==5){
+//							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndDeliveryTimeOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,StringToDate(deliveryTime, null), size, page));
+//						}else if(searchCondition==6){
+//							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,StringToDate(sendTime, null), size, page));
+//						}else if(searchCondition==7){
+//							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSellerRealNameContainingOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress,sellerRealName, size, page));
+//						}else{//正常情况不会进入   3,4,5暂时查询全部 
+//							map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size)); 
+//						}
+//					
+//					
+//						
+//				}
 				else
 				{
 					if (statusId.equals(0L)) // 全部订单
@@ -1533,7 +1541,8 @@ public class TdManagerOrderController {
 				{
 					order.setStatusId(7L);
 					order.setCancelTime(new Date());
-					if (null != order) {
+					if (null != order && order.getStatusId().equals(3L)) 
+					{
 						TdReturnNote returnNote = new TdReturnNote();
 
 						// 退货单编号
@@ -1584,7 +1593,6 @@ public class TdManagerOrderController {
 						Date date = new Date();
 						returnNote.setOrderTime(new Date());
 						
-						
 						//add MDJ
 						returnNote.setShoppingAddress(order.getShippingAddress());
 						returnNote.setSellerRealName(order.getSellerRealName());
@@ -1627,12 +1635,10 @@ public class TdManagerOrderController {
 						returnNote.setReturnGoodsList(orderGoodsList);
 						tdOrderGoodsService.save(orderGoodsList);
 						// 保存退货单
-						returnNote = tdReturnNoteService.save(returnNote);
 						returnNote.setStatusId(3L);
-
 						returnNote = tdReturnNoteService.save(returnNote);
-						TdReturnNote note1 = tdReturnNoteService.findByReturnNumber(returnNote.getReturnNumber());
-						tdCommonService.sendBackMsgToWMS(note1);
+
+						tdCommonService.sendBackMsgToWMS(returnNote);
 					}
 				}
 			}
