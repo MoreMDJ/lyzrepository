@@ -14,7 +14,7 @@
             <ul class="colo_box">
                 <#if color_package_list??>
                     <#list color_package_list as item>
-                        <li onclick="getColor('${item.code!''}',${item.id?c})"><img src="${item.coverImageUri!''}"></li>
+                        <li onclick="getColor('${item.code!''}',${item.id?c})" style="width: 90%;float: none;"><img src="${item.coverImageUri!''}" style="width: 16%;"> ${item.title!''}</li>
                         <#-- 指定调色包的库存 -->
                         <#if item.leftNumber??>
                             <input type="hidden" id="colorPackageInventory${item.id?c}" value="${item.leftNumber?c}">

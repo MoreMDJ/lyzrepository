@@ -301,8 +301,8 @@
         function imgChange(){
         	if (!isopen){ 
 	        	isopen = true; 
-	        	$("#signPhoto").width("auto"); 
-	        	$("#signPhoto").height("auto");
+	        	$("#signPhoto").width("230px"); 
+	        	$("#signPhoto").height("320px");
         	} 
         	else{ 
 	        	isopen = false; 

@@ -103,7 +103,7 @@ function downloaddate()
   <tbody>
   <tr class="odd_bg">
     <th width="8%">选择</th>
-    <th align="left">所有类型
+    <th align="left">优惠券名称
                     </th>
     <#--<th align="left" width="10%"><div class="rule-single-select">
                         <select name="diysiteId" onchange="javascript:setTimeout(__doPostBack('changeDiysite',''), 0)">
@@ -118,9 +118,9 @@ function downloaddate()
                     </th>-->
     <#--<th align="left" width="15%">种类</th>               -->
     <th align="left" width="15%">账号</th>
-    <th align="left" width="15%">电话</th>
+    <th align="left" width="15%">使用时间</th>
     <#--<th align="left" width="11%">车牌</th>-->
-    <th align="left" width="15%">领用时间</th>
+    <th align="left" width="15%">领取时间</th>
     <th align="left" width="17%">有效截止时间</th>
     <#--<th align="left" width="8%">消费密码</th>-->
     <th align="left" width="8%">是否使用
@@ -141,16 +141,16 @@ function downloaddate()
                     <input type="hidden" name="listId" id="listId" value="${item.id?c}">
                 </td>
                 <td>${item.typeTitle!""}</td>
-                <td>
+                <#--<td>
                 
                 	<#list couponType_list as cou>
                        <#if item.typeCategoryId?? && item.typeCategoryId==cou.id>${cou.title!''}</#if>
                     </#list>
 	                
-                </td>
+                </td>-->
                 <#--<td>${item.diySiteTitle!""}</td>-->
-                <#--<td>${item.username!""}</td>-->
-                <td>${item.mobile!""}</td>
+                <td>${item.username!""}</td>
+                <td><#if item.useTime??>${item.useTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
                 <#--<td>${item.carCode!""}</td>-->
                 <td><#if item.getTime??>${item.getTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
                 <td><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>

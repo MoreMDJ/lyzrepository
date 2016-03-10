@@ -49,7 +49,7 @@
                                 <section>
                                     <a>
                                         <!-- 图片原始尺寸 992*386 -->
-                                        <img src="/client/images/bg2_product_volume.png" alt="现金劵">
+                                        <img src="/client/images/bg2_product_volume.png" alt="产品劵">
                                         <div class="div1">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy-MM-dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd")}</#if></span></div>
                                         <div class="div2"></div>
                                         <div class="div3">${item.goodsName!''}</div>
@@ -68,7 +68,7 @@
                             <section>
                                 <a>
                                     <!-- 图片原始尺寸 992*386 -->
-                                    <img src="/client/images/bg1_cash_volume.png" alt="现金劵">
+                                    <img src="/client/images/bg1_product_volume.png" alt="产品劵">
                                     <div class="div1">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy-MM-dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd")}</#if></span></div>
                                     <div class="div2"></div>
                                     <div class="div3">${item.goodsName!''}</div>
@@ -87,7 +87,7 @@
                             <section>
                                 <a>
                                     <!-- 图片原始尺寸 992*386 -->
-                                    <img src="/client/images/bg1_cash_volume.png" alt="现金劵">
+                                    <img src="/client/images/bg1_product_volume.png" alt="产品劵">
                                     <div class="div1">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy-MM-dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd")}</#if></span></div>
                                     <div class="div2"></div>
                                     <div class="div3">${item.goodsName!''}</div>

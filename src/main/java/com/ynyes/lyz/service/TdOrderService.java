@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -546,6 +545,14 @@ public class TdOrderService {
 		}else{
 			return repository.findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(statusId,orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress,sendDate, pageRequest);
 		}
+	}
+	/**
+	 * 测试
+	 * @return
+	 */
+	public Page<TdOrder> searchAll(String whereStr,int size,int page){
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.searchAll(whereStr,pageRequest);
 	}
 	
 }

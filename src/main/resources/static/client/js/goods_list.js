@@ -61,7 +61,7 @@ function changeColor(goodsId) {
 
 			$('.colo_choice').height($(window).height())
 			$('.colo_box').height($(window).height() - 150)
-			$('.colo_box li').height($('.colo_box li').width() * 1)
+			$('.colo_box li').height($('.colo_box li').width() * 0.16)
 			$('.colo_sec').height($(window).height() - 50)
 			var hei = $(window).height() - 100
 			$('.colo_sec dl').css({

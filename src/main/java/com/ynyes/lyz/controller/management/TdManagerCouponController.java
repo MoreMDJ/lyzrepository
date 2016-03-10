@@ -438,7 +438,7 @@ public class TdManagerCouponController {
         				//查询已领取,已使用,类型筛选,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(true,typeId,page, size);
         			}else{
-        				//查询已领取,已使用,类型筛选,根据领取时间排序
+        				//查询已领取,未使用,类型筛选,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(false,typeId,page, size);
         			}
         		}

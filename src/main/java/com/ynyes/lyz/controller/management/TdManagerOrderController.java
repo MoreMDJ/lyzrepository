@@ -1230,7 +1230,6 @@ public class TdManagerOrderController {
 					{
 						date2 = new Date();
 					}
-					
 						//判断按照那个条件查询
 						if(searchCondition==1){
 							map.addAttribute("order_page", tdOrderService.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingOrderByIdDesc(statusId,keywords, date1, date2, userPhone, shippingName, shippingPhone, shippingAddress, size, page));
