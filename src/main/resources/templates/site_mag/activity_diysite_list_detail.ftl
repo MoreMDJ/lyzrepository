@@ -58,8 +58,18 @@ function UncheckDiy(object)
             <div class="rule-multi-checkbox">
                 <span>
                     <#list diysite_list as product>
-                        <input type="checkbox" class="productIdRadio" name="diySiteIds" value="${product.id!""}" datatype="*" <#if activity?? && activity.diySiteIds?? && activity.diySiteIds?contains(product.id?c)>checked="checked"</#if>>
-                        <label>${product.title!""}</label>
+                    	<#if activity_gift??>
+                    		<input type="checkbox" class="productIdRadio" name="diySiteIds" value="${product.id!""}" datatype="*" <#if activity_gift?? && activity_gift.diySiteIds?? && activity_gift.diySiteIds?contains(product.id?c)>checked="checked"</#if>>
+                        	<label>${product.title!""}</label>
+                    	
+                    	<#elseif activity??>
+                    		<input type="checkbox" class="productIdRadio" name="diySiteIds" value="${product.id!""}" datatype="*" <#if activity?? && activity.diySiteIds?? && activity.diySiteIds?contains(product.id?c)>checked="checked"</#if>>
+                        	<label>${product.title!""}</label>
+                    	
+                    	<#else>
+                    		<input type="checkbox" class="productIdRadio" name="diySiteIds" value="${product.id!""}" datatype="*" >
+                        	<label>${product.title!""}</label>
+                    	</#if>
                     </#list>
                 </span>
             </div>

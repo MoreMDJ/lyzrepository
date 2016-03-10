@@ -339,6 +339,8 @@ public class TdManagerActivityCotroller
 			{
 				map.addAttribute("activity_gift", tActivity);
 				map.addAttribute("city_list", tdCityService.findAll());
+				Page<TdDiySite> diySitePage = TdDiySiteService.findByCityIdAndIsEnableTrueOrderBySortIdAsc(tActivity.getCityId(), 0, 100000);
+				map.addAttribute("diysite_list", diySitePage.getContent());
 			}
 		}
 		map.addAttribute("category_list", tdProductCategoryService.findAll());
@@ -347,7 +349,7 @@ public class TdManagerActivityCotroller
 	}
 	
 	@RequestMapping(value = "/gift/save", method = RequestMethod.POST)
-	public String giftsave(TdActivityGift  tdActivityGift, String[] hid_photo_name_show360, String __EVENTTARGET, String __EVENTARGUMENT,
+	public String giftsave(TdActivityGift  tdActivityGift,Long[] diySiteIds, String[] hid_photo_name_show360, String __EVENTTARGET, String __EVENTARGUMENT,
 			String __VIEWSTATE, String menuId, String channelId, ModelMap map, Boolean isRecommendIndex,
 			Boolean isRecommendType, Boolean isHot, Boolean isNew, Boolean isSpecialPrice, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -357,13 +359,30 @@ public class TdManagerActivityCotroller
 		}
 		
 		String type = null;
+		
+		if (diySiteIds != null)
+		{
+			List<TdDiySiteList> siteLists = new ArrayList();
+			for (Long id : diySiteIds)
+			{
+				TdDiySiteList siteList = new TdDiySiteList();
+				TdDiySite diySite = TdDiySiteService.findOne(id);
+				siteList.setSiteId(id.toString());
+				siteList.setTitle(diySite.getTitle());
+//				siteList.setCity(tdCityService.findBySobIdCity(diySite.getCityId()).getCityName());
+				siteList.setInfo(diySite.getInfo());
+				tdDiySiteListService.save(siteList);
+				siteLists.add(siteList);
+			}
+//			tdActivity.setSiteList(siteLists);
+		}
 
 		if (null ==  tdActivityGift.getId()) {
 			type = "add";
 		} else {
 			type = "edit";
 		}
-		
+//		tdActivityGift.setCityId(4L);
 		tdActivityGiftService.save(tdActivityGift);
 //		tdGoodsService.save(tdGoods, username);
 //

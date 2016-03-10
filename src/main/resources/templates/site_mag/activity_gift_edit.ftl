@@ -36,6 +36,10 @@ $(function () {
     $("#addGift").click(function(){
         showDialogGift();
     });
+ 	//根据城市选择门店
+    $("#cityId").change(function(){
+        getDiySiteList(this);
+    });
     
     //创建促销赠品窗口
     function showDialogGift(obj) {
@@ -87,6 +91,22 @@ function show_goods_gift_dialog(obj) {
 function del_goods_gift(obj) {
     $(obj).parent().parent().remove();
     $("#totalGift").val(parseInt($("#totalGift").val())-1);
+}
+
+function getDiySiteList(object)
+{
+    $.ajax({
+            url : '/Verwalter/activity/diysite/list/show?regionId='+$(object).val(),
+            type : 'post',
+            success : function(res) 
+            {
+                $("#id-param-sec").html(res);
+            },
+            error: function(res)
+            {
+                alert("error code : -1 + " + res);
+            }
+    });
 }
 
 </script>
@@ -169,6 +189,23 @@ function del_goods_gift(obj) {
             </dd>
         </dl>
         <dl>
+            <dt>城市</dt>
+            <dd>
+                <div class="rule-single-select">
+                    <select name="cityId" id="cityId"  datatype="*" sucmsg=" ">
+                        <#if !activity_gift??>
+                        <option value="">请选择城市...</option>
+                        </#if>
+                        <#if city_list??> 
+                            <#list city_list as c>
+                                <option value="${c.id?c}" <#if activity_gift?? && activity_gift.cityId==c.id>selected="selected"</#if>>${c.cityName!''}</option>
+                            </#list>
+                        </#if>
+                    </select>
+                </div>
+            </dd>
+        </dl>
+        <dl>
             <dt>活动开始时间</dt>
             <dd>
                 <div class="input-date">
@@ -202,7 +239,11 @@ function del_goods_gift(obj) {
                 <span class="Validform_checktip">*数字，越小越向前</span>
             </dd>
         </dl>
-        
+        <div id="id-param-sec">
+            <#if diysite_list??>
+                <#include "/site_mag/activity_diysite_list_detail.ftl" />
+            </#if>
+        </div>
         <dl>
             <dt>赠品</dt>
             <dd>
