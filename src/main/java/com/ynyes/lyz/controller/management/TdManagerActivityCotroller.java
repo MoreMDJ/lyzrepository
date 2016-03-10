@@ -338,11 +338,12 @@ public class TdManagerActivityCotroller
 			if (null != tActivity) 
 			{
 				map.addAttribute("activity_gift", tActivity);
-				map.addAttribute("city_list", tdCityService.findAll());
+				
 				Page<TdDiySite> diySitePage = TdDiySiteService.findByCityIdAndIsEnableTrueOrderBySortIdAsc(tActivity.getCityId(), 0, 100000);
 				map.addAttribute("diysite_list", diySitePage.getContent());
 			}
 		}
+		map.addAttribute("city_list", tdCityService.findAll());
 		map.addAttribute("category_list", tdProductCategoryService.findAll());
 
 		return "/site_mag/activity_gift_edit";
