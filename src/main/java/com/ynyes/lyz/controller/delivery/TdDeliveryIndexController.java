@@ -714,6 +714,12 @@ public class TdDeliveryIndexController {
 		return res;
 	}
 
+	
+	
+	/*
+	 * 申请欠款
+	 * 
+	 */
 	@RequestMapping(value = "/submitOwnMoney/{id}", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> submitMoney(@PathVariable Long id, Double payed,
