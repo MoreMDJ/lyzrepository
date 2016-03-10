@@ -62,8 +62,9 @@ var theForm = document.forms['form1'];
   <tbody>
   <tr class="odd_bg">
     <th  width="8%">选择</th>
-    <th align="left" width="20%">行政街道名称</th>
-    <th align="left" width="30%">所属行政区划</th>
+   <th align="left" width="20%">行政街道名称</th>
+    <th align="left" width="20%">所属行政区划</th>
+     <th align="left" width="20%">所属城市</th>
     <th align="left" width="30%">物流配送费用</th>
     <th align="center" width="10%">排序号</th>
   </tr>
@@ -79,6 +80,9 @@ var theForm = document.forms['form1'];
                 </td>
                 <td align="left"><a href="/Verwalter/setting/subdistrict/edit?id=${item.id?c}">${item.name!""}</a></td>
                 <td align="left">${item.districtName!""}</td>
+                 <td align="left">
+                ${item.city!""}
+                 </td>
                 <td align="left"><#if item.deliveryFee??>${item.deliveryFee?string("0.00")}<#else>0</#if></td>
                 <td align="center">${item.sortId!""}</td>
             </tr>

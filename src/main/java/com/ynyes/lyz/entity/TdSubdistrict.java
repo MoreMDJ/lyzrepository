@@ -47,6 +47,17 @@ public class TdSubdistrict {
 	@Column
 	private Double sortId;
 
+	//所属城市
+	@Column
+	private String city;
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
 	public Long getId() {
 		return id;
 	}
