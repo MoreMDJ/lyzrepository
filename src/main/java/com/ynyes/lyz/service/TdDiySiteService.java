@@ -2,6 +2,7 @@ package com.ynyes.lyz.service;
 
 import java.util.List;
 
+import org.apache.xml.resolver.apps.resolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -69,6 +70,15 @@ public class TdDiySiteService {
 		}
 
 		return repository.findOne(id);
+	}
+	
+	public TdDiySite findByStoreCode(String storeCode)
+	{
+		if (storeCode == null)
+		{
+			return null;
+		}
+		return repository.findByStoreCode(storeCode);
 	}
 
 	/**
