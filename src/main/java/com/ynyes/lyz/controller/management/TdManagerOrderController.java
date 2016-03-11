@@ -592,10 +592,10 @@ public class TdManagerOrderController {
         	
         	if (null != records && records.size() > 0)
         	{
-            	row.createCell((short) 7).setCellValue((records.get(0).getPayed() == null ? 0 : records.get(0).getPayed()) + (records.get(0).getOwned()== null ? 0 : records.get(0).getOwned()));
+            	row.createCell(7).setCellValue((records.get(0).getPayed() == null ? 0 : records.get(0).getPayed()) + (records.get(0).getOwned()== null ? 0 : records.get(0).getOwned()));
     		}else{
     			if(tdOrder.getTotalPrice() != null){
-    				row.createCell((short)7).setCellValue(tdOrder.getTotalPrice());
+    				row.createCell(7).setCellValue(tdOrder.getTotalPrice());
     			}
     		}
         	if (null != records && records.size() > 0 && records.get(0).getPayed() != null)
