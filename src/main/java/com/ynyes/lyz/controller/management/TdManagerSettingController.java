@@ -1,8 +1,11 @@
 package com.ynyes.lyz.controller.management;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,7 +24,6 @@ import com.ynyes.lyz.entity.TdSmsAccount;
 import com.ynyes.lyz.entity.TdStorage;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
-import com.ynyes.lyz.repository.TdStorageRepo;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCompanyService;
 import com.ynyes.lyz.service.TdDistrictService;
@@ -615,6 +617,23 @@ public class TdManagerSettingController {
         map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
         map.addAttribute("subdistrict_page", tdSubdistrictService.findAll(page, size));
+        
+        Page<TdSubdistrict> findAll = tdSubdistrictService.findAll(page, size);
+        
+        List<TdSubdistrict> content = findAll.getContent();
+        for (int i = 0; i < content.size(); i++)
+        {
+     	  TdSubdistrict sub =  content.get(i);
+     	  if(sub.getCity() == null || sub.getCity().equals(""))
+     	  {
+     		  Long disId =  sub.getDistrictId();
+     		  TdDistrict district = tdDistrictService.findOne(disId);
+     		  Long cityId =  district.getCityId();
+     		  String name = tdCityService.findOne(cityId).getCityName();
+     		  sub.setCity(name);
+     		  tdSubdistrictService.save(sub);
+     	  }
+        }
     	return "/site_mag/subdistrict_list";
     }
     
