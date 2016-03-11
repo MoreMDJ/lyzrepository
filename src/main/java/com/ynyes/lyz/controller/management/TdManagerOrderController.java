@@ -37,6 +37,7 @@ import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
@@ -44,6 +45,7 @@ import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceList;
+import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
@@ -237,22 +239,34 @@ public class TdManagerOrderController {
 		cell.setCellValue("单价");
 		cell.setCellStyle(style);
 		cell = row.createCell(11);
-		cell.setCellValue("使用可提现金额");
+		cell.setCellValue("总价");
 		cell.setCellStyle(style);
 		cell = row.createCell(12);
-		cell.setCellValue("使用不可体现金额");
+		cell.setCellValue("使用可提现金额");
 		cell.setCellStyle(style);
 		cell = row.createCell(13);
-		cell.setCellValue("备注");
+		cell.setCellValue("使用不可体现金额");
 		cell.setCellStyle(style);
 		cell = row.createCell(14);
-		cell.setCellValue("中转仓");
+		cell.setCellValue("备注");
 		cell.setCellStyle(style);
 		cell = row.createCell(15);
-		cell.setCellValue("配送人员");
+		cell.setCellValue("中转仓");
 		cell.setCellStyle(style);
 		cell = row.createCell(16);
+		cell.setCellValue("配送人员");
+		cell.setCellStyle(style);
+		cell = row.createCell(17);
 		cell.setCellValue("配送人员电话");
+		cell.setCellStyle(style);
+		cell = row.createCell(18);
+		cell.setCellValue("导购姓名");
+		cell.setCellStyle(style);
+		cell = row.createCell(19);
+		cell.setCellValue("商品类型");
+		cell.setCellStyle(style);
+		cell = row.createCell(20);
+		cell.setCellValue("配送方式");
 		cell.setCellStyle(style);
 		
 		List<TdOrder> orderList = null;
@@ -318,17 +332,20 @@ public class TdManagerOrderController {
 						{
 							row.createCell(10).setCellValue(og.getPrice());
 						}
+						if(og.getQuantity() != null && og.getPrice() != null){
+							row.createCell(11).setCellValue(og.getPrice()*og.getQuantity());
+						}
 						if (null != tdOrder.getCashBalanceUsed())
 			        	{
-			            	row.createCell(11).setCellValue(tdOrder.getCashBalanceUsed());
+			            	row.createCell(12).setCellValue(tdOrder.getCashBalanceUsed());
 			    		}
 			        	if (null != tdOrder.getUnCashBalanceUsed())
 			        	{
-			            	row.createCell(12).setCellValue(tdOrder.getUnCashBalanceUsed());
+			            	row.createCell(13).setCellValue(tdOrder.getUnCashBalanceUsed());
 			    		}
 						if (tdOrder.getRemark() != null)
 						{
-							row.createCell(13).setCellValue(tdOrder.getRemark());
+							row.createCell(14).setCellValue(tdOrder.getRemark());
 						}
 						
 						List<TdDeliveryInfo> deliveryInfo = null;
@@ -348,16 +365,31 @@ public class TdManagerOrderController {
 			    		}
 			        	if (deliveryInfo != null && deliveryInfo.size() > 0)
 			        	{
-			        		row.createCell(14).setCellValue(changeName(deliveryInfo.get(0).getWhNo()));
+			        		row.createCell(15).setCellValue(changeName(deliveryInfo.get(0).getWhNo()));
 						}
 			        	if (user != null)
 						{
-			        		row.createCell(15).setCellValue(user.getRealName());
+			        		row.createCell(16).setCellValue(user.getRealName());
 						}
 			        	if (null != user)
 			        	{
-			            	row.createCell(16).setCellValue(user.getUsername());
+			            	row.createCell(17).setCellValue(user.getUsername());
 			    		}
+			        	if(tdOrder.getSellerRealName() != null){
+			        		row.createCell(18).setCellValue(tdOrder.getSellerRealName());
+			        	}
+			        	if(og.getGoodsId() != null){
+			        		TdGoods goods= tdGoodsService.findOne(og.getGoodsId());
+			        		if(null != goods && goods.getCategoryId() != null){
+			        			TdProductCategory productCategory= tdProductCategoryService.findOne(goods.getCategoryId());
+			        			if( null != productCategory && productCategory.getTitle()!=null){
+			        				row.createCell(19).setCellValue(productCategory.getTitle());
+			        			}
+			        		}
+			        	}
+			        	if(tdOrder.getDeliverTypeTitle()!=null){
+			        		row.createCell(20).setCellValue(tdOrder.getDeliverTypeTitle());
+			        	}
 						
 						i++;
 					}
@@ -561,6 +593,10 @@ public class TdManagerOrderController {
         	if (null != records && records.size() > 0)
         	{
             	row.createCell((short) 7).setCellValue((records.get(0).getPayed() == null ? 0 : records.get(0).getPayed()) + (records.get(0).getOwned()== null ? 0 : records.get(0).getOwned()));
+    		}else{
+    			if(tdOrder.getTotalPrice() != null){
+    				row.createCell((short)7).setCellValue(tdOrder.getTotalPrice());
+    			}
     		}
         	if (null != records && records.size() > 0 && records.get(0).getPayed() != null)
         	{

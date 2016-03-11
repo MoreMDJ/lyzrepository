@@ -276,6 +276,15 @@ function submitOwnMoney()
         <div class="mesg">实代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.payed??>${ownrecord.payed?c}<#else>0.00</#if><#else><#if td_order.allActualPay??>${td_order.allActualPay?c}<#else>0.00</#if></#if>元</div>
       </div>
     </section>
+    <!-- 签收图片 -->
+    <#if td_order.photo??>
+    <section>
+      <div class="title">签收图片</div>
+      <div class="content">
+      	<div class="mesg"><img width="100px" height="100px" src="${td_order.photo!''}"></div>
+      </div>
+    </section>
+    </#if>
     <#if td_order.statusId == 4>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitReturn(${td_order.id?c})">拒签退货</a>
     <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(${td_order.id?c})">确认送达</a>
