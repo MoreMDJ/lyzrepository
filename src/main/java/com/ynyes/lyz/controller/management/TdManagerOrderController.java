@@ -458,19 +458,19 @@ public class TdManagerOrderController {
         sheet.setColumnWidth(0 , 8*256);
         sheet.setColumnWidth(1 , 13*256);
         sheet.setColumnWidth(2 , 25*256);
-        sheet.setColumnWidth(3 , 25*256);
-        sheet.setColumnWidth(4 , 18*256);
-        sheet.setColumnWidth(5 , 11*256);
-        sheet.setColumnWidth(6 , 13*256);
-        sheet.setColumnWidth(7 , 11*256);
-        sheet.setColumnWidth(8 , 19*256);
-        sheet.setColumnWidth(9 , 12*256);
-        sheet.setColumnWidth(10 , 9*256);
+//      sheet.setColumnWidth(3 , 25*256);
+        sheet.setColumnWidth(3 , 18*256);
+        sheet.setColumnWidth(4 , 11*256);
+        sheet.setColumnWidth(5 , 13*256);
+        sheet.setColumnWidth(6 , 11*256);
+        sheet.setColumnWidth(7 , 19*256);
+        sheet.setColumnWidth(8 , 12*256);
+        sheet.setColumnWidth(9 , 9*256);
+        sheet.setColumnWidth(10 , 13*256);
         sheet.setColumnWidth(11 , 13*256);
         sheet.setColumnWidth(12 , 13*256);
-        sheet.setColumnWidth(13 , 13*256);
+        sheet.setColumnWidth(13 , 40*256);
         sheet.setColumnWidth(14 , 40*256);
-        sheet.setColumnWidth(15 , 40*256);
         
         // 第四步，创建单元格，并设置值表头 设置表头居中  
         HSSFCellStyle style = wb.createCellStyle();  
@@ -487,72 +487,73 @@ public class TdManagerOrderController {
         cell = row.createCell(2);  
         cell.setCellValue("主单号");  
         cell.setCellStyle(style);
+//        cell = row.createCell(3);  
+//        cell.setCellValue("分单号");  
+//        cell.setCellStyle(style);
         cell = row.createCell(3);  
-        cell.setCellValue("分单号");  
-        cell.setCellStyle(style);
-        cell = row.createCell(4);  
         cell.setCellValue("订单日期");
         cell.setCellStyle(style);
-        cell = row.createCell(5);  
+        cell = row.createCell(4);  
         cell.setCellValue("可提现金额");
         cell.setCellStyle(style);
-        cell = row.createCell(6);  
+        cell = row.createCell(5);  
         cell.setCellValue("不可体现金额");
         cell.setCellStyle(style);
-        cell = row.createCell(7);  
+        cell = row.createCell(6);  
         cell.setCellValue("代收款金额");
         cell.setCellStyle(style);
-        cell = row.createCell(8);  
+        cell = row.createCell(7);  
         cell.setCellValue("实际代收款金额");
         cell.setCellStyle(style);
-        cell = row.createCell(9);  
+        cell = row.createCell(8);  
         cell.setCellValue("欠款");
         cell.setCellStyle(style);
-        cell = row.createCell(10);  
+        cell = row.createCell(9);  
         cell.setCellValue("配送人员");
         cell.setCellStyle(style);
-        cell = row.createCell(11);  
+        cell = row.createCell(10);  
         cell.setCellValue("配送人电话");
         cell.setCellStyle(style);
-        cell = row.createCell(12);  
+        cell = row.createCell(11);  
         cell.setCellValue("收货人");
         cell.setCellStyle(style);
-        cell = row.createCell(13);  
+        cell = row.createCell(12);  
         cell.setCellValue("收货人电话");
         cell.setCellStyle(style);
-        cell = row.createCell(14);  
+        cell = row.createCell(13);  
         cell.setCellValue("收货人地址");
         cell.setCellStyle(style);
-        cell = row.createCell(15);  
+        cell = row.createCell(14);  
         cell.setCellValue("备注信息");
         cell.setCellStyle(style);
-        cell = row.createCell(16);
+        cell = row.createCell(15);
         cell.setCellValue("现金券额度");
         cell.setCellStyle(style);
-        cell = row.createCell(17);
+        cell = row.createCell(16);
         cell.setCellValue("订单状态");
         cell.setCellStyle(style);
-        cell = row.createCell(18);
+        cell = row.createCell(17);
         cell.setCellValue("仓库名称");
         cell.setCellStyle(style);
-        cell = row.createCell(19);
+        cell = row.createCell(18);
         cell.setCellValue("订单总金额");
         cell.setCellStyle(style);
-        cell = row.createCell(20);
+        cell = row.createCell(19);
         cell.setCellValue("预约配送时间");
         cell.setCellStyle(style);
-        cell = row.createCell(21);
+        cell = row.createCell(20);
         cell.setCellValue("实际配送时间");
         cell.setCellStyle(style);
         // 第五步，设置值  
         List<TdOrder> orders = null;
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
-        	orders = tdOrderService.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(tdManager.getDiyCode(),date1,date2);
+        	orders = tdOrderService.searchMainOrderNumberByTimeAndDiySiteCode(tdManager.getDiyCode(),date1,date2);
 		}
         else
         {
-        	orders = tdOrderService.findByBeginAndEndOrderByOrderTimeDesc(date1, date2);
+        	orders = tdOrderService.searchMainOrderNumberByTimeAndDiySiteCode("1007",date1,date2);
+//        	orders = tdOrderService.searchMainOrderNumberByTime(date1, date2);
         }
         Integer i = 0;
         for (TdOrder tdOrder : orders)
@@ -570,41 +571,41 @@ public class TdManagerOrderController {
         	{
             	row.createCell(2).setCellValue(tdOrder.getMainOrderNumber());
     		}
-        	if (null != tdOrder.getOrderNumber())
-        	{
-            	row.createCell(3).setCellValue(tdOrder.getOrderNumber());
-    		}
+//        	if (null != tdOrder.getOrderNumber())
+//        	{
+//            	row.createCell(3).setCellValue(tdOrder.getOrderNumber());
+//    		}
         	if (null != tdOrder.getOrderTime())
         	{
         		Date orderTime = tdOrder.getOrderTime();
         		String orderTimeStr = orderTime.toString();
-            	row.createCell(4).setCellValue(orderTimeStr);
+            	row.createCell(3).setCellValue(orderTimeStr);
     		}
         	if (null != tdOrder.getCashBalanceUsed())
         	{
-            	row.createCell(5).setCellValue(tdOrder.getCashBalanceUsed());
+            	row.createCell(4).setCellValue(tdOrder.getCashBalanceUsed());
     		}
         	if (null != tdOrder.getUnCashBalanceUsed())
         	{
-            	row.createCell(6).setCellValue(tdOrder.getUnCashBalanceUsed());
+            	row.createCell(5).setCellValue(tdOrder.getUnCashBalanceUsed());
     		}
         	List<TdOwnMoneyRecord> records = tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(tdOrder.getOrderNumber());
         	
         	if (null != records && records.size() > 0)
         	{
-            	row.createCell((short) 7).setCellValue((records.get(0).getPayed() == null ? 0 : records.get(0).getPayed()) + (records.get(0).getOwned()== null ? 0 : records.get(0).getOwned()));
+            	row.createCell(6).setCellValue((records.get(0).getPayed() == null ? 0 : records.get(0).getPayed()) + (records.get(0).getOwned()== null ? 0 : records.get(0).getOwned()));
     		}else{
     			if(tdOrder.getTotalPrice() != null){
-    				row.createCell((short)7).setCellValue(tdOrder.getTotalPrice());
+    				row.createCell(6).setCellValue(tdOrder.getTotalPrice());
     			}
     		}
         	if (null != records && records.size() > 0 && records.get(0).getPayed() != null)
         	{
-            	row.createCell(8).setCellValue(records.get(0).getPayed());
+            	row.createCell(7).setCellValue(records.get(0).getPayed());
     		}
         	if (null != records && records.size() > 0 && records.get(0).getOwned() != null)
         	{
-            	row.createCell(9).setCellValue(records.get(0).getOwned());
+            	row.createCell(8).setCellValue(records.get(0).getOwned());
     		}
         	
         	List<TdDeliveryInfo> deliveryInfo = null;
@@ -625,54 +626,54 @@ public class TdManagerOrderController {
     		}
         	if (deliveryInfo != null && deliveryInfo.size() > 0)
         	{
-        		row.createCell(18).setCellValue(changeName(deliveryInfo.get(0).getWhNo()));
+        		row.createCell(17).setCellValue(changeName(deliveryInfo.get(0).getWhNo()));
 			}
         	if (user != null)
 			{
-        		row.createCell(10).setCellValue(user.getRealName());
+        		row.createCell(9).setCellValue(user.getRealName());
 			}
         	if (null != user)
         	{
-            	row.createCell(11).setCellValue(user.getUsername());
+            	row.createCell(10).setCellValue(user.getUsername());
     		}
         	if (null != tdOrder.getShippingName())
         	{
-            	row.createCell(12).setCellValue(tdOrder.getShippingName());
+            	row.createCell(11).setCellValue(tdOrder.getShippingName());
     		}
         	if (null != tdOrder.getShippingPhone())
         	{
-            	row.createCell(13).setCellValue(tdOrder.getShippingPhone());
+            	row.createCell(12).setCellValue(tdOrder.getShippingPhone());
     		}
         	if (null != tdOrder.getShippingAddress())
         	{
-            	row.createCell(14).setCellValue(tdOrder.getShippingAddress());
+            	row.createCell(13).setCellValue(tdOrder.getShippingAddress());
     		}
         	if (null != tdOrder.getRemark())
         	{
-            	row.createCell(15).setCellValue(tdOrder.getRemark());
+            	row.createCell(14).setCellValue(tdOrder.getRemark());
     		}
         	if (null != tdOrder.getCashCoupon())
         	{
-				row.createCell(16).setCellValue(tdOrder.getCashCoupon());
+				row.createCell(15).setCellValue(tdOrder.getCashCoupon());
 			}
         	if (null != tdOrder.getStatusId())
         	{
         		String statusStr = orderStatus(tdOrder.getStatusId());
-				row.createCell(17).setCellValue(statusStr);
+				row.createCell(16).setCellValue(statusStr);
 			}
         	if (null != tdOrder.getTotalPrice())
         	{
-				row.createCell(19).setCellValue(tdOrder.getTotalPrice());
+				row.createCell(18).setCellValue(tdOrder.getTotalPrice());
 			}
         	if (null != tdOrder.getDeliveryDate()) 
         	{
         		String dayTime = tdOrder.getDeliveryDate();
     			dayTime = dayTime + " " + tdOrder.getDeliveryDetailId() + ":30";
-				row.createCell(20).setCellValue(dayTime);
+				row.createCell(19).setCellValue(dayTime);
 			}
         	if (null != tdOrder.getDeliveryTime()) 
         	{
-				row.createCell(21).setCellValue(tdOrder.getDeliveryTime().toString());
+				row.createCell(20).setCellValue(tdOrder.getDeliveryTime().toString());
 			}
         	
         	i++;

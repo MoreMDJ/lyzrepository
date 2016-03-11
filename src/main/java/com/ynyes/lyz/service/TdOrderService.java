@@ -551,5 +551,21 @@ public class TdOrderService {
 			return repository.findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(statusId,orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress,sendDate, pageRequest);
 		}
 	}
+	/**
+	 *  根据时间查询 只查询总单号
+	 * @return
+	 */
+	public List<TdOrder> searchMainOrderNumberByTime(Date begin,Date end)
+	{
+		return repository.searchMainOrderNumberByTime(begin, end);
+	}
+	/**
+	 * 根据时间 配送门店 查询总单号
+	 * @return
+	 */
+	public List<TdOrder> searchMainOrderNumberByTimeAndDiySiteCode(String diyCode,Date begin,Date end)
+	{
+		return repository.searchMainOrderNumberByTimeAndDiySiteCode(diyCode,begin,end);
+	}
 	
 }
