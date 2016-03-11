@@ -1,5 +1,6 @@
 <script type="text/javascript" src="/mag/js/layout.js"></script>
 <script type="text/javascript">
+
 function checkDiy(object){
     if ($(object).val() == "全选") {
         $(object).val("取消");
@@ -30,7 +31,9 @@ function checkDiy(object){
 function UncheckDiy(object)
 {
     var checkbox1 = $(".productIdRadio:enabled").first();
+   
     var labels = checkbox1.siblings("label");
+    var as=$(object).parent().next().children().first().children("a");
     var MDJnumber = 0;
     labels.each(function(){
         var val = $(this).html();
@@ -42,9 +45,19 @@ function UncheckDiy(object)
         else
         {
             checkOne.prop("checked",true);
-        }
-        $("a:contains('"+val+"')").trigger("click");
+        } 
+        //$("a:contains('"+val+"')").trigger("click");
     });
+    as.each(function(){
+    	if ($(this).hasClass("selected")) {
+            $(this).removeClass("selected");
+           
+        } else {
+            $(this).addClass("selected");
+            
+        }
+    });
+    
 }
 </script>
 <dl>

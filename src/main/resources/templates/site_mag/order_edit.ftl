@@ -556,7 +556,7 @@
                                     <p>${order.payTime!""}</p>
                                 </span>
                             </div>
-                            <div class="order-flow-wait">
+                            <div class="order-flow-arrive">
                                 <a class="order-flow-input"></a>
                                 <span>
                                     <p class="name">待评价</p>

@@ -68,7 +68,7 @@ function getUserInfo() {
 }
 
 /**
- * 验证用户是否是店长或销顾的方法
+ * 去支付的方法
  * 
  * @author DengXiao
  */
@@ -91,6 +91,12 @@ function pay() {
 			}
 			if (0 == res.status) {
 				window.location.href = "/order/pay";
+				return;
+			}
+			if (3 == res.status) {
+				if ("支付宝" == res.title) {
+					window.location.href = "/pay/alipay?id=" + res.order_id;
+				}
 			}
 		}
 	});

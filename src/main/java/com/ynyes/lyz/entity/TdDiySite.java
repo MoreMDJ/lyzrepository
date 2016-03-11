@@ -55,7 +55,7 @@ public class TdDiySite {
 	@Column
 	private String city;
 	
-	// 门店车市id
+	// 门店城市id
 	@Column
 	private Long cityId;
 

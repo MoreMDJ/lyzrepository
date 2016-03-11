@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdManager;
+import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdReturnNote;
@@ -31,6 +33,8 @@ import com.ynyes.lyz.entity.TdUserTurnRecord;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdManagerLogService;
+import com.ynyes.lyz.service.TdManagerRoleService;
+import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
@@ -53,9 +57,6 @@ public class TdManagerReturnNoteController {
 	private TdOrderService tdOrderService;
 
 	@Autowired
-	private TdOrderGoodsService tdOrderGoodsService;
-
-	@Autowired
 	private TdUserService tdUserSerrvice;
 
 	@Autowired
@@ -69,6 +70,12 @@ public class TdManagerReturnNoteController {
 
 	@Autowired
 	private TdCommonService tdCommonService;
+	
+	@Autowired
+	private TdManagerService tdManagerService;
+	
+	@Autowired
+	private TdManagerRoleService tdManagerRoleService;
 
 	// 列表
 	@RequestMapping(value = "/{type}/list")
@@ -77,6 +84,17 @@ public class TdManagerReturnNoteController {
 			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
+			return "redirect:/Verwalter/login";
+		}
+		
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (tdManager != null && tdManager.getRoleId() != null)
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		if (tdManagerRole == null)
+		{
 			return "redirect:/Verwalter/login";
 		}
 
@@ -128,16 +146,37 @@ public class TdManagerReturnNoteController {
 		if (null != type) {
 			if (type.equalsIgnoreCase("returnNote")) //
 			{
+//				if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
+//				{
+//					String diyCode = tdManager.getDiyCode();
+//					TdDiySite tdDiySite = tdDisSiteService.findByStoreCode(diyCode);
+//					map.addAttribute("returnNote_page",tdReturnNoteService.findBySiteIdAndKeywords(tdDiySite.getId(), keywords, page, size));
+//				}
+//				else
+//				{
+//					if (StringUtils.isNotBlank(keywords))
+//					{
+//						map.addAttribute("returnNote_page", tdReturnNoteService.searchAll(keywords, page, size));
+//					}
+//					else
+//					{
+//						map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
+//					}
+//				}
 				String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
 				siteName = StringUtils.isNotBlank(siteName) ? siteName : keywords;
 				String keyword = StringUtils.isNotBlank(keywords) ? keywords : "";
-				if (StringUtils.isNotBlank(siteName)){
+				if (StringUtils.isNotBlank(siteName))
+				{
 					map.addAttribute("returnNote_page", tdReturnNoteService
 							.findByDiySiteTitleAndOrderNumberOrReturnNumberOrUsername(siteName, keyword, page, size));
-				}else if (StringUtils.isNotBlank(keyword)){
-					map.addAttribute("returnNote_page", tdReturnNoteService
-							.searchAll(keyword, page, size));
-				}else{
+				}
+				else if (StringUtils.isNotBlank(keyword))
+				{
+					map.addAttribute("returnNote_page", tdReturnNoteService.searchAll(keyword, page, size));
+				}
+				else
+				{
 					map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
 				}
 				return "/site_mag/returnNote_list";
