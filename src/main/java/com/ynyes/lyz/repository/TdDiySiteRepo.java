@@ -23,6 +23,13 @@ public interface TdDiySiteRepo
 	List<TdDiySite> findByIsEnableTrue();
 
 	/**
+	 * 根据storeCode查找
+	 * @param storeCode
+	 * @return
+	 */
+	TdDiySite findByStoreCode(String storeCode);
+	
+	/**
 	 * 通过行政区划id查找其下属的所有门店
 	 * 
 	 * @author dengxiao

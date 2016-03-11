@@ -84,6 +84,14 @@ public class TdActivityGift {
 	// 赠品数量
 	@Column
 	private Integer totalGift;
+	
+	// 城市id
+	@Column
+	private Long cityId;
+	
+	// 门店id（多个以","分割）
+	@Column
+	private String diySiteIds;
 
 	public Long getId() {
 		return id;
@@ -188,6 +196,23 @@ public class TdActivityGift {
 	public void setTotalGift(Integer totalGift) {
 		this.totalGift = totalGift;
 	}
+
+	public Long getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Long cityId) {
+		this.cityId = cityId;
+	}
+
+	public String getDiySiteIds() {
+		return diySiteIds;
+	}
+
+	public void setDiySiteIds(String diySiteIds) {
+		this.diySiteIds = diySiteIds;
+	}
+	
 	
 
 }

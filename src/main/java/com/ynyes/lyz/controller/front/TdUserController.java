@@ -359,8 +359,10 @@ public class TdUserController {
 			TdUserRecentVisit recentVisit = recent_list.get(i);
 			if (null != recentVisit) {
 				// 获取指定商品的价目表项
-				TdPriceListItem priceListItem = tdPriceListItemService
-						.findByPriceListIdAndGoodsId(diySite.getPriceListId(), recentVisit.getGoodsId());
+				TdGoods goods = tdGoodsService.findOne(recentVisit.getGoodsId());
+				TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
+//				TdPriceListItem priceListItem = tdPriceListItemService
+//						.findByPriceListIdAndGoodsId(diySite.getPriceListId(),recentVisit.getGoodsId() );
 				map.addAttribute("priceListItem" + i, priceListItem);
 			}
 		}

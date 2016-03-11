@@ -1,5 +1,6 @@
 <script type="text/javascript" src="/mag/js/layout.js"></script>
 <script type="text/javascript">
+
 function checkDiy(object){
     if ($(object).val() == "全选") {
         $(object).val("取消");
@@ -30,7 +31,9 @@ function checkDiy(object){
 function UncheckDiy(object)
 {
     var checkbox1 = $(".productIdRadio:enabled").first();
+   
     var labels = checkbox1.siblings("label");
+    var as=$(object).parent().next().children().first().children("a");
     var MDJnumber = 0;
     labels.each(function(){
         var val = $(this).html();
@@ -42,9 +45,19 @@ function UncheckDiy(object)
         else
         {
             checkOne.prop("checked",true);
-        }
-        $("a:contains('"+val+"')").trigger("click");
+        } 
+        //$("a:contains('"+val+"')").trigger("click");
     });
+    as.each(function(){
+    	if ($(this).hasClass("selected")) {
+            $(this).removeClass("selected");
+           
+        } else {
+            $(this).addClass("selected");
+            
+        }
+    });
+    
 }
 </script>
 <dl>
@@ -58,8 +71,18 @@ function UncheckDiy(object)
             <div class="rule-multi-checkbox">
                 <span>
                     <#list diysite_list as product>
-                        <input type="checkbox" class="productIdRadio" name="diySiteIds" value="${product.id!""}" datatype="*" <#if activity?? && activity.diySiteIds?? && activity.diySiteIds?contains(product.id?c)>checked="checked"</#if>>
-                        <label>${product.title!""}</label>
+                    	<#if activity_gift??>
+                    		<input type="checkbox" class="productIdRadio" name="diySiteIds" value="${product.id!""}" datatype="*" <#if activity_gift?? && activity_gift.diySiteIds?? && activity_gift.diySiteIds?contains(product.id?c)>checked="checked"</#if>>
+                        	<label>${product.title!""}</label>
+                    	
+                    	<#elseif activity??>
+                    		<input type="checkbox" class="productIdRadio" name="diySiteIds" value="${product.id!""}" datatype="*" <#if activity?? && activity.diySiteIds?? && activity.diySiteIds?contains(product.id?c)>checked="checked"</#if>>
+                        	<label>${product.title!""}</label>
+                    	
+                    	<#else>
+                    		<input type="checkbox" class="productIdRadio" name="diySiteIds" value="${product.id!""}" datatype="*" >
+                        	<label>${product.title!""}</label>
+                    	</#if>
                     </#list>
                 </span>
             </div>

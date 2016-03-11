@@ -3,6 +3,7 @@ package com.ynyes.lyz.service;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.regexp.REUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.repository.TdReturnNoteRepo;
+
 
 @Service
 @Transactional
@@ -152,6 +154,28 @@ public class TdReturnNoteService {
 		return repository.findByDiySiteTitleOrOrderNumberOrReturnNumberOrUsername(title, keyword, keyword, keyword,
 				pageRequest);
 	}
+	public Page<TdReturnNote> findByDiySiteId(Long siteId,int page, int size)
+	{
+		if (siteId == null) {
+			return null;
+		}
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+		return repository.findByDiySiteId(siteId, pageRequest);
+	}
+	public Page<TdReturnNote> findBySiteIdAndKeywords(Long siteId,String keywords,int page,int size)
+	{
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+		if (StringUtils.isNotBlank(keywords)) 
+		{
+			repository.findByDiySiteIdAndReturnNumberContainingOrDiySiteIdAndOrderNumberContainingOrDiySiteIdAndUsernameContaining(siteId, keywords, siteId, keywords, siteId, keywords, pageRequest);
+		}
+		else
+		{
+			return repository.findByDiySiteId(siteId, pageRequest);
+		}
+		return null;
+	}
+	
 	
 	public String findSiteTitleByUserName(String username){
 		return repository.findSiteTitleByUserName(username);

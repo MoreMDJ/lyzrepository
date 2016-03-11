@@ -1759,8 +1759,6 @@ public class TdCommonService {
 
 			xmlStr = xmlStr.replace("null", "");
 
-			// System.out.print("MDJWS: returnNote-->" + xmlStr);
-
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
 			try {

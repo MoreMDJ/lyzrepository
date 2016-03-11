@@ -1320,7 +1320,6 @@ public class TdOrderController {
 		Long payTypeId = order_temp.getPayTypeId();
 		TdPayType payType = tdPayTypeService.findOne(payTypeId);
 		if (null != payType && payType.getIsOnlinePay()) {
-			System.err.println("用户属于线上支付");
 			isOnline = true;
 		}
 
@@ -1331,13 +1330,10 @@ public class TdOrderController {
 		if (isOnline) {
 			// 判断是否还有未支付的金额
 			if (order_temp.getTotalPrice() > 0) {
-				// 跳转第三方
-				// res.put("url", payType.get);
-				// 支付失败将订单用户还原
-				order_temp.setUsername(user.getUsername());
-				order_temp.setUserId(user.getId());
-				tdOrderService.save(order_temp);
-				res.put("message", "支付失败");
+				// status的值为3代表需要通过第三方支付
+				res.put("status", 3);
+				res.put("title", payType.getTitle());
+				res.put("order_id", order_temp.getId());
 				return res;
 			} else {
 				// 将选择的现金券和产品券设置为已使用
