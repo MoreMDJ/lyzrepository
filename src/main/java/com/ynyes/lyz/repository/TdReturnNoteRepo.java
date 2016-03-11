@@ -28,6 +28,10 @@ public interface TdReturnNoteRepo extends PagingAndSortingRepository<TdReturnNot
 
 	Integer countByStatusIdAndOrderTimeAfterOrderByIdDesc(Long statusId, Date time);
 	
+	Page<TdReturnNote> findByDiySiteId(Long siteId,Pageable page);
+	
+	Page<TdReturnNote> findByDiySiteIdAndReturnNumberContainingOrDiySiteIdAndOrderNumberContainingOrDiySiteIdAndUsernameContaining(Long siteId0,String returnNumebr,Long siteId1,String orderNumebr,Long siteId2,String username,Pageable page);
+	
 	@Query(value = "select ds.title from td_manager m join td_manager_role mr on m.role_id = "
 			+ " mr.id left JOIN td_diy_site ds on m.diy_code = ds.store_code "
 			+ " where mr.is_sys = 0 and m.username = ?1 ", nativeQuery = true)
