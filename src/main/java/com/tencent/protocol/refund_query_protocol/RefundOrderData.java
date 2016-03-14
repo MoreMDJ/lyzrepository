@@ -1,8 +1,6 @@
 package com.tencent.protocol.refund_query_protocol;
 
 import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * User: rizenguo
@@ -70,7 +68,6 @@ public class RefundOrderData {
     }
 
     public String toMap(){
-        Map<String,Object> map = new LinkedHashMap<String, Object>();
         Field[] fields = this.getClass().getDeclaredFields();
         StringBuilder s=new StringBuilder("{");
         

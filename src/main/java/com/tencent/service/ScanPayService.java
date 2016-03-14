@@ -1,13 +1,7 @@
 package com.tencent.service;
 
-import com.tencent.common.*;
+import com.tencent.common.Configure;
 import com.tencent.protocol.pay_protocol.ScanPayReqData;
-
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 
 /**
  * User: rizenguo

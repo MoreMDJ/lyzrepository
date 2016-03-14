@@ -1,9 +1,18 @@
 package com.tencent.common;
 
-import com.tencent.service.IServiceRequest;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
@@ -18,14 +27,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLContext;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.security.*;
-import java.security.cert.CertificateException;
+import com.tencent.service.IServiceRequest;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 
 /**
  * User: rizenguo
@@ -171,7 +176,7 @@ public class HttpsRequest implements IServiceRequest{
      * @param socketTimeout 连接时长，默认10秒
      */
     public void setSocketTimeout(int socketTimeout) {
-        socketTimeout = socketTimeout;
+        this.socketTimeout = socketTimeout;
         resetRequestConfig();
     }
 
@@ -181,12 +186,12 @@ public class HttpsRequest implements IServiceRequest{
      * @param connectTimeout 传输时长，默认30秒
      */
     public void setConnectTimeout(int connectTimeout) {
-        connectTimeout = connectTimeout;
+        this.connectTimeout = connectTimeout;
         resetRequestConfig();
     }
 
     private void resetRequestConfig(){
-        requestConfig = RequestConfig.custom().setSocketTimeout(socketTimeout).setConnectTimeout(connectTimeout).build();
+        this.requestConfig = RequestConfig.custom().setSocketTimeout(socketTimeout).setConnectTimeout(connectTimeout).build();
     }
 
     /**
@@ -195,6 +200,6 @@ public class HttpsRequest implements IServiceRequest{
      * @param requestConfig 设置HttpsRequest的请求器配置
      */
     public void setRequestConfig(RequestConfig requestConfig) {
-        requestConfig = requestConfig;
+        this.requestConfig = requestConfig;
     }
 }

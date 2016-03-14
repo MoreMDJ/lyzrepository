@@ -1,13 +1,16 @@
 package com.tencent.common;
 
-import com.thoughtworks.xstream.XStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.util.Map;
+
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import com.thoughtworks.xstream.XStream;
 
 /**
  * User: rizenguo
@@ -26,7 +29,7 @@ public class Util {
      * @throws Exception
      */
     public static void reflect(Object o) throws Exception {
-        Class cls = o.getClass();
+        Class<? extends Object> cls = o.getClass();
         Field[] fields = cls.getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             Field f = fields[i];
@@ -65,7 +68,7 @@ public class Util {
         return tInputStringStream;
     }
 
-    public static Object getObjectFromXML(String xml, Class tClass) {
+    public static Object getObjectFromXML(String xml, Class<?> tClass) {
         //将从API返回的XML数据映射到Java对象
         XStream xStreamForResponseData = new XStream();
         xStreamForResponseData.alias("xml", tClass);

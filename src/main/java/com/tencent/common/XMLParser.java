@@ -31,7 +31,7 @@ public class XMLParser {
      * @return 因为订单数据有可能是多个，所以返回一个列表
      */
     public static List<RefundOrderData> getRefundOrderList(String refundQueryResponseString) throws IOException, SAXException, ParserConfigurationException {
-        List list = new ArrayList();
+        List<RefundOrderData> list = new ArrayList<RefundOrderData>();
 
         Map<String,Object> map = XMLParser.getMapFromXML(refundQueryResponseString);
 
@@ -66,7 +66,7 @@ public class XMLParser {
      * @return 因为订单数据有可能是多个，所以返回一个列表
      */
     public static List<CouponData> getCouponDataList(String payQueryResponseString) throws IOException, SAXException, ParserConfigurationException {
-        List list = new ArrayList();
+        List<CouponData> list = new ArrayList<CouponData>();
 
         Map<String,Object> map = XMLParser.getMapFromXML(payQueryResponseString);
 

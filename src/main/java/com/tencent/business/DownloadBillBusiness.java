@@ -1,6 +1,7 @@
 package com.tencent.business;
 
-import com.tencent.WXPay;
+import org.slf4j.LoggerFactory;
+
 import com.tencent.common.Configure;
 import com.tencent.common.Log;
 import com.tencent.common.Util;
@@ -11,7 +12,6 @@ import com.tencent.protocol.downloadbill_protocol.DownloadBillReqData;
 import com.tencent.protocol.downloadbill_protocol.DownloadBillResData;
 import com.tencent.service.DownloadBillService;
 import com.thoughtworks.xstream.io.StreamException;
-import org.slf4j.LoggerFactory;
 
 /**
  * User: rizenguo

@@ -1,10 +1,6 @@
 package com.tencent.service;
 
 import com.tencent.common.Configure;
-import com.tencent.common.HttpsRequest;
-import com.tencent.common.RandomStringGenerator;
-import com.tencent.common.Signature;
-import com.tencent.protocol.pay_protocol.ScanPayReqData;
 import com.tencent.protocol.pay_query_protocol.ScanPayQueryReqData;
 
 /**

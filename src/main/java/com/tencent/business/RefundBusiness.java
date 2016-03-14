@@ -1,6 +1,7 @@
 package com.tencent.business;
 
-import com.tencent.WXPay;
+import org.slf4j.LoggerFactory;
+
 import com.tencent.common.Configure;
 import com.tencent.common.Log;
 import com.tencent.common.Signature;
@@ -11,7 +12,6 @@ import com.tencent.common.report.service.ReportService;
 import com.tencent.protocol.refund_protocol.RefundReqData;
 import com.tencent.protocol.refund_protocol.RefundResData;
 import com.tencent.service.RefundService;
-import org.slf4j.LoggerFactory;
 
 /**
  * User: rizenguo

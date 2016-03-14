@@ -1,7 +1,18 @@
 package com.tencent.business;
 
-import com.tencent.WXPay;
-import com.tencent.common.*;
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import com.tencent.common.Configure;
+import com.tencent.common.Log;
+import com.tencent.common.Signature;
+import com.tencent.common.Util;
+import com.tencent.common.XMLParser;
 import com.tencent.common.report.ReporterFactory;
 import com.tencent.common.report.protocol.ReportReqData;
 import com.tencent.common.report.service.ReportService;
@@ -9,12 +20,6 @@ import com.tencent.protocol.refund_query_protocol.RefundOrderData;
 import com.tencent.protocol.refund_query_protocol.RefundQueryReqData;
 import com.tencent.protocol.refund_query_protocol.RefundQueryResData;
 import com.tencent.service.RefundQueryService;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * User: rizenguo

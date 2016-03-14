@@ -23,7 +23,7 @@ public class Signature {
      */
     public static String getSign(Object o) throws IllegalAccessException {
         ArrayList<String> list = new ArrayList<String>();
-        Class cls = o.getClass();
+        Class<? extends Object> cls = o.getClass();
         Field[] fields = cls.getDeclaredFields();
         for (Field f : fields) {
             f.setAccessible(true);

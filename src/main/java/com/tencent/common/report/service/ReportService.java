@@ -1,15 +1,15 @@
 package com.tencent.common.report.service;
 
-import com.tencent.common.*;
-import com.tencent.common.report.protocol.ReportReqData;
-
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import com.tencent.common.Configure;
+import com.tencent.common.HttpsRequest;
+import com.tencent.common.Util;
+import com.tencent.common.report.protocol.ReportReqData;
 
 /**
  * User: rizenguo
@@ -58,10 +58,10 @@ public class ReportService {
      * 获取time:统计发送时间，格式为yyyyMMddHHmmss，如2009年12 月25 日9 点10 分10 秒表示为20091225091010。时区为GMT+8 beijing。
      * @return 订单生成时间
      */
-    private static String getTime(){
-        //订单生成时间自然就是当前服务器系统时间咯
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        return simpleDateFormat.format(new Date());
-    }
+//    private static String getTime(){
+//        //订单生成时间自然就是当前服务器系统时间咯
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+//        return simpleDateFormat.format(new Date());
+//    }
 
 }

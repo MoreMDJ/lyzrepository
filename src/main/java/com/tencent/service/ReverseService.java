@@ -1,9 +1,6 @@
 package com.tencent.service;
 
 import com.tencent.common.Configure;
-import com.tencent.common.HttpsRequest;
-import com.tencent.common.RandomStringGenerator;
-import com.tencent.common.Signature;
 import com.tencent.protocol.reverse_protocol.ReverseReqData;
 
 /**

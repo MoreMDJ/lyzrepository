@@ -24,7 +24,7 @@ public class BaseService{
 
     public BaseService(String api) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         apiURL = api;
-        Class c = Class.forName(Configure.HttpsRequestClassName);
+        Class<?> c = Class.forName(Configure.HttpsRequestClassName);
         serviceRequest = (IServiceRequest) c.newInstance();
     }
 
