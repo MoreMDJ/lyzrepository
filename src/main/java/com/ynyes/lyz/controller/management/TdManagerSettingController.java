@@ -1,5 +1,6 @@
 package com.ynyes.lyz.controller.management;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ import com.ynyes.lyz.entity.TdSmsAccount;
 import com.ynyes.lyz.entity.TdStorage;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
+import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCompanyService;
 import com.ynyes.lyz.service.TdDistrictService;
@@ -35,6 +37,7 @@ import com.ynyes.lyz.service.TdSmsAccountService;
 import com.ynyes.lyz.service.TdStorageService;
 import com.ynyes.lyz.service.TdSubdistrictService;
 import com.ynyes.lyz.service.TdUserSuggestionCategoryService;
+import com.ynyes.lyz.service.TdWareHouseService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
 
@@ -81,6 +84,9 @@ public class TdManagerSettingController {
     
     @Autowired
     TdStorageService tdStorageService;  //zhangji 2016-1-8 9:48:44
+    
+    @Autowired
+    TdWareHouseService WareHouseService;  //华仔 2016-3-11 17:40:44
     
     @RequestMapping
     public String setting(Long status, ModelMap map,
@@ -1121,5 +1127,147 @@ public class TdManagerSettingController {
                 }
             }
         }
+    }
+    
+    
+    private void btnDeleteWareHouse(Long[] ids, Integer[] chkIds)
+    {
+        if (null == ids || null == chkIds || ids.length < 1 || chkIds.length < 1)
+        {
+            return;
+        }
+        
+        for (int chkId : chkIds)
+        {
+            if (chkId >=0 && ids.length > chkId)
+            {
+                Long id = ids[chkId];
+                
+                WareHouseService.delete(id);
+            }
+        }
+    }
+    
+    /**
+     * 仓库-列表
+     * @param page
+     * @param size
+     * @param __EVENTTARGET
+     * @param __EVENTARGUMENT
+     * @param __VIEWSTATE
+     * @param action
+     * @param listId
+     * @param listChkId
+     * @param map
+     * @param req
+     * @return
+     * @author 华仔
+     */
+    @RequestMapping(value = "/warehouse/list")
+    public String settingWareHouseList(Integer page,
+						            Integer size,
+						            String __EVENTTARGET,
+						            String __EVENTARGUMENT,
+						            String __VIEWSTATE,
+						            String action,
+						            Long[] listId,
+						            Integer[] listChkId,
+						            ModelMap map,
+						            HttpServletRequest req)
+    {
+    	String username = (String) req.getSession().getAttribute("manager");
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        if (null != __EVENTTARGET)
+        {
+            if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+            {
+                btnDeleteWareHouse(listId, listChkId);
+                tdManagerLogService.addLog("delete", "删除仓库", req);
+            }
+            else if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
+            {
+                if (null != __EVENTARGUMENT)
+                {
+                    page = Integer.parseInt(__EVENTARGUMENT);
+                }
+            }
+        }
+        
+        if (null == page || page < 0)
+        {
+            page = 0;
+        }
+        
+        if (null == size || size <= 0)
+        {
+            size = SiteMagConstant.pageSize;;
+        }
+        
+        map.addAttribute("page", page);
+        map.addAttribute("size", size);
+        map.addAttribute("action", action);
+        map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+        map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+        map.addAttribute("WareHouse_page", WareHouseService.findAll(page, size));
+        
+
+    	return "/site_mag/warehouse_list";
+    }
+    
+    @RequestMapping(value="/warehouse/edit")
+    public String WareHouseEdit(Long id,
+                        String __VIEWSTATE,
+                        ModelMap map,
+                        HttpServletRequest req)
+    {
+        String username = (String) req.getSession().getAttribute("manager");
+        
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+        
+        if (null != id)
+        {
+            map.addAttribute("warehouse",WareHouseService.findOne(id));
+        }
+        
+        map.addAttribute("warehouse_list",WareHouseService.findAll());
+        return "/site_mag/warehouse_edit";
+    }
+    
+    @RequestMapping(value="/warehouse/save", method = RequestMethod.POST)
+    public String WareHouseSave(TdWareHouse tdWareHouse, String __VIEWSTATE, ModelMap map, HttpServletRequest req) 
+    {
+        String username = (String) req.getSession().getAttribute("manager");
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+        String type = null;
+        Date date= tdWareHouse.getCreatTime();
+        if (null ==  tdWareHouse.getId())
+        {
+			type = "add";
+			tdWareHouse.setCreatTime(new Date());
+		}
+        else
+        {
+			type = "edit";
+
+		}
+        WareHouseService.save(tdWareHouse);
+        
+        tdManagerLogService.addLog(type, "修改仓库", req);
+        
+        return "redirect:/Verwalter/setting/warehouse/list";
     }
 }
