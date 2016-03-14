@@ -680,12 +680,12 @@ public class TdUserController {
 
 	/**
 	 * 跳转到新增收货页面的方法
-	 * 
+	 * @param returnPage 后面添加的参数 值为1时设置sesssion中returnPage的值为1 其他条件则为0
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/address/{type}")
 	public String userAddressAdd(HttpServletRequest req, ModelMap map, @PathVariable Long type, Long id,
-			String receiver, String receiverMobile, String detailAddress) {
+			String receiver, String receiverMobile, String detailAddress,String returnPage) {
 		// 判断用户是否登陆
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
@@ -707,6 +707,17 @@ public class TdUserController {
 			TdShippingAddress address = tdShippingAddressService.findOne(id);
 			map.addAttribute("address", address);
 			map.addAttribute("addressId", id);
+			//设置行政区域
+			req.getSession().setAttribute("new_district", address.getDisctrict());
+			req.getSession().setAttribute("new_district_id", address.getDistrictId());
+			//设置行政街道
+			req.getSession().setAttribute("new_subdistrict", address.getSubdistrict());
+			req.getSession().setAttribute("new_subdistrict_id", address.getSubdistrictId());
+			if(null!=returnPage && "1".equals(returnPage)){
+				req.getSession().setAttribute("returnPage", "1");
+			}else{
+				req.getSession().setAttribute("returnPage", "0");
+			}
 		}
 		map.addAttribute("city", user.getCityName());
 		map.addAttribute("operation", type);
@@ -770,7 +781,6 @@ public class TdUserController {
 
 	/**
 	 * 保存新增的收货地址的方法
-	 * 
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/address/add/save")
@@ -854,7 +864,13 @@ public class TdUserController {
 		req.getSession().setAttribute("new_subdistrict", null);
 		req.getSession().setAttribute("new_subdistrict_id", null);
 
+		//status 0:查看收货地址页面 1 选择收货地址页面
 		res.put("status", 0);
+		// returnPage 值为1时修改返回状态res.status=1 回到选择收货地址页面
+		String returnPage = (String) req.getSession().getAttribute("returnPage");
+		if(null!=returnPage && "1".equals(returnPage)){
+			res.put("status", 1);
+		}
 		return res;
 	}
 
@@ -916,7 +932,7 @@ public class TdUserController {
 						address_list.get(i).setIsDefaultAddress(false);
 					}
 					if (null != address_list.get(i) && null != address_list.get(i).getId()
-							&& id == address_list.get(i).getId()) {
+							&& address_list.get(i).getId().equals(id) ) {
 						address_list.get(i).setIsDefaultAddress(true);
 					}
 				}

@@ -176,6 +176,12 @@ function saveAddress() {
 					window.location.href = "/user/address";
 				}, 1000);
 			}
+			if (1 == res.status) {
+				warning("收货地址保存成功");
+				setTimeout(function() {
+					window.location.href = "/order/change/address";
+				}, 1000);
+			}
 		}
 	});
 }

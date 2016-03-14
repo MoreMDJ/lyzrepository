@@ -55,6 +55,6 @@
         <#-- 用于存储用户的城市 -->
         <input type="hidden" id="user_city" value="${city!''}">
         <input type="hidden" id="operation_type" value="${operation!''}">
-        <input type="hidden" id="address_id" value="${addressId!''}">
+        <input type="hidden" id="address_id" value="<#if addressId??>${addressId?c}</#if>">
     </body>
 </html>
