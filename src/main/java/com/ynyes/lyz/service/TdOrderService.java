@@ -557,7 +557,7 @@ public class TdOrderService {
 	 */
 	public List<TdOrder> searchMainOrderNumberByTime(Date begin,Date end)
 	{
-		return repository.searchMainOrderNumberByTime(begin, end);
+		return repository.searchOrderByTime(begin, end);
 	}
 	/**
 	 * 根据时间 配送门店 查询总单号
@@ -565,7 +565,7 @@ public class TdOrderService {
 	 */
 	public List<TdOrder> searchMainOrderNumberByTimeAndDiySiteCode(String diyCode,Date begin,Date end)
 	{
-		return repository.searchMainOrderNumberByTimeAndDiySiteCode(diyCode,begin,end);
+		return repository.searchMainOrderNumberByOrderTimeAndDiySiteCode(diyCode,begin,end);
 	}
 	
 }

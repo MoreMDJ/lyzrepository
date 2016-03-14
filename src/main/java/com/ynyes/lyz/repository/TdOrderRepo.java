@@ -196,13 +196,13 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	 * @return
 	 */
 	@Query("select o from TdOrder o where o.orderTime between ?1 and ?2 group by o.mainOrderNumber order by o.orderTime desc")
-	List<TdOrder> searchMainOrderNumberByTime(Date begin,Date end);
+	List<TdOrder> searchOrderByTime(Date begin,Date end);
 	
 	/**
 	 * 根据时间 配送门店 查询总单号
 	 * @return
 	 */
 	@Query("select o from TdOrder o where o.diySiteCode = ?1 and o.orderTime between ?2 and ?3 group by o.mainOrderNumber order by o.orderTime desc")
-	List<TdOrder> searchMainOrderNumberByTimeAndDiySiteCode(String diyCode,Date begin,Date end);
+	List<TdOrder> searchMainOrderNumberByOrderTimeAndDiySiteCode(String diyCode,Date begin,Date end);
 	
 }
