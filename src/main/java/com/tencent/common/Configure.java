@@ -39,7 +39,7 @@ public class Configure {
 	private static boolean useThreadToDoReport = true;
 
 	//机器IP
-	private static String ip = "";
+	private static String ip = "101.200.128.65";
 
 	//以下是几个API的路径：
 	//1）被扫支付API
