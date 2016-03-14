@@ -348,6 +348,10 @@ public class TdOrder {
 	@Column
 	private String realUserRealName;
 
+	// 第三方支付的金额
+	@Column
+	private Double otherPay;
+
 	public Double getRefund() {
 		return refund;
 	}
@@ -962,5 +966,13 @@ public class TdOrder {
 
 	public void setRealUserRealName(String realUserRealName) {
 		this.realUserRealName = realUserRealName;
+	}
+
+	public Double getOtherPay() {
+		return otherPay;
+	}
+
+	public void setOtherPay(Double otherPay) {
+		this.otherPay = otherPay;
 	}
 }

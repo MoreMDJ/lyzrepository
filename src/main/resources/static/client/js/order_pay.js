@@ -95,7 +95,7 @@ function pay() {
 			}
 			if (3 == res.status) {
 				if ("支付宝" == res.title) {
-					window.location.href = "/pay/alipay?id=" + res.order_id;
+					window.location.href = "/pay/alipay?id=" + res.order_id +"&type=0";
 				}
 			}
 		}
