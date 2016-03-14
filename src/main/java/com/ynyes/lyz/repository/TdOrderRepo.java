@@ -46,22 +46,22 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 //	@Query("select g from TdOrder o join o.orderGoodsList og where o.statusId = ?1 order by orderTime desc")
 	List<TdOrder> findByStatusIdOrderByOrderTimeDesc(Long statusid);
 	
-	
+	//@Query("select o from TdOrder o where o.statusId= ?1 and o.orderTime > ?2 and o.orderNumber in ?3 group by o.mainOrderNumber order by o.id desc")
 	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
-	
+	//@Query("select o from TdOrder o where o.statusId= ?1 and o.orderTime > ?2 and o.orderNumber in ?3 or o.statusId= ?4 and o.orderTime > ?5 and o.orderNumber in ?6 group by o.mainOrderNumber order by o.id desc")
 	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
-	
+	//@Query("select o from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4 group by o.mainOrderNumber order by o.id desc")
 	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end,  List<String> orderNumbers);
-	
+	//@Query("select o from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4 or o.statusId= ?5 and o.orderTime Between ?6 and ?7 and o.orderNumber in ?8 group by o.mainOrderNumber order by o.id desc")
 	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
 
-	
+	//@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime > ?2 and o.orderNumber in ?3  order by o.id desc")
 	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
-	
+	//@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime > ?2 and o.orderNumber in ?3 or o.statusId= ?4 and o.orderTime > ?5 and o.orderNumber in ?6  order by o.id desc")
 	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
-	
+	//@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4  order by o.id desc")
 	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end,  List<String> orderNumbers);
-	
+	//@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4 or o.statusId= ?5 and o.orderTime Between ?6 and ?7 and o.orderNumber in ?8 order by o.id desc")
 	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
 
 	

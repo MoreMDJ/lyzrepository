@@ -552,8 +552,7 @@ public class TdManagerOrderController {
 		}
         else
         {
-        	orders = tdOrderService.searchMainOrderNumberByTimeAndDiySiteCode("1007",date1,date2);
-//        	orders = tdOrderService.searchMainOrderNumberByTime(date1, date2);
+        	orders = tdOrderService.searchMainOrderNumberByTime(date1, date2);
         }
         Integer i = 0;
         for (TdOrder tdOrder : orders)

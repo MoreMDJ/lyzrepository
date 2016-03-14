@@ -130,6 +130,7 @@ function timer() {
     
     <#if order_list??>
     	<#list order_list as item>
+    	 <!-- <#if item.mainOrderNumber?? && item.mainOrderNumber != username>  -->
     		<section>
 		      <a href="/delivery/detail/${item.id?c}">
 		      	<#if item.statusId==3 || item.statusId==4>
@@ -143,6 +144,8 @@ function timer() {
 		        <div class="address">收货地址：${item.shippingAddress!''}</div>
 		      </a>
 		    </section>
+		    <!-- <#if item.mainOrderNumber??><#assign username=item.mainOrderNumber /></#if>
+		 </#if>  -->
     	</#list>
     </#if>
   </article>
