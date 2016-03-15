@@ -1253,7 +1253,6 @@ public class TdManagerSettingController {
         
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
         String type = null;
-        Date date= tdWareHouse.getCreatTime();
         if (null ==  tdWareHouse.getId())
         {
 			type = "add";

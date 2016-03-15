@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -204,5 +206,5 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	 */
 	@Query("select o from TdOrder o where o.diySiteCode = ?1 and o.orderTime between ?2 and ?3 group by o.mainOrderNumber order by o.orderTime desc")
 	List<TdOrder> searchMainOrderNumberByOrderTimeAndDiySiteCode(String diyCode,Date begin,Date end);
-	
+
 }

@@ -1,18 +1,29 @@
 package com.ynyes.lyz.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.repository.TdOrderRepo;
+import com.ynyes.lyz.util.Criteria;
+import com.ynyes.lyz.util.Restrictions;
 
 /**
  * TdOrder 服务类
@@ -566,6 +577,70 @@ public class TdOrderService {
 	public List<TdOrder> searchMainOrderNumberByTimeAndDiySiteCode(String diyCode,Date begin,Date end)
 	{
 		return repository.searchMainOrderNumberByOrderTimeAndDiySiteCode(diyCode,begin,end);
+	}
+	
+	public Page<TdOrder>findAll(String keywords,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
+			String deliveryTime,String userPhone,String shippingName,String sendTime,int size,int page){
+		PageRequest pageRequest = new PageRequest(page, size);
+		Criteria<TdOrder> c = new Criteria<TdOrder>();
+		if(null != keywords && !keywords.equalsIgnoreCase("")){
+			c.add(Restrictions.like("orderNumber", keywords, true));
+		}
+		if(null !=orderStartTime && !orderStartTime.equals("")){
+			c.add(Restrictions.lte("orderTime", StringToDate(orderStartTime,null), true));
+			
+		}
+		if(null !=orderEndTime && !orderEndTime.equals("")){
+			c.add( Restrictions.gte("orderTime", StringToDate(orderEndTime,null), true));
+		}
+		
+		if(null !=userPhone && !"".equals(userPhone)){
+			c.add( Restrictions.like("username", userPhone, true));
+		}
+		if(null !=shippingName && !"".equals(shippingName)){
+			c.add( Restrictions.like("shippingName", shippingName, true));
+		}
+		if(null !=shippingPhone && !"".equals(shippingPhone)){
+			c.add( Restrictions.like("shippingPhone", shippingPhone, true));
+		}
+		if(null !=shippingAddress && !"".equals(shippingAddress)){
+			c.add( Restrictions.like("shippingAddress", shippingAddress, true));
+		}
+		
+		if(null !=realName && !"".equals(realName)){	
+			c.add( Restrictions.like("realUserRealName", realName, true));
+		}
+		if(null !=deliveryTime && !deliveryTime.equals("")){
+			c.add( Restrictions.eq("realUserRealName", StringToDate(deliveryTime,null), true));
+		}
+		if(null !=sendTime && !sendTime.equals("")){
+			c.add( Restrictions.eq("sendTime", StringToDate(sendTime,null), true));
+		}
+		if(null !=sellerRealName  && !"".equals(sellerRealName )){
+			c.add( Restrictions.eq("sellerRealName", sellerRealName, true));
+		}
+				
+		       return repository.findAll(c,pageRequest);
+	}
+	/**
+	 * 字符串转换时间默认格式yyyy-MM-dd HH:mm:ss
+	 * @return
+	 */
+	private Date StringToDate(String time,String dateFormat){
+		if(null==dateFormat || "".equals(dateFormat)){
+			dateFormat="yyyy-MM-dd HH:mm:ss";
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		Date date = null;
+		if(null !=time && !time.equals(""))
+		{
+			try {
+				date = sdf.parse(time);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		return date;
 	}
 	
 }

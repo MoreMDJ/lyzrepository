@@ -187,6 +187,17 @@ public class StringUtils {
     String str="1";
     System.out.println(encryption(str));
 }
+   /**
+    * 判断字符串是否为空
+    * @return
+    */
+public static Boolean isEmpty(Object obj){
+	   if(null==obj || "".equals(obj)){
+		   return true;
+	   }else{
+		   return false;
+	   }
+   }
 } 
   
 

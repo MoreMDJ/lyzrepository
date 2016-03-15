@@ -11,6 +11,7 @@
 <script type="text/javascript" src="/mag/js/swfupload.js"></script>
 <script type="text/javascript" src="/mag/js/swfupload.queue.js"></script>
 <script type="text/javascript" src="/mag/js/swfupload.handlers.js"></script>
+<script type="text/javascript" src="/mag/js/WdatePicker.js"></script>
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
 <script type="text/javascript">
 $(function () {
@@ -78,18 +79,18 @@ $(function () {
     <dl>
         <dt>仓库类型</dt>
         <dd>
-            <input name="Type" type="text" value="<#if warehouse?? && warehouse.Type??>${warehouse.Type?string("0.00")}<#else>0</#if>" class="input normal" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" ">
+            <input name="Type" type="text" value="<#if warehouse?? && warehouse.type??>${warehouse.type!""}</#if>" class="input normal" datatype="*1-255" sucmsg=" ">
             <span class="Validform_checktip">仓库类型</span>
         </dd>
     </dl>
-     <dl>
+    <!--  <dl>
     <dt>创建时间</dt>
     <dd>
-        <input name="creatTime" type="text" readonly="readonly" value="<#if warehouse??>${warehouse.creatTime!"1"}</#if>" class="input normal" "> 
+        <input name="creatTime" type="text" readonly="readonly" value="<#if warehouse??>${warehouse.creatTime!"1"}</#if>"  class="input normal" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " /> 
         <span class="Validform_checktip">创建时间</span>
     </dd>
-  </dl>
-  <dl>
+  </dl> -->
+  <dl>  
     <dt>排序数字</dt>
     <dd>
       <input name="sortId" type="text" value="<#if warehouse??>${warehouse.sortId!"0"}<#else>99</#if>" class="input small" datatype="/^(([1-9]\d{0,1})|0)((\.\d{2})|(\.\d{1}))?$/" sucmsg=" " errormsg="请输入不超过100的2位小数">

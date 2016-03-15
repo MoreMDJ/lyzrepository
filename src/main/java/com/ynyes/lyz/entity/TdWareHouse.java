@@ -28,7 +28,7 @@ public class TdWareHouse {
 	
 	//仓库类型
 	@Column
-	private int Type;
+	private String Type;
 	
 	// 创建时间
 	@Column
@@ -56,11 +56,11 @@ public class TdWareHouse {
 		Name = name;
 	}
 
-	public int getType() {
+	public String getType() {
 		return Type;
 	}
 
-	public void setType(int type) {
+	public void setType(String type) {
 		Type = type;
 	}
 

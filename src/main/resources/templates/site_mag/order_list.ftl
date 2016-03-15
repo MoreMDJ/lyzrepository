@@ -158,11 +158,9 @@ function downloaddate(type)
                
                 <div  class="odiv"><span class="span1">会员姓名：</span><input name="realName" type="text" class="input"></div>
                 <div  class="odiv"><span class="span1">收货人电话：</span><input name="shippingPhone" type="text" class="input"></div>
-                <div class="odiv" ><span class="span1">收货地址：</span><input name="shippingAddress" type="text" class="input"></div>
-                <div class="odiv" ><span class="span1">导购姓名：</span><input name="sellerRealName" type="text" class="input"></div>
-
-
                 <div class="odiv" ><span class="span1">预约送货时间：</span><input name="deliveryTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
+                <div class="odiv" ><span class="span1">导购姓名：</span><input name="sellerRealName" type="text" class="input"></div>
+				<div class="odiv" ><span class="span1">收货地址：</span><input name="shippingAddress" type="text" class="input"></div>
                 <div class="odiv" ><span class="span1">会员电话：</span><input name="userPhone" type="text" class="input"></div>
                 <div class="odiv" ><span class="span1">收货人姓名：</span><input name="shippingName" type="text" class="input"></div>
                 

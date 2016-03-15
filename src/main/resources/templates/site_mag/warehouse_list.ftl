@@ -33,12 +33,12 @@ var theForm = document.forms['form1'];
 </script>
 <!--导航栏-->
 <div class="location" style="position: static; top: 0px;">
-  <a href="javascript:history.back(-1);" class="back"><i></i><span>返回上一页</span></a>
+  
   <a href="/Verwalter/center" class="home"><i></i><span>首页</span></a>
   <i class="arrow"></i>
-  <span>系统用户</span>
+  <span>系统设置</span>
   <i class="arrow"></i>
-  <span>日志列表</span>  
+  <span>仓库管理</span>  
 </div>
 <!--/导航栏-->
 
@@ -47,7 +47,7 @@ var theForm = document.forms['form1'];
   <div id="floatHead" class="toolbar" style="position: static; top: 42px;">
     <div class="l-list">
       <ul class="icon-list">
-        <li><a class="add" href="/Verwalter/setting/warehouse/edit"><i></i><span>导入</span></a></li>
+        <li><a class="add" href="/Verwalter/setting/warehouse/edit"><i></i><span>新增</span></a></li>
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除仓库</span></a></li>
       </ul>
