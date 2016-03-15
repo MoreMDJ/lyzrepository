@@ -1217,6 +1217,8 @@ public class TdManagerOrderController {
 				{
 					page = Integer.parseInt(__EVENTARGUMENT);
 				}
+			}else if(__EVENTTARGET.equals("btnSearch")){
+				page=0;
 			}
 		}
 
@@ -1251,7 +1253,7 @@ public class TdManagerOrderController {
 				if (searchCondition) 
 				{
 						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, realName, sellerRealName, shippingAddress, shippingPhone,
-					 deliveryTime, userPhone, shippingName, sendTime, size, page));
+					 deliveryTime, userPhone, shippingName, sendTime,statusId, size, page));
 				}
 				else
 				{

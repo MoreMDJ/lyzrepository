@@ -580,7 +580,7 @@ public class TdOrderService {
 	}
 	
 	public Page<TdOrder>findAll(String keywords,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
-			String deliveryTime,String userPhone,String shippingName,String sendTime,int size,int page){
+			String deliveryTime,String userPhone,String shippingName,String sendTime,Long statusId,int size,int page){
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdOrder> c = new Criteria<TdOrder>();
 		if(null != keywords && !keywords.equalsIgnoreCase("")){
@@ -618,6 +618,9 @@ public class TdOrderService {
 		}
 		if(null !=sellerRealName  && !"".equals(sellerRealName )){
 			c.add( Restrictions.eq("sellerRealName", sellerRealName, true));
+		}
+		if(null != statusId && !statusId.equals(0L)){
+			c.add( Restrictions.eq("statusId", statusId, true));
 		}
 				
 		       return repository.findAll(c,pageRequest);
