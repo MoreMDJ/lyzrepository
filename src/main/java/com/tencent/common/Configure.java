@@ -148,4 +148,12 @@ public class Configure {
 		return sdkVersion;
 	}
 
+	public static String getUNIFIED_ORDER_API() {
+		return UNIFIED_ORDER_API;
+	}
+
+	public static void setUNIFIED_ORDER_API(String uNIFIED_ORDER_API) {
+		UNIFIED_ORDER_API = uNIFIED_ORDER_API;
+	}
+	
 }
