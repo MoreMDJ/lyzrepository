@@ -925,7 +925,12 @@
                         </th>
                         <td>${order.deliverTypeTitle!""}</td>
                     </tr>
-                    
+                    <tr>
+                        <th>
+                            配送仓库
+                        </th>
+                        <td><#if tdWareHouse??>${tdWareHouse.whName!''}</#if></td>
+                    </tr>
                     <tr>
                         <th>
                             用户留言

@@ -1257,6 +1257,7 @@ public class TdManagerSettingController {
         {
 			type = "add";
 			tdWareHouse.setCreatTime(new Date());
+			tdWareHouse.setUpdateTime(new Date());
 		}
         else
         {

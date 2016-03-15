@@ -70,26 +70,33 @@ $(function () {
 <div class="tab-content">
 
   <dl>
-    <dt>仓库名称</dt>
+    <dt>仓库编号</dt>
     <dd>
-        <input name="name" type="text" value="<#if warehouse??>${warehouse.name!"1"}</#if>" class="input normal" datatype="*1-255" sucmsg=" "> 
-        <span class="Validform_checktip">*仓库名称</span>
+        <input name="whNumber" type="text" value="<#if warehouse??>${warehouse.whNumber!"1"}</#if>" class="input normal" datatype="*1-255" sucmsg=" "> 
+        <span class="Validform_checktip">*仓库编号</span>
     </dd>
   </dl>
     <dl>
-        <dt>仓库类型</dt>
+        <dt>仓库名称</dt>
         <dd>
-            <input name="Type" type="text" value="<#if warehouse?? && warehouse.type??>${warehouse.type!""}</#if>" class="input normal" datatype="*1-255" sucmsg=" ">
-            <span class="Validform_checktip">仓库类型</span>
+            <input name="whName" type="text" value="<#if warehouse?? && warehouse.whName??>${warehouse.whName!""}</#if>" class="input normal" datatype="*1-255" sucmsg=" ">
+            <span class="Validform_checktip">仓库名称</span>
         </dd>
     </dl>
-    <!--  <dl>
+  <dl style="display: none;">
     <dt>创建时间</dt>
     <dd>
         <input name="creatTime" type="text" readonly="readonly" value="<#if warehouse??>${warehouse.creatTime!"1"}</#if>"  class="input normal" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " /> 
         <span class="Validform_checktip">创建时间</span>
     </dd>
-  </dl> -->
+  </dl>
+  <dl style="display: none;">
+    <dt>修改时间</dt>
+    <dd>
+        <input name="updateTime" type="text" readonly="readonly" value="<#if warehouse??>${warehouse.updateTime!"1"}</#if>"  class="input normal" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " /> 
+        <span class="Validform_checktip">修改时间</span>
+    </dd>
+  </dl> 
   <dl>  
     <dt>排序数字</dt>
     <dd>

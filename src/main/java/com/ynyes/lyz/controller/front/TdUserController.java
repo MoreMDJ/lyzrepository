@@ -74,6 +74,7 @@ import com.ynyes.lyz.service.TdUserRecentVisitService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.service.TdUserSuggestionCategoryService;
 import com.ynyes.lyz.service.TdUserSuggestionService;
+import com.ynyes.lyz.service.TdWareHouseService;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.MD5;
 
@@ -162,6 +163,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdDeliveryInfoService tdDeliveryInfoService;
+	
+	@Autowired
+	private TdWareHouseService TdWareHouseService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1429,6 +1433,16 @@ public class TdUserController {
 				}
 			}
 		}
+		/*//仓库
+		if(null != order){
+			List<TdDeliveryInfo> deliveryList=tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+			if(null!=deliveryList && deliveryList.size()>0){
+				List<TdWareHouse> wareHouseList= TdWareHouseService.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
+				if(null != wareHouseList && wareHouseList.size()>0){
+					map.addAttribute("tdWareHouse", wareHouseList.get(0));
+				}
+			}
+		}*/
 
 		return "/client/user_order_detail";
 	}

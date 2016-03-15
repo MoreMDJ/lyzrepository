@@ -48,8 +48,11 @@ public class TdWareHouseService {
 	}
 	public Page<TdWareHouse> findAll(int page, int size) {
 
-		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "sortId"));
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
 
 		return repository.findAll(pageRequest);
+	}
+	public List<TdWareHouse> findBywhNumberOrderBySortIdAsc(String whNumber){
+		return repository.findBywhNumberOrderBySortIdAsc(whNumber);
 	}
 }

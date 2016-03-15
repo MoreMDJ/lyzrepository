@@ -49,6 +49,7 @@ import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
@@ -72,6 +73,7 @@ import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
 import com.ynyes.lyz.service.TdUserService;
+import com.ynyes.lyz.service.TdWareHouseService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
 /**
@@ -152,6 +154,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
+	
+	@Autowired
+	private TdWareHouseService tdWareHouseService;
 	
 	
 	@RequestMapping(value = "/downdatagoods")
@@ -1124,7 +1129,18 @@ public class TdManagerOrderController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("statusId", statusId);
 		if (null != id) {
+			TdOrder order=tdOrderService.findOne(id);
 			map.addAttribute("order", tdOrderService.findOne(id));
+			//仓库
+			if(null != order){
+				List<TdDeliveryInfo> deliveryList=tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+				if(null!=deliveryList && deliveryList.size()>0){
+					List<TdWareHouse> wareHouseList= tdWareHouseService.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
+					if(null != wareHouseList && wareHouseList.size()>0){
+						map.addAttribute("tdWareHouse", wareHouseList.get(0));
+					}
+				}
+			}
 		}
 		return "/site_mag/order_edit";
 	}

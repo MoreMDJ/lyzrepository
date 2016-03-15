@@ -22,18 +22,22 @@ public class TdWareHouse {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
+	//仓库编号
+	@Column
+	private String whNumber;
+	
 	//仓库名称
 	@Column
-	private String Name;
-	
-	//仓库类型
-	@Column
-	private String Type;
+	private String whName;
 	
 	// 创建时间
 	@Column
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date creatTime;
+	
+	@Column
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date updateTime;
 	
 	// 排序号
 	@Column
@@ -48,20 +52,20 @@ public class TdWareHouse {
 		this.id = id;
 	}
 
-	public String getName() {
-		return Name;
+	public String getWhNumber() {
+		return whNumber;
 	}
 
-	public void setName(String name) {
-		Name = name;
+	public void setWhNumber(String whNumber) {
+		this.whNumber = whNumber;
 	}
 
-	public String getType() {
-		return Type;
+	public String getWhName() {
+		return whName;
 	}
 
-	public void setType(String type) {
-		Type = type;
+	public void setWhName(String whName) {
+		this.whName = whName;
 	}
 
 	public Date getCreatTime() {
@@ -79,12 +83,14 @@ public class TdWareHouse {
 	public void setSortId(Double sortId) {
 		this.sortId = sortId;
 	}
-
-	@Override
-	public String toString() {
-		return "TdWareHouse [id=" + id + ", Name=" + Name + ", Type=" + Type + ", creatTime=" + creatTime + ", sortId="
-				+ sortId + "]";
-	}
 	
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
 	
 }

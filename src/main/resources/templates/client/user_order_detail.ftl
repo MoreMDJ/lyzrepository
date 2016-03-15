@@ -106,6 +106,7 @@
                         .li6 > .div1 {width:70%; float:left; color:#666;}
                     </style>
                     <li class="li5">配送人：<#if opUser??>${opUser.realName!''}</#if><#if opUser??&&opUser.username??>(<a href="tel:${opUser.username!''}"></a>)</#if></li>
+               		<!-- <li class="li5">配送仓库：<#if tdWareHouse??>${tdWareHouse.whName!''}</#if></li> -->
                 </ol>   
             </article>
             <!-- 订单详情 END -->
