@@ -19,6 +19,11 @@ public class TdWXPay {
 	
 	private static String trade_type_str = "APP";
 	
+	/**
+	 * 统一下单所需要的XML
+	 * @param order
+	 * @return
+	 */
 	public static String getUnifiedorderXML(TdOrder order)
 	{
 		/*
@@ -73,6 +78,10 @@ public class TdWXPay {
 		return content;
 	}
 	
+	/**
+	 * 统一下单请求获取 prepay_id
+	 * @param requestXML
+	 */
 	public static void sendUnifiedorderRequest(String requestXML)
 	{
 		
