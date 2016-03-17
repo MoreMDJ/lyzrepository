@@ -136,7 +136,10 @@
                     </div>
                     <div class="div1">
                         <label>预存款</label>
-                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(no_product_coupon_list??&&no_product_coupon_list?size gt 0)>href="/order/user/balance?max=${max!'0.00'}"</#if>>
+                        <#if !(max??)>
+                            <#assign max=0.00>
+                        </#if>
+                        <a class="target" <#if !(isCoupon??&&isCoupon==false)>href="/order/user/balance?max=${max?string("0.00")}"</#if>>
                             <#if isCoupon??&&isCoupon==false>
                                                                                 禁止使用
                             <#else>
