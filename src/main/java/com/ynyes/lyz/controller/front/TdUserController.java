@@ -1217,9 +1217,6 @@ public class TdUserController {
 			}
 		}
 
-		// add by Shawn
-		String mainOrderNumber = order.getMainOrderNumber();
-
 		if (null != order.getStatusId() && 3L == order.getStatusId()) {
 			// 生成退货单
 			if (null != order) {
@@ -1255,7 +1252,7 @@ public class TdUserController {
 
 				// 退货信息
 				returnNote.setUsername(order.getUsername());
-				returnNote.setRemarkInfo("取消订单退货");
+				returnNote.setRemarkInfo("用户取消订单，退货");
 
 				Long turnType = 2L;
 				// 退货方式
@@ -1276,7 +1273,6 @@ public class TdUserController {
 				}
 
 				returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
-				Date date = new Date();
 
 				// addMdj
 				// SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd
@@ -1332,12 +1328,9 @@ public class TdUserController {
 				returnNote.setReturnGoodsList(orderGoodsList);
 				tdOrderGoodsService.save(orderGoodsList);
 				// 保存退货单
-				returnNote = tdReturnNoteService.save(returnNote);
 				returnNote.setStatusId(3L);
-
 				returnNote = tdReturnNoteService.save(returnNote);
-				TdReturnNote note1 = tdReturnNoteService.findByReturnNumber(returnNote.getReturnNumber());
-				tdCommonService.sendBackMsgToWMS(note1);
+				tdCommonService.sendBackMsgToWMS(returnNote);
 //				System.out.println("MDJWMS:发送退货单：" + returnNote.getReturnNumber() + "成功！");
 			}
 		}
@@ -1597,7 +1590,8 @@ public class TdUserController {
 		if (null != id) {
 			TdOrder order = tdOrderService.findOne(id);
 
-			if (null != order) {
+			if (null != order && order.getStatusId() != null && order.getStatusId() != 9L)
+			{
 				TdReturnNote returnNote = new TdReturnNote();
 
 				// 退货单编号

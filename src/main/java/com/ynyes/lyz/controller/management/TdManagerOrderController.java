@@ -1568,7 +1568,7 @@ public class TdManagerOrderController {
 
 						// 退货信息
 						returnNote.setUsername(order.getUsername());
-						returnNote.setRemarkInfo("取消订单退货");
+						returnNote.setRemarkInfo("管理员 " + username +" 取消订单,退货");
 
 						Long turnType = 2L;
 						// 退货方式
