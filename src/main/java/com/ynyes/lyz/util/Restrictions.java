@@ -97,7 +97,7 @@ public class Restrictions {
 		 * @param ignoreNull
 		 * @return
 		 */
-		public static SimpleExpression lte(String fieldName, Object value, boolean ignoreNull) {
+		public static SimpleExpression gte(String fieldName, Object value, boolean ignoreNull) {
 			if(StringUtils.isEmpty(value))return null;
 			return new SimpleExpression (fieldName, value, Operator.GTE);
 		}
@@ -109,11 +109,11 @@ public class Restrictions {
 		 * @param ignoreNull
 		 * @return
 		 */
-		public static SimpleExpression gte(String fieldName, Object value, boolean ignoreNull) {
+		public static SimpleExpression lte(String fieldName, Object value, boolean ignoreNull) {
 			if(StringUtils.isEmpty(value))return null;
 			return new SimpleExpression (fieldName, value, Operator.LTE);
 		}
-
+		
 		/**
 		 * 并且
 		 * @param criterions

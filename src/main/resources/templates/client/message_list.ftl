@@ -45,21 +45,26 @@
                     </#list>
                 </#if>
                 <#if suggestions??>
-                    <#list suggestions as item>
+                    
                         <dl>
-                            <dt>
-                                <span><#if item.createTime??>${item.createTime?string("yyyy-MM-dd")}</#if></span>
-                            </dt>
+                           
                             <dd>
                                 <h3>咨询投诉</h3>
                                 <div>
                                     <img src="/client/images/nwe_centerimg.png"/>
                                 </div>
+                                <#list suggestions as item>
+                                 <dt>
+                                	<span><#if item.createTime??>${item.createTime?string("yyyy-MM-dd")}</#if></span>
+                           		 </dt>
                                 <p><#if item.content??>${item.content!''}...</#if></p>
-                                <a href="/article/1/${item.id?c}">查看详情 ></a>
+                                <#if item.isAnswered??>
+                                	<p>管理员回复:${item.answerContent!''} </p>
+                                </#if>
+                                </#list>
                             </dd>
                         </dl>
-                    </#list>
+                    
                 </#if>
             </section>
         </div>		

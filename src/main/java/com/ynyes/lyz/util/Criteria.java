@@ -19,9 +19,18 @@ import org.springframework.data.jpa.domain.Specification;
 public class Criteria<T> implements Specification<T> {
 
 		private List<Criterion> criterions = new ArrayList<Criterion>();
+		private String orderByAsc="";
+		private String orderByDesc="";
 
 		public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query,
 				CriteriaBuilder builder) {
+			if(!"".equals(orderByAsc)){
+				query.orderBy(builder.asc(root.get(orderByAsc)));
+			}
+			if(!"".equals(orderByDesc)){
+				query.orderBy(builder.desc(root.get(orderByDesc)));
+			}
+			
 			if (!criterions.isEmpty()) {
 				List<Predicate> predicates = new ArrayList<Predicate>();
 				for(Criterion c : criterions){
@@ -45,5 +54,14 @@ public class Criteria<T> implements Specification<T> {
 				criterions.add(criterion);
 			}
 		}
+		
+		public void setOrderByAsc(String orderByAsc) {
+			this.orderByAsc = orderByAsc;
+		}
+		public void setOrderByDesc(String orderByDesc) {
+			this.orderByDesc = orderByDesc;
+		}
+		
+		
 
 }

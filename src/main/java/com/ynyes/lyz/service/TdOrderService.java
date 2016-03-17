@@ -5,18 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -587,11 +580,11 @@ public class TdOrderService {
 			c.add(Restrictions.like("orderNumber", keywords, true));
 		}
 		if(null !=orderStartTime && !orderStartTime.equals("")){
-			c.add(Restrictions.lte("orderTime", StringToDate(orderStartTime,null), true));
+			c.add(Restrictions.gte("orderTime", stringToDate(orderStartTime,null), true));
 			
 		}
 		if(null !=orderEndTime && !orderEndTime.equals("")){
-			c.add( Restrictions.gte("orderTime", StringToDate(orderEndTime,null), true));
+			c.add( Restrictions.lte("orderTime", stringToDate(orderEndTime,null), true));
 		}
 		
 		if(null !=userPhone && !"".equals(userPhone)){
@@ -611,10 +604,10 @@ public class TdOrderService {
 			c.add( Restrictions.like("realUserRealName", realName, true));
 		}
 		if(null !=deliveryTime && !deliveryTime.equals("")){
-			c.add( Restrictions.eq("realUserRealName", StringToDate(deliveryTime,null), true));
+			c.add( Restrictions.eq("realUserRealName", stringToDate(deliveryTime,null), true));
 		}
 		if(null !=sendTime && !sendTime.equals("")){
-			c.add( Restrictions.eq("sendTime", StringToDate(sendTime,null), true));
+			c.add( Restrictions.eq("sendTime", stringToDate(sendTime,null), true));
 		}
 		if(null !=sellerRealName  && !"".equals(sellerRealName )){
 			c.add( Restrictions.eq("sellerRealName", sellerRealName, true));
@@ -622,14 +615,14 @@ public class TdOrderService {
 		if(null != statusId && !statusId.equals(0L)){
 			c.add( Restrictions.eq("statusId", statusId, true));
 		}
-				
+		c.setOrderByDesc("orderTime");
 		       return repository.findAll(c,pageRequest);
 	}
 	/**
 	 * 字符串转换时间默认格式yyyy-MM-dd HH:mm:ss
 	 * @return
 	 */
-	private Date StringToDate(String time,String dateFormat){
+	private Date stringToDate(String time,String dateFormat){
 		if(null==dateFormat || "".equals(dateFormat)){
 			dateFormat="yyyy-MM-dd HH:mm:ss";
 		}

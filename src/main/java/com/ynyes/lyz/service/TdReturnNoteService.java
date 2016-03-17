@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.regexp.REUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.repository.TdReturnNoteRepo;
+import com.ynyes.lyz.util.Criteria;
+import com.ynyes.lyz.util.Restrictions;
 
 
 @Service
@@ -214,6 +215,17 @@ public class TdReturnNoteService {
 		}
 		return repository.findByReturnNumber(returnNumber);
 
+	}
+	
+	public List<TdReturnNote> findByOrderTimeOrderByOrderTimeDesc(Date begin,Date end){
+		Criteria<TdReturnNote> c = new Criteria<TdReturnNote>();
+		if(null!=begin){
+			c.add(Restrictions.gte("orderTime", begin, true));
+		}if(null!=end){
+			c.add(Restrictions.lte("orderTime", end, true));
+		}
+		c.setOrderByDesc("orderTime");
+		return repository.findAll(c);
 	}
 
 }

@@ -7,6 +7,7 @@
 <script type="text/javascript" src="/mag/js/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="/mag/js/lhgdialog.js"></script>
 <script type="text/javascript" src="/mag/js/layout.js"></script>
+<script type="text/javascript" src="/mag/js/WdatePicker.js"></script>
 <link href="/mag/style/pagination.css" rel="stylesheet" type="text/css">
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
 </head>
@@ -28,6 +29,25 @@ function __doPostBack(eventTarget, eventArgument) {
         theForm.__EVENTTARGET.value = eventTarget;
         theForm.__EVENTARGUMENT.value = eventArgument;
         theForm.submit();
+    }
+}
+function downloaddate(type)
+{
+    var begain = $("#begain").val();
+    var end = $("#end").val();
+    if(begain==""){
+    	$.dialog.confirm("没有选择开始时间,数据可能很多,导出需要很多时间,请确认导出?", function () {
+    		downloaddateurl(type,"/Verwalter/returnNote/downdatareturnorder?begindata="+ begain + "&enddata=" + end);
+    		return;
+        });
+    }
+    downloaddateurl(type,"/Verwalter/returnNote/downdatareturnorder?begindata="+ begain + "&enddata=" + end);
+   
+}
+function downloaddateurl(type,url){
+	if(type == 0)
+    {
+		location.href=url;
     }
 }
 </script>
@@ -59,6 +79,10 @@ function __doPostBack(eventTarget, eventArgument) {
             <div class="r-list">
                 <input name="keywords" type="text" class="keyword">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
+                                                申请时间:
+                <input name="orderStartTime" id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
+                <input name=orderEndTime id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
+                <a style="color:black;" href="javascript:downloaddate(0);" class="a1">退货报表下载</a>
             </div>
         </div>
     </div>
