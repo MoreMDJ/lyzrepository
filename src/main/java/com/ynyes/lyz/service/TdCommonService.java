@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.PongMessage;
 import javax.xml.namespace.QName;
 
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
@@ -50,6 +51,8 @@ import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
+
+import scala.unchecked;
 
 @Service
 public class TdCommonService {
@@ -1183,6 +1186,7 @@ public class TdCommonService {
 
 		// 获取原单总价
 		Double totalPrice = order_temp.getTotalPrice();
+		
 		if (null == totalPrice) {
 			totalPrice = 0.00;
 		}
@@ -1198,6 +1202,8 @@ public class TdCommonService {
 		if (null == cashBalanceUsed) {
 			cashBalanceUsed = 0.00;
 		}
+		
+		totalPrice = totalPrice + unCashBalanceUsed + cashBalanceUsed;
 
 		// 遍历当前生成的订单
 		for (TdOrder order : order_map.values()) {
@@ -1221,6 +1227,18 @@ public class TdCommonService {
 						order.setUnCashBalanceUsed(Double.parseDouble(scale2_uncash));
 						order.setCashBalanceUsed(Double.parseDouble(scale2_cash));
 						order.setActualPay(order.getUnCashBalanceUsed() + order.getCashBalanceUsed());
+						
+//						BigDecimal uncash = new BigDecimal(unCashBalanceUsed * point);
+//						System.out.println("MDJ:dismantle" + unCashBalanceUsed + " + " + point + " + " + unCashBalanceUsed * point);
+//						Double uncashDouble = uncash.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+//						
+//						BigDecimal cash = new BigDecimal(cashBalanceUsed * point);
+//						System.out.println("MDJ:dismantle" + cashBalanceUsed+ " + " + point  + " + " + cashBalanceUsed * point);
+//						Double cashDouble = cash.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+//						
+//						order.setUnCashBalanceUsed(uncashDouble);
+//						order.setCashBalanceUsed(cashDouble);
+//						order.setActualPay(order.getUnCashBalanceUsed() + order.getCashBalanceUsed());
 					}
 				}
 			}
@@ -1756,7 +1774,6 @@ public class TdCommonService {
 					+ "<sub_order_number>" + requisition.getLeftPrice() + "</sub_order_number>"
 					+ "</TABLE>"
 					+ "</ERP>";
-
 			xmlStr = xmlStr.replace("null", "");
 
 			byte[] bs = xmlStr.getBytes();

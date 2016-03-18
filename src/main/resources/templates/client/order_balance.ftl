@@ -72,7 +72,7 @@
         <#include "/client/common_wait.ftl">
 		<div class="sec_header">
 			<a class="back" href="/order"></a>
-			<p>我的评论</p>				
+			<p>预存款使用</p>				
 		</div>
 		<ul class="my_add">
 			<li class="li01">
