@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdDeliveryInfo;
+import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdManager;
@@ -39,6 +41,8 @@ import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserTurnRecord;
 import com.ynyes.lyz.service.TdCommonService;
+import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
+import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -87,6 +91,11 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	
 	@Autowired
 	private TdGoodsService tdGoodsService;
+	
+	@Autowired
+	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
+	
+	private TdDeliveryInfoService tdDeliveryInfoService;
 
 	// 列表
 	@RequestMapping(value = "/{type}/list")
@@ -490,9 +499,16 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 								row.createCell(6).setCellValue(order.getSellerRealName());//导购
 					        	row.createCell(16).setCellValue(order.getCashCoupon());//退现金卷金额
 					            row.createCell(17).setCellValue(order.getProductCoupon());//退产品卷金额
-					        	row.createCell(20).setCellValue(order.getDistributionPerson());//配送人员
-					        	row.createCell(21).setCellValue(order.getDiySitePhone());//配送人员电话
+					        	row.createCell(22).setCellValue(order.getShippingAddress());//退货地址
 							}
+							if(StringUtils.isNotBlank(order.getMainOrderNumber())){
+								TdUser user= tdUserSerrvice.searchDriverByMainOrderNumber(order.getMainOrderNumber());
+								if(user!=null){
+									row.createCell(20).setCellValue(user.getRealName());//配送人员
+						        	row.createCell(21).setCellValue(user.getUsername());//配送人员电话
+								}
+							}
+							
 						}
 						if (returnNote.getReturnNumber() != null)
 						{//退货单号
@@ -543,16 +559,16 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			            	row.createCell(12).setCellValue(good.getGoodsTitle());
 			    		}
 			        	if (good.getQuantity() != null)
-			        	{
+			        	{//退货数量
 			            	row.createCell(13).setCellValue(good.getQuantity());
 			    		}
 						if (good.getPrice() != null)
-						{
+						{//退货单价
 							row.createCell(14).setCellValue(good.getPrice());
 						}
 						
 			        	if (returnNote.getTurnPrice() != null)
-			        	{
+			        	{//退货总价
 			        		row.createCell(15).setCellValue(returnNote.getTurnPrice());
 						}
 			        	
@@ -563,9 +579,6 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			        		row.createCell(19).setCellValue(returnNote.getRemarkInfo());
 			        	}*/
 			        	
-			        	if(returnNote.getShoppingAddress() != null){//退货地址
-			        		row.createCell(22).setCellValue(returnNote.getShoppingAddress());
-			        	}
 						i++;
 					}
 				}

@@ -47,6 +47,7 @@ import com.ynyes.lyz.entity.TdUserLevel;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdUserSuggestion;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
+import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.service.TdArticleCategoryService;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBalanceLogService;
@@ -1426,7 +1427,7 @@ public class TdUserController {
 				}
 			}
 		}
-		/*//仓库
+		//仓库
 		if(null != order){
 			List<TdDeliveryInfo> deliveryList=tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
 			if(null!=deliveryList && deliveryList.size()>0){
@@ -1435,7 +1436,7 @@ public class TdUserController {
 					map.addAttribute("tdWareHouse", wareHouseList.get(0));
 				}
 			}
-		}*/
+		}
 
 		return "/client/user_order_detail";
 	}

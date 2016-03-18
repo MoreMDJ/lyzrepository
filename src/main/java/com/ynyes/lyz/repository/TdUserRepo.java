@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.ynyes.lyz.entity.TdUser;
@@ -75,4 +76,11 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 * @return
 	 */
 	TdUser findByRealName(String realName);
+	/**
+	 * 根据主单号查询快递员
+	 * @param mainOrderNumber 主单号
+	 * @return
+	 */
+	@Query("select u from TdUser u,TdDeliveryInfo d where u.opUser=d.driver and d.orderNumber=?1")
+	TdUser searchDriverByMainOrderNumber(String mainOrderNumber);
 }

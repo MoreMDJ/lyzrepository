@@ -238,4 +238,15 @@ public class TdUserService {
 		}
 		return repository.findByRealName(realName);
 	}
+	/**
+	 * 根据主单号查询快递员
+	 * @param mainOrderNumber 主单号
+	 * @return
+	 */
+	public TdUser searchDriverByMainOrderNumber(String mainOrderNumber){
+		if (null == mainOrderNumber) {
+			return null;
+		}
+		return repository.searchDriverByMainOrderNumber(mainOrderNumber);
+	}
 }
