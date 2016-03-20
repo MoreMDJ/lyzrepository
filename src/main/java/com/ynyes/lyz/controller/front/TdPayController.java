@@ -1,6 +1,7 @@
 package com.ynyes.lyz.controller.front;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.alipay.config.AlipayConfig;
 import com.alipay.util.AlipayNotify;
 import com.alipay.util.AlipaySubmit;
+import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.service.TdCommonService;
+import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
@@ -29,6 +32,9 @@ public class TdPayController {
 
 	@Autowired
 	private TdCommonService tdCommonService;
+
+	@Autowired
+	private TdCouponService tdCouponService;
 
 	@RequestMapping(value = "/alipay")
 	public String alipay(HttpServletRequest req, ModelMap map, Long id, Long type) {
@@ -124,23 +130,51 @@ public class TdPayController {
 				// 如果有做过处理，不执行商户的业务程序
 
 				// 如果是下单的情况
-				if (out_trade_no.contains("XN")) {
-					TdOrder order = tdOrderService.findByOrderNumber(out_trade_no);
-					if (null != order) {
-						req.getSession().setAttribute("order_temp", order);
+				TdOrder order = tdOrderService.findByOrderNumber(out_trade_no);
+				if (null != order) {
+					req.getSession().setAttribute("order_temp", order);
+					String cashCouponId = order.getCashCouponId();
+					String productCouponId = order.getProductCouponId();
+					// 将所使用的优惠券设置为已使用状态
+					if (null != cashCouponId) {
+						String[] cashs = cashCouponId.split(",");
+						if (null != cashs) {
+							for (String sId : cashs) {
+								if (null != sId && !"".equals(sId)) {
+									Long coupon_id = Long.valueOf(sId);
+									TdCoupon coupon = tdCouponService.findOne(coupon_id);
+									if (null != coupon) {
+										coupon.setIsUsed(true);
+										coupon.setUseTime(new Date());
+										tdCouponService.save(coupon);
+									}
+								}
+							}
+						}
+					}
+
+					if (null != productCouponId) {
+						String[] products = productCouponId.split(",");
+						if (null != products) {
+							for (String sId : products) {
+								if (null != sId && !"".equals(sId)) {
+									Long coupon_id = Long.valueOf(sId);
+									TdCoupon coupon = tdCouponService.findOne(coupon_id);
+									if (null != coupon) {
+										coupon.setIsUsed(true);
+										coupon.setUseTime(new Date());
+										tdCouponService.save(coupon);
+									}
+								}
+							}
+						}
+					}
+					// 虚拟订单需要分单
+					if (out_trade_no.contains("XN")) {
 						tdCommonService.dismantleOrder(req, username);
 					}
 				}
-
-				// 如果是充值的情况下
-				if (out_trade_no.contains("CZ")) {
-
-				}
-
 			}
-
-		} else {
-			// 该页面可做页面美工编辑
 		}
 		return "/client/pay_success";
 	}
@@ -181,5 +215,65 @@ public class TdPayController {
 		map.addAttribute("PUB32TR2", PUB32TR2);
 
 		return "/client/union_pay";
+	}
+
+	@RequestMapping(value = "/union/return")
+	public String unionReturn(HttpServletRequest req, ModelMap map, String ORDERID, Double PAYMENT, Character SUCCESS) {
+		String username = (String) req.getSession().getAttribute("username");
+		// 根据指定的订单号查找订单
+		TdOrder order = tdOrderService.findByOrderNumber(ORDERID);
+		// 在能查询到具体订单的情况下进行业务逻辑处理
+		if (null != order) {
+			Double totalPrice = order.getTotalPrice();
+			// 在支付金额和实际金额相匹配的情况下再进行业务逻辑的处理
+			if (null != totalPrice && totalPrice.longValue() == PAYMENT.longValue()) {
+				// 判断是否支付成功
+				if (null != SUCCESS && SUCCESS.charValue() == 'Y') {
+					if (null != order) {
+						req.getSession().setAttribute("order_temp", order);
+						String cashCouponId = order.getCashCouponId();
+						String productCouponId = order.getProductCouponId();
+						// 将所使用的优惠券设置为已使用状态
+						if (null != cashCouponId) {
+							String[] cashs = cashCouponId.split(",");
+							if (null != cashs) {
+								for (String sId : cashs) {
+									if (null != sId && !"".equals(sId)) {
+										Long coupon_id = Long.valueOf(sId);
+										TdCoupon coupon = tdCouponService.findOne(coupon_id);
+										if (null != coupon) {
+											coupon.setIsUsed(true);
+											coupon.setUseTime(new Date());
+											tdCouponService.save(coupon);
+										}
+									}
+								}
+							}
+						}
+
+						if (null != productCouponId) {
+							String[] products = productCouponId.split(",");
+							if (null != products) {
+								for (String sId : products) {
+									if (null != sId && !"".equals(sId)) {
+										Long coupon_id = Long.valueOf(sId);
+										TdCoupon coupon = tdCouponService.findOne(coupon_id);
+										if (null != coupon) {
+											coupon.setIsUsed(true);
+											coupon.setUseTime(new Date());
+											tdCouponService.save(coupon);
+										}
+									}
+								}
+							}
+						}
+						if (ORDERID.contains("XN")) {
+							tdCommonService.dismantleOrder(req, username);
+						}
+					}
+				}
+			}
+		}
+		return "/client/pay_success";
 	}
 }

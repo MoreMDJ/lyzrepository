@@ -110,7 +110,7 @@ public class TdOrderController {
 
 		// 参数由调用函数检查
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
-
+		
 		if (null == user) {
 			return "redirect:/login";
 		}

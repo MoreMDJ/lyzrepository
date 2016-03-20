@@ -312,12 +312,12 @@ document.getElementById("MER_REFERERTR").style.display='none';
 else if(value==3){
 
 document.getElementById("PUB32TR").style.display='none';
-document.getElementById("PUB32TR1").style.display='';
-document.getElementById("GATEWAYTR").style.display='';
-document.getElementById("CLIENTIPTR").style.display='';
-document.getElementById("REGINFOTR").style.display='';
-document.getElementById("PROINFOTR").style.display='';
-document.getElementById("MER_REFERERTR").style.display='';
+document.getElementById("PUB32TR1").style.display='none';
+document.getElementById("GATEWAYTR").style.display='none';
+document.getElementById("CLIENTIPTR").style.display='none';
+document.getElementById("REGINFOTR").style.display='none';
+document.getElementById("PROINFOTR").style.display='none';
+document.getElementById("MER_REFERERTR").style.display='none';
 
 }
 

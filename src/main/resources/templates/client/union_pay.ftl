@@ -66,7 +66,7 @@
 	<body style="height: 100%; background: #f3f4f6;">
 		<div>
 			<div class="sec_header">
-				<a class="back"></a>
+				<a class="back" href="/"></a>
 				<p>确认支付</p>
 			</div>
 			<article class="product-volume">
@@ -79,9 +79,9 @@
   				<label>金额：</label><span>￥${PAYMENT!''}</span>
   			</li>
   		</ul>
-  		<form action="" method="post" name="MD5form" id="MD5form" target="_blank">
+  		<form action="" method="post" name="MD5form" id="MD5form">
 			<table width="80%" border="0" align="center" cellpadding="0" cellspacing="0">
-				<tr>
+				<tr style="display:none">
 					<td height="20">商户接口类型</td>
 					<td height="20">
 						<select name="INTER_FLAG" id="INTER_FLAG">
@@ -89,31 +89,31 @@
 						</select>
 					</td>
 				</tr>
-				<tr> 
+				<tr style="display:none"> 
 					<td width="26%" height="20" nowrap>商户代码【MERCHANTID】</td>
 					<td width="74%" height="20"><input name="MERCHANTID" type="text" class="text1" id="MERCHANTID" value="${MERCHANTID!''}"></td>
 				</tr>
-				<tr> 
+				<tr style="display:none"> 
 					<td height="20">商户柜台代码【POSID】</td>
 					<td height="20"><input name="POSID" type="text" class="text1" id="POSID" value="${POSID!''}"></td>
 				</tr>
-				<tr> 
+				<tr style="display:none"> 
 					<td height="20">分行代码【BRANCHID】</td>
 					<td height="20"><input name="BRANCHID" type="text" class="text1" id="BRANCHID" value="${BRANCHID!''}"></td>
 				</tr>
-				<tr> 
+				<tr style="display:none"> 
 					<td height="20">定单号【ORDERID】</td>
 					<td height="20"><input name="ORDERID" type="text" class="text1" id="ORDERID" value="${ORDERID!''}"></td>
 				</tr>
-				<tr> 
+				<tr style="display:none"> 
 					<td height="20">付款金额【PAYMENT】</td>
 					<td height="20"><input name="PAYMENT" type="text" class="text1" id="PAYMENT" value=${PAYMENT!''}></td>
 				</tr>
-				<tr> 
+				<tr style="display:none"> 
 					<td height="20">币种【CURCODE】</td>
 					<td height="20"><input name="CURCODE" type="text" class="text1" id="CURCODE" value="${CURCODE!''}"></td>
 				</tr>
-				<tr> 
+				<tr style="display:none"> 
 					<td height="20">交易码【TXCODE】</td>
 					<td height="20"><input name="TXCODE" type="text" class="text1" id="TXCODE" value="${TXCODE!''}"></td>
 				</tr>
@@ -139,21 +139,21 @@
 				</tr>
 				<tr id='CLIENTIPTR' style='display:none'> 
 					<td height="20">客户端IP【CLIENTIP】</td>
-					<td height="20"><input name="CLIENTIP" type="text" class="text1" id="CLIENTIP" value ="128.128.0.1"></td>
+					<td height="20"><input name="CLIENTIP" type="text" class="text1" id="CLIENTIP" value=""></td>
 				</tr>
 				<tr id='REGINFOTR' style='display:none'> 
 					<td height="20">注册信息【REGINFO】</td>
-					<td height="20"><input name="REGINFO" type="text" class="text1" id="REGINFO" value="xiaofeixia"></td>
+					<td height="20"><input name="REGINFO" type="text" class="text1" id="REGINFO" value=""></td>
 				</tr>
 				<tr id='PROINFOTR' style='display:none'> 
 					<td height="20">商品信息【PROINFO】</td>
-					<td height="20"><input name="PROINFO" type="text" class="text1" id="PROINFO" value="digital"></td>
+					<td height="20"><input name="PROINFO" type="text" class="text1" id="PROINFO" value=""></td>
 				</tr>
 				<tr id='MER_REFERERTR' style='display:none'> 
 					<td height="20">商户域名【REFERER】</td>
 					<td height="20"><input name="MER_REFERER" type="text" class="text1" id="MER_REFERER" value=""></td>
 				</tr>
-				<tr> 
+				<tr style='display:none'> 
 					<td height="20">银行网址【URL】</td>
 					<td height="20">
 					<select name="bankURL" id="bankURL">
@@ -162,7 +162,7 @@
 					<br>
 					<span class="smallfont">说明：要从http://开始添加，到？号以前，？号不要添加</span></td>
 				</tr>
-				<tr> 
+				<tr style='display:none'> 
 					<td height="20" colspan="2">
 						<div align="center"> 
 							<input name="makeMd5" type="button" id="makeMd5" value="生成MD5串" onClick="make()">
@@ -170,7 +170,7 @@
 						</div>
 					</td>
 				</tr>
-				<tr> 
+				<tr style='display:none'> 
 					<td height="20" colspan="2">
 						<div align="center"> 
 							<textarea name="result" cols="80" rows="10" wrap="VIRTUAL" class="text" id="result"></textarea>
@@ -182,7 +182,13 @@
 			<input type="hidden" name="URL01" id="URL01" value="">
 			<input type="hidden" name="REM1" id="REM1" value="">
 			<input type="hidden" name="REM2" id="REM2" value="">
-			<input class="sub" name="sendB" type="button" id="sendB" onClick="go(window.MD5form.result.value)" value="请确认支付" />
 		</form>
+		<input class="sub" name="sendB" type="button" id="sendB" onClick="formPay();" value="请确认支付" />
 	</body>
+	<script>
+		function formPay(){
+			make();
+			go(window.MD5form.result.value);
+		}
+	</script>
 </html>
