@@ -100,6 +100,8 @@ function pay() {
 				else if(res.title == "微信支付")
 				{
 					document.location = "WXAppPay:WX:" + res.order_id;
+				}else if("银行卡" === res.title){
+					window.location.href = "/pay/union?id=" +res.order_id + "&type=0";
 				}
 			}
 		}

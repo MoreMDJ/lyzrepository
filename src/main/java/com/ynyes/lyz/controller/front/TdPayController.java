@@ -26,7 +26,7 @@ public class TdPayController {
 
 	@Autowired
 	private TdOrderService tdOrderService;
-	
+
 	@Autowired
 	private TdCommonService tdCommonService;
 
@@ -145,4 +145,41 @@ public class TdPayController {
 		return "/client/pay_success";
 	}
 
+	@RequestMapping(value = "/union")
+	public String unionPay(HttpServletRequest req, ModelMap map, Long id, Long type) {
+		// 判断用户是否登录
+		String username = (String) req.getSession().getAttribute("username");
+		if (null == username) {
+			return "redirect:/login";
+		}
+
+		TdOrder order = tdOrderService.findOne(id);
+
+		// 开始组合参数
+		String MERCHANTID = "105510148160146";
+		String POSID = "632776177";
+		String BRANCHID = "510000000";
+		String ORDERID = order.getOrderNumber();
+		String PAYMENT = order.getTotalPrice() + "";
+		String CURCODE = "01";
+		String TXCODE = "520100";
+		String TYPE = "1";
+		String PUB = "30819c300d06092a864886f70d010101050003818a00308186028180756c3ad19960d52e9932c000bbbfa13c98726cba9c6117c0ab42391dd2c20fbe750fedffe3ab972f6f98d47d9d048ffb26d7fdfe804bc99e36db9233d6affb1e248faf997b488cdc560ca4548f6722222b924ec239e68d204536220f5d1913d0842a996e83837d328494a729e1b66aaa28fb7149ca35c6e2b0deed7800fe5fa1020111";
+
+		String PUB32 = PUB.substring(0, 30);
+		String PUB32TR2 = PUB.substring(PUB.length() - 30);
+
+		map.addAttribute("MERCHANTID", MERCHANTID);
+		map.addAttribute("POSID", POSID);
+		map.addAttribute("BRANCHID", BRANCHID);
+		map.addAttribute("ORDERID", ORDERID);
+		map.addAttribute("PAYMENT", PAYMENT);
+		map.addAttribute("CURCODE", CURCODE);
+		map.addAttribute("TXCODE", TXCODE);
+		map.addAttribute("TYPE", TYPE);
+		map.addAttribute("PUB32", PUB32);
+		map.addAttribute("PUB32TR2", PUB32TR2);
+
+		return "/client/union_pay";
+	}
 }

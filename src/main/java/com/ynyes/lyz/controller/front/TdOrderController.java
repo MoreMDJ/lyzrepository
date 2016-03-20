@@ -1021,8 +1021,11 @@ public class TdOrderController {
 								tdOrderGoodsService.save(orderGoods);
 								productCouponId += coupon.getId() + ",";
 								order.setProductCouponId(productCouponId);
+								coupon.setRealPrice(orderGoods.getPrice());
 								req.getSession().setAttribute("order_temp", order);
-								tdOrderService.save(order);
+								// 存储产品券的实际使用价值
+								coupon.setRealPrice(orderGoods.getPrice());
+								tdCouponService.save(coupon);
 							}
 						}
 					}
@@ -1039,9 +1042,6 @@ public class TdOrderController {
 							couponNumber = 0L;
 						} else {
 							orderGoods.setCouponNumber(orderGoods.getCouponNumber() - 1L);
-							// 存储产品券的实际使用价值
-							coupon.setRealPrice(orderGoods.getPrice());
-							tdCouponService.save(coupon);
 						}
 						tdOrderGoodsService.save(orderGoods);
 						if (!"".equals(productCouponId)) {
@@ -1267,7 +1267,7 @@ public class TdOrderController {
 	@RequestMapping(value = "/check")
 	@ResponseBody
 	public Map<String, Object> checkOrder(HttpServletRequest req, ModelMap map, Long id) {
-		System.err.println("进入支付控制器");
+		// System.err.println("进入支付控制器");
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 
@@ -1280,7 +1280,7 @@ public class TdOrderController {
 		}
 
 		// 获取虚拟订单
-		System.err.println("开始获取虚拟订单");
+		// System.err.println("开始获取虚拟订单");
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
 
 		// add by Shawn
@@ -1291,10 +1291,11 @@ public class TdOrderController {
 		}
 
 		// 判断是否为代下单
-		if (null != order_temp && null != order_temp.getIsSellerOrder() && order_temp.getIsSellerOrder()) {
-			order_temp.setUsername(order_temp.getRealUserUsername());
-			order_temp.setUserId(order_temp.getRealUserId());
-		}
+		// if (null != order_temp && null != order_temp.getIsSellerOrder() &&
+		// order_temp.getIsSellerOrder()) {
+		// order_temp.setUsername(order_temp.getRealUserUsername());
+		// order_temp.setUserId(order_temp.getRealUserId());
+		// }
 
 		if (null == order_temp.getSellerId() || null == order_temp.getSellerRealName()
 				|| null == order_temp.getSellerUsername()) {
@@ -1302,19 +1303,19 @@ public class TdOrderController {
 			return res;
 		}
 
-		System.err.println("获取虚拟订单中的地址信息");
+		// System.err.println("获取虚拟订单中的地址信息");
 		String address = order_temp.getShippingAddress();
 		String shippingName = order_temp.getShippingName();
 		String shippingPhone = order_temp.getShippingPhone();
 
-		System.err.println("判断是否填写收货地址");
+		// System.err.println("判断是否填写收货地址");
 		if ((null == address || null == shippingName || null == shippingPhone)
 				&& !"门店自提".equals(order_temp.getDeliverTypeTitle())) {
 			res.put("message", "请填写收货地址");
 			return res;
 		}
 
-		System.err.println("开始判断用户是否属于线上支付");
+		// System.err.println("开始判断用户是否属于线上支付");
 		// 判断用户是否是线下付款
 		Boolean isOnline = false;
 		Long payTypeId = order_temp.getPayTypeId();
@@ -1323,7 +1324,7 @@ public class TdOrderController {
 			isOnline = true;
 		}
 
-		System.err.println("开始获取该订单使用的优惠券id");
+		// System.err.println("开始获取该订单使用的优惠券id");
 		String cashCouponId = order_temp.getCashCouponId();
 		String productCouponId = order_temp.getProductCouponId();
 
@@ -1426,6 +1427,7 @@ public class TdOrderController {
 			balance = 0.00;
 		}
 
+		// 如果用户的不可提现余额大于或等于订单的预存款使用额，则表示改单用的全部都是不可提现余额
 		if (unCashBalance >= order_temp.getActualPay()) {
 			user.setUnCashBalance(user.getUnCashBalance() - order_temp.getActualPay());
 			order_temp.setUnCashBalanceUsed(order_temp.getActualPay());
