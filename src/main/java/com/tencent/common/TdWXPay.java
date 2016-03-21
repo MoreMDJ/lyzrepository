@@ -9,8 +9,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.springframework.ui.ModelMap;
 
-import com.sun.mail.imap.protocol.BODY;
-import com.sun.tools.jxc.gen.config.Config;
 import com.ynyes.lyz.entity.TdOrder;
 
 public class TdWXPay {
