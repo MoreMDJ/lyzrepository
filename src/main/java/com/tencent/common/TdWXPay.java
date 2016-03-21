@@ -44,7 +44,7 @@ public class TdWXPay {
 		//统一下单的签名XML
 		String body = "支付订单" + order.getOrderNumber();
 		String out_trade_no = order.getOrderNumber();
-		Long total_fee = Math.round(order.getAllTotalPay() * 100);
+		Long total_fee = Math.round(order.getTotalPrice() * 100);
 		String nonce_str = RandomStringGenerator.getRandomStringByLength(32);
 		
 		ModelMap signMap = new ModelMap();
@@ -64,7 +64,7 @@ public class TdWXPay {
 					+ "<appid>" + Configure.getAppid() + "</appid>\n"
 					+ "<mch_id>" + Configure.getMchid() + "</mch_id>\n"
 					+ "<nonce_str>" + nonce_str + "</nonce_str>\n"
-					+ "<body>支付订单" + body + "</body>\n"
+					+ "<body>" + body + "</body>\n"
 					+ "<out_trade_no>" + out_trade_no + "</out_trade_no>\n"
 					+ "<total_fee>" + total_fee + "</total_fee>\n"
 					+ "<spbill_create_ip>"+ Configure.getIP() +"</spbill_create_ip>\n"
@@ -80,7 +80,7 @@ public class TdWXPay {
 	 * 统一下单请求获取 prepay_id
 	 * @param requestXML
 	 */
-	public static void sendUnifiedorderRequest(String requestXML)
+	public static ModelMap sendUnifiedorderRequest(String requestXML)
 	{
 		
 		String return_code = null;
@@ -90,7 +90,7 @@ public class TdWXPay {
 		
 		if (requestXML == null)
 		{
-			return;
+			return null;
 		}
 		try 
 		{
@@ -109,7 +109,7 @@ public class TdWXPay {
 
 			while ((line = in.readLine()) != null)
 			{
-				//			System.out.println(": rline: " + line);
+				System.out.println(": rline: " + line);
 				if (line.contains("<return_code>"))
 				{
 					return_code = line.replaceAll("<xml><return_code><\\!\\[CDATA\\[", "").replaceAll("\\]\\]></return_code>", "");
@@ -133,15 +133,15 @@ public class TdWXPay {
 				String nonce_str = RandomStringGenerator.getRandomStringByLength(32);
 
 				String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
-				String packageString = "prepay_id=" + prepay_id;
+				String packageString = "Sign=WXPay";
 				String signType = "MD5";
 				ModelMap returnsignmap = new ModelMap();
 				returnsignmap.addAttribute("appId", Configure.getAppid());
-				returnsignmap.addAttribute("timeStamp", timeStamp);
-				returnsignmap.addAttribute("nonceStr", nonce_str);
+				returnsignmap.addAttribute("partnerid", Configure.getMchid());
+				returnsignmap.addAttribute("prepayid", prepay_id);
 				returnsignmap.addAttribute("package", packageString);
-				returnsignmap.addAttribute("signType", signType);
-
+				returnsignmap.addAttribute("noncestr", nonce_str);
+				returnsignmap.addAttribute("timestamp", timeStamp);
 
 				String returnsign = Signature.getSign(returnsignmap);
 				requestXML = "<xml>\n" 
@@ -153,15 +153,9 @@ public class TdWXPay {
 							+ "<signType>" + returnsign + "</signType>\n"
 							+ "</xml>\n";
 
-				System.out.print(": returnPayData xml=" + requestXML);
-				ModelMap map = new ModelMap();
-				map.addAttribute("appId", Configure.getAppid());
-				map.addAttribute("timeStamp", timeStamp);
-				map.addAttribute("nonceStr", nonce_str);
-				map.addAttribute("package", packageString);
-				map.addAttribute("signType", signType);
-				map.addAttribute("paySign", returnsign);
-				map.addAttribute("orderId", "");
+//				System.out.print(": returnPayData xml=" + requestXML);
+				returnsignmap.addAttribute("sign", returnsign);
+				return returnsignmap;
 			}
 		}
 		catch (IOException e)
@@ -169,6 +163,6 @@ public class TdWXPay {
 			e.printStackTrace();
 		}
 
-	
+	return null;
 	}
 }

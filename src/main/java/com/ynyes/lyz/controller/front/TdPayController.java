@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alipay.config.AlipayConfig;
 import com.alipay.util.AlipayNotify;
 import com.alipay.util.AlipaySubmit;
+import com.tencent.common.TdWXPay;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.service.TdCommonService;
@@ -275,5 +277,38 @@ public class TdPayController {
 			}
 		}
 		return "/client/pay_success";
+	}
+	
+	@RequestMapping(value = "/wx/sign")
+	@ResponseBody
+	public Map<String, Object> WxPayReturnSign(Long orderId)
+	{
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("code", 0);
+		if (orderId == null)
+		{
+			resultMap.put("msg", "订单Id不存在");
+			return resultMap;
+		}
+		TdOrder tdOrder = tdOrderService.findOne(orderId);
+		if (tdOrder == null)
+		{
+			resultMap.put("msg", "订单不存在，单号Id：" + orderId);
+			return resultMap;
+		}
+		String xml = TdWXPay.getUnifiedorderXML(tdOrder);
+		ModelMap modelMap = TdWXPay.sendUnifiedorderRequest(xml);
+		
+		if (modelMap != null)
+		{
+			resultMap.put("sign", modelMap);
+		}
+		else 
+		{
+			resultMap.put("msg", "签名出错");
+			return resultMap;
+		}
+		resultMap.put("code", 1);
+		return resultMap;
 	}
 }
