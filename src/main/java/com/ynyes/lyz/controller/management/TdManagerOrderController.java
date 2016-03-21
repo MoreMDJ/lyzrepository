@@ -274,6 +274,9 @@ public class TdManagerOrderController {
 		cell = row.createCell(20);
 		cell.setCellValue("配送方式");
 		cell.setCellStyle(style);
+		cell = row.createCell(21);
+		cell.setCellValue("收货人地址");
+		cell.setCellStyle(style);
 		
 		List<TdOrder> orderList = null;
 		if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
@@ -298,14 +301,22 @@ public class TdManagerOrderController {
 						{
 							row.createCell(0).setCellValue(tdOrder.getDiySiteName());
 						}
-						if (tdOrder.getMainOrderNumber() != null)
-						{
-							row.createCell(1).setCellValue(tdOrder.getMainOrderNumber());
+						//代付款订单没有主单号  分单号显示到主单号位置
+						if(tdOrder.getStatusId() != null && tdOrder.getStatusId().equals(2L)){
+							if (tdOrder.getOrderNumber() != null){
+								row.createCell(1).setCellValue(tdOrder.getOrderNumber());
+							}
+						}else{
+							if (tdOrder.getMainOrderNumber() != null)
+							{
+								row.createCell(1).setCellValue(tdOrder.getMainOrderNumber());
+							}
+							if (tdOrder.getOrderNumber() != null)
+							{
+								row.createCell(2).setCellValue(tdOrder.getOrderNumber());
+							}
 						}
-						if (tdOrder.getOrderNumber() != null)
-						{
-							row.createCell(2).setCellValue(tdOrder.getOrderNumber());
-						}
+						
 						if (tdOrder.getOrderTime() != null)
 						{
 							row.createCell(3).setCellValue(tdOrder.getOrderTime().toString());
@@ -395,6 +406,9 @@ public class TdManagerOrderController {
 			        	}
 			        	if(tdOrder.getDeliverTypeTitle()!=null){
 			        		row.createCell(20).setCellValue(tdOrder.getDeliverTypeTitle());
+			        	}
+			        	if(tdOrder.getShippingAddress()!=null && !"门店自提".equals(tdOrder.getDeliverTypeTitle())){
+			        		row.createCell(21).setCellValue(tdOrder.getShippingAddress());
 			        	}
 						
 						i++;

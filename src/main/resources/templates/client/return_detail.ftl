@@ -148,7 +148,7 @@ function submitRecv(id)
     <#include "/client/common_wait.ftl">   
       <header>
         <a class="back" href="/delivery/return"></a>
-        <p>详情产看</p>
+        <p>详情查看</p>
       </header>
       <!-- 头部 END -->
 

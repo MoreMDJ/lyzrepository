@@ -24,6 +24,7 @@
         <#if order??>
             <article class="order-details">
                 <!-- 用户信息 -->
+                <#if order.deliverTypeTitle!='门店自提'>
                 <div class="user-info">
                     <div class="div1">
                         <div class="div1-1">收货人: <span>${order.shippingName!''}</span></div>
@@ -31,6 +32,7 @@
                     </div>
                     <div class="div2">收货地址：<span>${order.shippingAddress!''}</span></div>
                 </div>
+                </#if>
                 <!-- 订单列表 -->
                 <ol class="order-list">
                     <li class="li1">

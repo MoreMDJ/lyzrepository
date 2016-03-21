@@ -34,6 +34,7 @@
         <!-- 填写订单 -->
         <article>
             <!-- 用户信息 -->
+            <#if order.deliverTypeTitle!='门店自提'>
             <#if order??&&order.shippingName??&&order.shippingPhone??&&order.shippingAddress??>
                 <div class="receiver-info">    
                     <div class="div1">
@@ -52,6 +53,7 @@
                 </div>
             <#else>
                 <a href="/order/add/address" style="background:#ffaa00;display:block;text-align:center;line-height:30px;width:92%;margin:0 4%;font-size:1.2em;color:white;border-radius:4px;margin-top:15px;">添加收货地址+</a>
+            </#if>
             </#if>
             <!-- 编辑订单 -->
             <article class="fill-order-list">
@@ -139,11 +141,11 @@
                         <#if !(max??)>
                             <#assign max=0.00>
                         </#if>
-                        <a class="target" <#if !(isCoupon??&&isCoupon==false)>href="/order/user/balance?max=${max?string("0.00")}"</#if>>
-                            <#if isCoupon??&&isCoupon==false>
-                                                                                禁止使用
+                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(order.payTypeTitle!='货到付款')>href="/order/user/balance?max=${max?string("0.00")}"</#if>>
+                            <#if !(isCoupon??&&isCoupon==false)&&(order.payTypeTitle!='货到付款')>
+                                <#if order??&&order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if>                                     
                             <#else>
-                                <#if order??&&order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if>
+                              	禁止使用
                             </#if>
                         </a>
                     </div>

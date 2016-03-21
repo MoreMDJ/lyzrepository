@@ -851,6 +851,7 @@
             </dd>
         </dl>
         
+        <#if order.deliverTypeTitle!='门店自提'>
         <dl>
             <dt>收货信息</dt>
             <dd>
@@ -908,6 +909,7 @@
                 </tbody></table>
             </dd>
         </dl>
+        </#if>
         
         <dl>
             <dt>支付配送</dt>
