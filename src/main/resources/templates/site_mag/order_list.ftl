@@ -251,7 +251,7 @@ function downloaddate(type)
                 <td>
                     <a href="/Verwalter/order/edit?id=${order.id?c}&statusId=${statusId!'0'}">${order.orderNumber!""}</a></td>
                 <td>${order.username!""}</td>
-                <td><#if name_map??>${name_map[order.username]}</#if></td>
+                <td><#if name_map??>${name_map[order.username]!''}</#if></td>
                 <#--<td>${order.shippingName!""}</td>-->
                 <td>${order.payTypeTitle!""}</td>
                 <td>${order.deliverTypeTitle!""}</td>

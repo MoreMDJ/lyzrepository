@@ -4,9 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -142,57 +140,7 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	List<TdOrder> findByOrderNumberContaining(String orderNumber);
 	
 	List<TdOrder> findByMainOrderNumberIgnoreCase(String mainOrderNumber);
-	/**
-	 * 7:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、导购姓名
-	 * @return
-	 */
-	Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSellerRealNameContainingOrderByIdDesc(String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,String sellerRealName,Pageable page);
-	/**
-	 * 1:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）
-	 * @return
-	 */
-	Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingOrderByIdDesc(String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Pageable page);
-	/**
-	 * 2:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、会员姓名
-	 * @return
-	 */
-	Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndUserIdOrderByIdDesc(String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Long userId,Pageable page);
-	/**
-	 * 5:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、预约送货时间
-	 * @return
-	 */
-	Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndDeliveryTimeOrderByIdDesc(String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Date deliveryDate,Pageable page);
-	/**
-	 * 6:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、实际送货时间
-	 * @return
-	 */
-	Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Date sendDate,Pageable page);
-	/**
-	 * (有订单状态)7:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、导购姓名
-	 * @return
-	 */
-	Page<TdOrder> findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSellerRealNameContainingOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,String sellerRealName,Pageable page);
-	/**
-	 * (有订单状态)1:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）
-	 * @return
-	 */
-	Page<TdOrder> findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Pageable page);
-	/**
-	 * (有订单状态)2:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、会员姓名
-	 * @return
-	 */
-	Page<TdOrder> findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndUserIdOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Long userId,Pageable page);
-	/**
-	 * (有订单状态)5:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、预约送货时间
-	 * @return
-	 */
-	Page<TdOrder> findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndDeliveryTimeOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Date deliveryDate,Pageable page);
-	/**
-	 * (有订单状态)6:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、实际送货时间
-	 * @return
-	 */
-	Page<TdOrder> findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Date sendDate,Pageable page);
-	
+
 	/**
 	 * 根据时间 查询总单号
 	 * @return
@@ -206,5 +154,5 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	 */
 	@Query("select o from TdOrder o where o.diySiteCode = ?1 and o.orderTime between ?2 and ?3 group by o.mainOrderNumber order by o.orderTime desc")
 	List<TdOrder> searchMainOrderNumberByOrderTimeAndDiySiteCode(String diyCode,Date begin,Date end);
-
+	
 }

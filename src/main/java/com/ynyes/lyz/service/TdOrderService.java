@@ -483,78 +483,7 @@ public class TdOrderService {
 		}
 		return repository.findByStatusIdOrderByOrderTimeDesc(statusId);
 	}
-	/**
-	 * (判断订单状态)7:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、导购姓名
-	 * @return
-	 */
-	public Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSellerRealNameContainingOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,String sellerRealName,int size,int page)
-	{
-		PageRequest pageRequest = new PageRequest(page, size);
-		if (null==statusId || statusId.equals(0L))
-		{
-			return repository.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSellerRealNameContainingOrderByIdDesc(orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress, sellerRealName, pageRequest);
-		}else{
-			return repository.findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSellerRealNameContainingOrderByIdDesc(statusId,orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress, sellerRealName, pageRequest);
-		}
-		
-		
-	}
-	/**
-	 * (判断订单状态)1:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）
-	 * @return
-	 */
-	public Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,int size,int page)
-	{
-		PageRequest pageRequest = new PageRequest(page, size);
-		if (null==statusId || statusId.equals(0L))
-		{
-			return repository.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingOrderByIdDesc(orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress, pageRequest);
-		}else{
-			return repository.findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingOrderByIdDesc(statusId,orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress, pageRequest);
-		}
-	}
-	/**
-	 * (判断订单状态)2:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、会员姓名
-	 * @return
-	 */
-	public Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndUserIdOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Long userId,int size,int page)
-	{
-		PageRequest pageRequest = new PageRequest(page, size);
-		if (null==statusId || statusId.equals(0L))
-		{
-			return repository.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndUserIdOrderByIdDesc(orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress, userId, pageRequest);
-		}else{
-			return repository.findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndUserIdOrderByIdDesc(statusId,orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress, userId, pageRequest);
-		}
-	}
-	/**
-	 * (判断订单状态)5:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、预约送货时间
-	 * @return
-	 */
-	public Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndDeliveryTimeOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Date deliveryDate,int size,int page)
-	{
-		PageRequest pageRequest = new PageRequest(page, size);
-		if (null==statusId || statusId.equals(0L))
-		{
-			return repository.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndDeliveryTimeOrderByIdDesc(orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress,deliveryDate, pageRequest);
-		}else{
-			return repository.findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndDeliveryTimeOrderByIdDesc(statusId,orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress,deliveryDate, pageRequest);
-		}
-	}
-	/**
-	 * (判断订单状态)6:按照 订单号、时间段、会员电话、收货人姓名、收货人电话、地址（模糊）、实际送货时间
-	 * @return
-	 */
-	public Page<TdOrder> findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(Long statusId,String orderNumbers,Date orderStartTime,Date orderEndTime,String userPhone,String shippingName,String shippingPhone,String shippingaddress,Date sendDate,int size,int page)
-	{
-		PageRequest pageRequest = new PageRequest(page, size);
-		if (null==statusId || statusId.equals(0L))
-		{
-			return repository.findByOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress,sendDate, pageRequest);
-		}else{
-			return repository.findByStatusIdAndOrderNumberContainingAndOrderTimeBetweenAndUsernameContainingAndShippingNameContainingAndShippingPhoneContainingAndShippingAddressContainingAndSendTimeOrderByIdDesc(statusId,orderNumbers, orderStartTime, orderEndTime, userPhone, shippingName, shippingPhone, shippingaddress,sendDate, pageRequest);
-		}
-	}
+	
 	/**
 	 *  根据时间查询 只查询总单号
 	 * @return
@@ -572,6 +501,10 @@ public class TdOrderService {
 		return repository.searchMainOrderNumberByOrderTimeAndDiySiteCode(diyCode,begin,end);
 	}
 	
+	/**
+	 * 订单条件查询 分页
+	 * @return
+	 */
 	public Page<TdOrder>findAll(String keywords,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
 			String deliveryTime,String userPhone,String shippingName,String sendTime,Long statusId,int size,int page){
 		PageRequest pageRequest = new PageRequest(page, size);
@@ -618,6 +551,8 @@ public class TdOrderService {
 		c.setOrderByDesc("orderTime");
 		       return repository.findAll(c,pageRequest);
 	}
+	
+	
 	/**
 	 * 字符串转换时间默认格式yyyy-MM-dd HH:mm:ss
 	 * @return

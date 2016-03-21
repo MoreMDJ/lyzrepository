@@ -16,6 +16,7 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -1269,6 +1270,7 @@ public class TdManagerOrderController {
 			}
 		}
 		
+		@SuppressWarnings("unchecked")
 		Page<TdOrder> orders1 = (Page<TdOrder>)map.get("order_page");
 		if (orders1 != null)
 		{
@@ -1863,7 +1865,9 @@ public class TdManagerOrderController {
 			else
 			{
 				TdUser tdUser = tdUserService.findByUsername(username);
-				map.put(username, tdUser.getRealName());
+				if(null != tdUser && StringUtils.isNotBlank(username)){
+					map.put(username, tdUser.getRealName());
+				}
 			}
 		}
 

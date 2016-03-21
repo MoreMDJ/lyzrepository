@@ -390,6 +390,10 @@ public class TdDeliveryIndexController {
 
 		map.addAttribute("order_list", orderList);
 
+		
+
+		map.addAttribute("order_list", orderList);
+		
 		return "/client/delivery_list";
 	}
 
