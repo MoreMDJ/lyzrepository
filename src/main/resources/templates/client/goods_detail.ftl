@@ -81,7 +81,7 @@
 				<ul class="det_list">
 					<li class="li01">
 						<div>品牌：</div>
-						<p><#if goods.belongTo??&&goods.belongTo==1>华润<#else>乐易装</#if></p>
+						<p>${goods.brandTitle!''}</p>
 					</li>
 				    <#--
 					<li class="li02">

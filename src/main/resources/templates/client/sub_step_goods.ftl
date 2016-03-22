@@ -29,7 +29,7 @@
                     <input min="0" class="goodsSelectedQuantity" type="number" id="quantity${goods.id?c}" value="0">
                     <a href="javascript:changeQuantity(${goods.id?c},'delete');">-</a>
                 </div>
-                <div class="fen_div02">
+                <div class="fen_div02" value="${goods_index} ">
                     <#-- 显示指定商品在该地区的价格 -->
                     <#if ("priceListItem"+goods_index)?eval??>
                         <#if ("priceListItem"+goods_index)?eval.salePrice??>
