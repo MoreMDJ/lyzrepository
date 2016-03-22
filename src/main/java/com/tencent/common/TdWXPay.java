@@ -57,6 +57,7 @@ public class TdWXPay {
 		signMap.addAttribute("spbill_create_ip", Configure.getIP());
 		signMap.addAttribute("notify_url", notify_url_str);
 		signMap.addAttribute("trade_type", trade_type_str);
+		signMap.addAttribute("device_info", "APP");
 
 		String sign = Signature.getSign(signMap);
 
@@ -70,6 +71,7 @@ public class TdWXPay {
 					+ "<spbill_create_ip>"+ Configure.getIP() +"</spbill_create_ip>\n"
 					+ "<notify_url>"+ notify_url_str +"</notify_url>\n"
 					+ "<trade_type>"+ trade_type_str +"</trade_type>\n"
+					+ "<device_info>"+ "APP" +"</device_info>\n"
 					+ "<sign>" + sign + "</sign>\n"
 					+ "</xml>\n";
 //		System.out.print("MDJ: xml=" + content + "\n");
@@ -136,12 +138,12 @@ public class TdWXPay {
 				String packageString = "Sign=WXPay";
 				String signType = "MD5";
 				ModelMap returnsignmap = new ModelMap();
-				returnsignmap.addAttribute("appId", Configure.getAppid());
-				returnsignmap.addAttribute("partnerid", Configure.getMchid());
-				returnsignmap.addAttribute("prepayid", prepay_id);
-				returnsignmap.addAttribute("package", packageString);
+				returnsignmap.addAttribute("appid", Configure.getAppid());
 				returnsignmap.addAttribute("noncestr", nonce_str);
+				returnsignmap.addAttribute("package", packageString);
+				returnsignmap.addAttribute("partnerid", Configure.getMchid());
 				returnsignmap.addAttribute("timestamp", timeStamp);
+				returnsignmap.addAttribute("prepayid", prepay_id);
 
 				String returnsign = Signature.getSign(returnsignmap);
 				requestXML = "<xml>\n" 
