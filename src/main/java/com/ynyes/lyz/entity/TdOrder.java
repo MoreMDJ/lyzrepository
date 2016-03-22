@@ -351,6 +351,10 @@ public class TdOrder {
 	// 第三方支付的金额
 	@Column
 	private Double otherPay;
+	
+	//有效时间(超过有效时间未支付将重新计算价格)
+	@Column
+	private Date validTime;
 
 	public Double getRefund() {
 		return refund;
@@ -974,5 +978,13 @@ public class TdOrder {
 
 	public void setOtherPay(Double otherPay) {
 		this.otherPay = otherPay;
+	}
+
+	public Date getValidTime() {
+		return validTime;
+	}
+
+	public void setValidTime(Date validTime) {
+		this.validTime = validTime;
 	}
 }
