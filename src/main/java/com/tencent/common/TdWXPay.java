@@ -2,20 +2,31 @@ package com.tencent.common;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.http.HttpServletRequest;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.springframework.ui.ModelMap;
 
 import com.ynyes.lyz.entity.TdOrder;
 
 public class TdWXPay {
 	
-	private static String notify_url_str = "www.leyizhuang.com.cn/order/wx_notify";
+	private static String notify_url_str = "http://www.leyizhuang.com.cn/pay/wx_notify";
 	
 	private static String trade_type_str = "APP";
+	
+	private static ModelMap signMap = new ModelMap();
 	
 	/**
 	 * 统一下单所需要的XML
@@ -47,7 +58,7 @@ public class TdWXPay {
 		Long total_fee = Math.round(order.getTotalPrice() * 100);
 		String nonce_str = RandomStringGenerator.getRandomStringByLength(32);
 		
-		ModelMap signMap = new ModelMap();
+//		ModelMap signMap = new ModelMap();
 		signMap.addAttribute("appid", Configure.getAppid());
 		signMap.addAttribute("mch_id", Configure.getMchid());
 		signMap.addAttribute("nonce_str",nonce_str);
@@ -76,6 +87,11 @@ public class TdWXPay {
 					+ "</xml>\n";
 //		System.out.print("MDJ: xml=" + content + "\n");
 		return content;
+	}
+	
+	public static void addSignMap(String key, Object object)
+	{
+		signMap.addAttribute(key, object);
 	}
 	
 	/**
@@ -166,5 +182,32 @@ public class TdWXPay {
 		}
 
 	return null;
+	}
+	
+	public static Map<String, String> parseXml(HttpServletRequest request) throws IOException, DocumentException
+	{
+		// 将解析结果存储在HashMap中
+        Map<String, String> map = new HashMap<String, String>();
+  
+        // 从request中取得输入流
+        InputStream inputStream = request.getInputStream();
+        // 读取输入流
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(inputStream);
+        // 得到xml根元素
+        Element root = document.getRootElement();
+        // 得到根元素的所有子节点
+        @SuppressWarnings("unchecked")
+		List<Element> elementList = root.elements();
+  
+        // 遍历所有子节点
+        for (Element e : elementList)
+            map.put(e.getName(), e.getText());
+  
+        // 释放资源
+        inputStream.close();
+        inputStream = null;
+		
+		return map;
 	}
 }

@@ -1,5 +1,6 @@
 package com.ynyes.lyz.controller.front;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -310,5 +312,18 @@ public class TdPayController {
 		}
 		resultMap.put("code", 1);
 		return resultMap;
+	}
+	
+	@RequestMapping(value = "wx_notify")
+	public void wxPayNotify(HttpServletResponse response, HttpServletRequest request) throws IOException, Exception
+	{
+		Map<String, String> map = TdWXPay.parseXml(request);
+		String return_code = map.get("return_code");
+//		String return_msg = map.get("return_msg");
+		if (return_code != null && return_code.contains("SUCCESS"))
+		{
+			String out_trade_no = map.get("out_trade_no");
+			System.out.println(out_trade_no);
+		}
 	}
 }
