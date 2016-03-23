@@ -49,7 +49,7 @@
         
         <!-- 投诉建议 -->
         <article class="suggest">
-            <div class="title">送货、退换货及咨询请联系<a href="tel://18580494867">电话客服</a></div>
+            <div class="title">送货、退换货及咨询请联系<a href="tel://<#if telphone??>${telphone!''}</#if>">电话客服</a></div>
             <#if category_list??&&category_list?size gt 0>
                 <div class="title" style="background:none;">
                     <select name="categoryId" id="suggestion_category">
