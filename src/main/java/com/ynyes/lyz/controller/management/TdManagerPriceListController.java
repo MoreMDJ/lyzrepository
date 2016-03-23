@@ -72,7 +72,7 @@ public class TdManagerPriceListController {
                 }
             }
             else if (__EVENTTARGET.equalsIgnoreCase("btnSearch"))
-            {//搜索按钮当前页修改为第一页
+            {//点击查询按钮当前页修改为第一页
             	page=0;
             }
         }
