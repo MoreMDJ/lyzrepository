@@ -54,8 +54,7 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	// static String wmsUrl =
-	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);

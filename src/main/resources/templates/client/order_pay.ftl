@@ -141,11 +141,11 @@
                         <#if !(max??)>
                             <#assign max=0.00>
                         </#if>
-                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(order.payTypeTitle!='货到付款')>href="/order/user/balance?max=${max?string("0.00")}"</#if>>
-                            <#if !(isCoupon??&&isCoupon==false)&&(order.payTypeTitle!='货到付款')>
-                                <#if order??&&order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if>                                     
+                        <a class="target" <#if !(isCoupon??&&isCoupon==false)>href="/order/user/balance?max=${max?string("0.00")}"</#if>>
+                            <#if isCoupon??&&isCoupon==false>
+                                                                                禁止使用
                             <#else>
-                              	禁止使用
+                                <#if order??&&order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if>
                             </#if>
                         </a>
                     </div>

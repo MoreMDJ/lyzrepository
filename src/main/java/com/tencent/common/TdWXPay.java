@@ -1,6 +1,7 @@
 package com.tencent.common;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,12 +11,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.springframework.ui.ModelMap;
 
 import com.ynyes.lyz.entity.TdOrder;
@@ -89,6 +95,46 @@ public class TdWXPay {
 		return content;
 	}
 	
+	
+	/**
+	 * 讲 map 转化为 XML
+	 * @param map
+	 * @return
+	 */
+	public static String mapToXML(ModelMap map) {
+        Document document = DocumentHelper.createDocument();  
+        Element nodeElement = document.addElement("node");  
+        for (Object obj : map.keySet()) 
+        {  
+            Element keyElement = nodeElement.addElement("key");  
+            keyElement.addAttribute("label", String.valueOf(obj));  
+            keyElement.setText(String.valueOf(map.get(obj)));  
+        }  
+        return docToString(document);  
+    } 
+	
+	
+	/**
+	 * 讲 Document转化为String
+	 * @param document
+	 * @return
+	 */
+	public static String docToString(Document document) {
+        String s = "";  
+        try {  
+            // 使用输出流来进行转化  
+            ByteArrayOutputStream out = new ByteArrayOutputStream();  
+            // 使用UTF-8编码  
+            OutputFormat format = new OutputFormat("   ", true, "UTF-8");  
+            XMLWriter writer = new XMLWriter(out, format);  
+            writer.write(document);  
+            s = out.toString("UTF-8");  
+        } catch (Exception ex) {
+            ex.printStackTrace();  
+        }  
+        return s;  
+    } 
+	
 	public static void addSignMap(String key, Object object)
 	{
 		signMap.addAttribute(key, object);
@@ -96,6 +142,7 @@ public class TdWXPay {
 	
 	/**
 	 * 统一下单请求获取 prepay_id
+	 * 
 	 * @param requestXML
 	 */
 	public static ModelMap sendUnifiedorderRequest(String requestXML)
@@ -184,6 +231,15 @@ public class TdWXPay {
 	return null;
 	}
 	
+	
+	/**
+	 * 解析微信返回的XML
+	 * 
+	 * @param request
+	 * @return map 返回数据存放在map里面
+	 * @throws IOException
+	 * @throws DocumentException
+	 */
 	public static Map<String, String> parseXml(HttpServletRequest request) throws IOException, DocumentException
 	{
 		// 将解析结果存储在HashMap中
@@ -194,6 +250,7 @@ public class TdWXPay {
         // 读取输入流
         SAXReader reader = new SAXReader();
         Document document = reader.read(inputStream);
+        
         // 得到xml根元素
         Element root = document.getRootElement();
         // 得到根元素的所有子节点
@@ -202,7 +259,9 @@ public class TdWXPay {
   
         // 遍历所有子节点
         for (Element e : elementList)
-            map.put(e.getName(), e.getText());
+        {
+        	map.put(e.getName(), e.getText());
+        }
   
         // 释放资源
         inputStream.close();
@@ -210,4 +269,38 @@ public class TdWXPay {
 		
 		return map;
 	}
+	
+	
+	/**
+	 * 向微信服务器返回信息，表明已收到微信服务器的信息
+	 * 
+	 * @param response
+	 */
+	public void responeToWXService(HttpServletResponse response)
+	{
+		
+		String returnXML = "<xml>" 
+							+ "return_code><![CDATA[SUCCESS]]></return_code>"
+							+ "<return_msg><![CDATA[OK]]></return_msg>"
+							+ "</xml>";
+		try 
+		{
+			byte[] xmlData = returnXML.getBytes();
+
+			response.setContentType("text/xml");
+			response.setContentLength(xmlData.length);
+
+			ServletOutputStream os = response.getOutputStream();
+			os.write(xmlData);
+
+			os.flush();
+			os.close();
+		}
+		catch (IOException e)
+		{
+			
+			e.printStackTrace();
+		}
+	}
+	
 }
