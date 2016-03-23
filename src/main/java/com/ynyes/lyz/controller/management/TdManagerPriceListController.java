@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -96,10 +97,9 @@ public class TdManagerPriceListController {
 	 * @param req
 	 * @return
 	 */
-	@RequestMapping(value="/list", method = RequestMethod.GET)
-	public String pricelist( 
-			          ModelMap map,
-			          HttpServletRequest req){
+	@RequestMapping(value="/list")
+	public String pricelist(ModelMap map, HttpServletRequest req,String keywords)
+	{
 		 String username = (String) req.getSession().getAttribute("manager");
 	     if (null == username) {
 	         return "redirect:/Verwalter/login";
@@ -110,9 +110,14 @@ public class TdManagerPriceListController {
 	     map.addAttribute("page", page);
 	     map.addAttribute("size", size);
 
-         map.addAttribute("pricelist_page", 
-        		 tdPriceListService.findAll(page, size));
-         
+	     if (StringUtils.isNotBlank(keywords))
+	     {
+	    	 map.addAttribute("pricelist_page", tdPriceListService.searchAll(keywords, page, size));
+		 }
+	     else
+	     {
+	    	 map.addAttribute("pricelist_page", tdPriceListService.findAll(page, size));
+	     }
          return "/site_mag/pricelist_list";
 
 	}
@@ -140,106 +145,106 @@ public class TdManagerPriceListController {
 
 	}
 	
-	@RequestMapping(value="/list", method = RequestMethod.POST)
-	public String pricelist( String __EVENTTARGET,Integer page,   Integer size, 
-					  String type,
-			          String __EVENTARGUMENT,
-			          String __VIEWSTATE,
-			          String keywords,
-			          Long[] listId,
-			          Integer[] listChkId,
-			          Double[] listSortId,
-			          ModelMap map,
-			          HttpServletRequest req){
-		 String username = (String) req.getSession().getAttribute("manager");
-	     if (null == username) {
-	         return "redirect:/Verwalter/login";
-	     }
-	     
-	     if (null == type || type.equals(""))
-	     {
-	    	 type = "pricelist";
-	     }
-	        
-	     if (null == page || page < 0)
-	     {
-	         page = 0;
-	     }
-	        
-	     if (null == size || size <= 0)
-	     {
-	         size = SiteMagConstant.pageSize;;
-	     }
-	        
-	     if (null != keywords)
-	     {
-	         keywords = keywords.trim();
-	     }
-	     
-	     if (null != __EVENTTARGET)
-	        {
-	            if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
-	            {
-	                btnDelete(type, listId, listChkId);
-	                	               
-	                tdManagerLogService.addLog("delete", "删除价目表", req);
-	               
-	            }
-	            else if (__EVENTTARGET.equalsIgnoreCase("btnSave"))
-	            {
-	                btnSave(type, listId, listSortId);
-
-	                tdManagerLogService.addLog("edit", "修改价目表", req);
-	               
-	            }
-	            else if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
-	            {
-	                if (null != __EVENTARGUMENT)
-	                {
-	                    page = Integer.parseInt(__EVENTARGUMENT);
-	                } 
-	            }
-	        } 
-	     
-	     map.addAttribute("page", page);
-	     map.addAttribute("size", size);
-	     map.addAttribute("keywords", keywords);
-	     map.addAttribute("__EVENTTARGET", __EVENTTARGET);
-	     map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
-	     map.addAttribute("__VIEWSTATE", __VIEWSTATE);
-	     
-	     if (type.equalsIgnoreCase("pricelist"))
-	     {
-	    	 if (null == keywords)
-	         {
-	             map.addAttribute("pricelist_page", 
-	            		 tdPriceListService.findAll(page, size));
-	         }
-	         else
-	         {
-	             map.addAttribute("pricelist_page", 
-	            		 tdPriceListService.searchAll(keywords, page, size));
-	         }
-	         
-	         return "/site_mag/pricelist_list";
-	     }
-	     else if(type.equalsIgnoreCase("pricelistItem"))
-	     {
-	    	 if (null == keywords)
-	         {
-	             map.addAttribute("pricelistItem_page", 
-	            		 tdPriceListItemService.findAll(page, size));
-	         }
-	         else
-	         {
-	             map.addAttribute("pricelistItem_page", 
-	            		 tdPriceListItemService.searchAll(keywords, page, size));
-	         }
-	         
-	         return "/site_mag/pricelistItem_list";
-	     }
-	     return "/site_mag/center";
-	}
+//	@RequestMapping(value="/list", method = RequestMethod.POST)
+//	public String pricelist( String __EVENTTARGET,Integer page,   Integer size, 
+//					  String type,
+//			          String __EVENTARGUMENT,
+//			          String __VIEWSTATE,
+//			          String keywords,
+//			          Long[] listId,
+//			          Integer[] listChkId,
+//			          Double[] listSortId,
+//			          ModelMap map,
+//			          HttpServletRequest req){
+//		 String username = (String) req.getSession().getAttribute("manager");
+//	     if (null == username) {
+//	         return "redirect:/Verwalter/login";
+//	     }
+//	     
+//	     if (null == type || type.equals(""))
+//	     {
+//	    	 type = "pricelist";
+//	     }
+//	        
+//	     if (null == page || page < 0)
+//	     {
+//	         page = 0;
+//	     }
+//	        
+//	     if (null == size || size <= 0)
+//	     {
+//	         size = SiteMagConstant.pageSize;;
+//	     }
+//	        
+//	     if (null != keywords)
+//	     {
+//	         keywords = keywords.trim();
+//	     }
+//	     
+//	     if (null != __EVENTTARGET)
+//	        {
+//	            if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+//	            {
+//	                btnDelete(type, listId, listChkId);
+//	                	               
+//	                tdManagerLogService.addLog("delete", "删除价目表", req);
+//	               
+//	            }
+//	            else if (__EVENTTARGET.equalsIgnoreCase("btnSave"))
+//	            {
+//	                btnSave(type, listId, listSortId);
+//
+//	                tdManagerLogService.addLog("edit", "修改价目表", req);
+//	               
+//	            }
+//	            else if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
+//	            {
+//	                if (null != __EVENTARGUMENT)
+//	                {
+//	                    page = Integer.parseInt(__EVENTARGUMENT);
+//	                } 
+//	            }
+//	        } 
+//	     
+//	     map.addAttribute("page", page);
+//	     map.addAttribute("size", size);
+//	     map.addAttribute("keywords", keywords);
+//	     map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+//	     map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+//	     map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+//	     
+//	     if (type.equalsIgnoreCase("pricelist"))
+//	     {
+//	    	 if (null == keywords)
+//	         {
+//	             map.addAttribute("pricelist_page", 
+//	            		 tdPriceListService.findAll(page, size));
+//	         }
+//	         else
+//	         {
+//	             map.addAttribute("pricelist_page", 
+//	            		 tdPriceListService.searchAll(keywords, page, size));
+//	         }
+//	         
+//	         return "/site_mag/pricelist_list";
+//	     }
+//	     else if(type.equalsIgnoreCase("pricelistItem"))
+//	     {
+//	    	 if (null == keywords)
+//	         {
+//	             map.addAttribute("pricelistItem_page", 
+//	            		 tdPriceListItemService.findAll(page, size));
+//	         }
+//	         else
+//	         {
+//	             map.addAttribute("pricelistItem_page", 
+//	            		 tdPriceListItemService.searchAll(keywords, page, size));
+//	         }
+//	         
+//	         return "/site_mag/pricelistItem_list";
+//	     }
+//	     return "/site_mag/center";
+//	}
 	
 	/**
 	 * 编辑价目表
