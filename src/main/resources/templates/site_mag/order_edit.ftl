@@ -779,7 +779,18 @@
             <dt>订单统计</dt>
             <dd>
                 <table border="0" cellspacing="0" cellpadding="0" class="border-table" width="98%">
-                    <tbody><tr>
+                    <tbody>
+                    <tr>
+                        <th>
+                        导购名字
+                        </th>
+                        <td>
+                            <div class="position">
+                            <span><#if order.sellerRealName??>${order.sellerRealName!""}</#if> </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                         <th width="20%">
                             商品总金额
                         </th>
@@ -937,7 +948,7 @@
                         <th>
                             用户留言
                         </th>
-                        <td>${order.userRemarkInfo!""}</td>
+                        <td>${order.remark!""}</td>
                     </tr>
                     <tr>
                         <th valign="top">

@@ -16,6 +16,7 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -97,26 +98,30 @@ public class TdRegistController {
 			res.put("message", "验证码错误");
 			return res;
 		}
-		if (!repassword.equals(password)) {
-			res.put("message", "两次输入的密码不一致");
-			return res;
+		if(StringUtils.isNotBlank(password))
+		{
+			if (!repassword.equals(password))
+			{
+				res.put("message", "两次输入的密码不一致");
+				return res;
+			}
 		}
-
-		if ("".equals(password)) {
+		else 
+		{
 			password = "123456";
 		}
 
 		// 根据城市的名称获取指定城市的信息
 		TdCity city = tdCityService.findByCityName(cityInfo);
-		if (null == city) {
+		if (null == city)
+		{
 			city = new TdCity();
 			city.setCityName(cityInfo);
 			city = tdCityService.save(city);
 		}
 
 		// 获取门店名称
-		TdDiySite diySite = tdDiySiteService.findByRegionIdAndTitleAndIsEnableTrue(city.getSobIdCity(),
-				(cityInfo + "默认门店").trim());
+		TdDiySite diySite = tdDiySiteService.findByRegionIdAndTitleAndIsEnableTrue(city.getSobIdCity(), (cityInfo + "默认门店").trim());
 		TdUser new_user = new TdUser();
 		new_user.setUsername(phone);
 		new_user.setPassword(MD5.md5(password, 32));

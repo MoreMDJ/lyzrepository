@@ -314,12 +314,11 @@ public class TdPayController {
 		return resultMap;
 	}
 	
-	@RequestMapping(value = "wx_notify")
+	@RequestMapping(value = "/wx_notify")
 	public void wxPayNotify(HttpServletResponse response, HttpServletRequest request) throws IOException, Exception
 	{
 		Map<String, String> map = TdWXPay.parseXml(request);
 		String return_code = map.get("return_code");
-//		String return_msg = map.get("return_msg");
 		if (return_code != null && return_code.contains("SUCCESS"))
 		{
 			String out_trade_no = map.get("out_trade_no");
