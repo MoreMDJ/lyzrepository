@@ -93,11 +93,12 @@ public class TdPriceListService {
 	}
 
 	public Page<TdPriceList> searchAll(String keywords, int page, int size) {
-		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
-		return (Page<TdPriceList>) repository.findByNameContaining(keywords, pageRequest);
+		PageRequest pageRequest = new PageRequest(page, size);
+		return  repository.findByNameContaining(keywords, pageRequest);
 	}
 
-	public Page<TdPriceList> findAll(int page, int size) {
+	public Page<TdPriceList> findAll(int page, int size)
+	{
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
 		return repository.findAll(pageRequest);
 	}

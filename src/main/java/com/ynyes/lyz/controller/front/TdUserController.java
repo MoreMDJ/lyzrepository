@@ -509,7 +509,8 @@ public class TdUserController {
 
 		// 查询得到所有能用的咨询分类
 		List<TdUserSuggestionCategory> category_list = tdUserSuggestionCategoryService.findAll();
-
+		TdSetting tdSetting = tdSettingService.findTopBy();
+		map.addAttribute("telphone", tdSetting.getTelephone());
 		map.addAttribute("category_list", category_list);
 		map.addAttribute("username", username);
 		return "/client/user_suggestion";
