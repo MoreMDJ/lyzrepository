@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -49,7 +50,8 @@ public class TdManagerPriceListController {
 						            Long[] listId,
 						            Integer[] listChkId,
 						            ModelMap map,
-						            HttpServletRequest req)
+						            HttpServletRequest req,
+						            String keywords)
     {
     	String username = (String) req.getSession().getAttribute("manager");
         if (null == username)
@@ -69,6 +71,10 @@ public class TdManagerPriceListController {
                     page = Integer.parseInt(__EVENTARGUMENT);
                 }
             }
+            else if (__EVENTTARGET.equalsIgnoreCase("btnSearch"))
+            {//搜索按钮当前页修改为第一页
+            	page=0;
+            }
         }
         
         if (null == page || page < 0)
@@ -86,7 +92,13 @@ public class TdManagerPriceListController {
         map.addAttribute("__EVENTTARGET", __EVENTTARGET);
         map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
-        map.addAttribute("price_item_page", tdPriceListItemService.findAll(page, size));
+       
+        if(StringUtils.isNotBlank(keywords)){
+        	map.addAttribute("price_item_page", tdPriceListItemService.findByItemDescContainingOrItemNumContaining(keywords, page, size));
+        }else{
+        	 map.addAttribute("price_item_page", tdPriceListItemService.findAll(page, size));
+        }
+        
     	return "/site_mag/pricelist_item_list";
     }
 	

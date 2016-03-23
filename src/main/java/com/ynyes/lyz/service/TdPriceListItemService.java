@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.xerces.impl.xpath.regex.REUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -181,4 +180,17 @@ public class TdPriceListItemService {
 										lIstHearderId, inventoryItemId, start, end,
 										lIstHearderId,inventoryItemId);
 	}
+	
+	/**
+	 * 根据商品名称和编号查询价格表
+	 * @return
+	 */
+	public Page<TdPriceListItem> findByItemDescContainingOrItemNumContaining(String keywords,int page, int size){
+		if(null == keywords){
+			return null;
+		}
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByItemDescContainingOrItemNumContaining(keywords, keywords,pageRequest);
+	}
+	
 }
