@@ -608,6 +608,24 @@ public class TdGoodsController {
 	}
 
 	/**
+	 * 刷新已选商品页面的方法
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/select/refresh")
+	public String goodsSelectRefresh(HttpServletRequest req, ModelMap map) {
+		// 获取登录用户的信息
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsername(username);
+		// 获取所有的已选商品
+		if (null != user) {
+			List<TdCartGoods> selected_goods = tdCartGoodsService.findByUserId(user.getId());
+			map.addAttribute("all_selected", selected_goods);
+		}
+		return "/client/selected_goods_and_color";
+	}
+
+	/**
 	 * 立即购买某件商品的方法
 	 * 
 	 * @author dengxiao

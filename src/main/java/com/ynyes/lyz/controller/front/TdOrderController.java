@@ -110,7 +110,7 @@ public class TdOrderController {
 
 		// 参数由调用函数检查
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
-		
+
 		if (null == user) {
 			return "redirect:/login";
 		}
@@ -1552,6 +1552,69 @@ public class TdOrderController {
 		}
 
 		res.put("status", 0);
+		return res;
+	}
+
+	/**
+	 * 确认代下单的方法
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/seller/operation")
+	@ResponseBody
+	public Map<String, Object> orderSellerOperation(HttpServletRequest req, ModelMap map, Long realUserId) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+		// 获取被代下单的用户的信息
+		TdUser realUser = tdUserService.findOne(realUserId);
+		if (null == realUser) {
+			res.put("message", "未获取到指定用户的信息");
+			return res;
+		}
+		// 获取真实用户绑定的销顾
+		Long sellerId = realUser.getSellerId();
+		// 查询到销顾的信息
+		TdUser seller = tdUserService.findOne(sellerId);
+		// 生成虚拟订单
+		TdOrder order = tdCommonService.createVirtual(req);
+		// 设置真实用户信息
+		order.setUsername(realUser.getUsername());
+		order.setUserId(realUser.getId());
+
+		// 修改订单的默认收货地址
+		List<TdShippingAddress> addressList = realUser.getShippingAddressList();
+		TdShippingAddress defaultAddress = null;
+		for (TdShippingAddress tdShippingAddress : addressList) {
+			if (null != tdShippingAddress && null != tdShippingAddress.getIsDefaultAddress()
+					&& tdShippingAddress.getIsDefaultAddress()) {
+				defaultAddress = tdShippingAddress;
+			}
+		}
+		order.setProvince(defaultAddress.getProvince());
+		order.setCity(defaultAddress.getCity());
+		order.setDisctrict(defaultAddress.getDisctrict());
+		order.setSubdistrict(defaultAddress.getSubdistrict());
+		order.setDetailAddress(defaultAddress.getDetailAddress());
+
+		order.setShippingAddress(defaultAddress.getCity() + defaultAddress.getDisctrict()
+				+ defaultAddress.getSubdistrict() + defaultAddress.getDetailAddress());
+		order.setShippingName(defaultAddress.getReceiverName());
+		order.setShippingPhone(defaultAddress.getReceiverMobile());
+
+		// 设置销顾信息
+		if (null != seller) {
+			order.setSellerId(seller.getId());
+			order.setSellerRealName(seller.getRealName());
+			order.setSellerUsername(seller.getUsername());
+		}
+		order.setIsSellerOrder(true);
+		tdOrderService.save(order);
+
+		// 清空已选
+		tdCommonService.clear(req);
+
+		res.put("status", 0);
+		res.put("message", "代下单成功");
 		return res;
 	}
 

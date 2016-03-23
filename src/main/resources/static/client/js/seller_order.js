@@ -35,6 +35,7 @@ var seller = {
 				warning("亲，您的网速不给力啊");
 			},
 			success : function(res) {
+				console.log(res);
 				// res中的check代表当前登录的是否为普通用户，其值为true代表是，其值为false代表不是
 				if (true === res.check) {
 					window.location.href = "/order";
@@ -88,7 +89,45 @@ var seller = {
 	// 确定选择用户的方法
 	selectInfo : function(id) {
 		if (id) {
-			window.location.href = "/order?realUserId=" + id;
+			wait();
+			$.ajax({
+				type : "post",
+				url : "/order/seller/operation",
+				timeout : 20000,
+				data : {
+					realUserId : id
+				},
+				error : function() {
+					close(1);
+					warning("亲，您的网速不给力啊");
+				},
+				success : function(res) {
+					warning(res.message);
+					if (0 === res.status) {
+						win_no();
+						var select_number_el = seller.getE("select_num");
+						if (select_number_el) {
+							select_number_el.innerHTML = "0";
+						}
+						var my_selected_el = seller.getE("my_selected");
+						if (my_selected_el) {
+							$.ajax({
+								type : "post",
+								url : "/goods/select/refresh",
+								timeout : 10000,
+								error:function(){
+									close(1);
+									warning("亲，您的网速不给力啊");
+								},
+								success:function(res){
+									my_selected_el.innerHTML = res;
+								}
+							});
+						}
+					}
+					close(1);
+				}
+			});
 		}
 	}
 }

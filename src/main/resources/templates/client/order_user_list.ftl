@@ -42,6 +42,7 @@
         height: 26px;
         border-radius: 4px;
         background: #cc1421;
+        z-index:99999;
     }
     .win_yn .swiper-slide{
         overflow: hidden;
@@ -62,7 +63,7 @@
     }
     .my_left .swiper-container {
         width: 100%;
-        height: 230px;
+        height: 170px;
         overflow:hidden;
     }
     .searchBox{
