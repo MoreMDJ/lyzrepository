@@ -634,9 +634,11 @@ public class TdManagerSettingController {
      	  {
      		  Long disId =  sub.getDistrictId();
      		  TdDistrict district = tdDistrictService.findOne(disId);
-     		  Long cityId =  district.getCityId();
-     		  String name = tdCityService.findOne(cityId).getCityName();
-     		  sub.setCity(name);
+     		  if(null != district){
+     			 Long cityId =  district.getCityId();
+        		  String name = tdCityService.findOne(cityId).getCityName();
+        		  sub.setCity(name);
+     		  }
      		  tdSubdistrictService.save(sub);
      	  }
         }

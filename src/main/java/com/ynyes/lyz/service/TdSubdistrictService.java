@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.ynyes.lyz.entity.TdDistrict;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.repository.TdSubdistrictRepo;
 
@@ -29,7 +30,10 @@ public class TdSubdistrictService {
 			return null;
 		}
 
-		e.setDistrictName(tdDistrictService.findOne(e.getDistrictId()).getName());
+		TdDistrict tdDistrict= tdDistrictService.findOne(e.getDistrictId());
+		if(null != tdDistrict){
+			e.setDistrictName(tdDistrict.getName());
+		}
 
 		return repository.save(e);
 	}
