@@ -635,6 +635,12 @@ public class TdDeliveryIndexController {
 
 						// 添加订单信息
 						returnNote.setOrderNumber(subOrder.getOrderNumber());
+						
+						//add MDJ
+						returnNote.setShoppingAddress(order.getShippingAddress());
+						returnNote.setSellerRealName(order.getSellerRealName());
+						//end add MDJ
+						
 						// 支付方式
 						returnNote.setPayTypeId(subOrder.getPayTypeId());
 						returnNote.setPayTypeTitle(subOrder.getPayTypeTitle());
