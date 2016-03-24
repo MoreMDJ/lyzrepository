@@ -1633,12 +1633,15 @@ public class TdCommonService {
 			if (null == order.getAllTotalPay()) {
 				order.setAllTotalPay(0.0);
 			}
-
+			
 			if (null == order.getAllActualPay()) {
 				order.setAllActualPay(0.0);
 			}
+			if (null == order.getTotalPrice()) {
+				order.setTotalPrice(0.0);
+			}
 
-			Double left = order.getAllTotalPay() - order.getAllActualPay();
+			Double left = order.getTotalPrice() - order.getAllActualPay();
 
 			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
 
