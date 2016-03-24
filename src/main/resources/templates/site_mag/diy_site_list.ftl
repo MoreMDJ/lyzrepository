@@ -36,7 +36,7 @@ function __doPostBack(eventTarget, eventArgument) {
   <a href="/Verwalter/order/setting/diysite/list" class="back"><i></i><span>返回列表页</span></a>
   <a href="/Verwalter/center" class="home"><i></i><span>首页</span></a>
   <i class="arrow"></i>
-  <span>配送方式</span>
+  <span>门店</span>
 </div>
 <!--/导航栏-->
 
@@ -65,7 +65,7 @@ function __doPostBack(eventTarget, eventArgument) {
   <tbody>
   <tr class="odd_bg">
     <th width="8%">选择</th>
-    <th align="left">自提点名称</th>
+    <th align="left">门店名称</th>
     <th align="left" width="37%">地理位置</th>
     <th align="left" width="12%">排序</th>
     <th width="8%">是否启用</th>
