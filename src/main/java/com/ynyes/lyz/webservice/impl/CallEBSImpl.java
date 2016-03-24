@@ -31,6 +31,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.geronimo.mail.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
@@ -425,7 +426,7 @@ public class CallEBSImpl implements ICallEBS {
 						e.printStackTrace();
 					}
 				}
-				if (end_date_active != null)
+				if (StringUtils.isNotBlank(end_date_active))
 				{
 					try
 					{
@@ -436,6 +437,10 @@ public class CallEBSImpl implements ICallEBS {
 					{
 						e.printStackTrace();
 					}
+				}
+				else
+				{
+					tdPriceList.setEndDateActive(null);
 				}
 				tdPriceList.setPriceType(price_type);
 				tdPriceList.setPriceTypeDesc(price_type_DESC);
@@ -581,7 +586,7 @@ public class CallEBSImpl implements ICallEBS {
 						e.printStackTrace();
 					}
 				}
-				if (end_date_active != null)
+				if (StringUtils.isNotBlank(end_date_active))
 				{
 					try 
 					{
@@ -592,6 +597,10 @@ public class CallEBSImpl implements ICallEBS {
 					{
 						e.printStackTrace();
 					}
+				}
+				else
+				{
+					tdPriceListItem.setEndDateActive(null);
 				}
 				tdPriceListItemService.save(tdPriceListItem);
 			}
