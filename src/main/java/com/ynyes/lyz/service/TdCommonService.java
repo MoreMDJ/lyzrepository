@@ -699,17 +699,17 @@ public class TdCommonService {
 
 		TdUser seller = null;
 		// 获取用户的导购
-		// if (1L == user.getUserType().longValue() || 2L ==
-		// user.getUserType().longValue()) {
-		// // 如果当前登录账户是销顾或者店长，则改单的seller是他自己
-		// seller = user;
-		// } else {
-		// Long id = user.getSellerId();
-		// seller = tdUserService.findOne(id);
-		// if (null == seller) {
-		// seller = new TdUser();
-		// }
-		// }
+		 if (1L == user.getUserType().longValue() || 2L ==
+		 user.getUserType().longValue()) {
+		 // 如果当前登录账户是销顾或者店长，则改单的seller是他自己
+		 seller = user;
+		 } else {
+		 Long id = user.getSellerId();
+		 seller = tdUserService.findOne(id);
+		 if (null == seller) {
+		 seller = new TdUser();
+		 }
+		 }
 
 		// 默认的配送日期：第二天的的上午11:30——12:30
 		Calendar cal = Calendar.getInstance();
