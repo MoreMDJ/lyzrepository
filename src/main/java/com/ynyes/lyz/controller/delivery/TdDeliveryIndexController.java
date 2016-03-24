@@ -166,48 +166,46 @@ public class TdDeliveryIndexController {
 
 		List<TdReturnNote> rnList = new ArrayList<TdReturnNote>();
 		
-		// 1: 待取货 2: 已取货
-		if (null != startDate && null != user.getOpUser()) {
-			if (null != endDate) {
-				if (type.equals(1)) {
-					rnList = tdReturnNoteService
-							.findByStatusIdAndOrderTimeBetween(2L, startDate, endDate);
-				} else if (type.equals(2)) {
-					rnList = tdReturnNoteService
-							.findByStatusIdAndOrderTimeBetween(3L, startDate, endDate);
-				} else if (type.equals(3)) {
-					rnList = tdReturnNoteService
-							.findByStatusIdAndOrderTimeBetween(4L, startDate, endDate);
+		// type : 1: 待取货 2: 已取货     3: 已完成
+		if (null != startDate && null != user.getOpUser())
+		{
+			if (null != endDate) 
+			{
+				if (type.equals(1)) 
+				{
+					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeBetween(2L, startDate, endDate);
+				}
+				else if (type.equals(2)) 
+				{
+					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeBetween(3L, startDate, endDate);
+				}
+				else if (type.equals(3)) 
+				{
+					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeBetween(4L, startDate, endDate);
 				}
 
-				map.addAttribute(
-						"count_type_1",
-						tdReturnNoteService
-						.countByStatusIdAndOrderTimeBetween(2L, startDate, endDate));
-				map.addAttribute("count_type_2", tdReturnNoteService
-						.countByStatusIdAndOrderTimeBetween(3L, startDate, endDate));
-				map.addAttribute("count_type_3", tdReturnNoteService
-						.countByStatusIdAndOrderTimeBetween(4L, startDate, endDate));
-			} else {
-				if (type.equals(1)) {
-					rnList = tdReturnNoteService
-							.findByStatusIdAndOrderTimeAfter(2L, startDate);
-				} else if (type.equals(2)) {
-					rnList = tdReturnNoteService
-							.findByStatusIdAndOrderTimeAfter(3L, startDate);
-				} else if (type.equals(3)) {
-					rnList = tdReturnNoteService
-							.findByStatusIdAndOrderTimeAfter(4L, startDate);
+				map.addAttribute("count_type_1",tdReturnNoteService.countByStatusIdAndOrderTimeBetween(2L, startDate, endDate));
+				map.addAttribute("count_type_2", tdReturnNoteService.countByStatusIdAndOrderTimeBetween(3L, startDate, endDate));
+				map.addAttribute("count_type_3", tdReturnNoteService.countByStatusIdAndOrderTimeBetween(4L, startDate, endDate));
+			}
+			else
+			{
+				if (type.equals(1))
+				{
+					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeAfter(2L, startDate);
+				}
+				else if (type.equals(2))
+				{
+					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeAfter(3L, startDate);
+				}
+				else if (type.equals(3)) 
+				{
+					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeAfter(4L, startDate);
 				}
 
-				map.addAttribute(
-						"count_type_1",
-						tdReturnNoteService
-						.countByStatusIdAndOrderTimeAfter(2L, startDate));
-				map.addAttribute("count_type_2", tdReturnNoteService
-						.countByStatusIdAndOrderTimeAfter(3L, startDate));
-				map.addAttribute("count_type_3", tdReturnNoteService
-						.countByStatusIdAndOrderTimeAfter(4L, startDate));
+				map.addAttribute("count_type_1",tdReturnNoteService.countByStatusIdAndOrderTimeAfter(2L, startDate));
+				map.addAttribute("count_type_2", tdReturnNoteService.countByStatusIdAndOrderTimeAfter(3L, startDate));
+				map.addAttribute("count_type_3", tdReturnNoteService.countByStatusIdAndOrderTimeAfter(4L, startDate));
 			}
 		}
 

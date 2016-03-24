@@ -105,7 +105,7 @@ function downloaddateurl(type,url){
             门店名称
         </th>
         <th align="left" width="10%">
-            商户备注
+            退货原因
         </th>
         <th align="left" width="10%">
             申请时间
