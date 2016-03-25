@@ -1223,7 +1223,6 @@ public class TdUserController {
 			// 生成退货单
 			if (null != order) {
 				TdReturnNote returnNote = tdCommonService.MakeReturnNote(order,0L,"");
-				returnNote.setRemarkInfo("用户取消订单，退货");
 				tdCommonService.sendBackMsgToWMS(returnNote);
 //				System.out.println("MDJWMS:发送退货单：" + returnNote.getReturnNumber() + "成功！");
 			}
