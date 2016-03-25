@@ -135,6 +135,7 @@ public class TdPayController {
 
 				// 如果是下单的情况
 				TdOrder order = tdOrderService.findByOrderNumber(out_trade_no);
+				order.setActualPay(order.getTotalPrice());
 				if (null != order) {
 					req.getSession().setAttribute("order_temp", order);
 					String cashCouponId = order.getCashCouponId();
@@ -280,47 +281,39 @@ public class TdPayController {
 		}
 		return "/client/pay_success";
 	}
-	
+
 	@RequestMapping(value = "/wx/sign")
 	@ResponseBody
-	public Map<String, Object> WxPayReturnSign(Long orderId)
-	{
+	public Map<String, Object> WxPayReturnSign(Long orderId) {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("code", 0);
-		if (orderId == null)
-		{
+		if (orderId == null) {
 			resultMap.put("msg", "订单Id不存在");
 			return resultMap;
 		}
 		TdOrder tdOrder = tdOrderService.findOne(orderId);
-		if (tdOrder == null)
-		{
+		if (tdOrder == null) {
 			resultMap.put("msg", "订单不存在，单号Id：" + orderId);
 			return resultMap;
 		}
 		String xml = TdWXPay.getUnifiedorderXML(tdOrder);
 		ModelMap modelMap = TdWXPay.sendUnifiedorderRequest(xml);
-		
-		if (modelMap != null)
-		{
+
+		if (modelMap != null) {
 			resultMap.put("sign", modelMap);
-		}
-		else 
-		{
+		} else {
 			resultMap.put("msg", "签名出错");
 			return resultMap;
 		}
 		resultMap.put("code", 1);
 		return resultMap;
 	}
-	
+
 	@RequestMapping(value = "/wx_notify")
-	public void wxPayNotify(HttpServletResponse response, HttpServletRequest request) throws IOException, Exception
-	{
+	public void wxPayNotify(HttpServletResponse response, HttpServletRequest request) throws IOException, Exception {
 		Map<String, String> map = TdWXPay.parseXml(request);
 		String return_code = map.get("return_code");
-		if (return_code != null && return_code.contains("SUCCESS"))
-		{
+		if (return_code != null && return_code.contains("SUCCESS")) {
 			String out_trade_no = map.get("out_trade_no");
 			System.out.println(out_trade_no);
 		}
