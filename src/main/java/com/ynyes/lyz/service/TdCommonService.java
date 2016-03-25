@@ -56,7 +56,8 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+	// static String wmsUrl =
+	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -118,13 +119,11 @@ public class TdCommonService {
 
 	@Autowired
 	private TdInterfaceErrorLogService tdInterfaceErrorLogService;
-	
+
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
 
-	
-	public TdReturnNote MakeReturnNote(TdOrder order,Long type, String msg)
-	{
+	public TdReturnNote MakeReturnNote(TdOrder order, Long type, String msg) {
 		TdReturnNote returnNote = new TdReturnNote();
 
 		// 退货单编号
@@ -137,12 +136,12 @@ public class TdCommonService {
 
 		// 添加订单信息
 		returnNote.setOrderNumber(order.getOrderNumber());
-		
-		//add MDJ
+
+		// add MDJ
 		returnNote.setShoppingAddress(order.getShippingAddress());
 		returnNote.setSellerRealName(order.getSellerRealName());
-		//end add MDJ
-		
+		// end add MDJ
+
 		// 支付方式
 		returnNote.setPayTypeId(order.getPayTypeId());
 		returnNote.setPayTypeTitle(order.getPayTypeTitle());
@@ -157,48 +156,34 @@ public class TdCommonService {
 
 		// 退货信息
 		returnNote.setUsername(order.getUsername());
-		if (type == 0L)
-		{
+		if (type == 0L) {
 			returnNote.setRemarkInfo("用户取消订单，退货");
-		}
-		else if (type == 1L)
-		{
-			returnNote.setRemarkInfo("管理员 " + msg +" 取消订单,退货");
+		} else if (type == 1L) {
+			returnNote.setRemarkInfo("管理员 " + msg + " 取消订单,退货");
 		}
 
 		Long turnType;
-		if (org.apache.commons.lang3.StringUtils.isNotBlank(order.getDeliverTypeTitle()) && "门店自提".equals(order.getDeliverTypeTitle()))
-		{
+		if (org.apache.commons.lang3.StringUtils.isNotBlank(order.getDeliverTypeTitle())
+				&& "门店自提".equals(order.getDeliverTypeTitle())) {
 			returnNote.setTurnType(1L);
 			turnType = 1L;
-		}
-		else
-		{
+		} else {
 			returnNote.setTurnType(2L);
 			turnType = 2L;
 		}
 		// 退货方式
 		returnNote.setTurnType(turnType);
 		// 原订单配送方式
-		if ("门店自提".equals(order.getDeliverTypeTitle()))
-		{
-			if (turnType.equals(1L))
-			{
+		if ("门店自提".equals(order.getDeliverTypeTitle())) {
+			if (turnType.equals(1L)) {
 				returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
-			}
-			else
-			{
+			} else {
 				returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
 			}
-		}
-		else
-		{
-			if (turnType.equals(1L)) 
-			{
+		} else {
+			if (turnType.equals(1L)) {
 				returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
-			} 
-			else 
-			{
+			} else {
 				returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
 			}
 		}
@@ -245,7 +230,7 @@ public class TdCommonService {
 		tdOrderGoodsService.save(orderGoodsList);
 		return tdReturnNoteService.save(returnNote);
 	}
-	
+
 	/**
 	 * 获取登陆用户信息的方法
 	 * 
@@ -828,17 +813,16 @@ public class TdCommonService {
 
 		TdUser seller = null;
 		// 获取用户的导购
-		 if (1L == user.getUserType().longValue() || 2L ==
-		 user.getUserType().longValue()) {
-		 // 如果当前登录账户是销顾或者店长，则改单的seller是他自己
-		 seller = user;
-		 } else {
-		 Long id = user.getSellerId();
-		 seller = tdUserService.findOne(id);
-		 if (null == seller) {
-		 seller = new TdUser();
-		 }
-		 }
+		if (1L == user.getUserType().longValue() || 2L == user.getUserType().longValue()) {
+			// 如果当前登录账户是销顾或者店长，则该单的seller是他自己
+			seller = user;
+		} else {
+			Long id = user.getSellerId();
+			seller = tdUserService.findOne(id);
+			if (null == seller) {
+				seller = new TdUser();
+			}
+		}
 
 		// 默认的配送日期：第二天的的上午11:30——12:30
 		Calendar cal = Calendar.getInstance();
@@ -1762,7 +1746,7 @@ public class TdCommonService {
 			if (null == order.getAllTotalPay()) {
 				order.setAllTotalPay(0.0);
 			}
-			
+
 			if (null == order.getAllActualPay()) {
 				order.setAllActualPay(0.0);
 			}
