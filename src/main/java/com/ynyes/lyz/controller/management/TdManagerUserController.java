@@ -315,6 +315,11 @@ public class TdManagerUserController {
 				tdUser.setCustomerId(site.getCustomerId());
 				tdUser.setCityId(site.getRegionId());
 				tdUser.setDiyName(site.getTitle());
+				
+				TdCity city= tdCityService.findOne(site.getCityId());
+				if(null!=city){
+					tdUser.setCityName(city.getCityName());
+				}
 			}
 		}
 
@@ -339,6 +344,10 @@ public class TdManagerUserController {
 				tdUser.setPassword(MD5.md5(password, 32));
 			}
 		}
+		
+		
+		
+		
 
 		// String password = tdUser.getPassword();
 		// tdUser.setPassword(MD5.md5(password, 32));
@@ -346,6 +355,7 @@ public class TdManagerUserController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
 		if (null == tdUser.getId()) {
+			tdUser.setRegisterTime(new Date());
 			tdManagerLogService.addLog("add", "修改用户", req);
 		} else {
 			tdManagerLogService.addLog("edit", "修改用户", req);
