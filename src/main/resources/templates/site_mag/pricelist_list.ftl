@@ -103,7 +103,7 @@ function __doPostBack(eventTarget, eventArgument) {
                     <#if pricelist.listHeaderId??>${pricelist.listHeaderId?c}</#if>
                 </td>
                 <td>${pricelist.name!""}</td>
-                <td>${pricelist.cityId!""}</td>
+                <td><#if pricelist.cityId??>${pricelist.cityId?c}<#else>无效</#if></td>
                 <td>${pricelist.startDateActive!""}</td>
 	            <td>${pricelist.endDateActive!""}</td>
 	            <td align="center">

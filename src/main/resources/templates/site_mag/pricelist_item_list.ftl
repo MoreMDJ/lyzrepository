@@ -43,10 +43,10 @@ function __doPostBack(eventTarget, eventArgument) {
         <span>价目表列表</span>
     </div>
     <!--/导航栏-->
-    <!--工具栏
+    <!--工具栏 -->
     <div class="toolbar-wrap">
         <div id="floatHead" class="toolbar">
-            <div class="l-list">
+            <!-- <div class="l-list">
                 <ul class="icon-list">
                     <li><a class="add" href="/Verwalter/pricelist/edit?__VIEWSTATE=${__VIEWSTATE!""}"><i></i><span>新增</span></a></li>
       				<li><a id="btnSave" class="save" href="javascript:__doPostBack('btnSave','')"><i></i><span>保存</span></a></li>              
@@ -58,13 +58,13 @@ function __doPostBack(eventTarget, eventArgument) {
                     </li>
                     
                 </ul>
-            </div>
+            </div> -->
             <div class="r-list">
                 <input name="keywords" type="text" class="keyword">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
             </div>
         </div>
-    </div>-->
+    </div>
     <!--/工具栏-->
     <!--列表-->
     

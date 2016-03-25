@@ -15,13 +15,13 @@
                     </#if>
                 </dt>
                 <dd>
-                    <#if ("priceListitem"+goods_index)?eval??>
-                        <#if ("priceListitem"+goods_index)?eval.salePrice??>
-                            <p>￥${("priceListitem"+goods_index)?eval.salePrice?string("0.00")}</p>
+                    <#if ("priceListItem"+goods_index)?eval??>
+                        <#if ("priceListItem"+goods_index)?eval.salePrice??>
+                            <p>￥${("priceListItem"+goods_index)?eval.salePrice?string("0.00")}</p>
                         </#if>
                             
-                        <#if ("priceListitem"+goods_index)?eval.isPromotion??>
-                            <#if ("priceListitem"+goods_index)?eval.isPromotion>
+                        <#if ("priceListItem"+goods_index)?eval.isPromotion??>
+                            <#if ("priceListItem"+goods_index)?eval.isPromotion>
                                 <a style="margin-right:3%;">促销</a>
                             </#if>
                         </#if>

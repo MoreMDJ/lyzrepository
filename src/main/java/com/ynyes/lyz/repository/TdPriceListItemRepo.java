@@ -60,4 +60,10 @@ public interface TdPriceListItemRepo
 																		Long listHeaderId1,Long inventoryItemId1,Date start,
 																		Long listHeaderId2,Long inventoryItemId2,Date start2,Date end,
 																		Long listHeaderId3,Long inventoryItemId3);
+	/**
+	 * 根据商品名称和编号查询价格表
+	 * @return
+	 */
+	Page<TdPriceListItem> findByItemDescContainingOrItemNumContaining(String itemDesc,String itemNum,Pageable page);
+	
 }

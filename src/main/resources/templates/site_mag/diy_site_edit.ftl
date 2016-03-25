@@ -77,9 +77,9 @@
   <a href="/Verwalter/order/setting/diysite/list" class="back"><i></i><span>返回列表页</span></a>
   <a href="/Verwalter/center" class="home"><i></i><span>首页</span></a>
   <i class="arrow"></i>
-  <a href="/Verwalter/order/setting/diysite/list"><span>自提点</span></a>
+  <a href="/Verwalter/order/setting/diysite/list"><span>门店</span></a>
   <i class="arrow"></i>
-  <span>编辑自提点</span>
+  <span>门店编辑</span>
 </div>
 <div class="line10"></div>
 <!--/导航栏-->
@@ -99,7 +99,7 @@
   <dl>
     <dt>门店名称</dt>
     <dd>
-        <input name="title" type="text" value="<#if diy_site??>${diy_site.title!""}</#if>" class="input normal" datatype="*2-100" sucmsg=" "> 
+        <input name="title" type="text" value="<#if diy_site??>${diy_site.title!''}</#if>" class="input normal" datatype="*2-100" sucmsg=" "> 
         <span class="Validform_checktip">*门店名称</span>
     </dd>
   </dl>

@@ -177,7 +177,7 @@ $(function () {
         </dd>
     </dl>
     <dl>
-        <dt>联系电话</dt>
+        <dt>客服电话</dt>
         <dd>
             <input name="telephone" type="text" value="<#if setting??>${setting.telephone!""}</#if>" class="input normal" datatype="*0-100" sucmsg=" ">
             <span class="Validform_checktip"></span>

@@ -272,8 +272,13 @@ function submitOwnMoney()
     <section>
       <div class="title">收款信息</div>
       <div class="content">
+      	<#--
       	<div class="mesg">订单总金额：<#if td_order.allTotalPay??>${td_order.allTotalPay?c}<#else>0.00</#if>元</div>
         <div class="mesg">需代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.owned??>${ownrecord.owned?c}<#else>0.00</#if><#else><#if td_order.allTotalPay?? && td_order.allActualPay??>${td_order.allTotalPay-td_order.allActualPay}<#else>0</#if></#if>元</div>
+        <div class="mesg">实代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.payed??>${ownrecord.payed?c}<#else>0.00</#if><#else><#if td_order.allActualPay??>${td_order.allActualPay?c}<#else>0.00</#if></#if>元</div>
+        -->
+        <div class="mesg">订单总金额：<#if td_order.allTotalPay?? && td_order.allActualPay>${td_order.allTotalPay + td_order.allActualPay}<#else>0.00</#if>元</div>
+        <div class="mesg">需代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.owned??>${ownrecord.owned?c}<#else>0.00</#if><#else><#if td_order.allTotalPay??>${td_order.allTotalPay?c}<#else>0</#if></#if>元</div>
         <div class="mesg">实代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.payed??>${ownrecord.payed?c}<#else>0.00</#if><#else><#if td_order.allActualPay??>${td_order.allActualPay?c}<#else>0.00</#if></#if>元</div>
       </div>
     </section>

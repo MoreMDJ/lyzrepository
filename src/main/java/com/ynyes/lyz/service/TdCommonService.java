@@ -1,5 +1,7 @@
 package com.ynyes.lyz.service;
 
+import static org.apache.commons.lang3.StringUtils.leftPad;
+
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -117,6 +119,117 @@ public class TdCommonService {
 
 	@Autowired
 	private TdInterfaceErrorLogService tdInterfaceErrorLogService;
+
+	@Autowired
+	private TdReturnNoteService tdReturnNoteService;
+
+	public TdReturnNote MakeReturnNote(TdOrder order, Long type, String msg) {
+		TdReturnNote returnNote = new TdReturnNote();
+
+		// 退货单编号
+		Date current = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+		String curStr = sdf.format(current);
+		Random random = new Random();
+
+		returnNote.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+
+		// 添加订单信息
+		returnNote.setOrderNumber(order.getOrderNumber());
+
+		// add MDJ
+		returnNote.setShoppingAddress(order.getShippingAddress());
+		returnNote.setSellerRealName(order.getSellerRealName());
+		// end add MDJ
+
+		// 支付方式
+		returnNote.setPayTypeId(order.getPayTypeId());
+		returnNote.setPayTypeTitle(order.getPayTypeTitle());
+		// 门店信息
+		if (null != order.getDiySiteId()) {
+			TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
+			returnNote.setDiySiteId(order.getDiySiteId());
+			returnNote.setDiySiteTel(diySite.getServiceTele());
+			returnNote.setDiySiteTitle(diySite.getTitle());
+			returnNote.setDiySiteAddress(diySite.getAddress());
+		}
+
+		// 退货信息
+		returnNote.setUsername(order.getUsername());
+		if (type == 0L) {
+			returnNote.setRemarkInfo("用户取消订单，退货");
+		} else if (type == 1L) {
+			returnNote.setRemarkInfo("管理员 " + msg + " 取消订单,退货");
+		}
+
+		Long turnType;
+		if (org.apache.commons.lang3.StringUtils.isNotBlank(order.getDeliverTypeTitle())
+				&& "门店自提".equals(order.getDeliverTypeTitle())) {
+			returnNote.setTurnType(1L);
+			turnType = 1L;
+		} else {
+			returnNote.setTurnType(2L);
+			turnType = 2L;
+		}
+		// 退货方式
+		returnNote.setTurnType(turnType);
+		// 原订单配送方式
+		if ("门店自提".equals(order.getDeliverTypeTitle())) {
+			if (turnType.equals(1L)) {
+				returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
+			} else {
+				returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
+			}
+		} else {
+			if (turnType.equals(1L)) {
+				returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
+			} else {
+				returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
+			}
+		}
+
+		returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
+
+		returnNote.setOrderTime(new Date());
+
+		returnNote.setTurnPrice(order.getTotalGoodsPrice());
+		List<TdOrderGoods> orderGoodsList = new ArrayList<>();
+		if (null != order.getOrderGoodsList()) {
+			for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
+				TdOrderGoods orderGoods = new TdOrderGoods();
+
+				orderGoods.setBrandId(oGoods.getBrandId());
+				orderGoods.setBrandTitle(oGoods.getBrandTitle());
+				orderGoods.setGoodsId(oGoods.getGoodsId());
+				orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
+				orderGoods.setSku(oGoods.getSku());
+				orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
+				orderGoods.setGoodsColor(oGoods.getGoodsColor());
+				orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
+				orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
+				orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
+				orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
+
+				orderGoods.setPrice(oGoods.getPrice());
+				orderGoods.setQuantity(oGoods.getQuantity());
+
+				orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
+				orderGoods.setPoints(oGoods.getPoints());
+				// tdOrderGoodsService.save(orderGoods);
+				// 添加商品信息
+				orderGoodsList.add(orderGoods);
+
+				// 订单商品设置退货为True
+				oGoods.setIsReturnApplied(true);
+				// 更新订单商品信息是否退货状态
+				tdOrderGoodsService.save(oGoods);
+			}
+		}
+
+		returnNote.setReturnGoodsList(orderGoodsList);
+		tdOrderGoodsService.save(orderGoodsList);
+		return tdReturnNoteService.save(returnNote);
+	}
 
 	/**
 	 * 获取登陆用户信息的方法
@@ -1637,8 +1750,11 @@ public class TdCommonService {
 			if (null == order.getAllActualPay()) {
 				order.setAllActualPay(0.0);
 			}
+			if (null == order.getTotalPrice()) {
+				order.setTotalPrice(0.0);
+			}
 
-			Double left = order.getAllTotalPay() - order.getAllActualPay();
+			Double left = order.getTotalPrice() - order.getAllActualPay();
 
 			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
 
