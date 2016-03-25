@@ -168,6 +168,20 @@ function submitOwnMoney()
   		}
 	});
 }
+//图片点击放大缩小
+var isopen = false; 
+function imgChange(){
+	if (!isopen){ 
+    	isopen = true; 
+    	$("#signPhoto").width("230px"); 
+    	$("#signPhoto").height("320px");
+	} 
+	else{ 
+    	isopen = false; 
+    	$("#signPhoto").width("100px");
+    	$("#signPhoto").height("100px");
+	} 
+}
 </script>
 </head>
 <body class="bgc-f3f4f6">
@@ -287,7 +301,7 @@ function submitOwnMoney()
     <section>
       <div class="title">签收图片</div>
       <div class="content">
-      	<div class="mesg"><img width="100px" height="100px" src="${td_order.photo!''}"></div>
+      	<div class="mesg" onclick="imgChange()"><img id='signPhoto' width="100px" height="100px" src="${td_order.photo!''}"></div>
       </div>
     </section>
     </#if>
