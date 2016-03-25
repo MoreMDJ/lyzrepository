@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -331,22 +332,41 @@ public class TdManagerUserController {
 		}
 
 		// 设置新密码 zhangji 2016-1-7 22:01:45
-		if (null != tdUser.getId()) {
-			String password = tdUser.getPassword();
-			if (null == password || password.equals("")) {
-				tdUser.setPassword(oldPassword);
-			} else {
-				tdUser.setPassword(MD5.md5(password, 32));
+		if (null != tdUser.getId())
+		{
+			if (StringUtils.isNotBlank(oldPassword)) 
+			{
+				tdUser.setPassword(MD5.md5(oldPassword, 32));
 			}
 		}
+		else//新用户
+		{
+			TdCity city = tdCityService.findBySobIdCity(tdUser.getCityId());
+			if (StringUtils.isNotBlank(oldPassword)) 
+			{
+				tdUser.setPassword(MD5.md5(oldPassword, 32));
+			}
+			else
+			{
+				tdUser.setPassword(MD5.md5("123456", 32));
+			}
+			if (null != city)
+			{
+				tdUser.setCityName(city.getCityName());
+				tdUser.setCityId(city.getSobIdCity());
+			}
 
-		// String password = tdUser.getPassword();
-		// tdUser.setPassword(MD5.md5(password, 32));
-
+			tdUser.setRegisterTime(new Date());
+			tdUser.setAllPayed(0.00);
+			tdUser.setNickname(tdUser.getUsername());
+//			tdUser.setFirstOrder(true);
+			tdUser.setIsOld(false);
+		}
+		
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
 		if (null == tdUser.getId()) {
-			tdManagerLogService.addLog("add", "修改用户", req);
+			tdManagerLogService.addLog("add", "修改新用户", req);
 		} else {
 			tdManagerLogService.addLog("edit", "修改用户", req);
 		}

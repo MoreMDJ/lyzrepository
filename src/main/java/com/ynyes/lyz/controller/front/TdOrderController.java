@@ -1151,12 +1151,17 @@ public class TdOrderController {
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/new/address")
-	public String orderNewAddress(HttpServletRequest req, ModelMap map, String receiveName, String receiveMobile,
+	@ResponseBody
+	public Map<String, Object> orderNewAddress(HttpServletRequest req, ModelMap map, String receiveName, String receiveMobile,
 			Long district, Long subdistrict, String detail) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {
-			return "redirect:/login";
+			res.put("status", -2);
+			return res;
+//			return "redirect:/login";
 		}
 		TdDistrict tdDistrict = tdDistrictService.findOne(district);
 		TdSubdistrict tdSubdistrict = tdSubdistrictService.findOne(subdistrict);
@@ -1211,8 +1216,8 @@ public class TdOrderController {
 		order.setDeliverFee(tdSubdistrict.getDeliveryFee());
 		req.getSession().setAttribute("order_temp", order);
 		tdOrderService.save(order);
-
-		return "redirect:/order";
+		res.put("status", 0);
+		return res;
 	}
 
 	/**
