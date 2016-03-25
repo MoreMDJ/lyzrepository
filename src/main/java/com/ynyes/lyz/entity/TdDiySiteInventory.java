@@ -18,28 +18,36 @@ public class TdDiySiteInventory {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	//门店id
+
+	// 门店id
 	@Column
 	private Long diySiteId;
-	
-	//门店名称
+
+	// 门店名称
 	@Column
 	private String diySiteName;
-	
-	//商品id
+
+	// 商品id
 	@Column
 	private Long goodsId;
-	
-	//商品名称
+
+	// 商品名称
 	@Column
-	private String username;
-	
-	//商品SKU
+	private String goodsTitle;
+
+	// 商品SKU
 	@Column
 	private String goodsCode;
-	
-	//库存量
+
+	// 门店SKU
+	@Column
+	private String diySiteSku;
+
+	// 门店的地区编号
+	@Column
+	private String diySiteSobId;
+
+	// 库存量
 	@Column
 	private Long inventory;
 
@@ -75,12 +83,12 @@ public class TdDiySiteInventory {
 		this.goodsId = goodsId;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getGoodsTitle() {
+		return goodsTitle;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setGoodsTitle(String goodsTitle) {
+		this.goodsTitle = goodsTitle;
 	}
 
 	public String getGoodsCode() {
@@ -97,5 +105,21 @@ public class TdDiySiteInventory {
 
 	public void setInventory(Long inventory) {
 		this.inventory = inventory;
+	}
+
+	public String getDiySiteSku() {
+		return diySiteSku;
+	}
+
+	public void setDiySiteSku(String diySiteSku) {
+		this.diySiteSku = diySiteSku;
+	}
+
+	public String getDiySiteSobId() {
+		return diySiteSobId;
+	}
+
+	public void setDiySiteSobId(String diySiteSobId) {
+		this.diySiteSobId = diySiteSobId;
 	}
 }
