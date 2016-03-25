@@ -54,7 +54,8 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+	// static String wmsUrl =
+	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -699,17 +700,16 @@ public class TdCommonService {
 
 		TdUser seller = null;
 		// 获取用户的导购
-		// if (1L == user.getUserType().longValue() || 2L ==
-		// user.getUserType().longValue()) {
-		// // 如果当前登录账户是销顾或者店长，则改单的seller是他自己
-		// seller = user;
-		// } else {
-		// Long id = user.getSellerId();
-		// seller = tdUserService.findOne(id);
-		// if (null == seller) {
-		// seller = new TdUser();
-		// }
-		// }
+		if (1L == user.getUserType().longValue() || 2L == user.getUserType().longValue()) {
+			// 如果当前登录账户是销顾或者店长，则该单的seller是他自己
+			seller = user;
+		} else {
+			Long id = user.getSellerId();
+			seller = tdUserService.findOne(id);
+			if (null == seller) {
+				seller = new TdUser();
+			}
+		}
 
 		// 默认的配送日期：第二天的的上午11:30——12:30
 		Calendar cal = Calendar.getInstance();
