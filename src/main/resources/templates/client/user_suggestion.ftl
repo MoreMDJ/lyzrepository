@@ -65,7 +65,7 @@
                 <div class="headline">您的联系电话</div>
                 <input class="phone-num-textarea" id="phone" type="text" name="phone" value="${username!''}">
             </div>
-            <input class="btn-submit-save" id="button" type="button" onclick="submitTheSuggestion();" value="提交">
+            <input class="btn-submit-save" id="button" type="button" onclick="submitTheSuggestion();" value="提交" style="background-color: #cc0000;">
         </article>
         <!-- 投诉建议 END -->
         

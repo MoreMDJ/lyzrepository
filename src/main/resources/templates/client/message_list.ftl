@@ -59,7 +59,7 @@
                            		 </dt>
                                 <p><#if item.content??>${item.content!''}...</#if></p>
                                 <#if item.isAnswered??>
-                                	<p>管理员回复:${item.answerContent!''} </p>
+                                	<p style="font-weight: bolder; font-family: monospace;">管理员回复:${item.answerContent!''} </p>
                                 </#if>
                                 </#list>
                             </dd>
