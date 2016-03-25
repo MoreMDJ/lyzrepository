@@ -1565,8 +1565,6 @@ public class TdManagerOrderController {
 					if (null != order && order.getStatusId().equals(3L)) 
 					{
 						TdReturnNote returnNote = tdCommonService.MakeReturnNote(order,1L,username);
-						returnNote.setRemarkInfo("管理员 " + username +" 取消订单,退货");
-
 						tdCommonService.sendBackMsgToWMS(returnNote);
 					}
 					order.setStatusId(7L);
