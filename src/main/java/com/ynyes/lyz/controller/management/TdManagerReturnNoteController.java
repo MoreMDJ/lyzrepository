@@ -95,8 +95,6 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	@Autowired
 	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
 	
-	private TdDeliveryInfoService tdDeliveryInfoService;
-
 	// 列表
 	@RequestMapping(value = "/{type}/list")
 	public String list(@PathVariable String type, Integer page, Integer size, String keywords, String __EVENTTARGET,
@@ -473,7 +471,10 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 		
 		Date begin = stringToDate(begindata,null);
 		Date end = stringToDate(enddata,null);
-		List<TdReturnNote> returnList = tdReturnNoteService.findByOrderTimeOrderByOrderTimeDesc(begin, end);
+		
+		String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
+		List<TdReturnNote> returnList = tdReturnNoteService.findByOrderTimeOrderByOrderTimeDesc(begin, end,siteName);
+		
 		
 		if (returnList != null && returnList.size()>0)
 		{

@@ -1,17 +1,13 @@
 package com.ynyes.lyz.controller.management;
 
-import static org.apache.commons.lang3.StringUtils.leftPad;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -1237,52 +1233,68 @@ public class TdManagerOrderController {
 			}
 		}
 
-		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
-		{
-			if (null != statusId) 
-			{
-				if (null != keywords && !keywords.equalsIgnoreCase("")) 
-				{
-					map.addAttribute("order_page",tdOrderService.findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(tdManager.getDiyCode(), keywords, keywords, 0, 0));
-				}
-				else
-				{
-					if (statusId.equals(0L)) // 全部订单
-					{
-						map.addAttribute("order_page", tdOrderService.findByDiyCode(tdManager.getDiyCode(), page, size));
-					}
-					else
-					{
-						map.addAttribute("order_page", tdOrderService.findByDiyCodeAndStatusIdOrderByIdDesc(tdManager.getDiyCode(), statusId, page, size));
-					}
-				}
-			}
-		}
-		else 
-		{
+//		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
+//		{
+//			if (null != statusId) 
+//			{
+//				if (null != keywords && !keywords.equalsIgnoreCase("")) 
+//				{
+//					map.addAttribute("order_page",tdOrderService.findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(tdManager.getDiyCode(), keywords, keywords, 0, 0));
+//				}
+//				else
+//				{
+//					if (statusId.equals(0L)) // 全部订单
+//					{
+//						map.addAttribute("order_page", tdOrderService.findByDiyCode(tdManager.getDiyCode(), page, size));
+//					}
+//					else
+//					{
+//						map.addAttribute("order_page", tdOrderService.findByDiyCodeAndStatusIdOrderByIdDesc(tdManager.getDiyCode(), statusId, page, size));
+//					}
+//				}
+//			}
+//		}
+//		else 
+//		{
 			if (null != statusId)
 			{
 				//判断用户是否输入了查询条件
-				Boolean searchCondition= judgeSearchCondition(keywords,orderStartTime,orderEndTime, realName, sellerRealName, shippingAddress, shippingPhone,
-						 deliveryTime, userPhone, shippingName, sendTime);
-				if (searchCondition) 
-				{
-						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, realName, sellerRealName, shippingAddress, shippingPhone,
-					 deliveryTime, userPhone, shippingName, sendTime,statusId, size, page));
+//				Boolean searchCondition= judgeSearchCondition(keywords,orderStartTime,orderEndTime, realName, sellerRealName, shippingAddress, shippingPhone,
+//						 deliveryTime, userPhone, shippingName, sendTime);
+//				if (searchCondition) 
+//				{
+				String diySiteCode="";
+				if (tdManagerRole.getTitle().equalsIgnoreCase("门店")){
+					diySiteCode=tdManager.getDiyCode();
 				}
-				else
-				{
-					if (statusId.equals(0L)) // 全部订单
-					{
-						map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size));
-					} 
-					else 
-					{
-						map.addAttribute("order_page", tdOrderService.findByStatusIdOrderByIdDesc(statusId, page, size));
+				String userName="";
+				Boolean isNotFindUser=false;
+				if(StringUtils.isNotBlank(realName)){ //根据会员真实姓名查询用户名
+					TdUser user= tdUserService.findByRealName(realName);
+					if(null != user){
+						userName=user.getUsername();
+					}else{
+						isNotFindUser=true; 
 					}
 				}
+				if(!isNotFindUser){
+						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, userName, sellerRealName, shippingAddress, shippingPhone,
+					 deliveryTime, userPhone, shippingName, sendTime,statusId,diySiteCode, size, page));
+				}
+//				}
+//				else
+//				{
+//					if (statusId.equals(0L)) // 全部订单
+//					{
+//						map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size));
+//					} 
+//					else 
+//					{
+//						map.addAttribute("order_page", tdOrderService.findByStatusIdOrderByIdDesc(statusId, page, size));
+//					}
+//				}
 			}
-		}
+//		}
 		
 		@SuppressWarnings("unchecked")
 		Page<TdOrder> orders1 = (Page<TdOrder>)map.get("order_page");
@@ -1805,7 +1817,7 @@ public class TdManagerOrderController {
 	 * 判断是否按条件查询
 	 * @return 
 	 */
-	private Boolean judgeSearchCondition(String keywords,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
+	/*private Boolean judgeSearchCondition(String keywords,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
 			String deliveryTime,String userPhone,String shippingName,String sendTime){
 		Boolean searchCondition=false;
 		if(null != keywords && !keywords.equalsIgnoreCase("")){
@@ -1855,7 +1867,7 @@ public class TdManagerOrderController {
 			searchCondition=true;
 		}
 		return searchCondition;
-	}
+	}*/
 	
 	
 }
