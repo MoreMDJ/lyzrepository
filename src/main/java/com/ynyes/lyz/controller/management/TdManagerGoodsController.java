@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -20,20 +21,29 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
+import com.ynyes.lyz.entity.TdManager;
+import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdPriceChangeLog;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBrandService;
+import com.ynyes.lyz.service.TdDiySiteInventoryLogService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdInventoryLogService;
 import com.ynyes.lyz.service.TdManagerLogService;
+import com.ynyes.lyz.service.TdManagerRoleService;
+import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdPriceChangeLogService;
 import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.service.TdProductService;
 import com.ynyes.lyz.util.SiteMagConstant;
+
+import bsh.commands.dir;
 
 /**
  * 后台首页控制器
@@ -76,6 +86,15 @@ public class TdManagerGoodsController {
 	private TdInventoryLogService tdInventoryLogService;
 	@Autowired // zhangji 2015-12-30 16:26:29
 	TdPriceListService tdPriceListService;
+	
+	@Autowired
+	private TdManagerService tdManagerService;
+	
+	@Autowired
+	private TdManagerRoleService tdManagerRoleService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	@RequestMapping(value = "/refresh")
 	public String refreshCategorg() {
@@ -222,6 +241,16 @@ public class TdManagerGoodsController {
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		if (tdManagerRole == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
 
 		if (null == page || page < 0) {
 			page = 0;
@@ -305,6 +334,10 @@ public class TdManagerGoodsController {
 			}
 		}
 
+		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
+		{
+			map.addAttribute("diy_site_manager", tdManager.getId());
+		}
 		map.addAttribute("content_page", goodsPage);
 
 		// 参数注回
@@ -326,6 +359,42 @@ public class TdManagerGoodsController {
 
 		// 图片列表模式
 		return "/site_mag/goods_pic_list";
+	}
+	
+	@RequestMapping(value = "/setting/goodsleft/number")
+	public void setGoodsLeftNumber()
+	{
+		List<TdManagerRole> managerRoles = tdManagerRoleService.findByRoleTitle("门店");
+		List<TdManager> managers = tdManagerService.findByRoleId(managerRoles.get(0).getId());
+		Page<TdGoods> goodsPage = tdGoodsService.findAll(2, 100);
+		for (TdManager tdManager : managers)
+		{
+			for (int goodsIndex = 0; goodsIndex < goodsPage.getSize(); goodsIndex++) 
+			{
+				TdGoods goods = goodsPage.getContent().get(goodsIndex);
+				List<TdDiySiteInventory> diySiteInventories = goods.getInventoryList();
+				Boolean isNotIn = true;
+				for (int inventoryIndex = 0; inventoryIndex < diySiteInventories.size(); inventoryIndex++)
+				{
+					TdDiySiteInventory tdDiySiteInventory = diySiteInventories.get(inventoryIndex);
+					if(tdDiySiteInventory.getDiyCode().equalsIgnoreCase(tdManager.getDiyCode()))
+					{
+						isNotIn = false;
+						break;
+					}
+				}
+				if (isNotIn)
+				{
+					TdDiySiteInventory siteInventory = new TdDiySiteInventory();
+					siteInventory.setDiyCode(tdManager.getDiyCode());
+					siteInventory.setInventory(0L);
+					siteInventory.setManagerId(tdManager.getId());
+					diySiteInventories.add(siteInventory);
+					tdDiySiteInventoryService.save(siteInventory);
+					tdGoodsService.save(goods, "添加门店库存");
+				}
+			}
+		}
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
@@ -732,7 +801,20 @@ public class TdManagerGoodsController {
 				map.addAttribute("goods", tdGoods);
 			}
 		}
-
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		if (tdManagerRole == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
+		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
+		{
+			map.addAttribute("diy_site_manager", tdManager.getId());
+		}
 		return "/site_mag/goods_edit";
 	}
 

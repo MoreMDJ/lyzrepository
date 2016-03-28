@@ -89,6 +89,16 @@ public class TdManagerService {
         return repository.findByUsernameAndIsEnableTrue(username);
     }
     
+    public List<TdManager> findByRoleId(Long roleId)
+    {
+    	if (roleId == null)
+    	{
+			return null;
+		}
+    	
+    	return repository.findByRoleId(roleId);
+    }
+    
     /**
      * 查找
      * 

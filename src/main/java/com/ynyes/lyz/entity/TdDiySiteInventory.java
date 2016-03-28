@@ -26,6 +26,10 @@ public class TdDiySiteInventory {
 	// 门店名称
 	@Column
 	private String diySiteName;
+	
+	// 门店编号
+	@Column
+	private String diyCode;
 
 	// 商品id
 	@Column
@@ -39,10 +43,6 @@ public class TdDiySiteInventory {
 	@Column
 	private String goodsCode;
 
-	// 门店SKU
-	@Column
-	private String diySiteSku;
-
 	// 门店的地区编号
 	@Column
 	private String diySiteSobId;
@@ -50,6 +50,54 @@ public class TdDiySiteInventory {
 	// 库存量
 	@Column
 	private Long inventory;
+
+	// 商品类型
+	@Column
+	private Long categoryId;
+
+	// 商品类型名称
+	@Column
+	private String categoryTitle;
+
+	// 商品所有类型
+	@Column
+	private String categoryIdTree;
+	
+	// 管理员id
+	@Column
+	private Long managerId;
+
+	public Long getManagerId() {
+		return managerId;
+	}
+
+	public void setManagerId(Long managerId) {
+		this.managerId = managerId;
+	}
+
+	public Long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public String getCategoryTitle() {
+		return categoryTitle;
+	}
+
+	public void setCategoryTitle(String categoryTitle) {
+		this.categoryTitle = categoryTitle;
+	}
+
+	public String getCategoryIdTree() {
+		return categoryIdTree;
+	}
+
+	public void setCategoryIdTree(String categoryIdTree) {
+		this.categoryIdTree = categoryIdTree;
+	}
 
 	public Long getId() {
 		return id;
@@ -107,19 +155,19 @@ public class TdDiySiteInventory {
 		this.inventory = inventory;
 	}
 
-	public String getDiySiteSku() {
-		return diySiteSku;
-	}
-
-	public void setDiySiteSku(String diySiteSku) {
-		this.diySiteSku = diySiteSku;
-	}
-
 	public String getDiySiteSobId() {
 		return diySiteSobId;
 	}
 
 	public void setDiySiteSobId(String diySiteSobId) {
 		this.diySiteSobId = diySiteSobId;
+	}
+
+	public String getDiyCode() {
+		return diyCode;
+	}
+
+	public void setDiyCode(String diyCode) {
+		this.diyCode = diyCode;
 	}
 }

@@ -395,64 +395,6 @@ function del_goods_comb(obj) {
                 <#include "/site_mag/activity_diysite_list_detail.ftl" />
             </#if>
         </div>
-        <#--<dl>
-            <dt>门店</dt>
-            <dd>
-                <a id="addDiySite" class="icon-btn add"><i></i><span>添加门店</span></a>
-                <span class="Validform_checktip"></span>
-            </dd>
-        </dl>
-        <dl>
-            <dt></dt>
-            <dd>
-                <table border="0" cellspacing="0" cellpadding="0" class="border-table" width="98%">
-                    <thead>
-                        <tr>
-                            <th width="6%">
-                                门店id
-                            </th>
-                            <th width="20%">
-                                门店名称
-                            </th>
-                            <th width="38%">
-                                所属城市
-                            </th>
-                            <th>
-                                描述
-                            </th>
-                            <th width="6%">
-                                操作
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="var_box_DiySite">
-                        <input type="hidden" id="totalDiySite" name="totalDiySite" value="<#if activity??>${activity.totalDiySite!'0'}<#else>0</#if>" />
-                        <#if activity?? && activity.siteList??>
-                            <#list activity.siteList as site>
-                                <tr class="td_c">
-                                    <td>
-                                        <input name="siteList[${site_index}].id?c" type="hidden" value="${site.id?c}">
-                                        <input type="text" id="id" name="siteList[${site_index}].siteId" class="td-input" value="${site.siteId!''}" style="width:90%;">
-                                    </td>
-                                    <td><input type="text" id="title" name="siteList[${site_index}].title" class="td-input" value="${site.title!''}" style="width:90%;"></td>
-                                    <td>
-                                        <input type="text" id="price" name="siteList[${site_index}].city" class="td-input" value="${site.city!''}" style="width:90%;">
-                                    </td>
-                                    <td>
-                                        <input type="text" id="current" name="siteList[${site_index}].info" class="td-input" value="${site.info!''}" style="width:90%;">
-                                    </td>
-                                    <td>
-                                        <i class="icon"></i>
-                                        <a title="编辑" class="img-btn edit operator" onclick="show_diysite_dialog(this);">编辑</a>
-                                        <a title="删除" class="img-btn del operator" onclick="del_goods_gift(this);">删除</a>
-                                    </td>
-                                </tr>
-                            </#list>
-                        </#if>
-                    </tbody>
-                </table>
-            </dd>
-        </dl>-->
         <dl>
             <dt>活动商品</dt>
             <dd>
