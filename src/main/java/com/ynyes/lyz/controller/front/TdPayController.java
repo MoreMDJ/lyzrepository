@@ -2,10 +2,12 @@ package com.ynyes.lyz.controller.front;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -193,6 +195,18 @@ public class TdPayController {
 		}
 
 		TdOrder order = tdOrderService.findOne(id);
+
+		/*
+		 * 重新更改订单号
+		 */
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		Date now = new Date();
+		String sDate = sdf.format(now);
+		Random random = new Random();
+		Integer suiji = random.nextInt(900) + 100;
+		String orderNum = sDate + suiji;
+		order.setOrderNumber(orderNum);
+		tdOrderService.save(order);
 
 		// 开始组合参数
 		String MERCHANTID = "105510148160146";
