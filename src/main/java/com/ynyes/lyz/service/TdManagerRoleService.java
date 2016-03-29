@@ -2,6 +2,7 @@ package com.ynyes.lyz.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -95,6 +96,15 @@ public class TdManagerRoleService {
     {
         return (List<TdManagerRole>) repository.findAll();
     }
+    
+    public List<TdManagerRole> findByRoleTitle(String roleTitle)
+    {
+    	if (StringUtils.isBlank(roleTitle))
+    	{
+			return null;
+		}
+    	return repository.findByTitle(roleTitle);
+	}
     
     public Page<TdManagerRole> findAll(int page, int size)
     {

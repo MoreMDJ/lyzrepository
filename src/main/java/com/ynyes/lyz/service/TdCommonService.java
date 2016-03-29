@@ -669,12 +669,15 @@ public class TdCommonService {
 	public List<TdActivityGift> getActivityGiftBySelected(HttpServletRequest req) {
 		// 创建一个集合用于存储当前已选的所能参加的小辅料活动
 		List<TdActivityGift> join = new ArrayList<>();
-
+		//获取当前用户
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		// 获取已选【类别：数量】组
 		Map<Long, Long> category_quantity = this.getGroup(req);
 
 		// 遍历map
 		for (Long categoryId : category_quantity.keySet()) {
+			
 			// 根据分类id获取小辅料赠送活动
 			List<TdActivityGift> activityGift_list = tdActivityGiftService
 					.findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterOrderBySortIdAsc(categoryId,
@@ -683,7 +686,13 @@ public class TdCommonService {
 			if (null != activityGift_list) {
 				for (TdActivityGift activityGift : activityGift_list) {
 					if (null != activityGift && !join.contains(activityGift)) {
-						join.add(activityGift);
+						//判断是否在活动的门店内
+						String[] diySiteIds= activityGift.getDiySiteIds().split(",");
+						for (String diySiteId : diySiteIds) {
+							if(diySiteId.equals(user.getUpperDiySiteId().toString())){
+								join.add(activityGift);
+							}
+						}
 					}
 				}
 			}

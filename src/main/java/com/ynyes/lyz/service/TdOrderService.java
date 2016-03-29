@@ -506,7 +506,7 @@ public class TdOrderService {
 	 * @return
 	 */
 	public Page<TdOrder>findAll(String keywords,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
-			String deliveryTime,String userPhone,String shippingName,String sendTime,Long statusId,int size,int page){
+			String deliveryTime,String userPhone,String shippingName,String sendTime,Long statusId,String diyCode,int size,int page){
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdOrder> c = new Criteria<TdOrder>();
 		if(null != keywords && !keywords.equalsIgnoreCase("")){
@@ -534,7 +534,7 @@ public class TdOrderService {
 		}
 		
 		if(null !=realName && !"".equals(realName)){	
-			c.add( Restrictions.like("realUserRealName", realName, true));
+			c.add( Restrictions.eq("username", realName, true));
 		}
 		if(null !=deliveryTime && !deliveryTime.equals("")){
 			c.add( Restrictions.eq("realUserRealName", stringToDate(deliveryTime,null), true));
@@ -547,6 +547,9 @@ public class TdOrderService {
 		}
 		if(null != statusId && !statusId.equals(0L)){
 			c.add( Restrictions.eq("statusId", statusId, true));
+		}
+		if(null!=diyCode && !"".equals(diyCode)){
+			c.add( Restrictions.eq("diySiteCode", diyCode, true));
 		}
 		c.setOrderByDesc("orderTime");
 		       return repository.findAll(c,pageRequest);

@@ -36,12 +36,14 @@ function downloaddate(type)
     var begain = $("#begain").val();
     var end = $("#end").val();
     if(begain==""){
-    	$.dialog.confirm("没有选择开始时间,数据可能很多,导出需要很多时间,请确认导出?", function () {
+    	$.dialog.confirm("将导出全部数据,请确认导出?", function () {
     		downloaddateurl(type,"/Verwalter/returnNote/downdatareturnorder?begindata="+ begain + "&enddata=" + end);
     		return;
         });
+    }else{
+    	downloaddateurl(type,"/Verwalter/returnNote/downdatareturnorder?begindata="+ begain + "&enddata=" + end);
     }
-    downloaddateurl(type,"/Verwalter/returnNote/downdatareturnorder?begindata="+ begain + "&enddata=" + end);
+    
    
 }
 function downloaddateurl(type,url){

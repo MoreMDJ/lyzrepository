@@ -216,13 +216,19 @@ public class TdReturnNoteService {
 		return repository.findByReturnNumber(returnNumber);
 
 	}
-	
-	public List<TdReturnNote> findByOrderTimeOrderByOrderTimeDesc(Date begin,Date end){
+	/**
+	 * 根据时间和门店查询退货单
+	 * @return
+	 */
+	public List<TdReturnNote> findByOrderTimeOrderByOrderTimeDesc(Date begin,Date end,String siteName){
 		Criteria<TdReturnNote> c = new Criteria<TdReturnNote>();
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
 		}if(null!=end){
 			c.add(Restrictions.lte("orderTime", end, true));
+		}
+		if(null!=siteName && !"".equals(siteName)){
+			c.add( Restrictions.eq("diySiteTitle", siteName, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
