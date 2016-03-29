@@ -312,7 +312,7 @@ $(function () {
   </dl>
   <dl>
     <dt>确认密码</dt>
-    <dd><input name="oldPassword" type="password" value="" class="input normal" datatype="*" <#if user??>ignore="ignore"</#if> recheck="oldPassword" nullmsg="请再输入一次密码" errormsg="两次输入的密码不一致" sucmsg=" " value=""> <span class="Validform_checktip">*再次输入密码</span></dd>
+    <dd><input name="rePassword" type="password" value="" class="input normal" datatype="*" <#if user??>ignore="ignore"</#if> recheck="oldPassword" nullmsg="请再输入一次密码" errormsg="两次输入的密码不一致" sucmsg=" " value=""> <span class="Validform_checktip">*再次输入密码</span></dd>
   </dl>
   <#--<#if user??>
   	<input name="oldPassword" type="hidden" value="${user.password!''}" />
