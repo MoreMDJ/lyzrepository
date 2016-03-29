@@ -161,6 +161,12 @@ public class TdGoodsService {
 
 		return repository.findAll(pageRequest);
 	}
+	
+	// 查找所有商品
+	public Page<TdGoods> findAllOrderById(int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+		return repository.findAll(pageRequest);
+	}
 
 	// 查找所有商品按序号排序
 	public Page<TdGoods> findAllOrderBySortIdAsc(int page, int size) {

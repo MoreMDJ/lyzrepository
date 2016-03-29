@@ -48,12 +48,10 @@ import com.ynyes.lyz.entity.TdLyzParameter;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.service.TdBrandService;
-import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsLimitService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdLyzParameterService;
-import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.webservice.ICallEBS;
@@ -80,13 +78,7 @@ public class CallEBSImpl implements ICallEBS {
 	private TdGoodsLimitService tdGoodsLimitService;
 	
 	@Autowired
-	private TdDeliveryInfoService tdDeliveryInfoService;
-	
-	@Autowired
 	private TdBrandService tdBrandService;
-	
-	@Autowired
-	private TdOrderService tdOrderService;
 
 	public String GetErpInfo(String STRTABLE, String STRTYPE, String XML) 
 	{

@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.jws.WebService;
 import javax.xml.parsers.DocumentBuilder;
@@ -43,6 +44,7 @@ import com.ynyes.lyz.entity.TdBackDetail;
 import com.ynyes.lyz.entity.TdBackMain;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdReturnNote;
@@ -51,14 +53,13 @@ import com.ynyes.lyz.service.TdBackDetailService;
 import com.ynyes.lyz.service.TdBackMainService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.webservice.ICallWMS;
-
-import bsh.commands.dir;
 
 @WebService
 public class CallWMSImpl implements ICallWMS {
@@ -89,6 +90,9 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
@@ -482,6 +486,7 @@ public class CallWMSImpl implements ICallWMS {
 				infoDetail.setBackNumber(c_d_ack_qty);
 				infoDetail.setSubOrderNumber(c_reserved1);
 				tdDeliveryInfoDetailService.save(infoDetail);
+				String siteCode = null;
 				if (c_reserved1 != null)
 				{
 					 TdOrder tdOrder = tdOrderService.findByOrderNumber(c_reserved1);
@@ -489,15 +494,31 @@ public class CallWMSImpl implements ICallWMS {
 					 {
 						 tdOrder.setStatusId(4L);
 						 tdOrderService.save(tdOrder);
+						 siteCode = tdOrder.getDiySiteCode();
 					 }
 				}
 				Long backquantity = Math.round(infoDetail.getBackNumber() == null ? 0 : infoDetail.getBackNumber());
 				TdGoods tdGoods = tdGoodsService.findByCode(infoDetail.getgCode());
+				List<TdDiySiteInventory> inventoryList = tdGoods.getInventoryList();
 				if (tdGoods != null && tdGoods.getLeftNumber() != null)
 				{
 					tdGoods.setLeftNumber(tdGoods.getLeftNumber() - backquantity >= 0 ? tdGoods.getLeftNumber() - backquantity : 0);
-					tdGoodsService.save(tdGoods, "goods");
 				}
+				if (tdGoods != null && siteCode != null && inventoryList.size() >= 1)
+				{
+					for (int inventoryIndex = 0; inventoryIndex < inventoryList.size(); inventoryIndex++) 
+					{
+						TdDiySiteInventory siteInventory = inventoryList.get(inventoryIndex);
+						if (siteInventory.getDiyCode().equals(siteCode)) 
+						{
+							siteInventory.setInventory(siteInventory.getInventory() - backquantity);
+							tdDiySiteInventoryService.save(siteInventory);
+							tdGoodsService.save(tdGoods, "WMS:goods");
+							break;
+						}
+					}
+				}
+				
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}

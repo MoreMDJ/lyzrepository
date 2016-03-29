@@ -305,14 +305,14 @@ $(function () {
 <!--/基本资料-->
 
 <!--安全设置-->
-<div class="tab-content" style="display:none;">  
+<div class="tab-content" style="display:none;">
   <dl>
     <dt>设置新密码</dt>
-    <dd><input name="oldPassword" type="password" value="" class="input normal" datatype="*6-20" <#if user??>ignore="ignore"</#if> nullmsg="请设置密码" errormsg="密码范围在6-20位之间" sucmsg=" " value=""> <span class="Validform_checktip">*新密码将覆盖原密码，至少6位</span></dd>
+    <dd><input name="oldPassword" type="password" value="" class="input normal" datatype="*6-20" ignore="ignore" nullmsg="请设置密码" errormsg="密码范围在6-20位之间" sucmsg=" " value=""> <span class="Validform_checktip">*新密码将覆盖原密码，至少6位</span></dd>
   </dl>
   <dl>
     <dt>确认密码</dt>
-    <dd><input name="rePassword" type="password" value="" class="input normal" datatype="*" <#if user??>ignore="ignore"</#if> recheck="oldPassword" nullmsg="请再输入一次密码" errormsg="两次输入的密码不一致" sucmsg=" " value=""> <span class="Validform_checktip">*再次输入密码</span></dd>
+    <dd><input name="rePassword" type="password" value="" class="input normal" datatype="*" ignore="ignore" recheck="oldPassword" nullmsg="请再输入一次密码" errormsg="两次输入的密码不一致" sucmsg=" " value=""> <span class="Validform_checktip">*再次输入密码</span></dd>
   </dl>
   <#--<#if user??>
   	<input name="oldPassword" type="hidden" value="${user.password!''}" />

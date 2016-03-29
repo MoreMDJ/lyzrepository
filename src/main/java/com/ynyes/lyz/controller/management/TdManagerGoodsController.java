@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -30,7 +29,6 @@ import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBrandService;
-import com.ynyes.lyz.service.TdDiySiteInventoryLogService;
 import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdInventoryLogService;
@@ -42,8 +40,6 @@ import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.service.TdProductService;
 import com.ynyes.lyz.util.SiteMagConstant;
-
-import bsh.commands.dir;
 
 /**
  * 后台首页控制器
@@ -361,15 +357,23 @@ public class TdManagerGoodsController {
 		return "/site_mag/goods_pic_list";
 	}
 	
+	/**
+	 * 单门店库存管理数据初始化
+	 */
 	@RequestMapping(value = "/setting/goodsleft/number")
-	public void setGoodsLeftNumber()
+	@ResponseBody
+	public void setGoodsLeftNumber(Integer page)
 	{
+		if (page == null)
+		{
+			page = 0;
+		}
 		List<TdManagerRole> managerRoles = tdManagerRoleService.findByRoleTitle("门店");
 		List<TdManager> managers = tdManagerService.findByRoleId(managerRoles.get(0).getId());
-		Page<TdGoods> goodsPage = tdGoodsService.findAll(2, 100);
+		Page<TdGoods> goodsPage = tdGoodsService.findAllOrderById(page, 100);
 		for (TdManager tdManager : managers)
 		{
-			for (int goodsIndex = 0; goodsIndex < goodsPage.getSize(); goodsIndex++) 
+			for (int goodsIndex = 0; goodsIndex < goodsPage.getSize(); goodsIndex++)
 			{
 				TdGoods goods = goodsPage.getContent().get(goodsIndex);
 				List<TdDiySiteInventory> diySiteInventories = goods.getInventoryList();
