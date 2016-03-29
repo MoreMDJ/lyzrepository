@@ -19,54 +19,73 @@ import com.ynyes.lyz.entity.TdOrder;
  */
 
 public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, JpaSpecificationExecutor<TdOrder> {
-	
-	
-	//根据订单状态
-	List<TdOrder> findByStatusIdAndCashCouponIdNotNullOrStatusIdAndCashCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrderByOrderTimeDesc(Long statusId1,Long statusId2,Long statusId3,Long statusId4);
-	
-	//根据门店id
-	Page<TdOrder> findByDiySiteCode(String diyCode,Pageable page);
-	
-	//根据门店id和订单状态
-	Page<TdOrder> findByDiySiteCodeAndStatusIdOrderByIdDesc(String diyCode,Long statusId,Pageable page);
-	
-	//根据门店id，订单号，用户账号
-	Page<TdOrder> findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(String diyCode,String orderNumbers,String diyCode1,String username,Pageable page);
-	
-	Page<TdOrder> findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(String orderNumbers,String username,Pageable page);
-	
+
+	// 根据订单状态
+	List<TdOrder> findByStatusIdAndCashCouponIdNotNullOrStatusIdAndCashCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrderByOrderTimeDesc(
+			Long statusId1, Long statusId2, Long statusId3, Long statusId4);
+
+	// 根据门店id
+	Page<TdOrder> findByDiySiteCode(String diyCode, Pageable page);
+
+	// 根据门店id和订单状态
+	Page<TdOrder> findByDiySiteCodeAndStatusIdOrderByIdDesc(String diyCode, Long statusId, Pageable page);
+
+	// 根据门店id，订单号，用户账号
+	Page<TdOrder> findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(
+			String diyCode, String orderNumbers, String diyCode1, String username, Pageable page);
+
+	Page<TdOrder> findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(String orderNumbers, String username,
+			Pageable page);
+
 	Page<TdOrder> findByStatusIdOrderByIdDesc(Long statusId, Pageable page);
 
 	Page<TdOrder> findByUsernameOrderByIdDesc(String username, Pageable page);
-	
-	List<TdOrder> findByOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(Date begin,Date end);
-	
-	List<TdOrder> findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String diyCode,Date begin,Date end);
-	
-//	@Query("select g from TdOrder o join o.orderGoodsList og where o.statusId = ?1 order by orderTime desc")
+
+	List<TdOrder> findByOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(Date begin, Date end);
+
+	List<TdOrder> findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String diyCode, Date begin,
+			Date end);
+
+	// @Query("select g from TdOrder o join o.orderGoodsList og where o.statusId
+	// = ?1 order by orderTime desc")
 	List<TdOrder> findByStatusIdOrderByOrderTimeDesc(Long statusid);
-	
+
 	@Query("select o from TdOrder o where o.statusId= ?1 and o.orderTime > ?2 and o.orderNumber in ?3 group by o.mainOrderNumber order by o.id desc")
-	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
+	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId,
+			Date time, List<String> orderNumbers);
+
 	@Query("select o from TdOrder o where o.statusId= ?1 and o.orderTime > ?2 and o.orderNumber in ?3 or o.statusId= ?4 and o.orderTime > ?5 and o.orderNumber in ?6 group by o.mainOrderNumber order by o.id desc")
-	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
+	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(
+			Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2,
+			List<String> orderNumbers2);
+
 	@Query("select o from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4 group by o.mainOrderNumber order by o.id desc")
-	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end,  List<String> orderNumbers);
+	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId,
+			Date start, Date end, List<String> orderNumbers);
+
 	@Query("select o from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4 or o.statusId= ?5 and o.orderTime Between ?6 and ?7 and o.orderNumber in ?8 group by o.mainOrderNumber order by o.id desc")
-	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
+	List<TdOrder> findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(
+			Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2,
+			List<String> orderNumbers2);
 
 	@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime > ?2 and o.orderNumber in ?3  order by o.id desc")
-	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers);
-	@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime > ?2 and o.orderNumber in ?3 or o.statusId= ?4 and o.orderTime > ?5 and o.orderNumber in ?6  order by o.id desc")
-	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2, List<String> orderNumbers2);
-	@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4  order by o.id desc")
-	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end,  List<String> orderNumbers);
-	@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4 or o.statusId= ?5 and o.orderTime Between ?6 and ?7 and o.orderNumber in ?8 order by o.id desc")
-	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2, List<String> orderNumbers2);
+	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(Long statusId,
+			Date time, List<String> orderNumbers);
 
-	
-	
-	
+	@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime > ?2 and o.orderNumber in ?3 or o.statusId= ?4 and o.orderTime > ?5 and o.orderNumber in ?6  order by o.id desc")
+	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(
+			Long statusId, Date time, List<String> orderNumbers, Long statusId2, Date time2,
+			List<String> orderNumbers2);
+
+	@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4  order by o.id desc")
+	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(Long statusId,
+			Date start, Date end, List<String> orderNumbers);
+
+	@Query("select count(Distinct o.mainOrderNumber) from TdOrder o where o.statusId= ?1 and o.orderTime Between ?2 and ?3 and o.orderNumber in ?4 or o.statusId= ?5 and o.orderTime Between ?6 and ?7 and o.orderNumber in ?8 order by o.id desc")
+	Integer countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(
+			Long statusId, Date start, Date end, List<String> orderNumbers, Long statusId2, Date start2, Date end2,
+			List<String> orderNumbers2);
+
 	Page<TdOrder> findByUsernameAndStatusIdNotOrderByIdDesc(String username, Long statusId, Pageable page);
 
 	Page<TdOrder> findByUsernameAndStatusIdOrUsernameAndStatusIdOrUsernameAndStatusIdOrderByIdDesc(String username1,
@@ -135,24 +154,64 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 
 	// 查找用户所有非删除的订单
 	List<TdOrder> findByUsernameAndStatusIdNotOrderByOrderTimeDesc(String username, Long status);
-	
-	//根据订单号查找订单
+
+	// 查找用户所有非删除的订单
+	Page<TdOrder> findByUsernameAndStatusIdNotOrderByOrderTimeDesc(String username, Long status, Pageable page);
+
+	// 根据订单号查找订单
 	List<TdOrder> findByOrderNumberContaining(String orderNumber);
-	
+
 	List<TdOrder> findByMainOrderNumberIgnoreCase(String mainOrderNumber);
 
 	/**
 	 * 根据时间 查询总单号
+	 * 
 	 * @return
 	 */
 	@Query("select o from TdOrder o where o.orderTime between ?1 and ?2 group by o.mainOrderNumber order by o.orderTime desc")
-	List<TdOrder> searchOrderByTime(Date begin,Date end);
-	
+	List<TdOrder> searchOrderByTime(Date begin, Date end);
+
 	/**
 	 * 根据时间 配送门店 查询总单号
+	 * 
 	 * @return
 	 */
 	@Query("select o from TdOrder o where o.diySiteCode = ?1 and o.orderTime between ?2 and ?3 group by o.mainOrderNumber order by o.orderTime desc")
-	List<TdOrder> searchMainOrderNumberByOrderTimeAndDiySiteCode(String diyCode,Date begin,Date end);
-	
+	List<TdOrder> searchMainOrderNumberByOrderTimeAndDiySiteCode(String diyCode, Date begin, Date end);
+
+	/**
+	 * 查询指定归属销顾的订单
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdOrder> findBySellerIdAndStatusIdNotOrderByOrderTimeDesc(Long sellerId, Long statusId);
+
+	/**
+	 * 查询指定归属销顾的订单
+	 * 
+	 * @author DengXiao
+	 */
+	Page<TdOrder> findBySellerIdAndStatusIdNotOrderByOrderTimeDesc(Long sellerId, Long statusId, Pageable page);
+
+	/**
+	 * 查询指定归属销顾的指定状态的订单
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdOrder> findBySellerIdAndStatusIdOrderByOrderTimeDesc(Long sellerId, Long statusId);
+
+	/**
+	 * 根据门店的id查询门店下所有的订单
+	 * 
+	 * @author DengXiao
+	 */
+	Page<TdOrder> findByDiySiteIdAndStatusIdNotOrderByOrderTimeDesc(Long diySiteId, Long statusId, Pageable page);
+
+	/**
+	 * 根据门店id查询门店下指定状态的订单
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdOrder> findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(Long diySiteId, Long statusId);
+
 }

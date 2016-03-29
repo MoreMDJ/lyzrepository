@@ -101,58 +101,56 @@ public class TdOrderService {
 
 		return repository.findAll(pageRequest);
 	}
-	
-	public List<TdOrder> findByCompleteOrder()
-	{
-		return repository.findByStatusIdAndCashCouponIdNotNullOrStatusIdAndCashCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrderByOrderTimeDesc(5L, 6L,5L,6L);
+
+	public List<TdOrder> findByCompleteOrder() {
+		return repository
+				.findByStatusIdAndCashCouponIdNotNullOrStatusIdAndCashCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrStatusIdAndProductCouponIdNotNullOrderByOrderTimeDesc(
+						5L, 6L, 5L, 6L);
 	}
-	
+
 	/**
 	 * 根据门店查询订单
+	 * 
 	 * @param diyCode
 	 * @param page
 	 * @param size
 	 * @return
 	 */
-	public Page<TdOrder> findByDiyCode(String diyCode,int page,int size)
-	{
-		if (diyCode == null)
-		{
+	public Page<TdOrder> findByDiyCode(String diyCode, int page, int size) {
+		if (diyCode == null) {
 			return null;
 		}
-		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC,"id"));
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
 		return repository.findByDiySiteCode(diyCode, pageRequest);
 	}
-	
-	
-	public Page<TdOrder> findByDiyCodeAndStatusIdOrderByIdDesc(String diyCode ,Long statusId,Integer page,Integer size)
-	{
-		if (diyCode == null || statusId == null || page == null || size == null)
-		{
+
+	public Page<TdOrder> findByDiyCodeAndStatusIdOrderByIdDesc(String diyCode, Long statusId, Integer page,
+			Integer size) {
+		if (diyCode == null || statusId == null || page == null || size == null) {
 			return null;
 		}
 		PageRequest pageRequest = new PageRequest(page, size);
 		return repository.findByDiySiteCodeAndStatusIdOrderByIdDesc(diyCode, statusId, pageRequest);
 	}
-	
-	public Page<TdOrder> findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(String diyCode,String orderNumbers,String username ,int page,int size)
-	{
-		if (diyCode == null || orderNumbers == null || username == null)
-		{
+
+	public Page<TdOrder> findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(
+			String diyCode, String orderNumbers, String username, int page, int size) {
+		if (diyCode == null || orderNumbers == null || username == null) {
 			return null;
 		}
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(diyCode,orderNumbers,diyCode,username,pageRequest);
+		return repository.findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(
+				diyCode, orderNumbers, diyCode, username, pageRequest);
 	}
-	
-	public Page<TdOrder> findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(String orderNumbers,String username,int size,int page)
-	{
-		if (orderNumbers == null || username == null)
-		{
+
+	public Page<TdOrder> findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(String orderNumbers,
+			String username, int size, int page) {
+		if (orderNumbers == null || username == null) {
 			return null;
 		}
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(orderNumbers,username,pageRequest);
+		return repository.findByOrderNumberContainingOrUsernameContainingOrderByIdDesc(orderNumbers, username,
+				pageRequest);
 	}
 
 	public Page<TdOrder> findByStatusIdOrderByIdDesc(long statusId, int page, int size) {
@@ -173,19 +171,19 @@ public class TdOrderService {
 		return repository.findByUsernameAndStatusIdNotOrderByIdDesc(username, StatusId, pageRequest);
 		// return repository.findByUsernameOrderByIdDesc(username, pageRequest);
 	}
-	
+
 	/**
 	 * 根据时间查找
+	 * 
 	 * @return
 	 */
-	public List<TdOrder> findByBeginAndEndOrderByOrderTimeDesc(Date begin,Date end)
-	{
+	public List<TdOrder> findByBeginAndEndOrderByOrderTimeDesc(Date begin, Date end) {
 		return repository.findByOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(begin, end);
 	}
-	
-	public List<TdOrder> findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String diyCode,Date begin,Date end)
-	{
-		return repository.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(diyCode,begin,end);
+
+	public List<TdOrder> findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String diyCode,
+			Date begin, Date end) {
+		return repository.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(diyCode, begin, end);
 	}
 
 	// zhangji
@@ -363,7 +361,8 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList);
+		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId,
+				time, orderNumberList);
 	}
 
 	public List<TdOrder> findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Long statusId2,
@@ -372,37 +371,43 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList, statusId2, time, orderNumberList);
+		return repository
+				.findDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(
+						statusId, time, orderNumberList, statusId2, time, orderNumberList);
 	}
 
-	public List<TdOrder> findByStatusIdAndOrderTimeBetween(Long statusId, List<String> orderNumberList, Date start, Date end) {
+	public List<TdOrder> findByStatusIdAndOrderTimeBetween(Long statusId, List<String> orderNumberList, Date start,
+			Date end) {
 
-		if (null == statusId || null == start || null == end || null == orderNumberList || orderNumberList.size() == 0) {
+		if (null == statusId || null == start || null == end || null == orderNumberList
+				|| orderNumberList.size() == 0) {
 			return null;
 		}
 
-		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end, orderNumberList);
+		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(
+				statusId, start, end, orderNumberList);
 	}
 
 	public List<TdOrder> findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Long statusId2,
 			List<String> orderNumberList, Date start, Date end) {
 
-		if (null == statusId || null == statusId2 || null == start || null == end || null == orderNumberList || orderNumberList.size() == 0) {
+		if (null == statusId || null == statusId2 || null == start || null == end || null == orderNumberList
+				|| orderNumberList.size() == 0) {
 			return null;
 		}
 
-		return repository.findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end,
-				orderNumberList, statusId2, start, end, orderNumberList);
+		return repository
+				.findDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(
+						statusId, start, end, orderNumberList, statusId2, start, end, orderNumberList);
 	}
-	
-	
-	
+
 	public Integer countByStatusIdAndOrderTimeAfter(Long statusId, Date time, List<String> orderNumberList) {
 		if (null == statusId || null == time || null == orderNumberList || orderNumberList.size() == 0) {
 			return null;
 		}
 
-		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList);
+		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId,
+				time, orderNumberList);
 	}
 
 	public Integer countByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(Long statusId, Long statusId2,
@@ -411,30 +416,35 @@ public class TdOrderService {
 			return null;
 		}
 
-		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(statusId, time, orderNumberList, statusId2, time, orderNumberList);
+		return repository
+				.countDistinctMainOrderNumberByStatusIdAndOrderTimeAfterAndOrderNumberInOrStatusIdAndOrderTimeAfterAndOrderNumberInOrderByIdDesc(
+						statusId, time, orderNumberList, statusId2, time, orderNumberList);
 	}
 
-	public Integer countByStatusIdAndOrderTimeBetween(Long statusId, List<String> orderNumberList, Date start, Date end) {
+	public Integer countByStatusIdAndOrderTimeBetween(Long statusId, List<String> orderNumberList, Date start,
+			Date end) {
 
-		if (null == statusId || null == start || null == end || null == orderNumberList || orderNumberList.size() == 0) {
+		if (null == statusId || null == start || null == end || null == orderNumberList
+				|| orderNumberList.size() == 0) {
 			return null;
 		}
 
-		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end, orderNumberList);
+		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(
+				statusId, start, end, orderNumberList);
 	}
 
 	public Integer countByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(Long statusId, Long statusId2,
 			List<String> orderNumberList, Date start, Date end) {
 
-		if (null == statusId || null == statusId2 || null == start || null == end || null == orderNumberList || orderNumberList.size() == 0) {
+		if (null == statusId || null == statusId2 || null == start || null == end || null == orderNumberList
+				|| orderNumberList.size() == 0) {
 			return null;
 		}
 
-		return repository.countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(statusId, start, end,
-				orderNumberList, statusId2, start, end, orderNumberList);
+		return repository
+				.countDistinctMainOrderNumberByStatusIdAndOrderTimeBetweenAndOrderNumberInOrStatusIdAndOrderTimeBetweenAndOrderNumberInOrderByIdDesc(
+						statusId, start, end, orderNumberList, statusId2, start, end, orderNumberList);
 	}
-	
-	
 
 	/**
 	 * 保存
@@ -461,113 +471,122 @@ public class TdOrderService {
 		return repository.findByUsernameAndStatusIdNotOrderByOrderTimeDesc(username, 8L);
 	}
 
+	// 查找用户所有非删除的订单
+	public Page<TdOrder> findByUsernameAndStatusIdNotOrderByOrderTimeDesc(String username, int page, int size) {
+		if (null == username) {
+			return null;
+		}
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByUsernameAndIsCancelTrue(username, pageRequest);
+	}
+
 	public List<TdOrder> findByOrderNumberContaining(String orderNumber) {
 		if (null == orderNumber) {
 			return null;
 		}
 		return repository.findByOrderNumberContaining(orderNumber);
 	}
-	
+
 	public List<TdOrder> findByMainOrderNumberIgnoreCase(String mainOrderNumber) {
 		if (null == mainOrderNumber) {
 			return null;
 		}
 		return repository.findByMainOrderNumberIgnoreCase(mainOrderNumber);
 	}
-	
-	public List<TdOrder> findByStatusIdOrderByOrderTimeDesc(Long statusId)
-	{
-		if(null == statusId)
-		{
+
+	public List<TdOrder> findByStatusIdOrderByOrderTimeDesc(Long statusId) {
+		if (null == statusId) {
 			return null;
 		}
 		return repository.findByStatusIdOrderByOrderTimeDesc(statusId);
 	}
-	
+
 	/**
-	 *  根据时间查询 只查询总单号
+	 * 根据时间查询 只查询总单号
+	 * 
 	 * @return
 	 */
-	public List<TdOrder> searchMainOrderNumberByTime(Date begin,Date end)
-	{
+	public List<TdOrder> searchMainOrderNumberByTime(Date begin, Date end) {
 		return repository.searchOrderByTime(begin, end);
 	}
+
 	/**
 	 * 根据时间 配送门店 查询总单号
+	 * 
 	 * @return
 	 */
-	public List<TdOrder> searchMainOrderNumberByTimeAndDiySiteCode(String diyCode,Date begin,Date end)
-	{
-		return repository.searchMainOrderNumberByOrderTimeAndDiySiteCode(diyCode,begin,end);
+	public List<TdOrder> searchMainOrderNumberByTimeAndDiySiteCode(String diyCode, Date begin, Date end) {
+		return repository.searchMainOrderNumberByOrderTimeAndDiySiteCode(diyCode, begin, end);
 	}
-	
+
 	/**
 	 * 订单条件查询 分页
+	 * 
 	 * @return
 	 */
-	public Page<TdOrder>findAll(String keywords,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
-			String deliveryTime,String userPhone,String shippingName,String sendTime,Long statusId,String diyCode,int size,int page){
+	public Page<TdOrder> findAll(String keywords, String orderStartTime, String orderEndTime, String realName,
+			String sellerRealName, String shippingAddress, String shippingPhone, String deliveryTime, String userPhone,
+			String shippingName, String sendTime, Long statusId, String diyCode, int size, int page) {
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdOrder> c = new Criteria<TdOrder>();
-		if(null != keywords && !keywords.equalsIgnoreCase("")){
+		if (null != keywords && !keywords.equalsIgnoreCase("")) {
 			c.add(Restrictions.like("orderNumber", keywords, true));
 		}
-		if(null !=orderStartTime && !orderStartTime.equals("")){
-			c.add(Restrictions.gte("orderTime", stringToDate(orderStartTime,null), true));
-			
+		if (null != orderStartTime && !orderStartTime.equals("")) {
+			c.add(Restrictions.gte("orderTime", stringToDate(orderStartTime, null), true));
+
 		}
-		if(null !=orderEndTime && !orderEndTime.equals("")){
-			c.add( Restrictions.lte("orderTime", stringToDate(orderEndTime,null), true));
+		if (null != orderEndTime && !orderEndTime.equals("")) {
+			c.add(Restrictions.lte("orderTime", stringToDate(orderEndTime, null), true));
 		}
-		
-		if(null !=userPhone && !"".equals(userPhone)){
-			c.add( Restrictions.like("username", userPhone, true));
+
+		if (null != userPhone && !"".equals(userPhone)) {
+			c.add(Restrictions.like("username", userPhone, true));
 		}
-		if(null !=shippingName && !"".equals(shippingName)){
-			c.add( Restrictions.like("shippingName", shippingName, true));
+		if (null != shippingName && !"".equals(shippingName)) {
+			c.add(Restrictions.like("shippingName", shippingName, true));
 		}
-		if(null !=shippingPhone && !"".equals(shippingPhone)){
-			c.add( Restrictions.like("shippingPhone", shippingPhone, true));
+		if (null != shippingPhone && !"".equals(shippingPhone)) {
+			c.add(Restrictions.like("shippingPhone", shippingPhone, true));
 		}
-		if(null !=shippingAddress && !"".equals(shippingAddress)){
-			c.add( Restrictions.like("shippingAddress", shippingAddress, true));
+		if (null != shippingAddress && !"".equals(shippingAddress)) {
+			c.add(Restrictions.like("shippingAddress", shippingAddress, true));
 		}
-		
-		if(null !=realName && !"".equals(realName)){	
-			c.add( Restrictions.eq("username", realName, true));
+
+		if (null != realName && !"".equals(realName)) {
+			c.add(Restrictions.eq("username", realName, true));
 		}
-		if(null !=deliveryTime && !deliveryTime.equals("")){
-			c.add( Restrictions.eq("realUserRealName", stringToDate(deliveryTime,null), true));
+		if (null != deliveryTime && !deliveryTime.equals("")) {
+			c.add(Restrictions.eq("realUserRealName", stringToDate(deliveryTime, null), true));
 		}
-		if(null !=sendTime && !sendTime.equals("")){
-			c.add( Restrictions.eq("sendTime", stringToDate(sendTime,null), true));
+		if (null != sendTime && !sendTime.equals("")) {
+			c.add(Restrictions.eq("sendTime", stringToDate(sendTime, null), true));
 		}
-		if(null !=sellerRealName  && !"".equals(sellerRealName )){
-			c.add( Restrictions.eq("sellerRealName", sellerRealName, true));
+		if (null != sellerRealName && !"".equals(sellerRealName)) {
+			c.add(Restrictions.eq("sellerRealName", sellerRealName, true));
 		}
-		if(null != statusId && !statusId.equals(0L)){
-			c.add( Restrictions.eq("statusId", statusId, true));
+		if (null != statusId && !statusId.equals(0L)) {
+			c.add(Restrictions.eq("statusId", statusId, true));
 		}
-		if(null!=diyCode && !"".equals(diyCode)){
-			c.add( Restrictions.eq("diySiteCode", diyCode, true));
+		if (null != diyCode && !"".equals(diyCode)) {
+			c.add(Restrictions.eq("diySiteCode", diyCode, true));
 		}
 		c.setOrderByDesc("orderTime");
-		       return repository.findAll(c,pageRequest);
+		return repository.findAll(c, pageRequest);
 	}
-	
-	
+
 	/**
 	 * 字符串转换时间默认格式yyyy-MM-dd HH:mm:ss
+	 * 
 	 * @return
 	 */
-	private Date stringToDate(String time,String dateFormat){
-		if(null==dateFormat || "".equals(dateFormat)){
-			dateFormat="yyyy-MM-dd HH:mm:ss";
+	private Date stringToDate(String time, String dateFormat) {
+		if (null == dateFormat || "".equals(dateFormat)) {
+			dateFormat = "yyyy-MM-dd HH:mm:ss";
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 		Date date = null;
-		if(null !=time && !time.equals(""))
-		{
+		if (null != time && !time.equals("")) {
 			try {
 				date = sdf.parse(time);
 			} catch (ParseException e) {
@@ -576,5 +595,67 @@ public class TdOrderService {
 		}
 		return date;
 	}
-	
+
+	/**
+	 * 查询指定归属销顾的订单
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdOrder> findBySellerIdAndStatusIdNotOrderByOrderTimeDesc(Long sellerId) {
+		if (null == sellerId) {
+			return null;
+		}
+		return repository.findBySellerIdAndStatusIdNotOrderByOrderTimeDesc(sellerId, 8L);
+	}
+
+	/**
+	 * 查询指定归属销顾的订单
+	 * 
+	 * @author DengXiao
+	 */
+	public Page<TdOrder> findBySellerIdAndStatusIdNotOrderByOrderTimeDesc(Long sellerId, int page, int size) {
+		if (null == sellerId) {
+			return null;
+		}
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findBySellerIdAndStatusIdNotOrderByOrderTimeDesc(sellerId, 8L, pageRequest);
+	}
+
+	/**
+	 * 查询指定归属销顾的指定状态的订单
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdOrder> findBySellerIdAndStatusIdOrderByOrderTimeDesc(Long sellerId, Long statusId) {
+		if (null == sellerId || null == statusId) {
+			return null;
+		}
+		return repository.findBySellerIdAndStatusIdOrderByOrderTimeDesc(sellerId, statusId);
+	}
+
+	/**
+	 * 根据门店的id查询门店下所有的订单
+	 * 
+	 * @author DengXiao
+	 */
+	public Page<TdOrder> findByDiySiteIdAndStatusIdNotOrderByOrderTimeDesc(Long diySiteId, int page, int size) {
+		if (null == diySiteId) {
+			return null;
+		}
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByDiySiteIdAndStatusIdNotOrderByOrderTimeDesc(diySiteId, 8L, pageRequest);
+	}
+
+	/**
+	 * 根据门店id查询门店下指定状态的订单
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdOrder> findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(Long diySiteId, Long statusId) {
+		if (null == diySiteId || null == statusId) {
+			return null;
+		}
+		return repository.findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(diySiteId, statusId);
+	}
+
 }

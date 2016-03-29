@@ -6,7 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-
 /**
  * 订单商品
  *
@@ -18,91 +17,99 @@ import javax.persistence.Id;
 
 @Entity
 public class TdOrderGoods {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-    // 商品ID
-    @Column
-    private Long goodsId;
-    
-    // 商品名称
-    @Column
-    private String goodsTitle;
-    
-    // 商品简介
-    @Column
-    private String goodsSubTitle;
-    
-    // 商品封面
-    @Column
-    private String goodsCoverImageUri;
-    
-    //商品的SKU
-    @Column
-    private String sku;
-    
-    // 商品版本颜色
-    @Column
-    private String goodsColor;
-    
-    // 商品版本容量
-    @Column
-    private String goodsCapacity;
-    
-    // 商品版本名称
-    @Column
-    private String goodsVersion;
-    
-    // 商品销售方式
-    @Column
-    private Integer goodsSaleType;
-    
-    // 成交价
-    @Column(scale=2)
-    private Double price;
-    
-    //真实价格
-    @Column
-    private Double realPrice;
-    
-    // 商品数量
-    @Column
-    private Long quantity;
-    
-    // 发货数量
-    @Column
-    private Long deliveredQuantity;
-    
-    // 积分
-    @Column
-    private Long points;
-    
-    // 是否申请了退还该商品？
-    @Column
-    private Boolean isReturnApplied;
-    
-    // 是否已评价
-    @Column
-    private Boolean isCommented;
-    
-    // 评论ID
-    @Column
-    private Long commentId;
-    
-    //商品品牌标题
-    @Column
-    private String brandTitle;
-    
-    //商品的品牌id
-    @Column
-    private Long brandId;
-    
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	// 商品ID
+	@Column
+	private Long goodsId;
+
+	// 商品名称
+	@Column
+	private String goodsTitle;
+
+	// 商品简介
+	@Column
+	private String goodsSubTitle;
+
+	// 商品封面
+	@Column
+	private String goodsCoverImageUri;
+
+	// 商品的SKU
+	@Column
+	private String sku;
+
+	// 商品版本颜色
+	@Column
+	private String goodsColor;
+
+	// 商品版本容量
+	@Column
+	private String goodsCapacity;
+
+	// 商品版本名称
+	@Column
+	private String goodsVersion;
+
+	// 商品销售方式
+	@Column
+	private Integer goodsSaleType;
+
+	// 成交价
+	@Column(scale = 2)
+	private Double price;
+
+	// 真实价格
+	@Column
+	private Double realPrice;
+
+	// 商品数量
+	@Column
+	private Long quantity;
+
+	// 发货数量
+	@Column
+	private Long deliveredQuantity;
+
+	// 积分
+	@Column
+	private Long points;
+
+	// 是否申请了退还该商品？
+	@Column
+	private Boolean isReturnApplied;
+
+	// 是否已评价
+	@Column
+	private Boolean isCommented;
+
+	// 评论ID
+	@Column
+	private Long commentId;
+
+	// 商品品牌标题
+	@Column
+	private String brandTitle;
+
+	// 商品的品牌id
+	@Column
+	private Long brandId;
+
+	// 可退数量
+	@Column
+	private Long canReturnNumber;
+
+	// 退款单价
+	@Column
+	private Double returnUnitPrice;
+
 	// 使用产品券的数量，默认为0
 	@Column
 	private Long couponNumber;
 
-    public Boolean getIsCommented() {
+	public Boolean getIsCommented() {
 		return isCommented;
 	}
 
@@ -119,70 +126,70 @@ public class TdOrderGoods {
 	}
 
 	public Long getId() {
-        return id;
-    }
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Long getGoodsId() {
-        return goodsId;
-    }
+	public Long getGoodsId() {
+		return goodsId;
+	}
 
-    public void setGoodsId(Long goodsId) {
-        this.goodsId = goodsId;
-    }
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
+	}
 
-    public String getGoodsTitle() {
-        return goodsTitle;
-    }
+	public String getGoodsTitle() {
+		return goodsTitle;
+	}
 
-    public void setGoodsTitle(String goodsTitle) {
-        this.goodsTitle = goodsTitle;
-    }
+	public void setGoodsTitle(String goodsTitle) {
+		this.goodsTitle = goodsTitle;
+	}
 
-    public String getGoodsSubTitle() {
-        return goodsSubTitle;
-    }
+	public String getGoodsSubTitle() {
+		return goodsSubTitle;
+	}
 
-    public void setGoodsSubTitle(String goodsSubTitle) {
-        this.goodsSubTitle = goodsSubTitle;
-    }
+	public void setGoodsSubTitle(String goodsSubTitle) {
+		this.goodsSubTitle = goodsSubTitle;
+	}
 
-    public String getGoodsCoverImageUri() {
-        return goodsCoverImageUri;
-    }
+	public String getGoodsCoverImageUri() {
+		return goodsCoverImageUri;
+	}
 
-    public void setGoodsCoverImageUri(String goodsCoverImageUri) {
-        this.goodsCoverImageUri = goodsCoverImageUri;
-    }
+	public void setGoodsCoverImageUri(String goodsCoverImageUri) {
+		this.goodsCoverImageUri = goodsCoverImageUri;
+	}
 
-    public String getGoodsColor() {
-        return goodsColor;
-    }
+	public String getGoodsColor() {
+		return goodsColor;
+	}
 
-    public void setGoodsColor(String goodsColor) {
-        this.goodsColor = goodsColor;
-    }
+	public void setGoodsColor(String goodsColor) {
+		this.goodsColor = goodsColor;
+	}
 
-    public String getGoodsCapacity() {
-        return goodsCapacity;
-    }
+	public String getGoodsCapacity() {
+		return goodsCapacity;
+	}
 
-    public void setGoodsCapacity(String goodsCapacity) {
-        this.goodsCapacity = goodsCapacity;
-    }
+	public void setGoodsCapacity(String goodsCapacity) {
+		this.goodsCapacity = goodsCapacity;
+	}
 
-    public String getGoodsVersion() {
-        return goodsVersion;
-    }
+	public String getGoodsVersion() {
+		return goodsVersion;
+	}
 
-    public void setGoodsVersion(String goodsVersion) {
-        this.goodsVersion = goodsVersion;
-    }   
-    
-    public Integer getGoodsSaleType() {
+	public void setGoodsVersion(String goodsVersion) {
+		this.goodsVersion = goodsVersion;
+	}
+
+	public Integer getGoodsSaleType() {
 		return goodsSaleType;
 	}
 
@@ -191,44 +198,44 @@ public class TdOrderGoods {
 	}
 
 	public Double getPrice() {
-        return price;
-    }
+		return price;
+	}
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+	public void setPrice(Double price) {
+		this.price = price;
+	}
 
-    public Long getQuantity() {
-        return quantity;
-    }
+	public Long getQuantity() {
+		return quantity;
+	}
 
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
-    }
+	public void setQuantity(Long quantity) {
+		this.quantity = quantity;
+	}
 
-    public Long getDeliveredQuantity() {
-        return deliveredQuantity;
-    }
+	public Long getDeliveredQuantity() {
+		return deliveredQuantity;
+	}
 
-    public void setDeliveredQuantity(Long deliveredQuantity) {
-        this.deliveredQuantity = deliveredQuantity;
-    }
+	public void setDeliveredQuantity(Long deliveredQuantity) {
+		this.deliveredQuantity = deliveredQuantity;
+	}
 
-    public Boolean getIsReturnApplied() {
-        return isReturnApplied;
-    }
+	public Boolean getIsReturnApplied() {
+		return isReturnApplied;
+	}
 
-    public void setIsReturnApplied(Boolean isReturnApplied) {
-        this.isReturnApplied = isReturnApplied;
-    }
+	public void setIsReturnApplied(Boolean isReturnApplied) {
+		this.isReturnApplied = isReturnApplied;
+	}
 
-    public Long getPoints() {
-        return points;
-    }
+	public Long getPoints() {
+		return points;
+	}
 
-    public void setPoints(Long points) {
-        this.points = points;
-    }
+	public void setPoints(Long points) {
+		this.points = points;
+	}
 
 	public String getSku() {
 		return sku;
@@ -270,14 +277,32 @@ public class TdOrderGoods {
 		this.couponNumber = couponNumber;
 	}
 
+	public Long getCanReturnNumber() {
+		return canReturnNumber;
+	}
+
+	public void setCanReturnNumber(Long canReturnNumber) {
+		this.canReturnNumber = canReturnNumber;
+	}
+
+	public Double getReturnUnitPrice() {
+		return returnUnitPrice;
+	}
+
+	public void setReturnUnitPrice(Double returnUnitPrice) {
+		this.returnUnitPrice = returnUnitPrice;
+	}
+
 	@Override
 	public String toString() {
 		return "TdOrderGoods [id=" + id + ", goodsId=" + goodsId + ", goodsTitle=" + goodsTitle + ", goodsSubTitle="
 				+ goodsSubTitle + ", goodsCoverImageUri=" + goodsCoverImageUri + ", sku=" + sku + ", goodsColor="
 				+ goodsColor + ", goodsCapacity=" + goodsCapacity + ", goodsVersion=" + goodsVersion
-				+ ", goodsSaleType=" + goodsSaleType + ", price=" + price + ", quantity=" + quantity
-				+ ", deliveredQuantity=" + deliveredQuantity + ", points=" + points + ", isReturnApplied="
+				+ ", goodsSaleType=" + goodsSaleType + ", price=" + price + ", realPrice=" + realPrice + ", quantity="
+				+ quantity + ", deliveredQuantity=" + deliveredQuantity + ", points=" + points + ", isReturnApplied="
 				+ isReturnApplied + ", isCommented=" + isCommented + ", commentId=" + commentId + ", brandTitle="
-				+ brandTitle + ", brandId=" + brandId + "]";
+				+ brandTitle + ", brandId=" + brandId + ", canReturnNumber=" + canReturnNumber + ", returnUnitPrice="
+				+ returnUnitPrice + ", couponNumber=" + couponNumber + "]";
 	}
+
 }

@@ -106,7 +106,7 @@ public class TdPayController {
 			params.put(name, valueStr);
 		}
 
-		// 获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以下仅供参考)//
+		// 获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以下仅供参考)
 
 		String out_trade_no = null;
 		String trade_no = null;

@@ -164,7 +164,7 @@ public class TdUserController {
 
 	@Autowired
 	private TdDeliveryInfoService tdDeliveryInfoService;
-	
+
 	@Autowired
 	private TdWareHouseService TdWareHouseService;
 
@@ -220,25 +220,85 @@ public class TdUserController {
 			return "redirect:/login";
 		}
 
-		// 查找所有的订单
-		List<TdOrder> all_order_list = tdOrderService.findByUsernameAndStatusIdNotOrderByOrderTimeDesc(username);
-		map.addAttribute("all_order_list", all_order_list);
+		/*
+		 * 根据登录用户端的身份查询出不同的订单
+		 * 
+		 * @author DengXiao
+		 * 
+		 * @date 2016年3月29日
+		 */
+		if (0L == user.getUserType().longValue()) {
+			// 查找所有的订单
+			Page<TdOrder> all_order_page = tdOrderService.findByUsernameAndStatusIdNotOrderByOrderTimeDesc(username, 0,
+					20);
+			map.addAttribute("all_order_list", all_order_page.getContent());
 
-		// 查找所有待支付的订单
-		List<TdOrder> unpayed_order_list = tdOrderService.findByUsernameAndStatusId(username, 2L);
-		map.addAttribute("unpayed_order_list", unpayed_order_list);
+			// 查找所有待支付的订单
+			List<TdOrder> unpayed_order_list = tdOrderService.findByUsernameAndStatusId(username, 2L);
+			map.addAttribute("unpayed_order_list", unpayed_order_list);
 
-		// 查找所有待发货的订单
-		List<TdOrder> undeliver_order_list = tdOrderService.findByUsernameAndStatusId(username, 3L);
-		map.addAttribute("undeliver_order_list", undeliver_order_list);
+			// 查找所有待发货的订单
+			List<TdOrder> undeliver_order_list = tdOrderService.findByUsernameAndStatusId(username, 3L);
+			map.addAttribute("undeliver_order_list", undeliver_order_list);
 
-		// 查找所有待收货的订单
-		List<TdOrder> unsignin_order_list = tdOrderService.findByUsernameAndStatusId(username, 4L);
-		map.addAttribute("unsignin_order_list", unsignin_order_list);
+			// 查找所有待收货的订单
+			List<TdOrder> unsignin_order_list = tdOrderService.findByUsernameAndStatusId(username, 4L);
+			map.addAttribute("unsignin_order_list", unsignin_order_list);
 
-		// 查找所有待评价的订单
-		List<TdOrder> uncomment_order_list = tdOrderService.findByUsernameAndStatusId(username, 5L);
-		map.addAttribute("uncomment_order_list", uncomment_order_list);
+			// 查找所有待评价的订单
+			List<TdOrder> uncomment_order_list = tdOrderService.findByUsernameAndStatusId(username, 5L);
+			map.addAttribute("uncomment_order_list", uncomment_order_list);
+		} else if (1L == user.getUserType().longValue()) {
+			// 查询所有的归属销顾为自己的订单
+			Page<TdOrder> all_order_page = tdOrderService.findBySellerIdAndStatusIdNotOrderByOrderTimeDesc(user.getId(),
+					0, 20);
+			map.addAttribute("all_order_list", all_order_page.getContent());
+
+			// 查询指定销顾下待支付的订单
+			List<TdOrder> unpayed_order_list = tdOrderService
+					.findBySellerIdAndStatusIdOrderByOrderTimeDesc(user.getId(), 2L);
+			map.addAttribute("unpayed_order_list", unpayed_order_list);
+
+			// 查询指定销顾待发货的订单
+			List<TdOrder> undeliver_order_list = tdOrderService
+					.findBySellerIdAndStatusIdOrderByOrderTimeDesc(user.getId(), 3L);
+			map.addAttribute("undeliver_order_list", undeliver_order_list);
+
+			// 查询所有待收货的订单
+			List<TdOrder> unsignin_order_list = tdOrderService
+					.findBySellerIdAndStatusIdOrderByOrderTimeDesc(user.getId(), 4L);
+			map.addAttribute("unsignin_order_list", unsignin_order_list);
+
+			// 查找所有未评价的订单
+			List<TdOrder> uncomment_order_list = tdOrderService
+					.findBySellerIdAndStatusIdOrderByOrderTimeDesc(user.getId(), 5L);
+			map.addAttribute("uncomment_order_list", uncomment_order_list);
+		} else if (2L == user.getUserType().longValue()) {
+			// 获取用户的门店
+			TdDiySite diySite = tdCommonService.getDiySite(req);
+			if (null != diySite) {
+				// 获取门店所有的订单
+				Page<TdOrder> all_order_page = tdOrderService
+						.findByDiySiteIdAndStatusIdNotOrderByOrderTimeDesc(diySite.getId(), 0, 20);
+				map.addAttribute("all_order_list", all_order_page.getContent());
+				// 获取门店所有待支付的订单
+				List<TdOrder> unpayed_order_list = tdOrderService
+						.findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(diySite.getId(), 2L);
+				map.addAttribute("unpayed_order_list", unpayed_order_list);
+				// 获取门店所有待发货的订单
+				List<TdOrder> undeliver_order_list = tdOrderService
+						.findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(diySite.getId(), 3L);
+				map.addAttribute("undeliver_order_list", undeliver_order_list);
+				// 获取门店所有待收货的订单
+				List<TdOrder> unsign_order_list = tdOrderService
+						.findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(diySite.getId(), 4L);
+				map.addAttribute("unsign_order_list", unsign_order_list);
+				// 获取门店所有未评价的订单
+				List<TdOrder> uncomment_order_list = tdOrderService
+						.findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(diySite.getId(), 5L);
+				map.addAttribute("uncomment_order_list", uncomment_order_list);
+			}
+		}
 
 		map.addAttribute("typeId", typeId);
 		return "/client/user_order_list";
@@ -366,8 +426,9 @@ public class TdUserController {
 				// 获取指定商品的价目表项
 				TdGoods goods = tdGoodsService.findOne(recentVisit.getGoodsId());
 				TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
-//				TdPriceListItem priceListItem = tdPriceListItemService
-//						.findByPriceListIdAndGoodsId(diySite.getPriceListId(),recentVisit.getGoodsId() );
+				// TdPriceListItem priceListItem = tdPriceListItemService
+				// .findByPriceListIdAndGoodsId(diySite.getPriceListId(),recentVisit.getGoodsId()
+				// );
 				map.addAttribute("priceListItem" + i, priceListItem);
 			}
 		}
@@ -686,12 +747,14 @@ public class TdUserController {
 
 	/**
 	 * 跳转到新增收货页面的方法
-	 * @param returnPage 后面添加的参数 值为1时设置sesssion中returnPage的值为1 其他条件则为0
+	 * 
+	 * @param returnPage
+	 *            后面添加的参数 值为1时设置sesssion中returnPage的值为1 其他条件则为0
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/address/{type}")
 	public String userAddressAdd(HttpServletRequest req, ModelMap map, @PathVariable Long type, Long id,
-			String receiver, String receiverMobile, String detailAddress,String returnPage) {
+			String receiver, String receiverMobile, String detailAddress, String returnPage) {
 		// 判断用户是否登陆
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
@@ -713,15 +776,15 @@ public class TdUserController {
 			TdShippingAddress address = tdShippingAddressService.findOne(id);
 			map.addAttribute("address", address);
 			map.addAttribute("addressId", id);
-			//设置行政区域
+			// 设置行政区域
 			req.getSession().setAttribute("new_district", address.getDisctrict());
 			req.getSession().setAttribute("new_district_id", address.getDistrictId());
-			//设置行政街道
+			// 设置行政街道
 			req.getSession().setAttribute("new_subdistrict", address.getSubdistrict());
 			req.getSession().setAttribute("new_subdistrict_id", address.getSubdistrictId());
-			if(null!=returnPage && "1".equals(returnPage)){
+			if (null != returnPage && "1".equals(returnPage)) {
 				req.getSession().setAttribute("returnPage", "1");
-			}else{
+			} else {
 				req.getSession().setAttribute("returnPage", "0");
 			}
 		}
@@ -787,6 +850,7 @@ public class TdUserController {
 
 	/**
 	 * 保存新增的收货地址的方法
+	 * 
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/address/add/save")
@@ -870,11 +934,11 @@ public class TdUserController {
 		req.getSession().setAttribute("new_subdistrict", null);
 		req.getSession().setAttribute("new_subdistrict_id", null);
 
-		//status 0:查看收货地址页面 1 选择收货地址页面
+		// status 0:查看收货地址页面 1 选择收货地址页面
 		res.put("status", 0);
 		// returnPage 值为1时修改返回状态res.status=1 回到选择收货地址页面
 		String returnPage = (String) req.getSession().getAttribute("returnPage");
-		if(null!=returnPage && "1".equals(returnPage)){
+		if (null != returnPage && "1".equals(returnPage)) {
 			res.put("status", 1);
 		}
 		return res;
@@ -938,7 +1002,7 @@ public class TdUserController {
 						address_list.get(i).setIsDefaultAddress(false);
 					}
 					if (null != address_list.get(i) && null != address_list.get(i).getId()
-							&& address_list.get(i).getId().equals(id) ) {
+							&& address_list.get(i).getId().equals(id)) {
 						address_list.get(i).setIsDefaultAddress(true);
 					}
 				}
@@ -973,7 +1037,7 @@ public class TdUserController {
 		if (null != site && (site.getStatus() == 2)) {
 			map.addAttribute("isSelected", false);
 		}
-		
+
 		// 获取用户所在城市的所有行政区划
 		TdCity city = tdCityService.findBySobIdCity(user.getCityId());
 		List<TdDistrict> district_list = tdDistrictService.findByCityIdOrderBySortIdAsc(city.getId());
@@ -1119,24 +1183,26 @@ public class TdUserController {
 		}
 		return "/client/user_recharge";
 	}
-	
+
 	/**
 	 * 跳转到现金卷使用说明页面
+	 * 
 	 * @author tangjunmao
 	 */
 	@RequestMapping(value = "/coupon/cash/guide")
-	public String toCashCouponGuide(ModelMap map){
+	public String toCashCouponGuide(ModelMap map) {
 		TdSetting setting = tdSettingService.findTopBy();
 		map.addAttribute("cashCouponGuide", setting.getCashCouponGuide());
 		return "/client/user_cash_coupon_guide";
 	}
-	
+
 	/**
 	 * 跳转到产品卷使用说明页面
+	 * 
 	 * @author tangjunmao
 	 */
 	@RequestMapping(value = "/coupon/goods/guide")
-	public String toGoodsCouponGuide(ModelMap map){
+	public String toGoodsCouponGuide(ModelMap map) {
 		TdSetting setting = tdSettingService.findTopBy();
 		map.addAttribute("goodsCouponGuide", setting.getGoodsCouponGuide());
 		return "/client/user_goods_coupon_guide";
@@ -1222,9 +1288,10 @@ public class TdUserController {
 		if (null != order.getStatusId() && 3L == order.getStatusId()) {
 			// 生成退货单
 			if (null != order) {
-				TdReturnNote returnNote = tdCommonService.MakeReturnNote(order,0L,"");
+				TdReturnNote returnNote = tdCommonService.MakeReturnNote(order, 0L, "");
 				tdCommonService.sendBackMsgToWMS(returnNote);
-//				System.out.println("MDJWMS:发送退货单：" + returnNote.getReturnNumber() + "成功！");
+				// System.out.println("MDJWMS:发送退货单：" +
+				// returnNote.getReturnNumber() + "成功！");
 			}
 		}
 
@@ -1319,12 +1386,14 @@ public class TdUserController {
 				}
 			}
 		}
-		//仓库
-		if(null != order){
-			List<TdDeliveryInfo> deliveryList=tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
-			if(null!=deliveryList && deliveryList.size()>0){
-				List<TdWareHouse> wareHouseList= TdWareHouseService.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
-				if(null != wareHouseList && wareHouseList.size()>0){
+		// 仓库
+		if (null != order) {
+			List<TdDeliveryInfo> deliveryList = tdDeliveryInfoService
+					.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+			if (null != deliveryList && deliveryList.size() > 0) {
+				List<TdWareHouse> wareHouseList = TdWareHouseService
+						.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
+				if (null != wareHouseList && wareHouseList.size() > 0) {
 					map.addAttribute("tdWareHouse", wareHouseList.get(0));
 				}
 			}
@@ -1333,10 +1402,8 @@ public class TdUserController {
 		return "/client/user_order_detail";
 	}
 
-	
 	@RequestMapping("/order/map")
-	public String showTheSender(ModelMap map,HttpServletRequest request,Long oid)
-	{
+	public String showTheSender(ModelMap map, HttpServletRequest request, Long oid) {
 		String username = (String) request.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {
@@ -1344,35 +1411,30 @@ public class TdUserController {
 		}
 		TdOrder order = null;
 		TdUser tdUser = null;
-		if (oid != null)
-		{
+		if (oid != null) {
 			order = tdOrderService.findOne(oid);
 		}
-		if (order != null && order.getMainOrderNumber() != null)
-		{
-			List<TdDeliveryInfo> deliveryInfos = tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
-			if (deliveryInfos != null && deliveryInfos.size() > 0)
-			{
+		if (order != null && order.getMainOrderNumber() != null) {
+			List<TdDeliveryInfo> deliveryInfos = tdDeliveryInfoService
+					.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+			if (deliveryInfos != null && deliveryInfos.size() > 0) {
 				TdDeliveryInfo deliveryInfo = deliveryInfos.get(0);
-				if (deliveryInfo != null && deliveryInfo.getDriver() != null)
-				{
+				if (deliveryInfo != null && deliveryInfo.getDriver() != null) {
 					tdUser = tdUserService.findByOpUser(deliveryInfo.getDriver());
-					
+
 				}
 			}
 		}
-		if (tdUser != null)
-		{
+		if (tdUser != null) {
 			List<TdGeoInfo> geoInfos = tdGeoInfoService.findByOpUserOrderByTimeDesc(tdUser.getOpUser());
-			if (geoInfos != null && geoInfos.size() > 0)
-			{
+			if (geoInfos != null && geoInfos.size() > 0) {
 				map.addAttribute("map_x", geoInfos.get(0).getLatitude());
 				map.addAttribute("map_y", geoInfos.get(0).getLongitude());
 			}
 		}
 		return "/client/user_order_detail_map";
 	}
-	
+
 	/**
 	 * 用户修改归属门店并且保存的方法
 	 * 
@@ -1483,8 +1545,7 @@ public class TdUserController {
 		if (null != id) {
 			TdOrder order = tdOrderService.findOne(id);
 
-			if (null != order && order.getStatusId() != null && order.getStatusId() != 9L)
-			{
+			if (null != order && order.getStatusId() != null && order.getStatusId() != 9L) {
 				TdReturnNote returnNote = new TdReturnNote();
 
 				// 退货单编号
@@ -1497,12 +1558,12 @@ public class TdUserController {
 
 				// 添加订单信息
 				returnNote.setOrderNumber(order.getOrderNumber());
-				
-				//add MDJ
+
+				// add MDJ
 				returnNote.setShoppingAddress(order.getShippingAddress());
 				returnNote.setSellerRealName(order.getSellerRealName());
-				//end add MDJ
-				
+				// end add MDJ
+
 				// 支付方式
 				returnNote.setPayTypeId(order.getPayTypeId());
 				returnNote.setPayTypeTitle(order.getPayTypeTitle());
