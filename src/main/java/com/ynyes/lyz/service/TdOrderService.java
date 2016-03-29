@@ -477,7 +477,7 @@ public class TdOrderService {
 			return null;
 		}
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByUsernameAndIsCancelTrue(username, pageRequest);
+		return repository.findByUsernameAndStatusIdNotOrderByOrderTimeDesc(username, 8L, pageRequest);
 	}
 
 	public List<TdOrder> findByOrderNumberContaining(String orderNumber) {
@@ -656,6 +656,48 @@ public class TdOrderService {
 			return null;
 		}
 		return repository.findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(diySiteId, statusId);
+	}
+
+	/**
+	 * 用户模糊查找订单，参与参数：username，orderNumber
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdOrder> findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(
+			String keywords, String username) {
+		if (null == keywords || null == username) {
+			return null;
+		}
+		return repository.findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(
+				keywords, username, keywords, username);
+	}
+
+	/**
+	 * 销顾模糊查询订单，参与参数：username，orderNumber
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdOrder> findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrderByOrderTimeDesc(
+			String keywords, Long sellerId) {
+		if (null == keywords || null == sellerId) {
+			return null;
+		}
+		return repository.findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrderByOrderTimeDesc(
+				keywords, sellerId, keywords, sellerId);
+	}
+
+	/**
+	 * 店长模糊查询订单，参与参数：username,orderNumber
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdOrder> findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrderByOrderTimeDesc(
+			String keywords, Long diySiteId) {
+		if (null == keywords || null == diySiteId) {
+			return null;
+		}
+		return repository.findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrderByOrderTimeDesc(
+				keywords, diySiteId, keywords, diySiteId);
 	}
 
 }

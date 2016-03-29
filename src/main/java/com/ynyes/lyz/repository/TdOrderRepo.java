@@ -214,4 +214,28 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	 */
 	List<TdOrder> findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(Long diySiteId, Long statusId);
 
+	/**
+	 * 用户模糊查找订单，参与参数：username，orderNumber
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdOrder> findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(
+			String keywords1, String username1, String keywords2, String username2);
+
+	/**
+	 * 销顾模糊查询订单，参与参数：username，orderNumber
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdOrder> findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrderByOrderTimeDesc(
+			String keywords1, Long sellerId1, String keywords2, Long sellerId2);
+
+	/**
+	 * 店长模糊查询订单，参与参数：username,orderNumber
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdOrder> findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrderByOrderTimeDesc(
+			String keywords1, Long diySiteId1, String keywords2, Long diySiteId2);
+
 }

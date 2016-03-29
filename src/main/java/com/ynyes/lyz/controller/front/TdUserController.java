@@ -305,6 +305,41 @@ public class TdUserController {
 	}
 
 	/**
+	 * 模糊查询指定订单的方法（异步刷新）
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/order/search")
+	public String userOrderSearch(HttpServletRequest req, ModelMap map, String keywords) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null != user) {
+			// 获取用户的身份
+			Long userType = user.getUserType();
+			if (null != userType && userType.longValue() == 0L) {
+				List<TdOrder> all_order_list = tdOrderService
+						.findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(
+								keywords, user.getUsername());
+				map.addAttribute("all_order_list", all_order_list);
+			} else if (null != userType && userType.longValue() == 1L) {
+				List<TdOrder> all_order_list = tdOrderService
+						.findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrderByOrderTimeDesc(
+								keywords, user.getId());
+				map.addAttribute("all_order_list", all_order_list);
+			} else if (null != userType && userType.longValue() == 2L) {
+				TdDiySite diySite = tdCommonService.getDiySite(req);
+				if (null != diySite) {
+					List<TdOrder> all_order_list = tdOrderService
+							.findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrderByOrderTimeDesc(
+									keywords, diySite.getId());
+					map.addAttribute("all_order_list", all_order_list);
+				}
+			}
+		}
+		return "/client/user_all_order";
+	}
+
+	/**
 	 * 跳转到我的收藏页面的方法
 	 * 
 	 * @author dengxiao
