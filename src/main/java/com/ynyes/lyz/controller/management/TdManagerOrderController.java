@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdAgencyFund;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDeliveryType;
@@ -47,6 +48,7 @@ import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdWareHouse;
+import com.ynyes.lyz.service.TdAgencyFundService;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
@@ -154,6 +156,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdWareHouseService tdWareHouseService;
+	
+	@Autowired
+	private TdAgencyFundService tdAgencyFundService;
 	
 	
 	@RequestMapping(value = "/downdatagoods")
@@ -560,8 +565,9 @@ public class TdManagerOrderController {
         cell = row.createCell(20);
         cell.setCellValue("实际配送时间");
         cell.setCellStyle(style);
+        
         // 第五步，设置值  
-        List<TdOrder> orders = null;
+        /*List<TdOrder> orders = null;
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
         	orders = tdOrderService.searchMainOrderNumberByTimeAndDiySiteCode(tdManager.getDiyCode(),date1,date2);
@@ -689,6 +695,117 @@ public class TdManagerOrderController {
         	if (null != tdOrder.getDeliveryTime()) 
         	{
 				row.createCell(20).setCellValue(tdOrder.getDeliveryTime().toString());
+			}
+        	
+        	i++;
+		}*/
+        List<TdAgencyFund> agencyFundList = null;
+        if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
+		{
+        	agencyFundList = tdAgencyFundService.searchAllbyDiyCodeAndTime(tdManager.getDiyCode(),date1,date2);
+		}
+        else
+        {
+        	agencyFundList = tdAgencyFundService.searchAllByTime(date1, date2);
+        }
+        Integer i = 0;
+        for (TdAgencyFund agencyFund : agencyFundList)
+        {
+        	row = sheet.createRow((int) i + 1);
+        	if (null != agencyFund.getDiySiteName())
+        	{
+            	row.createCell(0).setCellValue(agencyFund.getDiySiteName());
+    		}
+        	if (null != agencyFund.getDiySitePhone())
+        	{
+            	row.createCell(1).setCellValue(agencyFund.getDiySitePhone());
+    		}
+        	if (null != agencyFund.getMainOrderNumber())
+        	{
+            	row.createCell(2).setCellValue(agencyFund.getMainOrderNumber());
+    		}
+//        	if (null != tdOrder.getOrderNumber())
+//        	{
+//            	row.createCell(3).setCellValue(tdOrder.getOrderNumber());
+//    		}
+        	if (null != agencyFund.getOrderTime())
+        	{
+        		Date orderTime = agencyFund.getOrderTime();
+        		String orderTimeStr = orderTime.toString();
+            	row.createCell(3).setCellValue(orderTimeStr);
+    		}
+        	if (null != agencyFund.getCashBalanceUsed())
+        	{
+            	row.createCell(4).setCellValue(agencyFund.getCashBalanceUsed());
+    		}
+        	if (null != agencyFund.getUnCashBalanceUsed())
+        	{
+            	row.createCell(5).setCellValue(agencyFund.getUnCashBalanceUsed());
+    		}
+        	
+        	if (null != agencyFund.getPayPrice())
+        	{
+    			row.createCell(6).setCellValue(agencyFund.getPayPrice());
+    		}
+        	if (null != agencyFund.getPayed())
+        	{
+            	row.createCell(7).setCellValue(agencyFund.getPayed());
+    		}
+        	if (null != agencyFund.getOwned())
+        	{
+            	row.createCell(8).setCellValue(agencyFund.getOwned());
+    		}
+        	
+        	if (null != agencyFund.getWhNo())
+        	{
+        		row.createCell(17).setCellValue(changeName(agencyFund.getWhNo()));
+			}
+        	if (null != agencyFund.getRealName())
+			{
+        		row.createCell(9).setCellValue(agencyFund.getRealName());
+			}
+        	if (null != agencyFund.getUsername())
+        	{
+            	row.createCell(10).setCellValue(agencyFund.getUsername());
+    		}
+        	if (null != agencyFund.getShippingName())
+        	{
+            	row.createCell(11).setCellValue(agencyFund.getShippingName());
+    		}
+        	if (null != agencyFund.getShippingPhone())
+        	{
+            	row.createCell(12).setCellValue(agencyFund.getShippingPhone());
+    		}
+        	if (null != agencyFund.getShippingAddress())
+        	{
+            	row.createCell(13).setCellValue(agencyFund.getShippingAddress());
+    		}
+        	if (null != agencyFund.getRemark())
+        	{
+            	row.createCell(14).setCellValue(agencyFund.getRemark());
+    		}
+        	if (null != agencyFund.getCashCoupon())
+        	{
+				row.createCell(15).setCellValue(agencyFund.getCashCoupon());
+			}
+        	if (null != agencyFund.getStatusId())
+        	{
+        		String statusStr = orderStatus(agencyFund.getStatusId());
+				row.createCell(16).setCellValue(statusStr);
+			}
+        	if (null != agencyFund.getTotalPrice())
+        	{
+				row.createCell(18).setCellValue(agencyFund.getTotalPrice());
+			}
+        	if (null != agencyFund.getDeliveryDate()) 
+        	{
+        		String dayTime = agencyFund.getDeliveryDate();
+    			dayTime = dayTime + " " + agencyFund.getDeliveryDetailId() + ":30";
+				row.createCell(19).setCellValue(dayTime);
+			}
+        	if (null != agencyFund.getDeliveryTime()) 
+        	{
+				row.createCell(20).setCellValue(agencyFund.getDeliveryTime().toString());
 			}
         	
         	i++;
