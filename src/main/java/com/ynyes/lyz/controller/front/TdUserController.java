@@ -247,6 +247,7 @@ public class TdUserController {
 
 			// 查找所有待评价的订单
 			List<TdOrder> uncomment_order_list = tdOrderService.findByUsernameAndStatusId(username, 5L);
+			map.addAttribute("user_type",0);
 			map.addAttribute("uncomment_order_list", uncomment_order_list);
 		} 
 		else if (1L == user.getUserType().longValue()) 
@@ -301,6 +302,7 @@ public class TdUserController {
 				// 获取门店所有未评价的订单
 				List<TdOrder> uncomment_order_list = tdOrderService
 						.findByDiySiteIdAndStatusIdOrderByOrderTimeDesc(diySite.getId(), 5L);
+				map.addAttribute("user_type",2);
 				map.addAttribute("uncomment_order_list", uncomment_order_list);
 			}
 		}
