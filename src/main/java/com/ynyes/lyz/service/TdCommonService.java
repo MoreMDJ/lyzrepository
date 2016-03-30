@@ -779,7 +779,7 @@ public class TdCommonService {
 		}
 
 		// 删除用户的已选
-		List<TdCartGoods> list = tdCartGoodsService.findByUserId(user.getId());
+		List<TdCartGoods> list = tdCartGoodsService.findByUsername(user.getUsername());
 		tdCartGoodsService.deleteAll(list);
 	}
 
