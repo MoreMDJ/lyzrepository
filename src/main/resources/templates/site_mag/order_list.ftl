@@ -62,6 +62,7 @@ function downloaddate(type)
 {
     var begain = $("#begain").val();
     var end = $("#end").val();
+    var diyCode = $("#diyCode").val();
     if(begain == "")
     {
         alert("请选择开始时间！");
@@ -69,11 +70,11 @@ function downloaddate(type)
     }
     if(type == 0)
     {
-    location.href="/Verwalter/order/downdata?begindata="+ begain + "&enddata=" + end;
+    location.href="/Verwalter/order/downdata?begindata="+ begain + "&enddata=" + end+"&diyCode="+diyCode;
     }
     else if (type == 1)
     {
-    location.href="/Verwalter/order/downdatagoods?begindata="+ begain + "&enddata=" + end;
+    location.href="/Verwalter/order/downdatagoods?begindata="+ begain + "&enddata=" + end+"&diyCode="+diyCode;
     }
     else
     {
@@ -187,7 +188,18 @@ function downloaddate(type)
             	</div>
                 <div class="odiv" ><span class="span1">中转仓库：</span><input name="tt" type="text" class="input"></div>
  -->                <div class="odiv" ><span class="span1">实际送货时间：</span><input  name="sendTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
-            
+            <#if diySiteList?? && diySiteList?size gt 0 >
+            <div class="odiv" style="float:left;width:310px;"><span class="span1">门店名称：</span>
+                	<div class="rule-single-select">
+                        <select name="diyCode" id="diyCode">
+                        <option value="" >请选择</option>      
+                        <#list diySiteList as diySite>
+                        	<option value="${diySite.storeCode }" >${diySite.title }</option>
+                        </#list>
+                        </select>
+            		</div>
+            	</div>
+            	</#if>
             	<div class="odiv" style="width:648px;float:right"><div style="float:left;"><span class="span1">订单号：</span><input name="keywords" type="text" class="input">
                 </div>
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>

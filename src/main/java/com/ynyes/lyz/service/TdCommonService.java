@@ -1194,6 +1194,7 @@ public class TdCommonService {
 				}
 				orderGoodsList.add(orderGoods);
 				order.setPresentedList(orderGoodsList);
+				tdOrderService.save(order);
 			}
 		}
 
@@ -1212,6 +1213,7 @@ public class TdCommonService {
 				}
 				orderGoodsList.add(orderGoods);
 				order.setGiftGoodsList(orderGoodsList);
+				tdOrderService.save(order);
 			}
 		}
 

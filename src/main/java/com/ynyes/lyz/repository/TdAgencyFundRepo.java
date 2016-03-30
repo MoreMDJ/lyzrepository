@@ -37,15 +37,15 @@ public interface TdAgencyFundRepo extends PagingAndSortingRepository<TdAgencyFun
 	 * 根据订单时间,门店查询代收款报表数据
 	 * @return
 	 */
-	@Query(value = "select o.diy_site_name,o.diy_site_phone,o.main_order_number,o.order_time,o.cash_balance_used,o.un_cash_balance_used,if(omr.order_number is null,o.total_price,omr.payed+omr.owned) as pay_price,omr.payed,omr.owned,u.real_name,u.username,o.shipping_name,o.shipping_phone,o.shipping_address,o.remark,o.cash_coupon,o.status_id,di.wh_no,o.total_price,o.delivery_date,o.delivery_detail_id,o.delivery_time"
+	@Query(value = "select o.id,o.diy_site_name,o.diy_site_phone,o.main_order_number,o.order_time,o.cash_balance_used,o.un_cash_balance_used,if(omr.order_number is null,o.total_price,omr.payed+omr.owned) as pay_price,omr.payed,omr.owned,u.real_name,u.username,o.shipping_name,o.shipping_phone,o.shipping_address,o.remark,o.cash_coupon,o.status_id,di.wh_no,o.total_price,o.delivery_date,o.delivery_detail_id,o.delivery_time"
 			+ " from td_order o "
 			+ " left JOIN td_own_money_record omr on omr.order_number=o.main_order_number"
 			+ " LEFT JOIN td_delivery_info_detail did on did.sub_order_number=o.order_number"
 			+ " left JOIN td_delivery_info di on did.task_no = di.task_no"
 			+ " left JOIN td_user u on u.op_user=did.op_user"
 			+ " where   o.main_order_number is not null and"
-			+ " o.diySiteCode = ?1 and orderTime>=?2 and orderTime<=?3"
-			+ " GROUP BY o.mainOrderNumber",nativeQuery = true)
+			+ " o.diy_site_code = ?1 and order_time>=?2 and order_time<=?3"
+			+ " GROUP BY o.main_order_number",nativeQuery = true)
 	List<TdAgencyFund> searchAllbyDiyCodeAndTime(String diyCode,Date start,Date end);
 	
 }

@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.mysql.fabric.xmlrpc.base.Data;
 import com.ynyes.lyz.entity.TdAgencyFund;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
@@ -164,7 +163,7 @@ public class TdManagerOrderController {
 	
 	@RequestMapping(value = "/downdatagoods")
 	@ResponseBody
-	public String downdatagoods(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response)
+	public String downdatagoods(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,String diyCode)
 	{
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username)
@@ -287,7 +286,11 @@ public class TdManagerOrderController {
 		}
         else
         {
-        	orderList = tdOrderService.findByBeginAndEndOrderByOrderTimeDesc(date1, date2);
+        	if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") && StringUtils.isNotBlank(diyCode)){
+        		orderList = tdOrderService.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(diyCode,date1,date2);
+        	}else{
+        		orderList = tdOrderService.findByBeginAndEndOrderByOrderTimeDesc(date1, date2);
+        	}
         }
 		
 		if (orderList != null)
@@ -428,7 +431,7 @@ public class TdManagerOrderController {
 	 */
 	@RequestMapping(value = "/downdata",method = RequestMethod.GET)
 	@ResponseBody
-	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response)
+	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,String diyCode)
 	{
 		
 		String username = (String) req.getSession().getAttribute("manager");
@@ -709,9 +712,13 @@ public class TdManagerOrderController {
 		}
         else
         {
-        	System.out.println("------->1begain" + new Date());
-        	agencyFundList = tdAgencyFundService.searchAllByTime(date1, date2);
-        	System.out.println("------->1end" + new Date());
+        	if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") && StringUtils.isNotBlank(diyCode)){
+        		agencyFundList = tdAgencyFundService.searchAllbyDiyCodeAndTime(diyCode,date1,date2);
+        	}else{
+        		System.out.println("------->1begain" + new Date());
+            	agencyFundList = tdAgencyFundService.searchAllByTime(date1, date2);
+            	System.out.println("------->1end" + new Date());
+        	}
         }
         Integer i = 0;
         for (TdAgencyFund agencyFund : agencyFundList)
@@ -1301,7 +1308,7 @@ public class TdManagerOrderController {
 	public String goodsListDialog(String keywords, @PathVariable Long statusId, Integer page, Integer size,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
 			ModelMap map, HttpServletRequest req,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
-			String deliveryTime,String userPhone,Long orderStatusId,String shippingName,String sendTime) {
+			String deliveryTime,String userPhone,Long orderStatusId,String shippingName,String sendTime,String diyCode) {
 		String username = (String) req.getSession().getAttribute("manager");
 
 		if (null == username)
@@ -1388,6 +1395,8 @@ public class TdManagerOrderController {
 				String diySiteCode="";
 				if (tdManagerRole.getTitle().equalsIgnoreCase("门店")){
 					diySiteCode=tdManager.getDiyCode();
+				}else if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
+					diySiteCode=diyCode;
 				}
 				String userName="";
 				Boolean isNotFindUser=false;
@@ -1429,6 +1438,11 @@ public class TdManagerOrderController {
 				map.addAttribute("name_map",nameMap);
 			}
 		}
+		//门店信息
+		if (tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
+			map.addAttribute("diySiteList",tdDiySiteService.findAll());
+		}
+		
 		// 参数注回
 		map.addAttribute("page", page);
 		map.addAttribute("size", size);
