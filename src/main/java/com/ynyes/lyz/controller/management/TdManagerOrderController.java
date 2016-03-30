@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.mysql.fabric.xmlrpc.base.Data;
 import com.ynyes.lyz.entity.TdAgencyFund;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
@@ -702,11 +703,15 @@ public class TdManagerOrderController {
         List<TdAgencyFund> agencyFundList = null;
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
+        	System.out.println("------->begain" + new Date());
         	agencyFundList = tdAgencyFundService.searchAllbyDiyCodeAndTime(tdManager.getDiyCode(),date1,date2);
+        	System.out.println("------->end" + new Date());
 		}
         else
         {
+        	System.out.println("------->1begain" + new Date());
         	agencyFundList = tdAgencyFundService.searchAllByTime(date1, date2);
+        	System.out.println("------->1end" + new Date());
         }
         Integer i = 0;
         for (TdAgencyFund agencyFund : agencyFundList)
