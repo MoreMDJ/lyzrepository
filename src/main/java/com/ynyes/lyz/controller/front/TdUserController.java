@@ -248,7 +248,10 @@ public class TdUserController {
 			// 查找所有待评价的订单
 			List<TdOrder> uncomment_order_list = tdOrderService.findByUsernameAndStatusId(username, 5L);
 			map.addAttribute("uncomment_order_list", uncomment_order_list);
-		} else if (1L == user.getUserType().longValue()) {
+		} 
+		else if (1L == user.getUserType().longValue()) 
+		{
+			
 			// 查询所有的归属销顾为自己的订单
 			Page<TdOrder> all_order_page = tdOrderService.findBySellerIdAndStatusIdNotOrderByOrderTimeDesc(user.getId(),
 					0, 20);
@@ -270,10 +273,12 @@ public class TdUserController {
 			map.addAttribute("unsignin_order_list", unsignin_order_list);
 
 			// 查找所有未评价的订单
-			List<TdOrder> uncomment_order_list = tdOrderService
-					.findBySellerIdAndStatusIdOrderByOrderTimeDesc(user.getId(), 5L);
+			List<TdOrder> uncomment_order_list = tdOrderService.findBySellerIdAndStatusIdOrderByOrderTimeDesc(user.getId(), 5L);
+			map.addAttribute("user_type",1);
 			map.addAttribute("uncomment_order_list", uncomment_order_list);
-		} else if (2L == user.getUserType().longValue()) {
+		}
+		else if (2L == user.getUserType().longValue()) 
+		{
 			// 获取用户的门店
 			TdDiySite diySite = tdCommonService.getDiySite(req);
 			if (null != diySite) {
