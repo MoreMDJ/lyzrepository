@@ -1614,6 +1614,13 @@ public class TdOrderController {
 				defaultAddress = tdShippingAddress;
 			}
 		}
+		// add Mdj
+		if (defaultAddress == null)
+		{
+			res.put("message", "请让用户填写默认地址");
+			return res;
+		}
+		
 		order.setProvince(defaultAddress.getProvince());
 		order.setCity(defaultAddress.getCity());
 		order.setDisctrict(defaultAddress.getDisctrict());

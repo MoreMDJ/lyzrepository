@@ -216,6 +216,18 @@ $(function () {
     </dd>
   </dl>
   <#if user??>
+    <#--<dl>
+    <dt>所属城市</dt>
+    <dd>
+        <select name="cityId" id="cityId" datatype="n">
+            <#if city_list??>
+                <#list city_list as item>
+                    <option value="${item.sobIdCity?c}" <#if user.cityId==item.sobIdCity>selected="selected"</#if> >${item.cityName!''}</option>
+                </#list>
+            </#if>
+        </select>
+    </dd>
+  </dl>-->
   <dl>
     <dt>归属门店</dt>
     <dd>
@@ -296,7 +308,7 @@ $(function () {
     <dt>出生日期</dt>
     <dd>
       <div class="input-date">
-        <input name="birthdate" type="text" value="<#if user??>${user.birthday!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+        <input name="birthdate" type="text" value="<#if user?? && user.birthday??>${user.birthday?string("yyyy-MM-dd")}</#if>" class="input date" onfocus="WdatePicker({dateFmt:&#39;yyyy-MM-dd&#39;})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
         <i>日期</i>
       </div>
     </dd>

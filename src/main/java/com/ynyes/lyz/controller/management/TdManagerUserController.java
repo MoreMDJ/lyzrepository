@@ -276,7 +276,8 @@ public class TdManagerUserController {
 
 		if (null != user) {
 			map.addAttribute("user", user);
-
+			List<TdCity> cities = tdCityService.findAll();
+			map.addAttribute("city_list",cities);
 			// 获取用户所在城市
 			Long cityId = user.getCityId();
 
