@@ -52,6 +52,32 @@ var theForm = document.forms['form1'];
                 }
             });
         }
+ 		/* function clickfile(){
+ 			$('#clickFile')[0].click()
+ 		}	
+ 		function upload(){
+            var formData = new FormData($( "#upload" )[0]);  
+            $.ajax({  
+                 url: '/Verwalter/upload' ,  
+                 type: 'POST',  
+                 data: formData,  
+                 async: false,  
+                 cache: false,  
+                 contentType: false,  
+                 processData: false,  
+                 success: function (res) {  
+                     if(res.status==1){
+                    	 
+                     }else{
+                    	 alert("上传失败，请检查excel格式");  
+                     }
+                 },  
+                 error: function (res) {  
+                     alert("上传失败，请检查excel格式");  
+                 }  
+            });  
+        } */
+ 	
 </script>
 <!--导航栏-->
 <div class="location" style="position: static; top: 0px;">
@@ -69,6 +95,9 @@ var theForm = document.forms['form1'];
   <div id="floatHead" class="toolbar" style="position: static; top: 42px;">
     <div class="l-list">
       <ul class="icon-list">
+      	<!-- <li>
+      		<a class="" href="javascript:;" onclick="clickfile()"><i></i><span>导入</span></a>
+      	</li> -->
         <li><a class="add" href="/Verwalter/user/edit"><i></i><span>新增</span></a></li>
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除</span></a></li>
@@ -174,6 +203,8 @@ var theForm = document.forms['form1'];
 <#include "/site_mag/list_footer.ftl" />
 <!--/内容底部-->
 </form>
-
+<!-- <form id="upload" action="/Verwalter/upload" enctype="multipart/form-data" method="post">
+            <input type="file" onchange="upload()" name="Filedata" id="clickFile">
+        	</form> -->
 
 </body></html>
