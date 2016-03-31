@@ -45,4 +45,15 @@ public class TdAgencyFundService {
 		return repository.searchAllbyDiyCodeAndTime(diyCode,start, end);
 	}
 	
+	/**
+	 * 根据订单时间,城市查询代收款报表数据
+	 * @return
+	 */
+	public List<TdAgencyFund> searchAllbyCityAndTime(String city,Date start,Date end){
+		if(null == start || null == end){
+			return null;
+		}
+		return repository.searchAllbyCityAndTime(city,start, end);
+	}
+	
 }

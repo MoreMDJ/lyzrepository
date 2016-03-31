@@ -7,6 +7,7 @@
 <script type="text/javascript" src="/mag/js/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="/mag/js/lhgdialog.js"></script>
 <script type="text/javascript" src="/mag/js/layout.js"></script>
+<script type="text/javascript" src="/mag/js/WdatePicker.js"></script>
 <link href="/mag/style/pagination.css" rel="stylesheet" type="text/css">
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
 </head>
@@ -34,11 +35,16 @@ function downloaddate()
 {
     var begain = $("#begain").val();
     var end = $("#end").val();
-    
-    location.href="/Verwalter/coupon/downdata";
-   
-    return; 
-    
+    var diyCode = $("#diyCode").val();
+    var city = $("#cityId").val();
+    if(begain==""){
+    	$.dialog.confirm("将导出全部数据,请确认导出?", function () {
+    		location.href="/Verwalter/coupon/downdata?begindata="+ begain + "&enddata=" + end + "&diyCode=" + diyCode+ "&cityId=" + city;
+    		return;
+        });
+    }else{
+    	location.href="/Verwalter/coupon/downdata?begindata="+ begain + "&enddata=" + end + "&diyCode=" + diyCode+ "&cityId=" + city;
+    }
 }
 </script>
 <!--导航栏-->
@@ -90,6 +96,22 @@ function downloaddate()
       <div class="r-list">
                 <input name="keywords" type="text" class="keyword" value="<#if keywords??>${keywords!''}</#if>">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
+                <#if cityList?? && cityList?size gt 0 >
+            	<div class="odiv" style="float:left;width:310px;"><span class="span1">城市名称：</span>
+                	<div class="rule-single-select">
+                        <select name="cityId" id="cityId">
+                        <option value="0" >请选择</option>      
+                        <#list cityList as city>
+                        	<option value="${city.id }" >${city.cityName }</option>
+                        </#list>
+                        </select>
+            		</div>
+            	</div>
+            	</#if>
+                                                领取时间:
+                <input name="orderStartTime" id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
+                <input name=orderEndTime id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
+               
                 <a style="color:black;line-height: 30px;margin-left: 20px;" href="javascript:downloaddate();">领用记录报表下载</a>
       </div>
    

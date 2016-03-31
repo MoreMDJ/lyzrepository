@@ -3,6 +3,7 @@ package com.ynyes.lyz.controller.management;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +29,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ynyes.lyz.entity.TdDeliveryInfo;
-import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdManager;
@@ -40,9 +39,9 @@ import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserTurnRecord;
+import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
-import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -94,6 +93,12 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	
 	@Autowired
 	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
+	
+	@Autowired
+	private TdCityService tdCityService;
+	
+	@Autowired
+	private TdDiySiteService tdDiySiteService;
 	
 	// 列表
 	@RequestMapping(value = "/{type}/list")
@@ -196,6 +201,11 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				else
 				{
 					map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
+				}
+				//城市和门店信息
+				if (tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
+//					map.addAttribute("diySiteList",tdDiySiteService.findAll());
+					map.addAttribute("cityList", tdCityService.findAll());
 				}
 				return "/site_mag/returnNote_list";
 			}
@@ -414,7 +424,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	
 	@RequestMapping(value = "/downdatareturnorder")
 	@ResponseBody
-	public String downdatareturnorder(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response)
+	public String downdatareturnorder(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,String diyCode,Long city)
 	{
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username)
@@ -472,8 +482,27 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 		Date begin = stringToDate(begindata,null);
 		Date end = stringToDate(enddata,null);
 		
-		String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
-		List<TdReturnNote> returnList = tdReturnNoteService.findByOrderTimeOrderByOrderTimeDesc(begin, end,siteName);
+//		String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
+//		List<TdReturnNote> returnList = tdReturnNoteService.findByOrderTimeOrderByOrderTimeDesc(begin, end,siteName);
+//		
+		List<TdReturnNote> returnList = null;
+       
+        
+        	if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") &&  null != city && !city.equals(0L)){
+        		List<TdDiySite> siteList =tdDiySiteService.findByCityId(city);
+        		List<String> siteNamesList=new ArrayList<String>();
+        		if(null != siteList){
+        			for (TdDiySite site : siteList) {
+            			siteNamesList.add(site.getTitle());
+    				}
+        		}
+        		returnList =tdReturnNoteService.findByOrderTimeOrderByOrderTimeDesc(begin, end,null,siteNamesList);
+        		
+        	}else{
+        		String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
+        		returnList = tdReturnNoteService.findByOrderTimeOrderByOrderTimeDesc(begin, end,siteName,null);
+        	}
+        
 		
 		
 		if (returnList != null && returnList.size()>0)

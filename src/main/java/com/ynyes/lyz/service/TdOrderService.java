@@ -526,7 +526,7 @@ public class TdOrderService {
 	 */
 	public Page<TdOrder> findAll(String keywords, String orderStartTime, String orderEndTime, String realName,
 			String sellerRealName, String shippingAddress, String shippingPhone, String deliveryTime, String userPhone,
-			String shippingName, String sendTime, Long statusId, String diyCode, int size, int page) {
+			String shippingName, String sendTime, Long statusId, String diyCode,String city, int size, int page) {
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdOrder> c = new Criteria<TdOrder>();
 		if (null != keywords && !keywords.equalsIgnoreCase("")) {
@@ -570,6 +570,9 @@ public class TdOrderService {
 		}
 		if (null != diyCode && !"".equals(diyCode)) {
 			c.add(Restrictions.eq("diySiteCode", diyCode, true));
+		}
+		if (null != city && !"".equals(city)) {
+			c.add(Restrictions.eq("city", city, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c, pageRequest);
@@ -698,6 +701,15 @@ public class TdOrderService {
 		}
 		return repository.findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrderByOrderTimeDesc(
 				keywords, diySiteId, keywords, diySiteId);
+	}
+	
+	/**
+	 * 根据城市名称和订单时间查询订单
+	 * @return
+	 */
+	public List<TdOrder> findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String city,
+			Date begin, Date end) {
+		return repository.findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(city, begin, end);
 	}
 
 }

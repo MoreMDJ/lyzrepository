@@ -137,6 +137,18 @@ public class TdCoupon {
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date addTime;
+	// 门店编号
+	@Column
+	private String diySiteCode;
+	// 门店名称
+	@Column
+	private String diySiteTital;
+	// 城市id
+	@Column
+	private Long cityId;
+	// 城市名
+	@Column
+	private String cityName;
 
 	public Long getId() {
 		return id;
@@ -353,4 +365,37 @@ public class TdCoupon {
 	public void setRealPrice(Double realPrice) {
 		this.realPrice = realPrice;
 	}
+
+	public String getDiySiteCode() {
+		return diySiteCode;
+	}
+
+	public void setDiySiteCode(String diySiteCode) {
+		this.diySiteCode = diySiteCode;
+	}
+
+	public String getDiySiteTital() {
+		return diySiteTital;
+	}
+
+	public void setDiySiteTital(String diySiteTital) {
+		this.diySiteTital = diySiteTital;
+	}
+
+	public Long getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Long cityId) {
+		this.cityId = cityId;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+	
 }

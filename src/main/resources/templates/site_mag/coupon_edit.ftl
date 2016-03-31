@@ -114,6 +114,24 @@ function changeType(e)
     </dd>
   </dl>
   <dl>
+            <dt>城市</dt>
+            <dd>
+                <div class="rule-single-select">
+                    <select name="cityId" id="cityId"  datatype="*" sucmsg=" ">
+                        <#if !activity_gift??>
+                        <option value="">请选择城市...</option>
+                        </#if>
+                        <#if city_list??> 
+                            <#list city_list as c>
+                                <option value="${c.id?c}" <#if coupon?? && coupon.cityId?? && coupon.cityId==c.id>selected="selected"</#if>>${c.cityName!''}</option>
+                            </#list>
+                        </#if>
+                    </select>
+                </div>
+            </dd>
+        </dl>
+  <dl>
+  
     <dt>所属公司</dt>
     <dd>
         <div class="rule-single-select">

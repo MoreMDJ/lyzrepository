@@ -2,7 +2,6 @@ package com.ynyes.lyz.service;
 
 import java.util.List;
 
-import org.apache.xml.resolver.apps.resolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -219,5 +218,12 @@ public class TdDiySiteService {
 	
 	public List<TdDiySite> findAll(){
 		return (List<TdDiySite>) repository.findAll();
+	}
+	
+	public List<TdDiySite> findByCityId(Long cityId){
+		if(null == cityId){
+			return null;
+		}
+		return repository.findByCityId(cityId);
 	}
 }

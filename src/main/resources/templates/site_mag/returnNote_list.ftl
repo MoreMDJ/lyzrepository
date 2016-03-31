@@ -35,13 +35,15 @@ function downloaddate(type)
 {
     var begain = $("#begain").val();
     var end = $("#end").val();
+    var diyCode = $("#diyCode").val();
+    var city = $("#city").val();
     if(begain==""){
     	$.dialog.confirm("将导出全部数据,请确认导出?", function () {
-    		downloaddateurl(type,"/Verwalter/returnNote/downdatareturnorder?begindata="+ begain + "&enddata=" + end);
+    		downloaddateurl(type,"/Verwalter/returnNote/downdatareturnorder?begindata="+ begain + "&enddata=" + end + "&diyCode=" + diyCode+ "&city=" + city);
     		return;
         });
     }else{
-    	downloaddateurl(type,"/Verwalter/returnNote/downdatareturnorder?begindata="+ begain + "&enddata=" + end);
+    	downloaddateurl(type,"/Verwalter/returnNote/downdatareturnorder?begindata="+ begain + "&enddata=" + end + "&diyCode=" + diyCode+ "&city=" + city);
     }
     
    
@@ -81,9 +83,34 @@ function downloaddateurl(type,url){
             <div class="r-list">
                 <input name="keywords" type="text" class="keyword">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
+                <!-- <#if diySiteList?? && diySiteList?size gt 0 >
+            <div class="odiv" style="float:left;width:310px;"><span class="span1">门店名称：</span>
+                	<div class="rule-single-select">
+                        <select name="diyCode" id="diyCode">
+                        <option value="" >请选择</option>      
+                        <#list diySiteList as diySite>
+                        	<option value="${diySite.title }" >${diySite.title }</option>
+                        </#list>
+                        </select>
+            		</div>
+            	</div>
+            	</#if> -->
+            	<#if cityList?? && cityList?size gt 0 >
+            	<div class="odiv" style="float:left;width:310px;"><span class="span1">城市名称：</span>
+                	<div class="rule-single-select">
+                        <select name="city" id="city">
+                        <option value="0" >请选择</option>      
+                        <#list cityList as city>
+                        	<option value="${city.id }" >${city.cityName }</option>
+                        </#list>
+                        </select>
+            		</div>
+            	</div>
+            	</#if>
                                                 申请时间:
                 <input name="orderStartTime" id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
                 <input name=orderEndTime id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
+               
                 <a style="color:black;" href="javascript:downloaddate(0);" class="a1">退货报表下载</a>
             </div>
         </div>

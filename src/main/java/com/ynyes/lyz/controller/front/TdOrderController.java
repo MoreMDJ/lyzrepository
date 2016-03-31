@@ -208,7 +208,7 @@ public class TdOrderController {
 		for (Long brandId : brandIds) {
 			List<TdCoupon> coupon_list = tdCouponService
 					.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
-							username, 1L, brandId);
+							username, 1L, brandId,user.getCityName());
 			no_product_coupon_list.addAll(coupon_list);
 		}
 
@@ -220,13 +220,13 @@ public class TdOrderController {
 					// 查找能使用的产品券
 					List<TdCoupon> p_coupon_list = tdCouponService
 							.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-									username, goods.getGoodsId());
+									username, goods.getGoodsId(),user.getCityName());
 					product_coupon_list.addAll(p_coupon_list);
 
 					// 查找能使用的指定商品现金券
 					List<TdCoupon> c_coupon_list = tdCouponService
 							.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-									username, goods.getGoodsId());
+									username, goods.getGoodsId(),user.getCityName());
 					no_product_coupon_list.addAll(c_coupon_list);
 				}
 			}
@@ -761,7 +761,7 @@ public class TdOrderController {
 				if (null != brandId) {
 					List<TdCoupon> cash_coupon_brand = tdCouponService
 							.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
-									username, 1L, brandId);
+									username, 1L, brandId,user.getCityName());
 					if (null != cash_coupon_brand && cash_coupon_brand.size() > 0) {
 						cash_coupon_map.put(brandId, cash_coupon_brand);
 					}
@@ -780,14 +780,14 @@ public class TdOrderController {
 			if (null != cartGoods) {
 				List<TdCoupon> product_coupon_by_goodsId = tdCouponService
 						.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-								username, cartGoods.getGoodsId());
+								username, cartGoods.getGoodsId(),user.getCityName());
 				if (null != product_coupon_by_goodsId && product_coupon_by_goodsId.size() > 0) {
 					product_coupon_list.addAll(product_coupon_by_goodsId);
 				}
 
 				List<TdCoupon> no_product_coupon_by_goodsId = tdCouponService
 						.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-								username, cartGoods.getGoodsId());
+								username, cartGoods.getGoodsId(),user.getCityName());
 				if (null != no_product_coupon_by_goodsId && no_product_coupon_by_goodsId.size() > 0) {
 					Long brandId = cartGoods.getBrandId();
 					List<TdCoupon> list = cash_coupon_map.get(brandId);

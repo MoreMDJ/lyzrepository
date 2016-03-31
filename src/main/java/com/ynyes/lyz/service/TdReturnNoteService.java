@@ -220,7 +220,7 @@ public class TdReturnNoteService {
 	 * 根据时间和门店查询退货单
 	 * @return
 	 */
-	public List<TdReturnNote> findByOrderTimeOrderByOrderTimeDesc(Date begin,Date end,String siteName){
+	public List<TdReturnNote> findByOrderTimeOrderByOrderTimeDesc(Date begin,Date end,String siteName,List<String> siteNameList){
 		Criteria<TdReturnNote> c = new Criteria<TdReturnNote>();
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
@@ -229,6 +229,9 @@ public class TdReturnNoteService {
 		}
 		if(null!=siteName && !"".equals(siteName)){
 			c.add( Restrictions.eq("diySiteTitle", siteName, true));
+		}
+		if(null != siteNameList && siteNameList.size()>0){
+			c.add( Restrictions.in("diySiteTitle", siteNameList, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);

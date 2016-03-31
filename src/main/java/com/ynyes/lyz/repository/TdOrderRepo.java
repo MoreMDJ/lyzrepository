@@ -238,4 +238,10 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	List<TdOrder> findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrderByOrderTimeDesc(
 			String keywords1, Long diySiteId1, String keywords2, Long diySiteId2);
 
+	/**
+	 * 根据城市名称和订单时间查询订单
+	 * @return
+	 */
+	List<TdOrder> findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String city,
+			Date begin, Date end);
 }

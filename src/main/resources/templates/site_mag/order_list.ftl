@@ -63,6 +63,7 @@ function downloaddate(type)
     var begain = $("#begain").val();
     var end = $("#end").val();
     var diyCode = $("#diyCode").val();
+    var city = $("#city").val();
     if(begain == "")
     {
         alert("请选择开始时间！");
@@ -70,11 +71,11 @@ function downloaddate(type)
     }
     if(type == 0)
     {
-    location.href="/Verwalter/order/downdata?begindata="+ begain + "&enddata=" + end+"&diyCode="+diyCode;
+    location.href="/Verwalter/order/downdata?begindata="+ begain + "&enddata=" + end+"&diyCode="+diyCode+"&city="+city;
     }
     else if (type == 1)
     {
-    location.href="/Verwalter/order/downdatagoods?begindata="+ begain + "&enddata=" + end+"&diyCode="+diyCode;
+    location.href="/Verwalter/order/downdatagoods?begindata="+ begain + "&enddata=" + end+"&diyCode="+diyCode+"&city="+city;
     }
     else
     {
@@ -195,6 +196,18 @@ function downloaddate(type)
                         <option value="" >请选择</option>      
                         <#list diySiteList as diySite>
                         	<option value="${diySite.storeCode }" >${diySite.title }</option>
+                        </#list>
+                        </select>
+            		</div>
+            	</div>
+            	</#if>
+            	<#if cityList?? && cityList?size gt 0 >
+            	<div class="odiv" style="float:left;width:310px;"><span class="span1">城市名称：</span>
+                	<div class="rule-single-select">
+                        <select name="city" id="city">
+                        <option value="" >请选择</option>      
+                        <#list cityList as city>
+                        	<option value="${city.cityName }" >${city.cityName }</option>
                         </#list>
                         </select>
             		</div>

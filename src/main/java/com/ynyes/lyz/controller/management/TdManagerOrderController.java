@@ -163,7 +163,7 @@ public class TdManagerOrderController {
 	
 	@RequestMapping(value = "/downdatagoods")
 	@ResponseBody
-	public String downdatagoods(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,String diyCode)
+	public String downdatagoods(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,String diyCode,String city)
 	{
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username)
@@ -286,8 +286,12 @@ public class TdManagerOrderController {
 		}
         else
         {
-        	if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") && StringUtils.isNotBlank(diyCode)){
-        		orderList = tdOrderService.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(diyCode,date1,date2);
+        	if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") && (StringUtils.isNotBlank(diyCode)||StringUtils.isNotBlank(city))){
+        		if(StringUtils.isNotBlank(diyCode)){
+        			orderList = tdOrderService.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(diyCode,date1,date2);
+        		}else{
+        			orderList=tdOrderService.findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(city, date1, date2);
+        		}
         	}else{
         		orderList = tdOrderService.findByBeginAndEndOrderByOrderTimeDesc(date1, date2);
         	}
@@ -431,7 +435,7 @@ public class TdManagerOrderController {
 	 */
 	@RequestMapping(value = "/downdata",method = RequestMethod.GET)
 	@ResponseBody
-	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,String diyCode)
+	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,String diyCode,String city)
 	{
 		
 		String username = (String) req.getSession().getAttribute("manager");
@@ -706,18 +710,18 @@ public class TdManagerOrderController {
         List<TdAgencyFund> agencyFundList = null;
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
-        	System.out.println("------->begain" + new Date());
         	agencyFundList = tdAgencyFundService.searchAllbyDiyCodeAndTime(tdManager.getDiyCode(),date1,date2);
-        	System.out.println("------->end" + new Date());
 		}
         else
         {
-        	if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") && StringUtils.isNotBlank(diyCode)){
-        		agencyFundList = tdAgencyFundService.searchAllbyDiyCodeAndTime(diyCode,date1,date2);
+        	if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") && (StringUtils.isNotBlank(diyCode) || StringUtils.isNotBlank(city))){
+        		if(StringUtils.isNotBlank(diyCode)){
+        			agencyFundList = tdAgencyFundService.searchAllbyDiyCodeAndTime(diyCode,date1,date2);
+        		}else{
+        			agencyFundList = tdAgencyFundService.searchAllbyCityAndTime(city,date1,date2);
+        		}
         	}else{
-        		System.out.println("------->1begain" + new Date());
             	agencyFundList = tdAgencyFundService.searchAllByTime(date1, date2);
-            	System.out.println("------->1end" + new Date());
         	}
         }
         Integer i = 0;
@@ -1308,7 +1312,7 @@ public class TdManagerOrderController {
 	public String goodsListDialog(String keywords, @PathVariable Long statusId, Integer page, Integer size,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
 			ModelMap map, HttpServletRequest req,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
-			String deliveryTime,String userPhone,Long orderStatusId,String shippingName,String sendTime,String diyCode) {
+			String deliveryTime,String userPhone,Long orderStatusId,String shippingName,String sendTime,String diyCode,String city) {
 		String username = (String) req.getSession().getAttribute("manager");
 
 		if (null == username)
@@ -1410,7 +1414,7 @@ public class TdManagerOrderController {
 				}
 				if(!isNotFindUser){
 						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, userName, sellerRealName, shippingAddress, shippingPhone,
-					 deliveryTime, userPhone, shippingName, sendTime,statusId,diySiteCode, size, page));
+					 deliveryTime, userPhone, shippingName, sendTime,statusId,diySiteCode,city, size, page));
 				}
 //				}
 //				else
@@ -1438,9 +1442,10 @@ public class TdManagerOrderController {
 				map.addAttribute("name_map",nameMap);
 			}
 		}
-		//门店信息
+		//城市和门店信息
 		if (tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
 			map.addAttribute("diySiteList",tdDiySiteService.findAll());
+			map.addAttribute("cityList", tdCityService.findAll());
 		}
 		
 		// 参数注回

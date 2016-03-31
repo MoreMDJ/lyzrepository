@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdBrand;
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdCouponType;
 import com.ynyes.lyz.entity.TdDiySite;
@@ -40,6 +42,7 @@ import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdBrandService;
+import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdCouponTypeService;
 import com.ynyes.lyz.service.TdDiySiteService;
@@ -97,6 +100,8 @@ public class TdManagerCouponController {
     @Autowired
     private TdOrderService tdOrderService;
     
+    @Autowired 
+    private TdCityService tdCityService;
     
     @RequestMapping(value = "/down/order/use")
     public void couponUseDetail()
@@ -225,7 +230,7 @@ public class TdManagerCouponController {
 
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
         map.addAttribute("category_list", tdProductCategoryService.findAll());
-
+       
         if (null != id) {
             map.addAttribute("coupon_type", tdCouponTypeService.findOne(id));
         }
@@ -363,6 +368,7 @@ public class TdManagerCouponController {
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
         
         map.addAttribute("brand_list", tdBrandService.findAll());
+        map.addAttribute("city_list", tdCityService.findAll());
 
         if (null != id)
         {
@@ -398,6 +404,12 @@ public class TdManagerCouponController {
         if (null == username) {
             return "redirect:/Verwalter/login";
         }
+        TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (tdManager != null && tdManager.getRoleId() != null)
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
         
         if (null != __EVENTTARGET)
         {
@@ -529,6 +541,12 @@ public class TdManagerCouponController {
         //查询优惠券类型
         map.addAttribute("couponType_list", tdCouponTypeService.findAllOrderBySortIdAsc());
         map.addAttribute("typeId", typeId);
+        
+      //城市和门店信息
+		if (null != tdManagerRole && tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
+//			map.addAttribute("diySiteList",tdDiySiteService.findAll());
+			map.addAttribute("cityList", tdCityService.findAll());
+		}
         
         return "/site_mag/coupon_distributed_list";
     }
@@ -701,6 +719,12 @@ public class TdManagerCouponController {
         	if(null != brand)
         	{
         		tdCoupon.setBrandTitle(brand.getTitle());
+        	}
+        }
+        if(null != tdCoupon.getCityId()){
+        	TdCity city= tdCityService.findOne(tdCoupon.getCityId());
+        	if(null != city){
+        		tdCoupon.setCityName(city.getCityName());
         	}
         }
         tdCouponService.save(tdCoupon);
@@ -925,6 +949,8 @@ public class TdManagerCouponController {
     			tdCoupon.setTypeId(coupon.getTypeId());
     			tdCoupon.setTypeTitle(coupon.getTypeTitle());
     			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
+    			tdCoupon.setCityId(coupon.getCityId());
+    			tdCoupon.setCityName(coupon.getCityName());
     			
     			// 保存领取
     			tdCouponService.save(tdCoupon);
@@ -995,6 +1021,8 @@ public class TdManagerCouponController {
         			tdCoupon.setTypeId(coupon.getTypeId());
         			tdCoupon.setTypeTitle(coupon.getTypeTitle());
         			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
+        			tdCoupon.setCityId(coupon.getCityId());
+        			tdCoupon.setCityName(coupon.getCityName());
         			
         			// 保存领取
         			tdCouponService.save(tdCoupon);
@@ -1103,14 +1131,14 @@ public class TdManagerCouponController {
 	 */
 	@RequestMapping(value = "/downdata",method = RequestMethod.GET)
 	@ResponseBody
-	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response)
+	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,Long cityId)
 	{
 		
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
-		
+		TdUser user=tdUseService.findByUsername(username);
 		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
 		TdManagerRole tdManagerRole = null;
 		if (null != tdManager && null != tdManager.getRoleId())
@@ -1200,7 +1228,17 @@ public class TdManagerCouponController {
        
         // 第五步，设置值  
         List<TdCoupon> coupon = null;
-        coupon=tdCouponService.findByIsDistributtedTrueOrderByIdDesc();
+//        coupon=tdCouponService.findByIsDistributtedTrueOrderByIdDesc();
+        
+        if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") &&  null != cityId){
+        	coupon= tdCouponService.findByGetTimeAndCityIdOrderByGetTimeDesc(date1, date2, cityId);
+    	}else{
+    		TdCity city= tdCityService.findByCityName(user.getCityName());
+    		if(null != city){
+    			coupon= tdCouponService.findByGetTimeAndCityIdOrderByGetTimeDesc(date1, date2, city.getId());
+    		}
+    	}
+        
         		
         Integer i = 0;
         for (TdCoupon tdCoupon : coupon)
