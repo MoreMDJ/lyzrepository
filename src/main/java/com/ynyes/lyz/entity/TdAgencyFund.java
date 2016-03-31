@@ -85,7 +85,12 @@ public class TdAgencyFund {
 	//实际配送时间
 	@Column
 	private Date deliveryTime;
-	
+	// 城市
+	@Column
+	private String city;
+	// 配送门店id
+	@Column
+	private String diySiteCode;
 	
 	public Long getId() {
 		return id;
@@ -225,6 +230,17 @@ public class TdAgencyFund {
 	public void setDeliveryTime(Date deliveryTime) {
 		this.deliveryTime = deliveryTime;
 	}
-	
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getDiySiteCode() {
+		return diySiteCode;
+	}
+	public void setDiySiteCode(String diySiteCode) {
+		this.diySiteCode = diySiteCode;
+	}
 	
 }

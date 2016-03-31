@@ -32,19 +32,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdAgencyFund;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
-import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
-import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
-import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceList;
-import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.entity.TdReturnNote;
+import com.ynyes.lyz.entity.TdSalesDetail;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdWareHouse;
@@ -68,6 +65,7 @@ import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.service.TdReturnNoteService;
+import com.ynyes.lyz.service.TdSalesDetailService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
@@ -160,6 +158,8 @@ public class TdManagerOrderController {
 	@Autowired
 	private TdAgencyFundService tdAgencyFundService;
 	
+	@Autowired
+	private TdSalesDetailService tdSalesDetailService;
 	
 	@RequestMapping(value = "/downdatagoods")
 	@ResponseBody
@@ -279,7 +279,7 @@ public class TdManagerOrderController {
 		cell.setCellValue("收货人地址");
 		cell.setCellStyle(style);
 		
-		List<TdOrder> orderList = null;
+		/*List<TdOrder> orderList = null;
 		if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
 			orderList = tdOrderService.findByDiySiteCodeAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(tdManager.getDiyCode(),date1,date2);
@@ -424,6 +424,117 @@ public class TdManagerOrderController {
 					}
 				}
 			}
+		}*/
+		
+		if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
+		{
+			diyCode= tdManager.getDiyCode();
+			city=null;
+		}
+		List<TdSalesDetail> salesDetailList = tdSalesDetailService.searchSalesDetail(date1, date2, city, diyCode);
+		
+		if (salesDetailList != null)
+		{
+			Integer i = 1;
+			for (TdSalesDetail salesDetail : salesDetailList) {
+				
+						row = sheet.createRow(i);
+						if (salesDetail.getDiySiteName() != null)
+						{
+							row.createCell(0).setCellValue(salesDetail.getDiySiteName());
+						}
+						//代付款订单没有主单号  分单号显示到主单号位置
+						if(salesDetail.getStatusId() != null && salesDetail.getStatusId().equals(2L)){
+							if (salesDetail.getOrderNumber() != null){
+								row.createCell(1).setCellValue(salesDetail.getOrderNumber());
+							}
+						}else{
+							if (salesDetail.getMainOrderNumber() != null)
+							{
+								row.createCell(1).setCellValue(salesDetail.getMainOrderNumber());
+							}
+							if (salesDetail.getOrderNumber() != null)
+							{
+								row.createCell(2).setCellValue(salesDetail.getOrderNumber());
+							}
+						}
+						
+						if (salesDetail.getOrderTime() != null)
+						{
+							row.createCell(3).setCellValue(salesDetail.getOrderTime().toString());
+						}
+						if (salesDetail.getStatusId() != null)
+						{
+							row.createCell(4).setCellValue(orderStatus(salesDetail.getStatusId()));
+						}
+						if (salesDetail.getUsername() != null)
+						{
+							row.createCell(5).setCellValue(salesDetail.getUsername());
+						}
+						if (salesDetail.getShippingName() != null)
+						{
+							row.createCell(6).setCellValue(salesDetail.getShippingName());
+						}
+						if (salesDetail.getSku() != null)
+						{
+							row.createCell(7).setCellValue(salesDetail.getSku());
+						}
+						if (salesDetail.getGoodsTitle() != null)
+						{
+							row.createCell(8).setCellValue(salesDetail.getGoodsTitle());
+						}
+						if (salesDetail.getQuantity() != null)
+						{
+							row.createCell(9).setCellValue(salesDetail.getQuantity());
+						}
+						if (salesDetail.getPrice() != null)
+						{
+							row.createCell(10).setCellValue(salesDetail.getPrice());
+						}
+						if(salesDetail.getQuantity() != null && salesDetail.getPrice() != null){
+							row.createCell(11).setCellValue(salesDetail.getPrice()*salesDetail.getQuantity());
+						}
+						if (null != salesDetail.getCashBalanceUsed())
+			        	{
+			            	row.createCell(12).setCellValue(salesDetail.getCashBalanceUsed());
+			    		}
+			        	if (null != salesDetail.getUnCashBalanceUsed())
+			        	{
+			            	row.createCell(13).setCellValue(salesDetail.getUnCashBalanceUsed());
+			    		}
+						if (salesDetail.getRemark() != null)
+						{
+							row.createCell(14).setCellValue(salesDetail.getRemark());
+						}
+						
+						
+			        	if (salesDetail.getWhNo() != null )
+			        	{
+			        		row.createCell(15).setCellValue(changeName(salesDetail.getWhNo()));
+						}
+			        	if (null != salesDetail.getDeliverRealName())
+						{
+			        		row.createCell(16).setCellValue(salesDetail.getDeliverRealName());
+						}
+			        	if (null != salesDetail.getDeliverUsername())
+			        	{
+			            	row.createCell(17).setCellValue(salesDetail.getDeliverUsername());
+			    		}
+			        	if(salesDetail.getSellerRealName() != null){
+			        		row.createCell(18).setCellValue(salesDetail.getSellerRealName());
+			        	}
+			        	if(salesDetail.getTitle() != null){
+			        		row.createCell(19).setCellValue(salesDetail.getTitle());
+			        	}
+			        	if(salesDetail.getDeliverTypeTitle()!=null){
+			        		row.createCell(20).setCellValue(salesDetail.getDeliverTypeTitle());
+			        	}
+			        	if(salesDetail.getShippingAddress()!=null && !"门店自提".equals(salesDetail.getDeliverTypeTitle())){
+			        		row.createCell(21).setCellValue(salesDetail.getShippingAddress());
+			        	}
+						
+						i++;
+					}
 		}
 		
 		download(workbook, "1", response);
@@ -707,23 +818,14 @@ public class TdManagerOrderController {
         	
         	i++;
 		}*/
-        List<TdAgencyFund> agencyFundList = null;
+       
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
-        	agencyFundList = tdAgencyFundService.searchAllbyDiyCodeAndTime(tdManager.getDiyCode(),date1,date2);
+        	diyCode=tdManager.getDiyCode();
+        	city=null;
 		}
-        else
-        {
-        	if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") && (StringUtils.isNotBlank(diyCode) || StringUtils.isNotBlank(city))){
-        		if(StringUtils.isNotBlank(diyCode)){
-        			agencyFundList = tdAgencyFundService.searchAllbyDiyCodeAndTime(diyCode,date1,date2);
-        		}else{
-        			agencyFundList = tdAgencyFundService.searchAllbyCityAndTime(city,date1,date2);
-        		}
-        	}else{
-            	agencyFundList = tdAgencyFundService.searchAllByTime(date1, date2);
-        	}
-        }
+        List<TdAgencyFund> agencyFundList = tdAgencyFundService.searchAgencyFund(date1, date2, city, diyCode);
+        
         Integer i = 0;
         for (TdAgencyFund agencyFund : agencyFundList)
         {
