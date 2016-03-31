@@ -43,7 +43,12 @@
                             <#case 2>
                                 <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                 <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
-                                <a href="/order?id=${item.id?c}" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>
+                                <#--<a href="/order?id=${item.id?c}" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>-->
+                                <#if user_type??>
+                                    <#if user_type!=1>
+                                    <a href="/order?id=${item.id?c}" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>
+                                    </#if>
+                                </#if>
                             <#break>
                             <#case 3>
                                 <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>

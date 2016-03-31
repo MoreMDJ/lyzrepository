@@ -1601,6 +1601,8 @@ public class TdOrderController {
 		TdUser seller = tdUserService.findOne(sellerId);
 		// 生成虚拟订单
 		TdOrder order = tdCommonService.createVirtual(req);
+		tdPriceCouintService.countPrice(order, realUser);
+		
 		// 设置真实用户信息
 		order.setUsername(realUser.getUsername());
 		order.setUserId(realUser.getId());
@@ -1617,7 +1619,7 @@ public class TdOrderController {
 		// add Mdj
 		if (defaultAddress == null)
 		{
-			res.put("message", "请让用户填写默认地址");
+			res.put("message", "请让用户("+ realUser.getRealName() +")填写默认地址");
 			return res;
 		}
 		
