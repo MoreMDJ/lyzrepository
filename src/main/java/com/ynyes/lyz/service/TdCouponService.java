@@ -566,4 +566,18 @@ public class TdCouponService {
 		c.setOrderByDesc("getTime");
 		return repository.findAll(c);
 	}
+	
+	/**
+	 * 查看可领取现金券区分城市
+	 * @author Max
+	 */
+	
+	public List<TdCoupon> findByCityNameAndTypeIdAndTypeCategoryId(String cityName,Long typeId,Long cateId,Date date)
+	{
+		if(null == typeId || null == cateId || null==cityName)
+		{
+			return null;
+		}
+		return repository.findByCityNameAndTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(cityName,typeId, cateId, date);
+	}
 }

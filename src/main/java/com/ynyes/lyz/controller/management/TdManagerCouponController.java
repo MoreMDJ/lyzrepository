@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -830,6 +829,7 @@ public class TdManagerCouponController {
     		Integer[] listChkId,
     		Long[] listId,
     		Long[] quantity,
+    		String cityName,
     		HttpServletRequest req,
     		ModelMap map)
     {
@@ -860,10 +860,14 @@ public class TdManagerCouponController {
 			}
         }
     	
-    	
     	if(null != couponId)
     	{
     		TdCoupon coupon = tdCouponService.findOne(couponId);
+    		if(null != coupon){
+    			cityName=coupon.getCityName();
+    			System.out.println(cityName);
+    			map.addAttribute("cityName",cityName);
+    		}
     		map.addAttribute("coupon", coupon);
     	}
     	if(null == page)
@@ -879,11 +883,11 @@ public class TdManagerCouponController {
     	map.addAttribute("size", size);
     	map.addAttribute("keywords", keywords);
     	
-    	if(null == keywords)
+    	if(null == keywords || "".equals(keywords))
     	{
-    		map.addAttribute("user_page", tdUseService.findAllOrderByIdDesc(page, size));
+    		map.addAttribute("user_page", tdUseService.findByCityNameOrderByIdDesc(cityName,page, size));
     	}else{
-    		map.addAttribute("user_page", tdUseService.searchAndOrderByIdDesc(keywords, page, size));
+    		map.addAttribute("user_page", tdUseService.searchcityNameAndOrderByIdDesc(keywords,cityName, page, size));
     	}
     	
     	

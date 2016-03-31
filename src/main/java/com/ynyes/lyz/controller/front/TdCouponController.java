@@ -44,11 +44,14 @@ public class TdCouponController {
 		{
 			return "redirect:/login";
 		}
-		
+		TdUser user= tdUserService.findByUsername(username);
+		if(null == user){
+			return "redirect:/login";
+		}
 		// 查找可领取现金券
-		map.addAttribute("couponList", tdCouponService.findByTypeIdAndTypeCategoryId(2L, 1L,new Date()));
+		map.addAttribute("couponList", tdCouponService.findByCityNameAndTypeIdAndTypeCategoryId(user.getCityName(),2L, 1L,new Date()));
 		// 可领取产品券
-		map.addAttribute("coupon_list", tdCouponService.findByTypeIdAndTypeCategoryId(2L, 3L,new Date()));
+		map.addAttribute("coupon_list", tdCouponService.findByCityNameAndTypeIdAndTypeCategoryId(user.getCityName(),2L, 3L,new Date()));
 		
 		return "/client/coupon_list";
 	}

@@ -249,4 +249,22 @@ public class TdUserService {
 		}
 		return repository.searchDriverByMainOrderNumber(mainOrderNumber);
 	}
+	
+	/**
+	 * @注释：根据城市查找所有按id降序排序
+	 */
+	public Page<TdUser> findByCityNameOrderByIdDesc(String cityName,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+
+		return repository.findByCityNameOrderByIdDesc(cityName,pageRequest);
+	}
+	
+	/**
+	 * @注释：搜索城市下面的用户
+	 */
+	public Page<TdUser> searchcityNameAndOrderByIdDesc(String keywords,String cityName, int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size);
+
+		return repository.findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(keywords, keywords,cityName, pageRequest);
+	}
 }

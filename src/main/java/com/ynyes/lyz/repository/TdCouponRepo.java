@@ -215,4 +215,7 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 * @return
 	 */
 	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Boolean isUsed,Long typeCategoryId,Pageable page);
+
+	// Max 根据城市名类别和发放类型查找未过期 优惠券
+	List<TdCoupon> findByCityNameAndTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(String cityName,Long typeId,Long cateId,Date date);
 }
