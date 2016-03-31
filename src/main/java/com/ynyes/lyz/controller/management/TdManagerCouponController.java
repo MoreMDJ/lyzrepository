@@ -1227,7 +1227,7 @@ public class TdManagerCouponController {
         cell = row.createCell((short) 7);  
        
         // 第五步，设置值  
-        List<TdCoupon> coupon = null;
+        List<TdCoupon> coupon = null; 
 //        coupon=tdCouponService.findByIsDistributtedTrueOrderByIdDesc();
         
         if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") &&  null != cityId){
