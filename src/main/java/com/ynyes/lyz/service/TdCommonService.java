@@ -326,6 +326,15 @@ public class TdCommonService {
 
 		return priceItemList.get(0);
 	}
+	
+	public List<TdGoods> geTdGoodsByDiySiteCode(TdDiySite diySite)
+	{
+		List<TdGoods> tdGoodsList = new ArrayList<TdGoods>();
+		Long sobId = diySite.getRegionId();
+		String priceType = "LYZ";
+		List<TdPriceList> priceList_list = tdPriceListService.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
+		return tdGoodsList;
+	}
 
 	/**
 	 * 查找三级分类的方法并查找指定三级分类下的所有商品及其价目表的方法
