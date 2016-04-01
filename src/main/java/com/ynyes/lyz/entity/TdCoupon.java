@@ -28,7 +28,7 @@ public class TdCoupon {
 	@Column
 	private Long typeId;
 
-	// 优惠券限用分类类型ID: 1. 通用现金券；2. 指定商品现金券；3. 产品券
+	// 优惠券限用分类类型ID: 1. 通用现金券；2. 指定商品现金券；3. 产品券；4.数据导入
 	@Column
 	private Long typeCategoryId;
 	
@@ -149,6 +149,30 @@ public class TdCoupon {
 	// 城市名
 	@Column
 	private String cityName;
+	
+	//用户编号（ebs）
+	@Column
+	private Long customerId;
+	
+	//sku
+	@Column
+	private String sku;
+	
+	public Long getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
 
 	public Long getId() {
 		return id;
