@@ -166,7 +166,7 @@ public class TdDeliveryIndexController {
 
 		List<TdReturnNote> rnList = new ArrayList<TdReturnNote>();
 		
-		// type : 1: 待取货 2: 已取货     3: 已完成
+		// type : 1: 待取货 2: 已取货 3: 已完成
 		if (null != startDate && null != user.getOpUser())
 		{
 			if (null != endDate) 
