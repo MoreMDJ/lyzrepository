@@ -87,8 +87,9 @@ public class TdOrderController {
 
 	@Autowired
 	private TdPriceCountService tdPriceCouintService;
-	
-	@Autowired TdGoodsService tdGoodsService;
+
+	@Autowired
+	TdGoodsService tdGoodsService;
 
 	/**
 	 * 清空部分信息的控制器
@@ -1152,8 +1153,8 @@ public class TdOrderController {
 	 */
 	@RequestMapping(value = "/new/address")
 	@ResponseBody
-	public Map<String, Object> orderNewAddress(HttpServletRequest req, ModelMap map, String receiveName, String receiveMobile,
-			Long district, Long subdistrict, String detail) {
+	public Map<String, Object> orderNewAddress(HttpServletRequest req, ModelMap map, String receiveName,
+			String receiveMobile, Long district, Long subdistrict, String detail) {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 		String username = (String) req.getSession().getAttribute("username");
@@ -1161,7 +1162,7 @@ public class TdOrderController {
 		if (null == user) {
 			res.put("status", -2);
 			return res;
-//			return "redirect:/login";
+			// return "redirect:/login";
 		}
 		TdDistrict tdDistrict = tdDistrictService.findOne(district);
 		TdSubdistrict tdSubdistrict = tdSubdistrictService.findOne(subdistrict);
@@ -1324,15 +1325,15 @@ public class TdOrderController {
 			res.put("message", "请填写收货地址");
 			return res;
 		}
-		
-		//判断是否在有效时间之内
-		if(null != order_temp.getValidTime() &&  new Date().after(order_temp.getValidTime())){
+
+		// 判断是否在有效时间之内
+		if (null != order_temp.getValidTime() && new Date().after(order_temp.getValidTime())) {
 			res.put("message", "超过有效支付时间请刷新订单重新支付");
-			//修改订单中的商品价格为最新价格
-			changeOrderToNewPrice(req,order_temp);
+			// 修改订单中的商品价格为最新价格
+			changeOrderToNewPrice(req, order_temp);
 			tdPriceCouintService.countPrice(order_temp, user);
-			//修改有效支付时间
-			orderValidTimeSet(req,order_temp);
+			// 修改有效支付时间
+			orderValidTimeSet(req, order_temp);
 			return res;
 		}
 
@@ -1352,9 +1353,9 @@ public class TdOrderController {
 		if (isOnline) {
 			// 判断是否还有未支付的金额
 			if (order_temp.getTotalPrice() > 0) {
-				//修改有效支付时间
-				orderValidTimeSet(req,order_temp);
-				
+				// 修改有效支付时间
+				orderValidTimeSet(req, order_temp);
+
 				// status的值为3代表需要通过第三方支付
 				res.put("status", 3);
 				res.put("title", payType.getTitle());
@@ -1602,7 +1603,7 @@ public class TdOrderController {
 		// 生成虚拟订单
 		TdOrder order = tdCommonService.createVirtual(req);
 		tdPriceCouintService.countPrice(order, realUser);
-		
+
 		// 设置真实用户信息
 		order.setUsername(realUser.getUsername());
 		order.setUserId(realUser.getId());
@@ -1617,12 +1618,11 @@ public class TdOrderController {
 			}
 		}
 		// add Mdj
-		if (defaultAddress == null)
-		{
-			res.put("message", "请让用户("+ realUser.getRealName() +")填写默认地址");
+		if (defaultAddress == null) {
+			res.put("message", "请让用户(" + realUser.getRealName() + ")填写默认地址");
 			return res;
 		}
-		
+
 		order.setProvince(defaultAddress.getProvince());
 		order.setCity(defaultAddress.getCity());
 		order.setDisctrict(defaultAddress.getDisctrict());
@@ -1693,21 +1693,21 @@ public class TdOrderController {
 		}
 		return "/client/order_user_info";
 	}
-	
+
 	/**
 	 * 修改订单商品的价格为最新价格
 	 */
-	private void changeOrderToNewPrice(HttpServletRequest req,TdOrder order){
-		
-		List<TdOrderGoods> orderGoods= order.getOrderGoodsList();
-		
-		if(null!= orderGoods && orderGoods.size()>0){//检查非空
+	private void changeOrderToNewPrice(HttpServletRequest req, TdOrder order) {
+
+		List<TdOrderGoods> orderGoods = order.getOrderGoodsList();
+
+		if (null != orderGoods && orderGoods.size() > 0) {// 检查非空
 			for (TdOrderGoods tdOrderGood : orderGoods) {
-				TdGoods good=tdGoodsService.findOne(tdOrderGood.getGoodsId());
+				TdGoods good = tdGoodsService.findOne(tdOrderGood.getGoodsId());
 				// 获取指定商品的价目表项
 				TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, good);
-				if(null != priceListItem){//检查非空
-					//修改订单商品中的价格为最新价格
+				if (null != priceListItem) {// 检查非空
+					// 修改订单商品中的价格为最新价格
 					tdOrderGood.setPrice(priceListItem.getSalePrice());
 					tdOrderGood.setRealPrice(priceListItem.getRealSalePrice());
 					tdOrderGoodsService.save(tdOrderGood);
@@ -1715,12 +1715,15 @@ public class TdOrderController {
 			}
 		}
 	}
+
 	/**
-	 *  设置有效支付时间
-	 * @param order 订单
+	 * 设置有效支付时间
+	 * 
+	 * @param order
+	 *            订单
 	 */
-	private void orderValidTimeSet(HttpServletRequest req,TdOrder order){
-		if(null!=order){//检查非空
+	private void orderValidTimeSet(HttpServletRequest req, TdOrder order) {
+		if (null != order) {// 检查非空
 			long currentTime = System.currentTimeMillis() + 6 * 60 * 60 * 1000;
 			Date date = new Date(currentTime);
 			order.setValidTime(date);
@@ -1728,4 +1731,5 @@ public class TdOrderController {
 			tdOrderService.save(order);
 		}
 	}
+
 }

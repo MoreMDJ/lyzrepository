@@ -109,6 +109,10 @@ public class TdOrderGoods {
 	@Column
 	private Long couponNumber;
 
+	// 退货数量
+	@Column
+	private Long returnNumber;
+	
 	public Boolean getIsCommented() {
 		return isCommented;
 	}
@@ -293,6 +297,14 @@ public class TdOrderGoods {
 		this.returnUnitPrice = returnUnitPrice;
 	}
 
+	public Long getReturnNumber() {
+		return returnNumber;
+	}
+
+	public void setReturnNumber(Long returnNumber) {
+		this.returnNumber = returnNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "TdOrderGoods [id=" + id + ", goodsId=" + goodsId + ", goodsTitle=" + goodsTitle + ", goodsSubTitle="
@@ -302,7 +314,7 @@ public class TdOrderGoods {
 				+ quantity + ", deliveredQuantity=" + deliveredQuantity + ", points=" + points + ", isReturnApplied="
 				+ isReturnApplied + ", isCommented=" + isCommented + ", commentId=" + commentId + ", brandTitle="
 				+ brandTitle + ", brandId=" + brandId + ", canReturnNumber=" + canReturnNumber + ", returnUnitPrice="
-				+ returnUnitPrice + ", couponNumber=" + couponNumber + "]";
+				+ returnUnitPrice + ", couponNumber=" + couponNumber + ", returnNumber=" + returnNumber + "]";
 	}
 
 }
