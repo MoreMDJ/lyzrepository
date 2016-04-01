@@ -155,6 +155,9 @@ public class TdManagerCouponController {
 		    	cell = row.createCell(5);
 		    	cell.setCellStyle(cellStyle);
 		    	cell.setCellValue("产品分类");
+		    	cell = row.createCell(6);
+		    	cell.setCellStyle(cellStyle);
+		    	cell.setCellValue("产品分类");
 				rowNumber++;
 			}
 		}
@@ -1184,22 +1187,22 @@ public class TdManagerCouponController {
         HSSFSheet sheet = wb.createSheet("领用记录报表");  
         // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
         //列宽
-        sheet.setColumnWidth((short) 0 , 25*256);
-        sheet.setColumnWidth((short) 1 , 13*256);
-        sheet.setColumnWidth((short) 2 , 25*256);
-        sheet.setColumnWidth((short) 3 , 25*256);
-        sheet.setColumnWidth((short) 4 , 18*256);
-        sheet.setColumnWidth((short) 5 , 11*256);
-        sheet.setColumnWidth((short) 6 , 13*256);
-        sheet.setColumnWidth((short) 7 , 11*256);
-        sheet.setColumnWidth((short) 8 , 19*256);
-        sheet.setColumnWidth((short) 9 , 12*256);
-        sheet.setColumnWidth((short) 10 , 9*256);
-        sheet.setColumnWidth((short) 11 , 13*256);
-        sheet.setColumnWidth((short) 12 , 13*256);
-        sheet.setColumnWidth((short) 13 , 13*256);
-        sheet.setColumnWidth((short) 14 , 40*256);
-        sheet.setColumnWidth((short) 15 , 40*256);
+        sheet.setColumnWidth(0 , 25*256);
+        sheet.setColumnWidth(1 , 13*256);
+        sheet.setColumnWidth(2 , 25*256);
+        sheet.setColumnWidth(3 , 25*256);
+        sheet.setColumnWidth(4 , 18*256);
+        sheet.setColumnWidth(5 , 11*256);
+        sheet.setColumnWidth(6 , 13*256);
+        sheet.setColumnWidth(7 , 11*256);
+        sheet.setColumnWidth(8 , 19*256);
+        sheet.setColumnWidth(9 , 12*256);
+        sheet.setColumnWidth(10 , 9*256);
+        sheet.setColumnWidth(11 , 13*256);
+        sheet.setColumnWidth(12 , 13*256);
+        sheet.setColumnWidth(13 , 13*256);
+        sheet.setColumnWidth(14 , 40*256);
+        sheet.setColumnWidth(15 , 40*256);
         
         // 第四步，创建单元格，并设置值表头 设置表头居中  
         HSSFCellStyle style = wb.createCellStyle();  
@@ -1207,28 +1210,28 @@ public class TdManagerCouponController {
         style.setWrapText(true);
     	//优惠券名称、金额、领卷时间、领用用户、是否使用、使用的时间、使用订单号
         HSSFRow row = sheet.createRow((int) 0); 
-        HSSFCell cell = row.createCell((short) 0);  
+        HSSFCell cell = row.createCell(0);  
         cell.setCellValue("优惠券名称");
         cell.setCellStyle(style);
-        cell = row.createCell((short) 1);
+        cell = row.createCell(1);
         cell.setCellValue("金额");  
         cell.setCellStyle(style);  
-        cell = row.createCell((short) 2);  
+        cell = row.createCell(2);  
         cell.setCellValue("领卷时间");  
         cell.setCellStyle(style);
-        cell = row.createCell((short) 3);  
+        cell = row.createCell(3);  
         cell.setCellValue("领用用户");  
         cell.setCellStyle(style);
-        cell = row.createCell((short) 4);  
+        cell = row.createCell(4);  
         cell.setCellValue("是否使用");
         cell.setCellStyle(style);
-        cell = row.createCell((short) 5);  
+        cell = row.createCell(5);  
         cell.setCellValue("使用时间");
         cell.setCellStyle(style);
-        cell = row.createCell((short) 6);  
+        cell = row.createCell(6);  
         cell.setCellValue("使用订单号");
         cell.setCellStyle(style);
-        cell = row.createCell((short) 7);  
+        cell = row.createCell(7);  
        
         // 第五步，设置值  
         List<TdCoupon> coupon = null;
@@ -1250,36 +1253,36 @@ public class TdManagerCouponController {
         	row = sheet.createRow((int) i + 1);
         	if (null != tdCoupon.getTypeTitle())
         	{
-            	row.createCell((short) 0).setCellValue(tdCoupon.getTypeTitle());
+            	row.createCell(0).setCellValue(tdCoupon.getTypeTitle());
     		}
         	if (null != tdCoupon.getPrice())
         	{
-            	row.createCell((short) 1).setCellValue(tdCoupon.getPrice());
+            	row.createCell(1).setCellValue(tdCoupon.getPrice());
     		}
         	if (null != tdCoupon.getGetTime())
         	{
         		Date getTime = tdCoupon.getGetTime();
         		String couponTimeStr = getTime.toString();
-            	row.createCell((short) 2).setCellValue(couponTimeStr);
+            	row.createCell(2).setCellValue(couponTimeStr);
     		}
         	if (null != tdCoupon.getUsername())
         	{
-            	row.createCell((short) 3).setCellValue(tdCoupon.getUsername());
+            	row.createCell(3).setCellValue(tdCoupon.getUsername());
     		}
         	if (null != tdCoupon.getIsUsed())
         	{
         		if(tdCoupon.getIsUsed()){
-        			row.createCell((short) 4).setCellValue("是");
+        			row.createCell(4).setCellValue("是");
         			String couponUserTimeStr="";
         			if (null != tdCoupon.getUseTime()){
         				Date userTime = tdCoupon.getUseTime();
         				couponUserTimeStr = userTime.toString();
         			}
         			
-        			row.createCell((short) 5).setCellValue(couponUserTimeStr);
-        			row.createCell((short) 6).setCellValue(tdCoupon.getOrderNumber());
+        			row.createCell(5).setCellValue(couponUserTimeStr);
+        			row.createCell(6).setCellValue(tdCoupon.getOrderNumber());
         		}else{
-        			row.createCell((short) 4).setCellValue("否");
+        			row.createCell(4).setCellValue("否");
         		}
             	
     		}
