@@ -1569,142 +1569,159 @@ public class TdUserController {
 		return res;
 	}
 
+//	/**
+//	 * 申请退货
+//	 * 
+//	 * @author Max
+//	 */
+//	@RequestMapping(value = "/order/return", method = RequestMethod.POST)
+//	@ResponseBody
+//	public Map<String, Object> orderReturn(Long id, String remark, Long turnType, HttpServletRequest req) {
+//		Map<String, Object> res = new HashMap<>();
+//		res.put("code", 1);
+//
+//		String username = (String) req.getSession().getAttribute("username");
+//
+//		if (null == username) {
+//			res.put("message", "请重新登录");
+//			return res;
+//		}
+//
+//		if (null != id) {
+//			TdOrder order = tdOrderService.findOne(id);
+//
+//			if (null != order && order.getStatusId() != null && order.getStatusId() != 9L) {
+//				TdReturnNote returnNote = new TdReturnNote();
+//
+//				// 退货单编号
+//				Date current = new Date();
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+//				String curStr = sdf.format(current);
+//				Random random = new Random();
+//
+//				returnNote.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+//
+//				// 添加订单信息
+//				returnNote.setOrderNumber(order.getOrderNumber());
+//
+//				// add MDJ
+//				returnNote.setShoppingAddress(order.getShippingAddress());
+//				returnNote.setSellerRealName(order.getSellerRealName());
+//				// end add MDJ
+//
+//				// 支付方式
+//				returnNote.setPayTypeId(order.getPayTypeId());
+//				returnNote.setPayTypeTitle(order.getPayTypeTitle());
+//				// 门店信息
+//				if (null != order.getDiySiteId()) {
+//					TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
+//					returnNote.setDiySiteId(order.getDiySiteId());
+//					returnNote.setDiySiteTel(diySite.getServiceTele());
+//					returnNote.setDiySiteTitle(diySite.getTitle());
+//					returnNote.setDiySiteAddress(diySite.getAddress());
+//				}
+//
+//				// 退货信息
+//				returnNote.setUsername(username);
+//				returnNote.setRemarkInfo(remark);
+//
+//				// 退货方式
+//				if ("门店自提".equals(order.getDeliverTypeTitle())) {
+//					returnNote.setTurnType(1L);
+//					turnType = 1L;
+//				} else {
+//					returnNote.setTurnType(2L);
+//					turnType = 2L;
+//				}
+//				// returnNote.setTurnType(turnType);
+//				// 原订单配送方式
+//				if ("门店自提".equals(order.getDeliverTypeTitle())) {
+//					if (turnType == 1) {
+//						returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
+//					} else {
+//						returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
+//					}
+//				} else {
+//					if (turnType == 1) {
+//						returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
+//					} else {
+//						returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
+//					}
+//				}
+//
+//				returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
+//				returnNote.setOrderTime(new Date());
+//
+//				returnNote.setTurnPrice(order.getTotalGoodsPrice());
+//				List<TdOrderGoods> orderGoodsList = new ArrayList<>();
+//				if (null != order.getOrderGoodsList()) {
+//					for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
+//						TdOrderGoods orderGoods = new TdOrderGoods();
+//
+//						orderGoods.setBrandId(oGoods.getBrandId());
+//						orderGoods.setBrandTitle(oGoods.getBrandTitle());
+//						orderGoods.setGoodsId(oGoods.getGoodsId());
+//						orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
+//						orderGoods.setSku(oGoods.getSku());
+//						orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
+//						orderGoods.setGoodsColor(oGoods.getGoodsColor());
+//						orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
+//						orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
+//						orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
+//						orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
+//
+//						orderGoods.setPrice(oGoods.getPrice());
+//						orderGoods.setQuantity(oGoods.getQuantity());
+//
+//						orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
+//						orderGoods.setPoints(oGoods.getPoints());
+//						// tdOrderGoodsService.save(orderGoods);
+//						// 添加商品信息
+//						orderGoodsList.add(orderGoods);
+//
+//						// 订单商品设置退货为True
+//						oGoods.setIsReturnApplied(true);
+//						// 更新订单商品信息是否退货状态
+//						tdOrderGoodsService.save(oGoods);
+//					}
+//				}
+//
+//				returnNote.setReturnGoodsList(orderGoodsList);
+//				tdOrderGoodsService.save(orderGoodsList);
+//				// 保存退货单
+//				tdReturnNoteService.save(returnNote);
+//
+//				order.setStatusId(9L);
+//				order.setIsRefund(true);
+//				tdOrderService.save(order);
+//
+//				res.put("code", 0);
+//				res.put("message", "提交退货成功");
+//				return res;
+//			}
+//		}
+//
+//		res.put("message", "参数错误");
+//
+//		return res;
+//
+//	}
+
 	/**
-	 * 申请退货
+	 * 跳转到退货界面的控制器
 	 * 
-	 * @author Max
+	 * @author DengXiao
 	 */
-	@RequestMapping(value = "/order/return", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> orderReturn(Long id, String remark, Long turnType, HttpServletRequest req) {
-		Map<String, Object> res = new HashMap<>();
-		res.put("code", 1);
-
+	@RequestMapping(value = "/order/return")
+	public String userOrderReturn(HttpServletRequest req, ModelMap map, Long orderId) {
 		String username = (String) req.getSession().getAttribute("username");
-
-		if (null == username) {
-			res.put("message", "请重新登录");
-			return res;
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
 		}
-
-		if (null != id) {
-			TdOrder order = tdOrderService.findOne(id);
-
-			if (null != order && order.getStatusId() != null && order.getStatusId() != 9L) {
-				TdReturnNote returnNote = new TdReturnNote();
-
-				// 退货单编号
-				Date current = new Date();
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-				String curStr = sdf.format(current);
-				Random random = new Random();
-
-				returnNote.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
-
-				// 添加订单信息
-				returnNote.setOrderNumber(order.getOrderNumber());
-
-				// add MDJ
-				returnNote.setShoppingAddress(order.getShippingAddress());
-				returnNote.setSellerRealName(order.getSellerRealName());
-				// end add MDJ
-
-				// 支付方式
-				returnNote.setPayTypeId(order.getPayTypeId());
-				returnNote.setPayTypeTitle(order.getPayTypeTitle());
-				// 门店信息
-				if (null != order.getDiySiteId()) {
-					TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
-					returnNote.setDiySiteId(order.getDiySiteId());
-					returnNote.setDiySiteTel(diySite.getServiceTele());
-					returnNote.setDiySiteTitle(diySite.getTitle());
-					returnNote.setDiySiteAddress(diySite.getAddress());
-				}
-
-				// 退货信息
-				returnNote.setUsername(username);
-				returnNote.setRemarkInfo(remark);
-
-				// 退货方式
-				if ("门店自提".equals(order.getDeliverTypeTitle())) {
-					returnNote.setTurnType(1L);
-					turnType = 1L;
-				} else {
-					returnNote.setTurnType(2L);
-					turnType = 2L;
-				}
-				// returnNote.setTurnType(turnType);
-				// 原订单配送方式
-				if ("门店自提".equals(order.getDeliverTypeTitle())) {
-					if (turnType == 1) {
-						returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
-					} else {
-						returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
-					}
-				} else {
-					if (turnType == 1) {
-						returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
-					} else {
-						returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
-					}
-				}
-
-				returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
-				returnNote.setOrderTime(new Date());
-
-				returnNote.setTurnPrice(order.getTotalGoodsPrice());
-				List<TdOrderGoods> orderGoodsList = new ArrayList<>();
-				if (null != order.getOrderGoodsList()) {
-					for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
-						TdOrderGoods orderGoods = new TdOrderGoods();
-
-						orderGoods.setBrandId(oGoods.getBrandId());
-						orderGoods.setBrandTitle(oGoods.getBrandTitle());
-						orderGoods.setGoodsId(oGoods.getGoodsId());
-						orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
-						orderGoods.setSku(oGoods.getSku());
-						orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
-						orderGoods.setGoodsColor(oGoods.getGoodsColor());
-						orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
-						orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
-						orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
-						orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
-
-						orderGoods.setPrice(oGoods.getPrice());
-						orderGoods.setQuantity(oGoods.getQuantity());
-
-						orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
-						orderGoods.setPoints(oGoods.getPoints());
-						// tdOrderGoodsService.save(orderGoods);
-						// 添加商品信息
-						orderGoodsList.add(orderGoods);
-
-						// 订单商品设置退货为True
-						oGoods.setIsReturnApplied(true);
-						// 更新订单商品信息是否退货状态
-						tdOrderGoodsService.save(oGoods);
-					}
-				}
-
-				returnNote.setReturnGoodsList(orderGoodsList);
-				tdOrderGoodsService.save(orderGoodsList);
-				// 保存退货单
-				tdReturnNoteService.save(returnNote);
-
-				order.setStatusId(9L);
-				order.setIsRefund(true);
-				tdOrderService.save(order);
-
-				res.put("code", 0);
-				res.put("message", "提交退货成功");
-				return res;
-			}
-		}
-
-		res.put("message", "参数错误");
-
-		return res;
-
+		// 查询到指定id的订单
+		TdOrder order = tdOrderService.findOne(orderId);
+		map.addAttribute("order", order);
+		return "/client/user_return";
 	}
-
 }

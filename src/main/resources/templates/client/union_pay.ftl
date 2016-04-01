@@ -135,7 +135,7 @@
 				</tr>
 				<tr id='GATEWAYTR' style='display:none'> 
 					<td height="20">网关类型【GATEWAY】</td>
-					<td height="20"><input name="GATEWAY" type="text" class="text1" id="GATEWAY" value="W1Z1S2"></td>
+					<td height="20"><input name="GATEWAY" type="text" class="text1" id="GATEWAY" value="UnionPay"></td>
 				</tr>
 				<tr id='CLIENTIPTR' style='display:none'> 
 					<td height="20">客户端IP【CLIENTIP】</td>

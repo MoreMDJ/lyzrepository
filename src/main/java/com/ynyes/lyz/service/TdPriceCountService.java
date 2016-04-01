@@ -454,4 +454,14 @@ public class TdPriceCountService {
 			}
 		}
 	}
+
+	/**
+	 * 计算一个订单中所有的商品，包括促销赠品
+	 * 
+	 * @author DengXiao
+	 */
+	public Map<Long, Double> getAllOrderGoods(TdOrder order) {
+		Map<Long, Double> result = new HashMap<>();
+		return result;
+	}
 }
