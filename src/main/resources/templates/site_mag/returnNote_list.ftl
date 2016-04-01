@@ -99,9 +99,9 @@ function downloaddateurl(type,url){
             	<div class="odiv" style="float:left;width:310px;"><span class="span1">城市名称：</span>
                 	<div class="rule-single-select">
                         <select name="city" id="city">
-                        <option value="0" >请选择</option>      
+                        <option value="" >请选择</option>      
                         <#list cityList as city>
-                        	<option value="${city.id }" >${city.cityName }</option>
+                        	<option value="${city.cityName }" >${city.cityName }</option>
                         </#list>
                         </select>
             		</div>
