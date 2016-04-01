@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdBrand;
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdCouponType;
 import com.ynyes.lyz.entity.TdDiySite;
@@ -40,6 +41,7 @@ import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdBrandService;
+import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdCouponTypeService;
 import com.ynyes.lyz.service.TdDiySiteService;
@@ -97,6 +99,8 @@ public class TdManagerCouponController {
     @Autowired
     private TdOrderService tdOrderService;
     
+    @Autowired 
+    private TdCityService tdCityService;
     
     @RequestMapping(value = "/down/order/use")
     public void couponUseDetail()
@@ -149,6 +153,9 @@ public class TdManagerCouponController {
 		    	cell.setCellStyle(cellStyle);
 		    	cell.setCellValue("用户名");
 		    	cell = row.createCell(5);
+		    	cell.setCellStyle(cellStyle);
+		    	cell.setCellValue("产品分类");
+		    	cell = row.createCell(6);
 		    	cell.setCellStyle(cellStyle);
 		    	cell.setCellValue("产品分类");
 				rowNumber++;
@@ -225,7 +232,7 @@ public class TdManagerCouponController {
 
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
         map.addAttribute("category_list", tdProductCategoryService.findAll());
-
+       
         if (null != id) {
             map.addAttribute("coupon_type", tdCouponTypeService.findOne(id));
         }
@@ -363,6 +370,7 @@ public class TdManagerCouponController {
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
         
         map.addAttribute("brand_list", tdBrandService.findAll());
+        map.addAttribute("city_list", tdCityService.findAll());
 
         if (null != id)
         {
@@ -398,6 +406,12 @@ public class TdManagerCouponController {
         if (null == username) {
             return "redirect:/Verwalter/login";
         }
+        TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (tdManager != null && tdManager.getRoleId() != null)
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
         
         if (null != __EVENTTARGET)
         {
@@ -529,6 +543,12 @@ public class TdManagerCouponController {
         //查询优惠券类型
         map.addAttribute("couponType_list", tdCouponTypeService.findAllOrderBySortIdAsc());
         map.addAttribute("typeId", typeId);
+        
+      //城市和门店信息
+		if (null != tdManagerRole && tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
+//			map.addAttribute("diySiteList",tdDiySiteService.findAll());
+			map.addAttribute("cityList", tdCityService.findAll());
+		}
         
         return "/site_mag/coupon_distributed_list";
     }
@@ -703,6 +723,12 @@ public class TdManagerCouponController {
         		tdCoupon.setBrandTitle(brand.getTitle());
         	}
         }
+        if(null != tdCoupon.getCityId()){
+        	TdCity city= tdCityService.findOne(tdCoupon.getCityId());
+        	if(null != city){
+        		tdCoupon.setCityName(city.getCityName());
+        	}
+        }
         tdCouponService.save(tdCoupon);
         
         return "redirect:/Verwalter/coupon/list";
@@ -806,6 +832,7 @@ public class TdManagerCouponController {
     		Integer[] listChkId,
     		Long[] listId,
     		Long[] quantity,
+    		String cityName,
     		HttpServletRequest req,
     		ModelMap map)
     {
@@ -836,10 +863,14 @@ public class TdManagerCouponController {
 			}
         }
     	
-    	
     	if(null != couponId)
     	{
     		TdCoupon coupon = tdCouponService.findOne(couponId);
+    		if(null != coupon){
+    			cityName=coupon.getCityName();
+    			System.out.println(cityName);
+    			map.addAttribute("cityName",cityName);
+    		}
     		map.addAttribute("coupon", coupon);
     	}
     	if(null == page)
@@ -855,11 +886,11 @@ public class TdManagerCouponController {
     	map.addAttribute("size", size);
     	map.addAttribute("keywords", keywords);
     	
-    	if(null == keywords)
+    	if(null == keywords || "".equals(keywords))
     	{
-    		map.addAttribute("user_page", tdUseService.findAllOrderByIdDesc(page, size));
+    		map.addAttribute("user_page", tdUseService.findByCityNameOrderByIdDesc(cityName,page, size));
     	}else{
-    		map.addAttribute("user_page", tdUseService.searchAndOrderByIdDesc(keywords, page, size));
+    		map.addAttribute("user_page", tdUseService.searchcityNameAndOrderByIdDesc(keywords,cityName, page, size));
     	}
     	
     	
@@ -925,6 +956,8 @@ public class TdManagerCouponController {
     			tdCoupon.setTypeId(coupon.getTypeId());
     			tdCoupon.setTypeTitle(coupon.getTypeTitle());
     			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
+    			tdCoupon.setCityId(coupon.getCityId());
+    			tdCoupon.setCityName(coupon.getCityName());
     			
     			// 保存领取
     			tdCouponService.save(tdCoupon);
@@ -995,6 +1028,8 @@ public class TdManagerCouponController {
         			tdCoupon.setTypeId(coupon.getTypeId());
         			tdCoupon.setTypeTitle(coupon.getTypeTitle());
         			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
+        			tdCoupon.setCityId(coupon.getCityId());
+        			tdCoupon.setCityName(coupon.getCityName());
         			
         			// 保存领取
         			tdCouponService.save(tdCoupon);
@@ -1103,14 +1138,14 @@ public class TdManagerCouponController {
 	 */
 	@RequestMapping(value = "/downdata",method = RequestMethod.GET)
 	@ResponseBody
-	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response)
+	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,Long cityId)
 	{
 		
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
-		
+		TdUser user=tdUseService.findByUsername(username);
 		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
 		TdManagerRole tdManagerRole = null;
 		if (null != tdManager && null != tdManager.getRoleId())
@@ -1152,22 +1187,22 @@ public class TdManagerCouponController {
         HSSFSheet sheet = wb.createSheet("领用记录报表");  
         // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
         //列宽
-        sheet.setColumnWidth((short) 0 , 25*256);
-        sheet.setColumnWidth((short) 1 , 13*256);
-        sheet.setColumnWidth((short) 2 , 25*256);
-        sheet.setColumnWidth((short) 3 , 25*256);
-        sheet.setColumnWidth((short) 4 , 18*256);
-        sheet.setColumnWidth((short) 5 , 11*256);
-        sheet.setColumnWidth((short) 6 , 13*256);
-        sheet.setColumnWidth((short) 7 , 11*256);
-        sheet.setColumnWidth((short) 8 , 19*256);
-        sheet.setColumnWidth((short) 9 , 12*256);
-        sheet.setColumnWidth((short) 10 , 9*256);
-        sheet.setColumnWidth((short) 11 , 13*256);
-        sheet.setColumnWidth((short) 12 , 13*256);
-        sheet.setColumnWidth((short) 13 , 13*256);
-        sheet.setColumnWidth((short) 14 , 40*256);
-        sheet.setColumnWidth((short) 15 , 40*256);
+        sheet.setColumnWidth(0 , 25*256);
+        sheet.setColumnWidth(1 , 13*256);
+        sheet.setColumnWidth(2 , 25*256);
+        sheet.setColumnWidth(3 , 25*256);
+        sheet.setColumnWidth(4 , 18*256);
+        sheet.setColumnWidth(5 , 11*256);
+        sheet.setColumnWidth(6 , 13*256);
+        sheet.setColumnWidth(7 , 11*256);
+        sheet.setColumnWidth(8 , 19*256);
+        sheet.setColumnWidth(9 , 12*256);
+        sheet.setColumnWidth(10 , 9*256);
+        sheet.setColumnWidth(11 , 13*256);
+        sheet.setColumnWidth(12 , 13*256);
+        sheet.setColumnWidth(13 , 13*256);
+        sheet.setColumnWidth(14 , 40*256);
+        sheet.setColumnWidth(15 , 40*256);
         
         // 第四步，创建单元格，并设置值表头 设置表头居中  
         HSSFCellStyle style = wb.createCellStyle();  
@@ -1175,32 +1210,42 @@ public class TdManagerCouponController {
         style.setWrapText(true);
     	//优惠券名称、金额、领卷时间、领用用户、是否使用、使用的时间、使用订单号
         HSSFRow row = sheet.createRow((int) 0); 
-        HSSFCell cell = row.createCell((short) 0);  
+        HSSFCell cell = row.createCell(0);  
         cell.setCellValue("优惠券名称");
         cell.setCellStyle(style);
-        cell = row.createCell((short) 1);
+        cell = row.createCell(1);
         cell.setCellValue("金额");  
         cell.setCellStyle(style);  
-        cell = row.createCell((short) 2);  
+        cell = row.createCell(2);  
         cell.setCellValue("领卷时间");  
         cell.setCellStyle(style);
-        cell = row.createCell((short) 3);  
+        cell = row.createCell(3);  
         cell.setCellValue("领用用户");  
         cell.setCellStyle(style);
-        cell = row.createCell((short) 4);  
+        cell = row.createCell(4);  
         cell.setCellValue("是否使用");
         cell.setCellStyle(style);
-        cell = row.createCell((short) 5);  
+        cell = row.createCell(5);  
         cell.setCellValue("使用时间");
         cell.setCellStyle(style);
-        cell = row.createCell((short) 6);  
+        cell = row.createCell(6);  
         cell.setCellValue("使用订单号");
         cell.setCellStyle(style);
-        cell = row.createCell((short) 7);  
+        cell = row.createCell(7);  
        
         // 第五步，设置值  
         List<TdCoupon> coupon = null;
-        coupon=tdCouponService.findByIsDistributtedTrueOrderByIdDesc();
+//        coupon=tdCouponService.findByIsDistributtedTrueOrderByIdDesc();
+        
+        if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") &&  null != cityId){
+        	coupon= tdCouponService.findByGetTimeAndCityIdOrderByGetTimeDesc(date1, date2, cityId);
+    	}else{
+    		TdCity city= tdCityService.findByCityName(user.getCityName());
+    		if(null != city){
+    			coupon= tdCouponService.findByGetTimeAndCityIdOrderByGetTimeDesc(date1, date2, city.getId());
+    		}
+    	}
+        
         		
         Integer i = 0;
         for (TdCoupon tdCoupon : coupon)
@@ -1208,36 +1253,36 @@ public class TdManagerCouponController {
         	row = sheet.createRow((int) i + 1);
         	if (null != tdCoupon.getTypeTitle())
         	{
-            	row.createCell((short) 0).setCellValue(tdCoupon.getTypeTitle());
+            	row.createCell(0).setCellValue(tdCoupon.getTypeTitle());
     		}
         	if (null != tdCoupon.getPrice())
         	{
-            	row.createCell((short) 1).setCellValue(tdCoupon.getPrice());
+            	row.createCell(1).setCellValue(tdCoupon.getPrice());
     		}
         	if (null != tdCoupon.getGetTime())
         	{
         		Date getTime = tdCoupon.getGetTime();
         		String couponTimeStr = getTime.toString();
-            	row.createCell((short) 2).setCellValue(couponTimeStr);
+            	row.createCell(2).setCellValue(couponTimeStr);
     		}
         	if (null != tdCoupon.getUsername())
         	{
-            	row.createCell((short) 3).setCellValue(tdCoupon.getUsername());
+            	row.createCell(3).setCellValue(tdCoupon.getUsername());
     		}
         	if (null != tdCoupon.getIsUsed())
         	{
         		if(tdCoupon.getIsUsed()){
-        			row.createCell((short) 4).setCellValue("是");
+        			row.createCell(4).setCellValue("是");
         			String couponUserTimeStr="";
         			if (null != tdCoupon.getUseTime()){
         				Date userTime = tdCoupon.getUseTime();
         				couponUserTimeStr = userTime.toString();
         			}
         			
-        			row.createCell((short) 5).setCellValue(couponUserTimeStr);
-        			row.createCell((short) 6).setCellValue(tdCoupon.getOrderNumber());
+        			row.createCell(5).setCellValue(couponUserTimeStr);
+        			row.createCell(6).setCellValue(tdCoupon.getOrderNumber());
         		}else{
-        			row.createCell((short) 4).setCellValue("否");
+        			row.createCell(4).setCellValue("否");
         		}
             	
     		}

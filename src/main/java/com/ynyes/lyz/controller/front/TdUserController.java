@@ -1315,7 +1315,11 @@ public class TdUserController {
 		// 查询到指定的订单
 		TdOrder order = tdOrderService.findOne(orderId);
 		if (null != order.getStatusId()) {
-			if (2L == order.getStatusId().longValue() && 3L == order.getStatusId().longValue()) {
+//			if (2L == order.getStatusId().longValue() && 3L == order.getStatusId().longValue()) {
+//				res.put("message", "已出库的订单不能取消");
+//				return res;
+//			}
+			if ( 4L == order.getStatusId().longValue()) {
 				res.put("message", "已出库的订单不能取消");
 				return res;
 			}

@@ -130,6 +130,7 @@
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="${__EVENTTARGET!""}">
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="${__EVENTARGUMENT!""}">
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}">
+<#if cityName??><input type="hidden" name="cityName" id="cityName" value="${cityName}"></#if>
 <script type="text/javascript">
 var theForm = document.forms['form1'];
 if (!theForm) {

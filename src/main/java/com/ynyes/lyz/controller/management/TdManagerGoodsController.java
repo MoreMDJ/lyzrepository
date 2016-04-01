@@ -1032,7 +1032,7 @@ public class TdManagerGoodsController {
 	 * @param listChkId
 	 * @return
 	 */
-	@RequestMapping(value = "/inventory/list")
+	@RequestMapping(value = "/inventory/log")
 	public String inventoryLog(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,
 			String __EVENTARGUMENT, String __VIEWSTATE, String action, Long[] listId, Integer[] listChkId) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -1070,7 +1070,58 @@ public class TdManagerGoodsController {
 
 		return "site_mag/inventory_log";
 	}
+	/**
+	 *  库存日志列表
+	 * @param req
+	 * @param map
+	 * @param page
+	 * @param size
+	 * @param __EVENTTARGET
+	 * @param __EVENTARGUMENT
+	 * @param __VIEWSTATE
+	 * @param action
+	 * @param listId
+	 * @param listChkId
+	 * @return
+	 */
+	@RequestMapping(value = "/inventory/list")
+	public String inventoryList(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,
+			String __EVENTARGUMENT, String __VIEWSTATE, String action, Long[] listId, Integer[] listChkId) {
+		String username = (String) req.getSession().getAttribute("manager");
+		if (null == username) {
+			return "redirect:/Verwalter/login";
+		}
+		if (null != __EVENTTARGET) {
+			if (__EVENTTARGET.equalsIgnoreCase("btnDelete")) {
+				btnDeleteLog(listId, listChkId);
+				tdManagerLogService.addLog("delete", "删除管理日志", req);
+			} else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
+				if (null != __EVENTARGUMENT) {
+					page = Integer.parseInt(__EVENTARGUMENT);
+				}
+			}
+		}
 
+		if (null == page || page < 0) {
+			page = 0;
+		}
+
+		if (null == size || size <= 0) {
+			size = SiteMagConstant.pageSize;
+			;
+		}
+
+		map.addAttribute("page", page);
+		map.addAttribute("size", size);
+		map.addAttribute("action", action);
+		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+		tdGoodsService.findAll(page, size);
+		map.addAttribute("log_page", tdInventoryLogService.findAll(page, size));
+
+		return "site_mag/inventory_list";
+	}
 	/**
 	 * 删除库存日志
 	 * 

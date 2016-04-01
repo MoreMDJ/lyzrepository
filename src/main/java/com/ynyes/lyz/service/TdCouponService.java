@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.repository.TdCouponRepo;
+import com.ynyes.lyz.util.Criteria;
+import com.ynyes.lyz.util.Restrictions;
 
 /**
  * TdCoupon 服务类
@@ -413,12 +415,12 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-			String username, Long goodsId) {
-		if (null == username || null == goodsId) {
+			String username, Long goodsId,String cityName) {
+		if (null == username || null == goodsId || null==cityName) {
 			return null;
 		}
-		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-				username, 3L, goodsId);
+		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdAndCityNameOrderByGetTimeDesc(
+				username, 3L, goodsId,cityName);
 	}
 
 	/**
@@ -427,12 +429,12 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-			String username, Long goodsId) {
-		if (null == username || null == goodsId) {
+			String username, Long goodsId,String cityName) {
+		if (null == username || null == goodsId || null==cityName) {
 			return null;
 		}
-		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-				username, 2L, goodsId);
+		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdAndCityNameOrderByGetTimeDesc(
+				username, 2L, goodsId,cityName);
 	}
 	
 	/**
@@ -441,12 +443,12 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
-			String username, Long typeCategoryId, Long brandId) {
-		if (null == username || null == typeCategoryId || null == brandId) {
+			String username, Long typeCategoryId, Long brandId,String cityName) {
+		if (null == username || null == typeCategoryId || null == brandId || null ==cityName) {
 			return null;
 		}
-		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
-				username, typeCategoryId, brandId);
+		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdAndCityNameOrderByGetTimeDesc(
+				username, typeCategoryId, brandId,cityName);
 	}
 	
 	/**
@@ -545,5 +547,37 @@ public class TdCouponService {
 	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Boolean isUsed,Long typeCategoryId,int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 		return repository.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,isUsed,typeCategoryId,pageRequest);
+	}
+	
+	/**
+	 * 根据领取时间和城市id查询优惠卷
+	 * @return
+	 */
+	public List<TdCoupon> findByGetTimeAndCityIdOrderByGetTimeDesc(Date begin,Date end,Long cityId){
+		Criteria<TdCoupon> c = new Criteria<TdCoupon>();
+		if(null!=begin){
+			c.add(Restrictions.gte("getTime", begin, true));
+		}if(null!=end){
+			c.add(Restrictions.lte("getTime", end, true));
+		}
+		if(null!=cityId && !cityId.equals(0L)){
+			c.add( Restrictions.eq("cityId", cityId, true));
+		}
+		c.setOrderByDesc("getTime");
+		return repository.findAll(c);
+	}
+	
+	/**
+	 * 查看可领取现金券区分城市
+	 * @author Max
+	 */
+	
+	public List<TdCoupon> findByCityNameAndTypeIdAndTypeCategoryId(String cityName,Long typeId,Long cateId,Date date)
+	{
+		if(null == typeId || null == cateId || null==cityName)
+		{
+			return null;
+		}
+		return repository.findByCityNameAndTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(cityName,typeId, cateId, date);
 	}
 }

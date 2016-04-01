@@ -83,4 +83,14 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 */
 	@Query("select u from TdUser u,TdDeliveryInfo d where u.opUser=d.driver and d.orderNumber=?1")
 	TdUser searchDriverByMainOrderNumber(String mainOrderNumber);
+	
+	/**
+	 * @注释：根据城市查找所有按id降序排序
+	 */
+	public Page<TdUser> findByCityNameOrderByIdDesc(String cityName,Pageable page);
+	
+	/**
+	 * @注释：搜索城市下面的用户
+	 */
+	public Page<TdUser> findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(String keywords,String keywords1,String cityName,Pageable page );
 }

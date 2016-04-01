@@ -27,8 +27,10 @@ function showCityInfo() {
 					city_arry.each(function(i) {
 						var option = city_arry.eq(i);
 						var option_city_info = option.html();
+						option.attr("selected", "");
 						if (cityinfo == option_city_info) {
 							isHave = true;
+							city_arry.eq(0).removeAttr("selected");
 							option.attr("selected", "selected");
 						}
 					});

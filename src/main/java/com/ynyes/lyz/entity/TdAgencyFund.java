@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.UniqueConstraint;
 
 /**
  * 代收款报表
@@ -33,19 +32,19 @@ public class TdAgencyFund {
 	@Column
 	private Date orderTime;
 	//可提现金额
-	@Column
+	@Column(scale = 2)
 	private Double cashBalanceUsed;
 	//不可提现金额
-	@Column
+	@Column(scale = 2)
 	private Double unCashBalanceUsed;
 	//代收款金额
-	@Column
+	@Column(scale = 2)
 	private Double payPrice;
 	//实际代收款金额
-	@Column
+	@Column(scale = 2)
 	private Double payed;
 	//欠款
-	@Column
+	@Column(scale = 2)
 	private Double owned;
 	//配送人员
 	@Column
@@ -75,7 +74,7 @@ public class TdAgencyFund {
 	@Column
 	private String whNo;
 	//订单总金额
-	@Column
+	@Column(scale = 2)
 	private Double totalPrice;
 	//预约配送日期
 	@Column
@@ -86,7 +85,12 @@ public class TdAgencyFund {
 	//实际配送时间
 	@Column
 	private Date deliveryTime;
-	
+	// 城市
+	@Column
+	private String city;
+	// 配送门店id
+	@Column
+	private String diySiteCode;
 	
 	public Long getId() {
 		return id;
@@ -226,6 +230,17 @@ public class TdAgencyFund {
 	public void setDeliveryTime(Date deliveryTime) {
 		this.deliveryTime = deliveryTime;
 	}
-	
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getDiySiteCode() {
+		return diySiteCode;
+	}
+	public void setDiySiteCode(String diySiteCode) {
+		this.diySiteCode = diySiteCode;
+	}
 	
 }
