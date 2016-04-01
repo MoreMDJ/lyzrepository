@@ -1319,7 +1319,7 @@ public class TdUserController {
 //				res.put("message", "已出库的订单不能取消");
 //				return res;
 //			}
-			if ( 4L == order.getStatusId().longValue()) {
+			if ( 4L == order.getStatusId()) {
 				res.put("message", "已出库的订单不能取消");
 				return res;
 			}

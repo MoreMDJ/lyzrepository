@@ -504,7 +504,7 @@ public class CallWMSImpl implements ICallWMS {
 				{
 					tdGoods.setLeftNumber(tdGoods.getLeftNumber() - backquantity >= 0 ? tdGoods.getLeftNumber() - backquantity : 0);
 				}
-				if (tdGoods != null && siteCode != null && inventoryList.size() >= 1)
+				if (tdGoods != null && siteCode != null && inventoryList !=null && inventoryList.size() >= 1)
 				{
 					for (int inventoryIndex = 0; inventoryIndex < inventoryList.size(); inventoryIndex++) 
 					{
@@ -513,11 +513,11 @@ public class CallWMSImpl implements ICallWMS {
 						{
 							siteInventory.setInventory(siteInventory.getInventory() - backquantity);
 							tdDiySiteInventoryService.save(siteInventory);
-							tdGoodsService.save(tdGoods, "WMS:goods");
 							break;
 						}
 					}
 				}
+				tdGoodsService.save(tdGoods, "WMS:goods");
 				
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
