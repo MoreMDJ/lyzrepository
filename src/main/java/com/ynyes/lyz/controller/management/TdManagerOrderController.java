@@ -957,38 +957,49 @@ public class TdManagerOrderController {
 //		东大中转仓	1103	分仓
 //		百姓中转仓	1104	分仓
 //		主仓库	1105	分仓
-		if (name == null || name.equalsIgnoreCase(""))
+		
+		List<TdWareHouse> wareHouses = tdWareHouseService.findBywhNumberOrderBySortIdAsc(name);
+		if (wareHouses != null && wareHouses.size() > 0)
 		{
-			return "未知";
+			return wareHouses.get(0).getWhName();
 		}
-		if (name.equalsIgnoreCase("11"))
-		{
-			return "郑州公司";
-		}
-		else if (name.equalsIgnoreCase("1101"))
-		{
-			return "天荣中转仓";
-		}
-		else if (name.equalsIgnoreCase("1102"))
-		{
-			return "五龙口中转仓";
-		}
-		else if (name.equalsIgnoreCase("1103"))
-		{
-			return "东大中转仓";
-		}
-		else if (name.equalsIgnoreCase("1104"))
-		{
-			return "百姓中转仓";
-		}
-		else if (name.equalsIgnoreCase("1105"))
-		{
-			return "主仓库";
-		}
-		else
+		else 
 		{
 			return "未知编号：" + name;
 		}
+		
+//		if (name == null || name.equalsIgnoreCase(""))
+//		{
+//			return "未知";
+//		}
+//		if (name.equalsIgnoreCase("11"))
+//		{
+//			return "郑州公司";
+//		}
+//		else if (name.equalsIgnoreCase("1101"))
+//		{
+//			return "天荣中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1102"))
+//		{
+//			return "五龙口中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1103"))
+//		{
+//			return "东大中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1104"))
+//		{
+//			return "百姓中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1105"))
+//		{
+//			return "主仓库";
+//		}
+//		else
+//		{
+//			return "未知编号：" + name;
+//		}
 	}
 	private String orderStatus(Long status)
 	{
