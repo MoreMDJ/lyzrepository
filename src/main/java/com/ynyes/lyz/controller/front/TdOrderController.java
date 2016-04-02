@@ -1373,6 +1373,7 @@ public class TdOrderController {
 								if (null != coupon) {
 									coupon.setIsUsed(true);
 									coupon.setUseTime(new Date());
+									coupon.setOrderNumber(order_temp.getOrderNumber());
 									tdCouponService.save(coupon);
 								}
 							}
@@ -1390,6 +1391,7 @@ public class TdOrderController {
 								if (null != coupon) {
 									coupon.setIsUsed(true);
 									coupon.setUseTime(new Date());
+									coupon.setOrderNumber(order_temp.getOrderNumber());
 									tdCouponService.save(coupon);
 								}
 							}
@@ -1410,6 +1412,7 @@ public class TdOrderController {
 							if (null != coupon) {
 								coupon.setIsUsed(true);
 								coupon.setUseTime(new Date());
+								coupon.setOrderNumber(order_temp.getOrderNumber());
 								tdCouponService.save(coupon);
 							}
 						}
@@ -1427,6 +1430,7 @@ public class TdOrderController {
 							if (null != coupon) {
 								coupon.setIsUsed(true);
 								coupon.setUseTime(new Date());
+								coupon.setOrderNumber(order_temp.getOrderNumber());
 								tdCouponService.save(coupon);
 							}
 						}

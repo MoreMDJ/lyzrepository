@@ -166,6 +166,45 @@ public class TdUser {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date lastVisitTime;
 	
+	
+	//以下会员从crm导入新增字段
+	
+	//代表是从crm导入
+	@Column
+	private String registInfo;
+	
+	//与相应门店code对应
+	@Column
+	private String diyCode;
+	
+	//与优惠券的customerId匹配
+	@Column
+	private String userCusId;
+	
+	public String getUserCusId() {
+		return userCusId;
+	}
+
+	public void setUserCusId(String userCusId) {
+		this.userCusId = userCusId;
+	}
+
+	public String getDiyCode() {
+		return diyCode;
+	}
+
+	public void setDiyCode(String diyCode) {
+		this.diyCode = diyCode;
+	}
+
+	public String getRegistInfo() {
+		return registInfo;
+	}
+
+	public void setRegistInfo(String registInfo) {
+		this.registInfo = registInfo;
+	}
+
 	public String getLoginSession() {
 		return loginSession;
 	}

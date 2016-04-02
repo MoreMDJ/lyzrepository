@@ -152,17 +152,17 @@ public class TdCoupon {
 	
 	//用户编号（ebs）
 	@Column
-	private Long customerId;
+	private String customerId;
 	
 	//sku
 	@Column
 	private String sku;
 	
-	public Long getCustomerId() {
+	public String getCustomerId() {
 		return customerId;
 	}
 
-	public void setCustomerId(Long customerId) {
+	public void setCustomerId(String customerId) {
 		this.customerId = customerId;
 	}
 

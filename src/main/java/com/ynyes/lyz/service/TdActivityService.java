@@ -204,8 +204,7 @@ public class TdActivityService {
 		if (null == diySiteId || null == now) {
 			return null;
 		}
-		return repository.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(
-				diySiteId + ",", now, now);
+		return repository.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySiteId + ",", now, now);
 	}
 
 	public TdActivity findByName(String name) {

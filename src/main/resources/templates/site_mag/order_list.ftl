@@ -235,10 +235,10 @@ function downloaddate(type)
         <th align="left">
             订单号
         </th>
-        <th align="left" width="12%">
+        <th align="left" width="10%">
             会员账号
         </th>
-        <th align="left" width="12%">
+        <th align="left" width="8%">
             会员名
         </th>
         <#--<th align="left" width="8%">
@@ -260,7 +260,7 @@ function downloaddate(type)
             下单时间
         </th>
         <th width="8%">
-            操作
+            门店
         </th>
     </tr>
 
@@ -312,7 +312,8 @@ function downloaddate(type)
                 <td align="center" width="10%">￥<font color="#C30000"><#if order??&&order.totalPrice??>${order.totalPrice?string("#.00")}<#else>0.00</#if></font></td>
                 <td><#if order.orderTime??>${order.orderTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
                 <td align="center">
-                    <a href="/Verwalter/order/edit?id=${order.id?c}&statusId=${statusId!"0"}">详细</a>
+                    <#--<a href="/Verwalter/order/edit?id=${order.id?c}&statusId=${statusId!"0"}">详细</a>-->
+                    ${order.diySiteName}
                 </td>
             </tr>
         </#list>
