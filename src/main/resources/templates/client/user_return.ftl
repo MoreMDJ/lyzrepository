@@ -16,6 +16,7 @@
 		
 		<script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
 		<script src="/client/js/rich_lee.js" type="text/javascript"></script>
+		<script src="/client/js/angular.js" type="text/javascript"></script>
 	</head>
 	<style type="text/css">
 		.fen_goodbox{width: 100%;}
@@ -88,6 +89,7 @@
 		}
 	</style>
 	<script type="text/javascript">
+		var data = "";
 		window.onload = function(){
 			(function(){
 				var oHtml = document.getElementsByTagName('html')[0];
@@ -100,42 +102,106 @@
 				};
 			})();
 		};
+		var app = angular.module("app",[]);
+		var ctrl = app.controller("ctrl",function($scope,$http){
+			$scope.goods = [
+				<#if order.orderGoodsList??&&order.orderGoodsList?size gt 0>
+					<#list order.orderGoodsList as item>
+						<#if item??>
+							{
+								id : ${item.goodsId?c},
+								title : "${item.goodsTitle!''}",
+								img : "${item.goodsCoverImageUri!''}",
+								quantity : ${item.quantity!''},
+								reQuantity : ${item.quantity!''},
+								<#if item.goodsId??&&("unit"+item.goodsId)?eval??>
+									unit : ${("unit"+item.goodsId)?eval?string("0.00")},
+									total : ${((item.quantity)*("unit"+item.goodsId)?eval)?string("0.00")}
+								<#else>
+									unit : 0.00,
+									total : 0.00
+								</#if>
+							}
+							<#-- 判断是否添加逗号 -->
+							<#if item_index!=order.orderGoodsList?size-1>
+								,
+							</#if>
+						</#if>
+					</#list>
+				</#if>
+			]
+					
+			$scope.delete = function(index){
+				var number = this.goods[index].reQuantity;
+				if(number > 0){
+					this.goods[index].reQuantity -= 1;
+					this.goods[index].total -= this.goods[index].unit;
+				}
+			}
+			$scope.add = function(index){
+				var number = this.goods[index].reQuantity;
+				if(number < this.goods[index].quantity){
+					this.goods[index].reQuantity += 1;
+					this.goods[index].total += this.goods[index].unit;
+				}
+			}
+			$scope.send = function(){
+				data = "";
+				for(var i = 0; i < this.goods.length; i++){
+					data += (this.goods[i].id + "-" + this.goods[i].reQuantity + "-" + this.goods[i].unit + ",");
+				}
+				console.log(data);
+				wait();
+				$.ajax({
+					type:"post",
+					url:"/user/return/check",
+					data:{
+						orderId : ${order.id?c},
+						infos : data
+					},
+					error:function(){
+						close(1);
+						warning("亲，您的网速不给力啊");
+					},
+					success:function(res){
+					
+					}
+				});
+			}
+		});
+		
 	</script>
-	<body style="background: #f3f4f6;height: 100%;">
+	<body style="background: #f3f4f6;height: 100%;" ng-app="app">
+		<#-- 引入警告提示样式 -->
+        <#include "/client/common_warn.ftl">
+        <#-- 引入等待提示样式 -->
+       	<#include "/client/common_wait.ftl">  
 		<div class="sec_header">
-			<a href="javascript:go(-1);" class="back"></a>
+			<a href="javascript:history.go(-1);" class="back"></a>
 			<p>申请退货</p>	
 			<a></a>
 		</div>
-	<div class="fen_goodbox">					
-		<#if order??>
-			<#if order.orderGoodsList??&&order.orderGoodsList?size gt 0>
-				<#list order.orderGoodsList as item>
-					<#if item??>
-						<dl>
-							<dt>
-								<a>
-									<img src="${item.goodsCoverImageUri!''}">
-								</a>
-							</dt>
-							<dd>
-								<p>${item.goodsTitle!''}</p>
-								<div class="fen_div01">
-									<a>-</a>
-									<input type="text" name="" id="" value="${item.quantity!''}">
-									<a>+</a>
-								</div>
-								<div class="fen_div02">
-									<a>￥1700.00</a>
-								</div>
-							</dd>
-						</dl>	
-					</#if>
-				</#list>
-			</#if>
-		</#if>
-	<div style="float: left;width: 100%;height: 60px;"></div>
-	<input class="sub" type="submit" name="" id="" value="去退货" />
-</div>
+		<div class="fen_goodbox" ng-controller="ctrl">					
+			<dl ng-repeat="item in goods">
+				<dt>
+					<a>
+						<img src="{{item.img}}">
+					</a>
+				</dt>
+				<dd>
+					<p>{{item.title}}</p>
+					<div class="fen_div01">
+						<a ng-click="delete($index);">-</a>
+						<input type="text" name="" id="{{$index}}" ng-model="item.reQuantity">
+						<a ng-click="add($index);">+</a>
+					</div>
+					<div class="fen_div02">
+							<a>￥{{item.unit}}</a>
+					</div>
+				</dd>
+			</dl>	
+			<div style="float: left;width: 100%;height: 60px;"></div>
+			<input class="sub" type="button" ng-click="send();" value="去退货" />
+		</div>
 	</body>
 </html>

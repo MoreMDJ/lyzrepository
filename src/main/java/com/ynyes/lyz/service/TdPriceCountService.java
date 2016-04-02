@@ -460,8 +460,160 @@ public class TdPriceCountService {
 	 * 
 	 * @author DengXiao
 	 */
-	public Map<Long, Double> getAllOrderGoods(TdOrder order) {
-		Map<Long, Double> result = new HashMap<>();
+	public Map<Long, Double[]> getAllOrderGoods(TdOrder order) {
+		// result参数中key代表商品的id，Double数组中依次存储：0. 商品的购买单价；1. 商品的购买数量；
+		// 2. 商品的总价；3.退货单价
+		Map<Long, Double[]> result = new HashMap<>();
+		if (null != order) {
+			List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+			List<TdOrderGoods> presentedList = order.getPresentedList();
+			if (null != goodsList && goodsList.size() > 0) {
+				for (TdOrderGoods orderGoods : goodsList) {
+					if (null != orderGoods) {
+						Long goodsId = orderGoods.getGoodsId();
+						Long quantity = orderGoods.getQuantity();
+						Double price = orderGoods.getPrice();
+						if (null == quantity) {
+							quantity = 0L;
+						}
+						if (null == price) {
+							price = 0.00;
+						}
+						if (null != goodsId && null == result.get(goodsId)) {
+							Double[] val = new Double[4];
+							val[0] = price;
+							val[1] = new Double(quantity);
+							val[2] = price * quantity;
+							result.put(goodsId, val);
+						} else if (null != goodsId && null != result.get(goodsId)) {
+							Double[] val = result.get(goodsId);
+							val[0] = price;
+							val[1] = val[1] + new Double(quantity);
+							val[2] = val[0] * val[1];
+							result.put(goodsId, val);
+						}
+					}
+				}
+			}
+
+			if (null != presentedList && presentedList.size() > 0) {
+				for (TdOrderGoods orderGoods : presentedList) {
+					if (null != orderGoods) {
+						Long goodsId = orderGoods.getGoodsId();
+						Long quantity = orderGoods.getQuantity();
+						Double price = orderGoods.getPrice();
+						if (null == quantity) {
+							quantity = 0L;
+						}
+						if (null == price) {
+							price = 0.00;
+						}
+						if (null != goodsId && null == result.get(goodsId)) {
+							Double[] val = new Double[3];
+							val[0] = price;
+							val[1] = new Double(quantity);
+							val[2] = val[0] * val[1];
+							result.put(goodsId, val);
+						} else if (null != goodsId && null != result.get(goodsId)) {
+							Double[] val = result.get(goodsId);
+							val[0] = price;
+							val[1] = val[1] + new Double(quantity);
+							val[2] = val[0] * val[1];
+							result.put(goodsId, val);
+						}
+					}
+				}
+			}
+		}
 		return result;
+	}
+
+	/**
+	 * 获取订单总价格的方法
+	 * 
+	 * @author DengXiao
+	 */
+	public Double getRealPrice(TdOrder order) {
+		if (null == order) {
+			return null;
+		}
+		Double total = 0.00;
+		List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+		if (null == goodsList) {
+			return null;
+		}
+		for (TdOrderGoods orderGoods : goodsList) {
+			if (null != orderGoods && null != orderGoods.getPrice()) {
+				total += orderGoods.getPrice();
+			}
+		}
+		return total;
+	}
+
+	/**
+	 * 计算订单商品实际价值的方法
+	 * 
+	 * @author DengXiao
+	 */
+	public Double getTotalOrderGoodsPrice(TdOrder order) {
+		Map<Long, Double[]> map = this.getAllOrderGoods(order);
+		// 创建一个变量存储商品实际总价
+		Double totalPrice = 0.00;
+		// 获取订单实际总价
+		for (Double[] counts : map.values()) {
+			if (null != counts && counts.length == 4) {
+				Double single_total = counts[2];
+				if (null == single_total) {
+					single_total = 0.00;
+				}
+				totalPrice += single_total;
+			}
+		}
+		return totalPrice;
+	}
+
+	/**
+	 * 计算订单单品退货单价的方法
+	 * 
+	 * @author DengXiao
+	 */
+	public Map<Long, Double> getReturnUnitPrice(TdOrder order) {
+		Map<Long, Double> res = new HashMap<>();
+		if (null == order) {
+			return res;
+		}
+		// 获取订单的总价格
+		Double realPrice = this.getRealPrice(order);
+		// 获取订单的商品实际价值
+		Double totalOrderGoodsPrice = this.getTotalOrderGoodsPrice(order);
+
+		// 获取订单商品数量、总价队列
+		Map<Long, Double[]> allOrderGoods = this.getAllOrderGoods(order);
+		if (null != allOrderGoods && null != realPrice && 0.0 != realPrice && null != totalOrderGoodsPrice
+				&& 0.0 != totalOrderGoodsPrice) {
+			for (Long goodsId : allOrderGoods.keySet()) {
+				// 获取指定商品的购买单价、购买数量、购买总价、退货单价队列
+				if (null != goodsId) {
+					Double[] infos = allOrderGoods.get(goodsId);
+					// 判断是否获取到一个正确的队列
+					if (null != infos && infos.length == 4) {
+						// 取出商品的总价
+						Double goodsTotalPrice = infos[2];
+						if (null != goodsTotalPrice) {
+							// 开始计算该件商品的价值比例
+							Double point = goodsTotalPrice / totalOrderGoodsPrice;
+							// 通过这个比例计算实际上的商品退货单价
+							Double GoodsRealTotal = realPrice * point;
+							if (null != GoodsRealTotal && null != infos[1] && 0.0 != infos[1]) {
+								Double unit = GoodsRealTotal / infos[1];
+								res.put(goodsId, unit);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return res;
 	}
 }

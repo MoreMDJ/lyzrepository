@@ -1,7 +1,5 @@
 package com.ynyes.lyz.controller.front;
 
-import static org.apache.commons.lang3.StringUtils.leftPad;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,8 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdArticle;
@@ -1315,11 +1312,12 @@ public class TdUserController {
 		// 查询到指定的订单
 		TdOrder order = tdOrderService.findOne(orderId);
 		if (null != order.getStatusId()) {
-//			if (2L == order.getStatusId().longValue() && 3L == order.getStatusId().longValue()) {
-//				res.put("message", "已出库的订单不能取消");
-//				return res;
-//			}
-			if ( 4L == order.getStatusId()) {
+			// if (2L == order.getStatusId().longValue() && 3L ==
+			// order.getStatusId().longValue()) {
+			// res.put("message", "已出库的订单不能取消");
+			// return res;
+			// }
+			if (4L == order.getStatusId()) {
 				res.put("message", "已出库的订单不能取消");
 				return res;
 			}
@@ -1573,143 +1571,146 @@ public class TdUserController {
 		return res;
 	}
 
-//	/**
-//	 * 申请退货
-//	 * 
-//	 * @author Max
-//	 */
-//	@RequestMapping(value = "/order/return", method = RequestMethod.POST)
-//	@ResponseBody
-//	public Map<String, Object> orderReturn(Long id, String remark, Long turnType, HttpServletRequest req) {
-//		Map<String, Object> res = new HashMap<>();
-//		res.put("code", 1);
-//
-//		String username = (String) req.getSession().getAttribute("username");
-//
-//		if (null == username) {
-//			res.put("message", "请重新登录");
-//			return res;
-//		}
-//
-//		if (null != id) {
-//			TdOrder order = tdOrderService.findOne(id);
-//
-//			if (null != order && order.getStatusId() != null && order.getStatusId() != 9L) {
-//				TdReturnNote returnNote = new TdReturnNote();
-//
-//				// 退货单编号
-//				Date current = new Date();
-//				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-//				String curStr = sdf.format(current);
-//				Random random = new Random();
-//
-//				returnNote.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
-//
-//				// 添加订单信息
-//				returnNote.setOrderNumber(order.getOrderNumber());
-//
-//				// add MDJ
-//				returnNote.setShoppingAddress(order.getShippingAddress());
-//				returnNote.setSellerRealName(order.getSellerRealName());
-//				// end add MDJ
-//
-//				// 支付方式
-//				returnNote.setPayTypeId(order.getPayTypeId());
-//				returnNote.setPayTypeTitle(order.getPayTypeTitle());
-//				// 门店信息
-//				if (null != order.getDiySiteId()) {
-//					TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
-//					returnNote.setDiySiteId(order.getDiySiteId());
-//					returnNote.setDiySiteTel(diySite.getServiceTele());
-//					returnNote.setDiySiteTitle(diySite.getTitle());
-//					returnNote.setDiySiteAddress(diySite.getAddress());
-//				}
-//
-//				// 退货信息
-//				returnNote.setUsername(username);
-//				returnNote.setRemarkInfo(remark);
-//
-//				// 退货方式
-//				if ("门店自提".equals(order.getDeliverTypeTitle())) {
-//					returnNote.setTurnType(1L);
-//					turnType = 1L;
-//				} else {
-//					returnNote.setTurnType(2L);
-//					turnType = 2L;
-//				}
-//				// returnNote.setTurnType(turnType);
-//				// 原订单配送方式
-//				if ("门店自提".equals(order.getDeliverTypeTitle())) {
-//					if (turnType == 1) {
-//						returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
-//					} else {
-//						returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
-//					}
-//				} else {
-//					if (turnType == 1) {
-//						returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
-//					} else {
-//						returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
-//					}
-//				}
-//
-//				returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
-//				returnNote.setOrderTime(new Date());
-//
-//				returnNote.setTurnPrice(order.getTotalGoodsPrice());
-//				List<TdOrderGoods> orderGoodsList = new ArrayList<>();
-//				if (null != order.getOrderGoodsList()) {
-//					for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
-//						TdOrderGoods orderGoods = new TdOrderGoods();
-//
-//						orderGoods.setBrandId(oGoods.getBrandId());
-//						orderGoods.setBrandTitle(oGoods.getBrandTitle());
-//						orderGoods.setGoodsId(oGoods.getGoodsId());
-//						orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
-//						orderGoods.setSku(oGoods.getSku());
-//						orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
-//						orderGoods.setGoodsColor(oGoods.getGoodsColor());
-//						orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
-//						orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
-//						orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
-//						orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
-//
-//						orderGoods.setPrice(oGoods.getPrice());
-//						orderGoods.setQuantity(oGoods.getQuantity());
-//
-//						orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
-//						orderGoods.setPoints(oGoods.getPoints());
-//						// tdOrderGoodsService.save(orderGoods);
-//						// 添加商品信息
-//						orderGoodsList.add(orderGoods);
-//
-//						// 订单商品设置退货为True
-//						oGoods.setIsReturnApplied(true);
-//						// 更新订单商品信息是否退货状态
-//						tdOrderGoodsService.save(oGoods);
-//					}
-//				}
-//
-//				returnNote.setReturnGoodsList(orderGoodsList);
-//				tdOrderGoodsService.save(orderGoodsList);
-//				// 保存退货单
-//				tdReturnNoteService.save(returnNote);
-//
-//				order.setStatusId(9L);
-//				order.setIsRefund(true);
-//				tdOrderService.save(order);
-//
-//				res.put("code", 0);
-//				res.put("message", "提交退货成功");
-//				return res;
-//			}
-//		}
-//
-//		res.put("message", "参数错误");
-//
-//		return res;
-//
-//	}
+	// /**
+	// * 申请退货
+	// *
+	// * @author Max
+	// */
+	// @RequestMapping(value = "/order/return", method = RequestMethod.POST)
+	// @ResponseBody
+	// public Map<String, Object> orderReturn(Long id, String remark, Long
+	// turnType, HttpServletRequest req) {
+	// Map<String, Object> res = new HashMap<>();
+	// res.put("code", 1);
+	//
+	// String username = (String) req.getSession().getAttribute("username");
+	//
+	// if (null == username) {
+	// res.put("message", "请重新登录");
+	// return res;
+	// }
+	//
+	// if (null != id) {
+	// TdOrder order = tdOrderService.findOne(id);
+	//
+	// if (null != order && order.getStatusId() != null && order.getStatusId()
+	// != 9L) {
+	// TdReturnNote returnNote = new TdReturnNote();
+	//
+	// // 退货单编号
+	// Date current = new Date();
+	// SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+	// String curStr = sdf.format(current);
+	// Random random = new Random();
+	//
+	// returnNote.setReturnNumber("T" + curStr +
+	// leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+	//
+	// // 添加订单信息
+	// returnNote.setOrderNumber(order.getOrderNumber());
+	//
+	// // add MDJ
+	// returnNote.setShoppingAddress(order.getShippingAddress());
+	// returnNote.setSellerRealName(order.getSellerRealName());
+	// // end add MDJ
+	//
+	// // 支付方式
+	// returnNote.setPayTypeId(order.getPayTypeId());
+	// returnNote.setPayTypeTitle(order.getPayTypeTitle());
+	// // 门店信息
+	// if (null != order.getDiySiteId()) {
+	// TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
+	// returnNote.setDiySiteId(order.getDiySiteId());
+	// returnNote.setDiySiteTel(diySite.getServiceTele());
+	// returnNote.setDiySiteTitle(diySite.getTitle());
+	// returnNote.setDiySiteAddress(diySite.getAddress());
+	// }
+	//
+	// // 退货信息
+	// returnNote.setUsername(username);
+	// returnNote.setRemarkInfo(remark);
+	//
+	// // 退货方式
+	// if ("门店自提".equals(order.getDeliverTypeTitle())) {
+	// returnNote.setTurnType(1L);
+	// turnType = 1L;
+	// } else {
+	// returnNote.setTurnType(2L);
+	// turnType = 2L;
+	// }
+	// // returnNote.setTurnType(turnType);
+	// // 原订单配送方式
+	// if ("门店自提".equals(order.getDeliverTypeTitle())) {
+	// if (turnType == 1) {
+	// returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
+	// } else {
+	// returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
+	// }
+	// } else {
+	// if (turnType == 1) {
+	// returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
+	// } else {
+	// returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
+	// }
+	// }
+	//
+	// returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
+	// returnNote.setOrderTime(new Date());
+	//
+	// returnNote.setTurnPrice(order.getTotalGoodsPrice());
+	// List<TdOrderGoods> orderGoodsList = new ArrayList<>();
+	// if (null != order.getOrderGoodsList()) {
+	// for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
+	// TdOrderGoods orderGoods = new TdOrderGoods();
+	//
+	// orderGoods.setBrandId(oGoods.getBrandId());
+	// orderGoods.setBrandTitle(oGoods.getBrandTitle());
+	// orderGoods.setGoodsId(oGoods.getGoodsId());
+	// orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
+	// orderGoods.setSku(oGoods.getSku());
+	// orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
+	// orderGoods.setGoodsColor(oGoods.getGoodsColor());
+	// orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
+	// orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
+	// orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
+	// orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
+	//
+	// orderGoods.setPrice(oGoods.getPrice());
+	// orderGoods.setQuantity(oGoods.getQuantity());
+	//
+	// orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
+	// orderGoods.setPoints(oGoods.getPoints());
+	// // tdOrderGoodsService.save(orderGoods);
+	// // 添加商品信息
+	// orderGoodsList.add(orderGoods);
+	//
+	// // 订单商品设置退货为True
+	// oGoods.setIsReturnApplied(true);
+	// // 更新订单商品信息是否退货状态
+	// tdOrderGoodsService.save(oGoods);
+	// }
+	// }
+	//
+	// returnNote.setReturnGoodsList(orderGoodsList);
+	// tdOrderGoodsService.save(orderGoodsList);
+	// // 保存退货单
+	// tdReturnNoteService.save(returnNote);
+	//
+	// order.setStatusId(9L);
+	// order.setIsRefund(true);
+	// tdOrderService.save(order);
+	//
+	// res.put("code", 0);
+	// res.put("message", "提交退货成功");
+	// return res;
+	// }
+	// }
+	//
+	// res.put("message", "参数错误");
+	//
+	// return res;
+	//
+	// }
 
 	/**
 	 * 跳转到退货界面的控制器
@@ -1723,9 +1724,49 @@ public class TdUserController {
 		if (null == user) {
 			return "redirect:/login";
 		}
+
 		// 查询到指定id的订单
 		TdOrder order = tdOrderService.findOne(orderId);
+
+		// 获取退货单价
+		Map<Long, Double> returnUnitPrice = tdPriceCountService.getReturnUnitPrice(order);
+
+		if (null != returnUnitPrice && null != order && null != order.getOrderGoodsList()
+				&& order.getOrderGoodsList().size() > 0) {
+			for (TdOrderGoods goods : order.getOrderGoodsList()) {
+				if (null != goods) {
+					Long goodsId = goods.getGoodsId();
+					if (null != goodsId) {
+						Double unit = returnUnitPrice.get(goodsId);
+						map.addAttribute("unit" + goodsId, unit);
+					}
+				}
+			}
+		}
 		map.addAttribute("order", order);
 		return "/client/user_return";
+	}
+
+	@RequestMapping(value = "/return/check")
+	@ResponseBody
+	public Map<String, Object> userReturnCheck(Long orderId, String infos) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+		// 根据订单号查找订单
+		TdOrder order = tdOrderService.findOne(orderId);
+		// 判断订单是否已经退货
+		if (null != order && !(null != order.getIsRefund()) && order.getIsRefund()) {
+			// 开始解析infos字符串
+			if (null != infos) {
+				String[] singles = infos.split(",");
+				if (null != singles && singles.length > 0) {
+					
+				}
+
+			}
+		}
+
+		res.put("status", 0);
+		return res;
 	}
 }
