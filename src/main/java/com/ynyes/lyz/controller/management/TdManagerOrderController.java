@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.management;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -546,7 +547,7 @@ public class TdManagerOrderController {
 					}
 		}
 		
-		download(workbook, "1", response);
+		download(workbook, "1", response,"销售明细报表");
 		return "";
 	}
 	
@@ -946,7 +947,7 @@ public class TdManagerOrderController {
 		}
         
         String exportAllUrl = SiteMagConstant.backupPath;
-        download(wb, exportAllUrl, response);
+        download(wb, exportAllUrl, response,"代收款报表");
         return "";
 	}
 	private String changeName(String name)
@@ -957,38 +958,49 @@ public class TdManagerOrderController {
 //		东大中转仓	1103	分仓
 //		百姓中转仓	1104	分仓
 //		主仓库	1105	分仓
-		if (name == null || name.equalsIgnoreCase(""))
+		
+		List<TdWareHouse> wareHouses = tdWareHouseService.findBywhNumberOrderBySortIdAsc(name);
+		if (wareHouses != null && wareHouses.size() > 0)
 		{
-			return "未知";
+			return wareHouses.get(0).getWhName();
 		}
-		if (name.equalsIgnoreCase("11"))
-		{
-			return "郑州公司";
-		}
-		else if (name.equalsIgnoreCase("1101"))
-		{
-			return "天荣中转仓";
-		}
-		else if (name.equalsIgnoreCase("1102"))
-		{
-			return "五龙口中转仓";
-		}
-		else if (name.equalsIgnoreCase("1103"))
-		{
-			return "东大中转仓";
-		}
-		else if (name.equalsIgnoreCase("1104"))
-		{
-			return "百姓中转仓";
-		}
-		else if (name.equalsIgnoreCase("1105"))
-		{
-			return "主仓库";
-		}
-		else
+		else 
 		{
 			return "未知编号：" + name;
 		}
+		
+//		if (name == null || name.equalsIgnoreCase(""))
+//		{
+//			return "未知";
+//		}
+//		if (name.equalsIgnoreCase("11"))
+//		{
+//			return "郑州公司";
+//		}
+//		else if (name.equalsIgnoreCase("1101"))
+//		{
+//			return "天荣中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1102"))
+//		{
+//			return "五龙口中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1103"))
+//		{
+//			return "东大中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1104"))
+//		{
+//			return "百姓中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1105"))
+//		{
+//			return "主仓库";
+//		}
+//		else
+//		{
+//			return "未知编号：" + name;
+//		}
 	}
 	private String orderStatus(Long status)
 	{
@@ -1029,15 +1041,22 @@ public class TdManagerOrderController {
 	 * @author lc
 	 * @注释：下载
 	 */
-	public Boolean download(HSSFWorkbook wb, String exportUrl, HttpServletResponse resp){
+	public Boolean download(HSSFWorkbook wb, String exportUrl, HttpServletResponse resp,String fileName){
+		String filename="table";
+		try {
+			filename = new String(fileName.getBytes("GBK"), "ISO-8859-1");
+		} catch (UnsupportedEncodingException e1) {
+			System.out.println("下载文件名格式转换错误！");
+		}
 		try
 		{
 			OutputStream os;
 			try {
 				os = resp.getOutputStream();
 				try {
+					
 					resp.reset();
-					resp.setHeader("Content-Disposition", "attachment; filename=" + "table.xls");
+					resp.setHeader("Content-Disposition", "attachment; filename=" + filename +".xls");
 					resp.setContentType("application/octet-stream; charset=utf-8");
 					wb.write(os);
 					os.flush();

@@ -725,7 +725,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					}
 		}
 		
-		download(workbook, "1", response);
+		download(workbook, "1", response,"退货报表");
 		return "";
 	}
 

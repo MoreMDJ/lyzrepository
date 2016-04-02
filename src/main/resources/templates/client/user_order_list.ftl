@@ -47,7 +47,7 @@
             $("#orderId").attr("value",id);
         };
         
-        function win_no(){  
+        function win_no_return(){  
             $('.turn_div').fadeOut(600);
         };
         
@@ -104,7 +104,7 @@
                 <input onclick="win_no();" type="button" name="" id="" value="否" />
                 -->
                 <input type="submit" name="" id="" value="是" />
-                <input onclick="javascript:win_no();" type="button" value="否" />
+                <input onclick="javascript:win_no_return();" type="button" value="否" />
             </span>             
         </div>
         </form>

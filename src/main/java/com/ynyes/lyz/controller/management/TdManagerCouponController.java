@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.management;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -1323,14 +1324,20 @@ public class TdManagerCouponController {
 		}
         
         String exportAllUrl = SiteMagConstant.backupPath;
-        download(wb, exportAllUrl, response);
+        download(wb, exportAllUrl, response,"领用记录");
         return "";
 	}
 	/**
 	 * @author lc
 	 * @注释：下载
 	 */
-	public Boolean download(HSSFWorkbook wb, String exportUrl, HttpServletResponse resp){
+	public Boolean download(HSSFWorkbook wb, String exportUrl, HttpServletResponse resp,String fileName){
+		String filename="table";
+		try {
+			filename = new String(fileName.getBytes("GBK"), "ISO-8859-1");
+		} catch (UnsupportedEncodingException e1) {
+			System.out.println("下载文件名格式转换错误！");
+		}
 		try
 		{
 			OutputStream os;
@@ -1338,7 +1345,7 @@ public class TdManagerCouponController {
 				os = resp.getOutputStream();
 				try {
 					resp.reset();
-					resp.setHeader("Content-Disposition", "attachment; filename=" + "table.xls");
+					resp.setHeader("Content-Disposition", "attachment; filename=" + filename +".xls");
 					resp.setContentType("application/octet-stream; charset=utf-8");
 					wb.write(os);
 					os.flush();
