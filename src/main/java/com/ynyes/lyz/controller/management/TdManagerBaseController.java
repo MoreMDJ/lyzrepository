@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.management;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -68,8 +69,13 @@ public class TdManagerBaseController {
 	 * @author lc
 	 * @注释：下载
 	 */
-	public Boolean download(HSSFWorkbook wb, String exportUrl,
-			HttpServletResponse resp) {
+	public Boolean download(HSSFWorkbook wb, String exportUrl,HttpServletResponse resp,String fileName) {
+		String filename="table";
+		try {
+			filename = new String(fileName.getBytes("GBK"), "ISO-8859-1");
+		} catch (UnsupportedEncodingException e1) {
+			System.out.println("下载文件名格式转换错误！");
+		}
 		try {
 			OutputStream os;
 			try {
@@ -77,7 +83,7 @@ public class TdManagerBaseController {
 				try {
 					resp.reset();
 					resp.setHeader("Content-Disposition",
-							"attachment; filename=" + "table.xls");
+							"attachment; filename=" + filename +".xls");
 					resp.setContentType("application/octet-stream; charset=utf-8");
 					wb.write(os);
 					os.flush();
