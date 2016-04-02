@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ibm.icu.util.Calendar;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
@@ -616,14 +617,20 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				}
 			}
 		}*/
-		
+		if(begin.after(getStartTime()) || end.after(getStartTime())){
+        	try {//调用存储过程 报错
+        		tdReturnReportService.callInsertReturnReport(getStartTime(), getEndTime());
+    		} catch (Exception e) {
+    			System.out.println(e);
+    		}
+        }
 		diyCode=null;
     	if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
         	diyCode=tdManager.getDiyCode();
         	city=null;
 		}
-        List<TdReturnReport> returnReportList = tdReturnReportService.searchReturnReport(stringToDate(begindata, null),stringToDate(enddata, null), city, diyCode);
+        List<TdReturnReport> returnReportList = tdReturnReportService.searchReturnReport(begin,end, city, diyCode);
 	
 		if (returnReportList != null && returnReportList.size()>0)
 		{
@@ -776,4 +783,21 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 
 		}
 	}
+	private Date getStartTime(){  
+        Calendar todayStart = Calendar.getInstance();  
+        todayStart.set(Calendar.HOUR, 0);  
+        todayStart.set(Calendar.MINUTE, 0);  
+        todayStart.set(Calendar.SECOND, 0);  
+        todayStart.set(Calendar.MILLISECOND, 0);  
+        return todayStart.getTime();  
+    }  
+      
+    private Date getEndTime(){  
+        Calendar todayEnd = Calendar.getInstance();  
+        todayEnd.set(Calendar.HOUR, 23);  
+        todayEnd.set(Calendar.MINUTE, 59);  
+        todayEnd.set(Calendar.SECOND, 59);  
+        todayEnd.set(Calendar.MILLISECOND, 999);  
+        return todayEnd.getTime();  
+    }
 }

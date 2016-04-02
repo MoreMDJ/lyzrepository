@@ -63,4 +63,11 @@ public interface TdAgencyFundRepo extends PagingAndSortingRepository<TdAgencyFun
 			+ " GROUP BY o.main_order_number",nativeQuery = true)
 	List<TdAgencyFund> searchAllbyCityAndTime(String city,Date start,Date end);
 	
+	/**
+	 * 调用存储过程
+	 * @return
+	 */
+	@Query(value = "{call insertAgencyFund_initial(?1,?2)}",nativeQuery = true)
+	void callInsertAgencyFund(Date start,Date end);
+	
 }

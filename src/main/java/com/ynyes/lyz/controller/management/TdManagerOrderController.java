@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ibm.icu.util.Calendar;
 import com.ynyes.lyz.entity.TdAgencyFund;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryType;
@@ -426,6 +427,14 @@ public class TdManagerOrderController {
 			}
 		}*/
 		
+		if(date1.after(getStartTime()) || date2.after(getStartTime())){
+        	try {//调用存储过程 报错
+        		tdSalesDetailService.callInsertSalesDetail(getStartTime(), getEndTime());
+    		} catch (Exception e) {
+    			System.out.println(e);
+    		}
+        }
+		
 		if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
 			diyCode= tdManager.getDiyCode();
@@ -818,7 +827,14 @@ public class TdManagerOrderController {
         	
         	i++;
 		}*/
-       
+        
+        if(date1.after(getStartTime()) || date2.after(getStartTime())){
+        	try {//调用存储过程 报错
+            	tdAgencyFundService.callInsertAgencyFund(getStartTime(), getEndTime());
+    		} catch (Exception e) {
+    			System.out.println(e);
+    		}
+        }
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
         	diyCode=tdManager.getDiyCode();
@@ -2112,5 +2128,21 @@ public class TdManagerOrderController {
 		return searchCondition;
 	}*/
 	
-	
+	private Date getStartTime(){  
+        Calendar todayStart = Calendar.getInstance();  
+        todayStart.set(Calendar.HOUR, 0);  
+        todayStart.set(Calendar.MINUTE, 0);  
+        todayStart.set(Calendar.SECOND, 0);  
+        todayStart.set(Calendar.MILLISECOND, 0);  
+        return todayStart.getTime();  
+    }  
+      
+    private Date getEndTime(){  
+        Calendar todayEnd = Calendar.getInstance();  
+        todayEnd.set(Calendar.HOUR, 23);  
+        todayEnd.set(Calendar.MINUTE, 59);  
+        todayEnd.set(Calendar.SECOND, 59);  
+        todayEnd.set(Calendar.MILLISECOND, 999);  
+        return todayEnd.getTime();  
+    }  
 }

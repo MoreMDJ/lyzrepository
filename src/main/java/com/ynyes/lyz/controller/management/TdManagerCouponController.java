@@ -1211,27 +1211,36 @@ public class TdManagerCouponController {
     	//优惠券名称、金额、领卷时间、领用用户、是否使用、使用的时间、使用订单号
         HSSFRow row = sheet.createRow((int) 0); 
         HSSFCell cell = row.createCell(0);  
-        cell.setCellValue("优惠券名称");
+        cell.setCellValue("优惠券类型");
         cell.setCellStyle(style);
         cell = row.createCell(1);
-        cell.setCellValue("金额");  
+        cell.setCellValue("优惠券名称");
+        cell.setCellStyle(style);
+        cell = row.createCell(2);
+        cell.setCellValue("金额");
         cell.setCellStyle(style);  
-        cell = row.createCell(2);  
+        cell = row.createCell(3);  
+        cell.setCellValue("劵的来源");
+        cell.setCellStyle(style);  
+        cell = row.createCell(4);  
+        cell.setCellValue("劵的归属");
+        cell.setCellStyle(style);  
+        cell = row.createCell(5);  
         cell.setCellValue("领卷时间");  
         cell.setCellStyle(style);
-        cell = row.createCell(3);  
+        cell = row.createCell(6);  
         cell.setCellValue("领用用户");  
         cell.setCellStyle(style);
-        cell = row.createCell(4);  
+        cell = row.createCell(7);  
         cell.setCellValue("是否使用");
         cell.setCellStyle(style);
-        cell = row.createCell(5);  
+        cell = row.createCell(8);  
         cell.setCellValue("使用时间");
         cell.setCellStyle(style);
-        cell = row.createCell(6);  
+        cell = row.createCell(9);  
         cell.setCellValue("使用订单号");
         cell.setCellStyle(style);
-        cell = row.createCell(7);  
+        cell = row.createCell(10);  
        
         // 第五步，设置值  
         List<TdCoupon> coupon = null;
@@ -1251,38 +1260,61 @@ public class TdManagerCouponController {
         for (TdCoupon tdCoupon : coupon)
         {
         	row = sheet.createRow((int) i + 1);
+        	if(null != tdCoupon.getTypeCategoryId()){
+        		if(tdCoupon.getTypeCategoryId().equals(1L)){
+        			row.createCell(0).setCellValue("通用现金券");
+        		}
+        		if(tdCoupon.getTypeCategoryId().equals(2L)){
+        			row.createCell(0).setCellValue("指定商品现金券");
+        		}
+        		if(tdCoupon.getTypeCategoryId().equals(3L)){
+        			row.createCell(0).setCellValue("产品券");
+        		}
+        	}
+        		
         	if (null != tdCoupon.getTypeTitle())
         	{
-            	row.createCell(0).setCellValue(tdCoupon.getTypeTitle());
+            	row.createCell(1).setCellValue(tdCoupon.getTypeTitle());
     		}
         	if (null != tdCoupon.getPrice())
         	{
-            	row.createCell(1).setCellValue(tdCoupon.getPrice());
+            	row.createCell(2).setCellValue(tdCoupon.getPrice());
     		}
+        	if(null != tdCoupon.getTypeId()){
+        		if(tdCoupon.getTypeId().equals(1L)){
+        			row.createCell(3).setCellValue("促销发劵");
+        		}
+        		if(tdCoupon.getTypeId().equals(2L)){
+        			row.createCell(3).setCellValue("抢劵");
+        		}
+        	}
+        	if(null != tdCoupon.getBrandTitle()){
+        		row.createCell(4).setCellValue(tdCoupon.getBrandTitle());
+        	}
         	if (null != tdCoupon.getGetTime())
         	{
         		Date getTime = tdCoupon.getGetTime();
         		String couponTimeStr = getTime.toString();
-            	row.createCell(2).setCellValue(couponTimeStr);
+            	row.createCell(5).setCellValue(couponTimeStr);
     		}
         	if (null != tdCoupon.getUsername())
         	{
-            	row.createCell(3).setCellValue(tdCoupon.getUsername());
+            	row.createCell(6).setCellValue(tdCoupon.getUsername());
     		}
         	if (null != tdCoupon.getIsUsed())
         	{
         		if(tdCoupon.getIsUsed()){
-        			row.createCell(4).setCellValue("是");
+        			row.createCell(7).setCellValue("是");
         			String couponUserTimeStr="";
         			if (null != tdCoupon.getUseTime()){
         				Date userTime = tdCoupon.getUseTime();
         				couponUserTimeStr = userTime.toString();
         			}
         			
-        			row.createCell(5).setCellValue(couponUserTimeStr);
-        			row.createCell(6).setCellValue(tdCoupon.getOrderNumber());
+        			row.createCell(8).setCellValue(couponUserTimeStr);
+        			row.createCell(9).setCellValue(tdCoupon.getOrderNumber());
         		}else{
-        			row.createCell(4).setCellValue("否");
+        			row.createCell(7).setCellValue("否");
         		}
             	
     		}

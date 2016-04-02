@@ -46,5 +46,13 @@ public class TdSalesDetailService {
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
 	}
+	/**
+	 * 调用存储过程
+	 * @return 
+	 * @return
+	 */
+	public void callInsertSalesDetail(Date start,Date end){
+		repository.callInsertSalesDetail(start, end);
+	}
 	
 }

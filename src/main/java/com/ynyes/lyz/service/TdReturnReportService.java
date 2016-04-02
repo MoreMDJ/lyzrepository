@@ -46,5 +46,12 @@ public class TdReturnReportService {
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
 	}
-	
+	/**
+	 * 调用存储过程
+	 * @return 
+	 * @return
+	 */
+	public void callInsertReturnReport(Date start,Date end){
+		repository.callInsertReturnReport(start, end);
+	}
 }

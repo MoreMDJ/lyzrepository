@@ -79,5 +79,12 @@ public class TdAgencyFundService {
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
 	}
-	
+	/**
+	 * 调用存储过程
+	 * @return 
+	 * @return
+	 */
+	public void callInsertAgencyFund(Date start,Date end){
+		repository.callInsertAgencyFund(start, end);
+	}
 }
