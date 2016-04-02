@@ -253,7 +253,7 @@ public class TdManagerOrderController {
 		cell.setCellValue("使用可提现金额");
 		cell.setCellStyle(style);
 		cell = row.createCell(13);
-		cell.setCellValue("使用不可体现金额");
+		cell.setCellValue("使用不可提现金额");
 		cell.setCellStyle(style);
 		cell = row.createCell(14);
 		cell.setCellValue("备注");
@@ -643,10 +643,10 @@ public class TdManagerOrderController {
         cell.setCellValue("订单日期");
         cell.setCellStyle(style);
         cell = row.createCell(4);  
-        cell.setCellValue("可提现金额");
+        cell.setCellValue("使用可提现金额");
         cell.setCellStyle(style);
         cell = row.createCell(5);  
-        cell.setCellValue("不可体现金额");
+        cell.setCellValue("使用不可提现金额");
         cell.setCellStyle(style);
         cell = row.createCell(6);  
         cell.setCellValue("代收款金额");
@@ -879,7 +879,7 @@ public class TdManagerOrderController {
         	
         	if (null != agencyFund.getPayPrice())
         	{
-    			row.createCell(6).setCellValue(agencyFund.getPayPrice());
+    			row.createCell(6).setCellValue(agencyFund.getPayPrice()-(agencyFund.getUnCashBalanceUsed()==null?0:agencyFund.getUnCashBalanceUsed())-(agencyFund.getCashBalanceUsed()==null?0:agencyFund.getCashBalanceUsed()));
     		}
         	if (null != agencyFund.getPayed())
         	{
