@@ -56,8 +56,7 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	// static String wmsUrl =
-	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+//	static String wmsUrl =  "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -1053,7 +1052,7 @@ public class TdCommonService {
 											orderGoods.setGoodsId(goods.getId());
 											orderGoods.setGoodsTitle(goods.getTitle());
 											orderGoods.setGoodsSubTitle(goods.getSubTitle());
-											orderGoods.setPrice(priceListItem.getPrice());
+											orderGoods.setPrice(0.0);
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
@@ -1776,7 +1775,10 @@ public class TdCommonService {
 				order.setTotalPrice(0.0);
 			}
 
-			Double left = order.getTotalPrice() - order.getAllActualPay();
+//			Double left = order.getTotalPrice() - order.getAllActualPay();
+			
+			//add MDJ totalPrice修改后，改变
+			Double left = order.getAllTotalPay();
 
 			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
 

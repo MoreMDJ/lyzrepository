@@ -323,7 +323,7 @@ public class TdManagerUserController {
 		if (null != birthdate) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			try {
-				if (null != birthdate) {
+				if (StringUtils.isNotBlank(birthdate)) {
 					Date brithday = sdf.parse(birthdate);
 					tdUser.setBirthday(brithday);
 				}

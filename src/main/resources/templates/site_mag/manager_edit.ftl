@@ -123,7 +123,7 @@ $(function () {
     <dl>
         <dt>门店编码</dt>
         <dd>
-            <input name="diyCode" type="text" value="<#if tdManager??>${tdManager.diyCode!""}</#if>" class="input normal" datatype="0-100" sucmsg=" ">
+            <input name="diyCode" type="text" value="<#if tdManager??>${tdManager.diyCode!""}</#if>" class="input normal" datatype="*" sucmsg=" ">
             <span class="Validform_checktip">仅是门店的时候才填写！</span>
         </dd>
     </dl>
