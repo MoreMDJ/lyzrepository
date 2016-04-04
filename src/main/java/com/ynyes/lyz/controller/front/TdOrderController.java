@@ -210,7 +210,10 @@ public class TdOrderController {
 			List<TdCoupon> coupon_list = tdCouponService
 					.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
 							username, 1L, brandId,user.getCityName());
-			no_product_coupon_list.addAll(coupon_list);
+			if(null != coupon_list){
+				no_product_coupon_list.addAll(coupon_list);
+			}
+			
 		}
 
 		// 遍历所有已选，查找用户对于当前订单可以使用的指定商品现金券和产品券
@@ -222,13 +225,18 @@ public class TdOrderController {
 					List<TdCoupon> p_coupon_list = tdCouponService
 							.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
 									username, goods.getGoodsId(),user.getCityName());
-					product_coupon_list.addAll(p_coupon_list);
-
+					if(null != p_coupon_list){
+						product_coupon_list.addAll(p_coupon_list);
+					}
+					
 					// 查找能使用的指定商品现金券
 					List<TdCoupon> c_coupon_list = tdCouponService
 							.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
 									username, goods.getGoodsId(),user.getCityName());
-					no_product_coupon_list.addAll(c_coupon_list);
+					if(null != c_coupon_list){
+						no_product_coupon_list.addAll(c_coupon_list);
+					}
+					
 				}
 			}
 		}

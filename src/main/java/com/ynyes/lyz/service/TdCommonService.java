@@ -57,7 +57,7 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	// static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+//	static String wmsUrl =  "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -389,13 +389,13 @@ public class TdCommonService {
 
 		return priceItemList.get(0);
 	}
-	
-	public List<TdGoods> geTdGoodsByDiySiteCode(TdDiySite diySite)
-	{
+
+	public List<TdGoods> geTdGoodsByDiySiteCode(TdDiySite diySite) {
 		List<TdGoods> tdGoodsList = new ArrayList<TdGoods>();
 		Long sobId = diySite.getRegionId();
 		String priceType = "LYZ";
-		List<TdPriceList> priceList_list = tdPriceListService.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
+		List<TdPriceList> priceList_list = tdPriceListService
+				.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
 		return tdGoodsList;
 	}
 
@@ -741,7 +741,7 @@ public class TdCommonService {
 	public List<TdActivityGift> getActivityGiftBySelected(HttpServletRequest req) {
 		// 创建一个集合用于存储当前已选的所能参加的小辅料活动
 		List<TdActivityGift> join = new ArrayList<>();
-		//获取当前用户
+		// 获取当前用户
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		// 获取已选【类别：数量】组
@@ -749,7 +749,7 @@ public class TdCommonService {
 
 		// 遍历map
 		for (Long categoryId : category_quantity.keySet()) {
-			
+
 			// 根据分类id获取小辅料赠送活动
 			List<TdActivityGift> activityGift_list = tdActivityGiftService
 					.findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterOrderBySortIdAsc(categoryId,
@@ -758,10 +758,10 @@ public class TdCommonService {
 			if (null != activityGift_list) {
 				for (TdActivityGift activityGift : activityGift_list) {
 					if (null != activityGift && !join.contains(activityGift)) {
-						//判断是否在活动的门店内
-						String[] diySiteIds= activityGift.getDiySiteIds().split(",");
+						// 判断是否在活动的门店内
+						String[] diySiteIds = activityGift.getDiySiteIds().split(",");
 						for (String diySiteId : diySiteIds) {
-							if(diySiteId.equals(user.getUpperDiySiteId().toString())){
+							if (diySiteId.equals(user.getUpperDiySiteId().toString())) {
 								join.add(activityGift);
 							}
 						}
@@ -1106,6 +1106,8 @@ public class TdCommonService {
 											Long quantity = Long.parseLong(param[1]);
 											// 查找到指定id的商品
 											TdGoods goods = tdGoodsService.findOne(id);
+											// 查找指定商品的价格
+											TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
 											TdOrderGoods orderGoods = new TdOrderGoods();
 											orderGoods.setBrandId(goods.getBrandId());
 											orderGoods.setBrandTitle(goods.getBrandTitle());
@@ -1113,7 +1115,7 @@ public class TdCommonService {
 											orderGoods.setGoodsId(goods.getId());
 											orderGoods.setGoodsTitle(goods.getTitle());
 											orderGoods.setGoodsSubTitle(goods.getSubTitle());
-											orderGoods.setPrice(0.00);
+											orderGoods.setPrice(0.0);
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
@@ -1836,7 +1838,10 @@ public class TdCommonService {
 				order.setTotalPrice(0.0);
 			}
 
-			Double left = order.getTotalPrice() - order.getAllActualPay();
+//			Double left = order.getTotalPrice() - order.getAllActualPay();
+			
+			//add MDJ totalPrice修改后，改变
+			Double left = order.getAllTotalPay();
 
 			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
 

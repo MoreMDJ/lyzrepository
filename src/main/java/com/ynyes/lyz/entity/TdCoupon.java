@@ -24,18 +24,18 @@ public class TdCoupon {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	// 优惠券获取方式：1. 后台手动发放 2. 用户抢券
+	// 优惠券获取方式：1. 后台手动发放 2. 用户抢券 3. 退货新生成券
 	@Column
 	private Long typeId;
 
 	// 优惠券限用分类类型ID: 1. 通用现金券；2. 指定商品现金券；3. 产品券；4.数据导入
 	@Column
 	private Long typeCategoryId;
-	
+
 	// 券所属公司ID
 	@Column
 	private Long brandId;
-	
+
 	// 券所属公司名称
 	@Column
 	private String brandTitle;
@@ -53,7 +53,7 @@ public class TdCoupon {
 	 */
 	@Column
 	private String picUri;
-	
+
 	// 可使用的商品名称
 	@Column
 	private String goodsName;
@@ -73,8 +73,8 @@ public class TdCoupon {
 	// 金额
 	@Column(scale = 2)
 	private Double price;
-	
-	//实际使用金额
+
+	// 实际使用金额
 	@Column
 	private Double realPrice;
 
@@ -132,7 +132,7 @@ public class TdCoupon {
 	// 排序号
 	@Column
 	private Double sortId;
-	
+
 	// 使用日期
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -149,15 +149,15 @@ public class TdCoupon {
 	// 城市名
 	@Column
 	private String cityName;
-	
-	//用户编号（ebs）
+
+	// 用户编号（ebs）
 	@Column
 	private String customerId;
-	
-	//sku
+
+	// sku
 	@Column
 	private String sku;
-	
+
 	public String getCustomerId() {
 		return customerId;
 	}
@@ -421,5 +421,5 @@ public class TdCoupon {
 	public void setCityName(String cityName) {
 		this.cityName = cityName;
 	}
-	
+
 }

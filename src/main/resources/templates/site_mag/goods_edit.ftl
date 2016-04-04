@@ -378,9 +378,7 @@ function del_goods_comb(obj) {
                 <#--<input name="leftNumber" type="text" value="<#if goods?? && goods.leftNumber??>${goods.leftNumber?c!"0"}<#else>0</#if>" class="input normal" datatype="n" sucmsg=" ">--->
                 <#if diy_site_manager??>
                     <#if goods?? && goods.inventoryList??>
-                    Q
                         <#list goods.inventoryList as inventory>
-                        1
                             <#if inventory.managerId == diy_site_manager>
                                 <input name="inventoryList[${inventory_index?c}].inventory" type="text" value="<#if inventory.inventory??>${inventory.inventory?c}<#else>110</#if>" class="input normal" datatype="n" sucmsg=" ">
                                 <#break>
