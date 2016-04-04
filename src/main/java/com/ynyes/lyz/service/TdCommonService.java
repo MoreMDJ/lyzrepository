@@ -50,6 +50,7 @@ import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
+import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
 
@@ -121,6 +122,68 @@ public class TdCommonService {
 
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
+	
+	@Autowired
+	private TdWareHouseService tdWareHouseService;
+	
+	
+	/**
+	 * 根据仓库编号获取仓库名
+	 * @param name
+	 * @return
+	 */
+	public String changeName(String name)
+	{
+//		郑州公司	11	总仓
+//		天荣中转仓	1101	分仓
+//		五龙口中转仓	1102	分仓
+//		东大中转仓	1103	分仓
+//		百姓中转仓	1104	分仓
+//		主仓库	1105	分仓
+		
+		List<TdWareHouse> wareHouses = tdWareHouseService.findBywhNumberOrderBySortIdAsc(name);
+		if (wareHouses != null && wareHouses.size() > 0)
+		{
+			return wareHouses.get(0).getWhName();
+		}
+		else 
+		{
+			return "未知编号：" + name;
+		}
+		
+//		if (name == null || name.equalsIgnoreCase(""))
+//		{
+//			return "未知";
+//		}
+//		if (name.equalsIgnoreCase("11"))
+//		{
+//			return "郑州公司";
+//		}
+//		else if (name.equalsIgnoreCase("1101"))
+//		{
+//			return "天荣中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1102"))
+//		{
+//			return "五龙口中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1103"))
+//		{
+//			return "东大中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1104"))
+//		{
+//			return "百姓中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1105"))
+//		{
+//			return "主仓库";
+//		}
+//		else
+//		{
+//			return "未知编号：" + name;
+//		}
+	}
 
 	public TdReturnNote MakeReturnNote(TdOrder order, Long type, String msg) {
 		TdReturnNote returnNote = new TdReturnNote();

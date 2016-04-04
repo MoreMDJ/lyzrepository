@@ -617,7 +617,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				}
 			}
 		}*/
-		if(begin.after(getStartTime()) || end.after(getStartTime())){
+		if(end == null || end.after(getStartTime())){
         	try {//调用存储过程 报错
         		tdReturnReportService.callInsertReturnReport(getStartTime(), getEndTime());
     		} catch (Exception e) {
@@ -718,7 +718,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			        		row.createCell(18).setCellValue(returnReport.getRemarkInfo());
 			        	}
 			        	if(returnReport.getWhNo() != null){//中转仓
-			        		row.createCell(19).setCellValue(returnReport.getWhNo());
+			        		row.createCell(19).setCellValue(tdCommonService.changeName(returnReport.getWhNo()));
 			        	}
 			        	
 						i++;
