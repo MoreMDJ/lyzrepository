@@ -390,12 +390,11 @@ public class TdCommonService {
 		return priceItemList.get(0);
 	}
 
-	public List<TdGoods> geTdGoodsByDiySiteCode(TdDiySite diySite) {
+	public List<TdGoods> getTdGoodsByDiySiteCode(TdDiySite diySite) {
 		List<TdGoods> tdGoodsList = new ArrayList<TdGoods>();
 		Long sobId = diySite.getRegionId();
 		String priceType = "LYZ";
-		List<TdPriceList> priceList_list = tdPriceListService
-				.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
+		List<TdPriceList> priceList_list = tdPriceListService.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
 		return tdGoodsList;
 	}
 
