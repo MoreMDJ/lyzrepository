@@ -1536,7 +1536,7 @@ public class TdManagerOrderController {
 				String diySiteCode="";
 				if (tdManagerRole.getTitle().equalsIgnoreCase("门店")){
 					diySiteCode=tdManager.getDiyCode();
-				}else if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
+				}else if(tdManagerRole.getIsSys()){
 					diySiteCode=diyCode;
 				}
 				String userName="";
@@ -1580,7 +1580,7 @@ public class TdManagerOrderController {
 			}
 		}
 		//城市和门店信息
-		if (tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
+		if (tdManagerRole.getIsSys()){
 			map.addAttribute("diySiteList",tdDiySiteService.findAll());
 			map.addAttribute("cityList", tdCityService.findAll());
 		}

@@ -46,6 +46,12 @@ function downloaddate()
     	location.href="/Verwalter/coupon/downdata?begindata="+ begain + "&enddata=" + end + "&diyCode=" + diyCode+ "&cityId=" + city;
     }
 }
+function failureMsg(msg,objId){
+	$.dialog.confirm(msg, function () {
+		 __doPostBack(objId, '');
+    });
+	return false;
+}
 </script>
 <!--导航栏-->
 <div class="location">
@@ -72,6 +78,7 @@ function downloaddate()
       	
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>      
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除</span></a></li>
+        <li><a onclick="return failureMsg('失效记录后不可恢复，您确定吗？','btnFailure')" id="btnFailure" class="del" href="javascript:__doPostBack('btnFailure','')"><i></i><span>失效</span></a></li>
       </ul>
       <div class="menu-list">
       		<div class="rule-single-select">
@@ -144,7 +151,7 @@ function downloaddate()
     <#--<th align="left" width="11%">车牌</th>-->
     <th align="left" width="15%">领取时间</th>
     <th align="left" width="17%">有效截止时间</th>
-    <#--<th align="left" width="8%">消费密码</th>-->
+    <th align="left" width="8%">是否失效</th>
     <th align="left" width="8%">是否使用
                     </th>
     <#--
@@ -176,7 +183,15 @@ function downloaddate()
                 <#--<td>${item.carCode!""}</td>-->
                 <td><#if item.getTime??>${item.getTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
                 <td><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
-               <#--<td><#if item.consumerPassword??>${item.consumerPassword!''}</#if></td>-->
+               <td>
+		               <#if item.isOutDate??>
+		                        <#if item.isOutDate>
+		                            已失效
+		                        <#else>
+		                           未失效 
+		                        </#if>
+		                    </#if>
+               </td>
                <td>
                     <#if item.isUsed??>
                         <#if item.isUsed>

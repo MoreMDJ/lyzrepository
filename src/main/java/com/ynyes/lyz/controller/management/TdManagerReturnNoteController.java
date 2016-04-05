@@ -206,7 +206,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
 				}
 				//城市和门店信息
-				if (tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
+				if (tdManagerRole.getIsSys()){
 //					map.addAttribute("diySiteList",tdDiySiteService.findAll());
 					map.addAttribute("cityList", tdCityService.findAll());
 				}
@@ -617,7 +617,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				}
 			}
 		}*/
-		if(begin.after(getStartTime()) || end.after(getStartTime())){
+		if(null == end || end.after(getStartTime())){
         	try {//调用存储过程 报错
         		tdReturnReportService.callInsertReturnReport(getStartTime(), getEndTime());
     		} catch (Exception e) {
