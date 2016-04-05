@@ -29,7 +29,7 @@ public class SiteMagConstant {
 		if(operation.contains("Linux")){
 			backupPath = "/mnt/root/backup/";
 			imagePath = "/mnt/root/images/goods";
-			alipayReturnUrl = "http://123.57.32.143:8080/pay/alipay/return";
+			alipayReturnUrl = "http://101.200.128.65:8080/pay/alipay/return";
 		}else{
 			backupPath = "src/main/resources/backup/";
 			imagePath = "src/main/resources/static/images";
