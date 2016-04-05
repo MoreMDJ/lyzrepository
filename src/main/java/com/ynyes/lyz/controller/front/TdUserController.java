@@ -81,7 +81,7 @@ import com.ynyes.lyz.util.MD5;
 
 @Controller
 @RequestMapping(value = "/user")
-public class TdUserController {
+public class TdUserController{
 
 	@Autowired
 	private TdUserService tdUserService;
@@ -1576,7 +1576,7 @@ public class TdUserController {
 
 	/**
 	 * 申请退货
-	 *
+	 * 
 	 * @author Max
 	 */
 	@RequestMapping(value = "/order/return", method = RequestMethod.POST)
@@ -1712,40 +1712,41 @@ public class TdUserController {
 
 	}
 
+
 	/**
 	 * 跳转到退货界面的控制器
 	 * 
 	 * @author DengXiao
 	 */
-	@RequestMapping(value = "/order/return")
-	public String userOrderReturn(HttpServletRequest req, ModelMap map, Long orderId) {
-		String username = (String) req.getSession().getAttribute("username");
-		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
-		if (null == user) {
-			return "redirect:/login";
-		}
-
-		// 查询到指定id的订单
-		TdOrder order = tdOrderService.findOne(orderId);
-
-		// 获取退货单价
-		Map<Long, Double> returnUnitPrice = tdPriceCountService.getReturnUnitPrice(order);
-
-		if (null != returnUnitPrice && null != order && null != order.getOrderGoodsList()
-				&& order.getOrderGoodsList().size() > 0) {
-			for (TdOrderGoods goods : order.getOrderGoodsList()) {
-				if (null != goods) {
-					Long goodsId = goods.getGoodsId();
-					if (null != goodsId) {
-						Double unit = returnUnitPrice.get(goodsId);
-						map.addAttribute("unit" + goodsId, unit);
-					}
-				}
-			}
-		}
-		map.addAttribute("order", order);
-		return "/client/user_return";
-	}
+//	@RequestMapping(value = "/order/return")
+//	public String userOrderReturn(HttpServletRequest req, ModelMap map, Long orderId) {
+//		String username = (String) req.getSession().getAttribute("username");
+//		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+//		if (null == user) {
+//			return "redirect:/login";
+//		}
+//
+//		// 查询到指定id的订单
+//		TdOrder order = tdOrderService.findOne(orderId);
+//
+//		// 获取退货单价
+//		Map<Long, Double> returnUnitPrice = tdPriceCountService.getReturnUnitPrice(order);
+//
+//		if (null != returnUnitPrice && null != order && null != order.getOrderGoodsList()
+//				&& order.getOrderGoodsList().size() > 0) {
+//			for (TdOrderGoods goods : order.getOrderGoodsList()) {
+//				if (null != goods) {
+//					Long goodsId = goods.getGoodsId();
+//					if (null != goodsId) {
+//						Double unit = returnUnitPrice.get(goodsId);
+//						map.addAttribute("unit" + goodsId, unit);
+//					}
+//				}
+//			}
+//		}
+//		map.addAttribute("order", order);
+//		return "/client/user_return";
+//	}
 
 	@RequestMapping(value = "/return/check")
 	@ResponseBody

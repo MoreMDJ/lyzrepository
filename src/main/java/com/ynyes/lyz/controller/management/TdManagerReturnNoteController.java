@@ -718,7 +718,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			        		row.createCell(18).setCellValue(returnReport.getRemarkInfo());
 			        	}
 			        	if(returnReport.getWhNo() != null){//中转仓
-			        		row.createCell(19).setCellValue(returnReport.getWhNo());
+			        		row.createCell(19).setCellValue(tdCommonService.changeName(returnReport.getWhNo()));
 			        	}
 			        	
 						i++;

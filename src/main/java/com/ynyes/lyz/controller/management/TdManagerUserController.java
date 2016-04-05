@@ -359,15 +359,18 @@ public class TdManagerUserController {
 			tdUser.setRegisterTime(new Date());
 			tdUser.setAllPayed(0.00);
 			tdUser.setNickname(tdUser.getUsername());
-//			tdUser.setFirstOrder(true);
+			tdUser.setFirstOrder(true);
 			tdUser.setIsOld(false);
 		}
 		
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
-		if (null == tdUser.getId()) {
+		if (null == tdUser.getId()) 
+		{
 			tdManagerLogService.addLog("add", "修改用户", req);
-		} else {
+		}
+		else
+		{
 			tdManagerLogService.addLog("edit", "修改用户", req);
 		}
 
