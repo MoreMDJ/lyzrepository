@@ -216,7 +216,7 @@ $(function () {
     </dd>
   </dl>
   <#if user??>
-  <dl>
+  <#--<dl>
     <dt>所属城市</dt>
     <dd>
         <select name="cityId" id="cityId" datatype="n">
@@ -227,7 +227,7 @@ $(function () {
             </#if>
         </select>
     </dd>
-  </dl>
+  </dl>-->
   <dl id="diySiteId" style="display:block;">
     <dt>归属门店</dt>
     <dd>
