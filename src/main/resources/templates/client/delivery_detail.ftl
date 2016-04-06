@@ -312,13 +312,14 @@ function imgChange(){
     <a class="btn-submit-save bgc-ff8e08" <#if td_order.photo??>href="javascript:;" style="background:#999"<#else>href="javascript:photo();"</#if> >拍照上传</a>
     <a class="btn-submit-save bgc-ff8e08" <#if ownrecord??>href="javascript:;" style="background:#999"</#if> href="javascript:;" <#if !ownrecord??>onclick="pupopen()"</#if>><#if ownrecord?? && ownrecord.isEnable??><#if ownrecord.isEnable == true><#if ownrecord.ispassed == true>审核通过<#else>未通过审核</#if><#else>等待审核</#if><#else>申请欠款</#if></a>
     </#if>
-    <div style="display:none;">
-        <form id="imgUpload" action="/delivery/img" enctype="multipart/form-data" method="post">
+    <div style="display:block;filter:alpha(opacity=0);-moz-opacity:0;opacity:0;float: left;height: 0px;width: 0px;position: relative;">
+        <form id="imgUpload" action="/delivery/img" enctype="multipart/form-data" method="post" style="hight:0px;width: 0px;">
             <input type="file" onchange="upload()" name="Filedata" id="clickFile">
             <input type="text" name="orderNumber"  value="${td_order.orderNumber!''}">
             <input type="text" name="id" value="<#if id??>${id?c}<#else>0</#if>">
         </form>
     </div>
+    <div style="float: left;position: relative;height: 60px;width: 90%;"></div>
     <script>
         $(function(){
             var msg = "${msg!''}";
@@ -333,7 +334,7 @@ function imgChange(){
     
         function photo(){
             var ele = document.getElementById("clickFile");
-            ele.click();
+            return ele.click();
         }
         
         function upload(){
