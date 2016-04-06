@@ -448,55 +448,11 @@ public class TdManagerUserController {
 		return "redirect:/Verwalter/user/list/";
 	}
 	
-	/**
-	 * 记录管理员修改用户的预存款
-	 * @param operator 管理员
-	 * @param newUser 修改后的user
-	 */
-	private void saveBalanceLogWhenChange(TdManager operator,TdUser newUser)
-	{
-		if (newUser.getId() == null) //新增用户
-		{
-			
-			if (newUser.getBalance() != 0)
-			{
-				this.setAndSaveBalanceLog(null,0L, newUser, operator);
-			}
-			if (newUser.getCashBalance() != 0)
-			{
-				this.setAndSaveBalanceLog(null,1L, newUser, operator);
-			}
-			if (newUser.getUnCashBalance() != 0)
-			{
-				this.setAndSaveBalanceLog(null,2L, newUser, operator);
-			}
-		}
-		else //修改用户
-		{
-			TdUser originalUser = tdUserService.findByUsername(newUser.getUsername());
-			Double oBalance = originalUser.getBalance();
-			Double oCashBalance = originalUser.getCashBalance();
-			Double oUnCashBalance = originalUser.getUnCashBalance();
-			if (oBalance != newUser.getBalance())
-			{
-				this.setAndSaveBalanceLog(newUser.getBalance() - oBalance,0L, newUser, operator);
-			}
-			if (oCashBalance != newUser.getCashBalance())
-			{
-				this.setAndSaveBalanceLog(newUser.getCashBalance() - oCashBalance,1L, newUser, operator);
-			}
-			if (oUnCashBalance != newUser.getUnCashBalance())
-			{
-				this.setAndSaveBalanceLog(newUser.getUnCashBalance() - oUnCashBalance,2L, newUser, operator);
-			}
-		}
-	}
-	
 	private void setAndSaveBalanceLog( Double changeBalance,Long balancelType,TdUser newUser,TdManager operator)
 	{
 		TdBalanceLog balanceLog = new TdBalanceLog();
 		balanceLog.setUsername(newUser.getUsername());
-		if (changeBalance != null) 
+		if (changeBalance != null)
 		{
 			balanceLog.setMoney(changeBalance);
 		}
