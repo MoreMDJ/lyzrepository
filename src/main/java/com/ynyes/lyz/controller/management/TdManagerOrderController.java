@@ -885,7 +885,7 @@ public class TdManagerOrderController {
         	
         	if (null != agencyFund.getPayPrice())
         	{
-    			row.createCell(6).setCellValue(agencyFund.getPayPrice()-(agencyFund.getUnCashBalanceUsed()==null?0:agencyFund.getUnCashBalanceUsed())-(agencyFund.getCashBalanceUsed()==null?0:agencyFund.getCashBalanceUsed()));
+    			row.createCell(6).setCellValue(agencyFund.getPayPrice());
     		}
         	if (null != agencyFund.getPayed())
         	{
