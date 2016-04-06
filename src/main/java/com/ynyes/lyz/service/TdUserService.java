@@ -265,6 +265,6 @@ public class TdUserService {
 	public Page<TdUser> searchcityNameAndOrderByIdDesc(String keywords,String cityName, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(keywords, keywords,cityName, pageRequest);
+		return repository.findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(cityName,keywords, keywords, pageRequest);
 	}
 }
