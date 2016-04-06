@@ -104,6 +104,10 @@ public class TdOrderGoods {
 	// 退款单价
 	@Column
 	private Double returnUnitPrice;
+	
+	//促销赠品价格
+	@Column
+	private Double giftPrice;
 
 	// 使用产品券的数量，默认为0
 	@Column
@@ -305,6 +309,14 @@ public class TdOrderGoods {
 		this.returnNumber = returnNumber;
 	}
 
+	public Double getGiftPrice() {
+		return giftPrice;
+	}
+
+	public void setGiftPrice(Double giftPrice) {
+		this.giftPrice = giftPrice;
+	}
+
 	@Override
 	public String toString() {
 		return "TdOrderGoods [id=" + id + ", goodsId=" + goodsId + ", goodsTitle=" + goodsTitle + ", goodsSubTitle="
@@ -314,7 +326,8 @@ public class TdOrderGoods {
 				+ quantity + ", deliveredQuantity=" + deliveredQuantity + ", points=" + points + ", isReturnApplied="
 				+ isReturnApplied + ", isCommented=" + isCommented + ", commentId=" + commentId + ", brandTitle="
 				+ brandTitle + ", brandId=" + brandId + ", canReturnNumber=" + canReturnNumber + ", returnUnitPrice="
-				+ returnUnitPrice + ", couponNumber=" + couponNumber + ", returnNumber=" + returnNumber + "]";
+				+ returnUnitPrice + ", giftPrice=" + giftPrice + ", couponNumber=" + couponNumber + ", returnNumber="
+				+ returnNumber + "]";
 	}
 
 }

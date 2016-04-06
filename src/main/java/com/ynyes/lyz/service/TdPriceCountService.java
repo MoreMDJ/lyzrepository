@@ -16,6 +16,7 @@ import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPayType;
+import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUser;
 
@@ -509,7 +510,7 @@ public class TdPriceCountService {
 					if (null != orderGoods) {
 						Long goodsId = orderGoods.getGoodsId();
 						Long quantity = orderGoods.getQuantity();
-						Double price = orderGoods.getPrice();
+						Double price = orderGoods.getGiftPrice();
 						if (null == quantity) {
 							quantity = 0L;
 						}
@@ -882,7 +883,26 @@ public class TdPriceCountService {
 			}
 		}
 	}
-	
-	
-	
+
+	/**
+	 * 根据WMS返回信息退还券和钱
+	 * 
+	 * @author DengXiao
+	 */
+	public void actAccordingWMS(TdReturnNote returnNote, Long orderId) {
+		if (null != returnNote) {
+			List<TdOrderGoods> returnGoodsList = returnNote.getReturnGoodsList();
+			if (null != returnGoodsList && returnGoodsList.size() > 0) {
+				String params = "";
+				for (TdOrderGoods goods : returnGoodsList) {
+					if (null != goods && null != goods.getGoodsId() && null != goods.getQuantity()
+							&& null != goods.getPrice()) {
+						params += goods.getGoodsId() + "-" + goods.getQuantity() + "-" + goods.getPrice() + ",";
+					}
+				}
+				this.returnCashOrCoupon(orderId, params);
+			}
+		}
+	}
+
 }

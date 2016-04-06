@@ -23,6 +23,7 @@
 
     </head>
     <script type="text/javascript">
+    <!--
     $(document).ready(function(){
             $("#form1").Validform({
                 tiptype:4, 
@@ -37,6 +38,8 @@
                 }
             });
      })
+     -->
+     
           function order_return(id){
             var he = ($(window).height() - $('.turn_div div').height())/2 - 50;
             $('.turn_div div').css({marginTop:he});   
@@ -44,7 +47,7 @@
             $("#orderId").attr("value",id);
         };
         
-        function win_no(){  
+        function win_no_return(){  
             $('.turn_div').fadeOut(600);
         };
         
@@ -101,7 +104,7 @@
                 <input onclick="win_no();" type="button" name="" id="" value="否" />
                 -->
                 <input type="submit" name="" id="" value="是" />
-                <input onclick="javascript:win_no();" type="button" value="否" />
+                <input onclick="javascript:win_no_return();" type="button" value="否" />
             </span>             
         </div>
         </form>
@@ -203,7 +206,7 @@
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <#if !item.isRefund?? || !item.isRefund>
-                                                    <a href="javascript:;" onclick="order_return(${item.id?c})">申请退货</a>
+                                                    <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
                                                     <a href="">立即评价</a>
                                                     </#if>
                                                 <#break>
@@ -286,7 +289,7 @@
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <#if !item.isRefund?? || !item.isRefund>
-                                                    <a href="javascript:;" onclick="order_return(${item.id?c})">申请退货</a>
+                                                    <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
                                                     <a href="">立即评价</a>
                                                     </#if>
                                                 <#break>
@@ -369,7 +372,7 @@
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <#if !item.isRefund?? || !item.isRefund>
-                                                    <a href="javascript:;" onclick="order_return(${item.id?c})">申请退货</a>
+                                                    <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
                                                     <a href="">立即评价</a>
                                                     </#if>
                                                 <#break>
@@ -452,7 +455,7 @@
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <#if !item.isRefund?? || !item.isRefund>
-                                                    <a href="javascript:;" onclick="order_return(${item.id?c})">申请退货</a>
+                                                    <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
                                                     <a href="">立即评价</a>
                                                     </#if>
                                                 <#break>

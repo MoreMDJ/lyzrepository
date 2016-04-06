@@ -1053,7 +1053,7 @@ public class TdCommonService {
 											orderGoods.setGoodsId(goods.getId());
 											orderGoods.setGoodsTitle(goods.getTitle());
 											orderGoods.setGoodsSubTitle(goods.getSubTitle());
-											orderGoods.setPrice(priceListItem.getPrice());
+											orderGoods.setGiftPrice(priceListItem.getPrice());
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
 											// 创建一个布尔变量用于表示赠品是否已经在队列中

@@ -62,7 +62,7 @@
                             <#case 5>
                                 <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                 <#if !item.isRefund?? || !item.isRefund>
-                                <a href="javascript:;" onclick="order_return(${item.id?c})">申请退货</a>
+                                <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
                                 <a href="">立即评价</a>
                                 </#if>
                             <#break>
@@ -73,6 +73,20 @@
                             <#break>
                             <#case 7>
                                 <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
+                            <#break>
+                            <#case 9>
+                            	<a href="/user/order/detail/${item.id?c}">订单详情</a>
+                            <#break>
+                            <#case 10>
+                            	<a href="/user/order/detail/${item.id?c}">订单详情</a>
+                            <#break>
+                            <#case 11>
+                            	<a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
+                            <#break>
+                            <#case 12>
+                            	<a href="/user/order/detail/${item.id?c}">订单详情</a>
                                 <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                             <#break>
                         </#switch>

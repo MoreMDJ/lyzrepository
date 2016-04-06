@@ -114,9 +114,14 @@
 								img : "${item.goodsCoverImageUri!''}",
 								quantity : ${item.quantity!''},
 								reQuantity : ${item.quantity!''},
-								<#if item.goodsId??&&("unit"+item.goodsId)?eval??>
-									unit : ${("unit"+item.goodsId)?eval?string("0.00")},
-									total : ${((item.quantity)*("unit"+item.goodsId)?eval)?string("0.00")}
+								<#if item.goodsId??&&("price"+item.goodsId?c)?eval??>
+									price : ${("price"+item.goodsId?c)?eval?string("0.00")},
+								<#else>
+									price : 0.00,
+								</#if>
+								<#if item.goodsId??&&("unit"+item.goodsId?c)?eval??>
+									unit : ${("unit"+item.goodsId?c)?eval?string("0.00")},
+									total : this.quantity * this.unit
 								<#else>
 									unit : 0.00,
 									total : 0.00
@@ -148,9 +153,13 @@
 			$scope.send = function(){
 				data = "";
 				for(var i = 0; i < this.goods.length; i++){
-					data += (this.goods[i].id + "-" + this.goods[i].reQuantity + "-" + this.goods[i].unit + ",");
+					if(0 !== this.goods[i].reQuantity){
+						data += (this.goods[i].id + "-" + this.goods[i].reQuantity + "-" + this.goods[i].unit + "-" + this.goods[i].price + ",");
+					}
 				}
-				console.log(data);
+				if("" === data){
+					return;
+				}
 				wait();
 				$.ajax({
 					type:"post",
@@ -164,7 +173,9 @@
 						warning("亲，您的网速不给力啊");
 					},
 					success:function(res){
-					
+						if(0 === res.status){
+							window.location.href="/user/order/0";
+						}
 					}
 				});
 			}
