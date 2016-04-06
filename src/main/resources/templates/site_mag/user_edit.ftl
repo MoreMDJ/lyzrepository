@@ -337,18 +337,18 @@ $(function () {
 <#if !user?? || (user?? && user.userType?? && user.userType == 0 )>
   <dl>
     <dt>总金额</dt>
-    <dd><input name="balance" type="text" class="input normal" sucmsg=" " value="<#if user?? && user.balance??>${user.balance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
+    <dd><input name="obalance" type="text" class="input normal" sucmsg=" " value="<#if user?? && user.balance??>${user.balance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
   </dl>
   <dl>
     <dt>可提现余额</dt>
-    <dd><input name="cashBalance" type="text" class="input normal"sucmsg=" " value="<#if user?? && user.cashBalance??>${user.cashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
+    <dd><input name="ocashBalance" type="text" class="input normal"sucmsg=" " value="<#if user?? && user.cashBalance??>${user.cashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
   </dl>
   <dl>
     <dt>不可提现余额</dt>
-    <dd><input name="unCashBalance" type="text" class="input normal"sucmsg=" " value="<#if user?? && user.unCashBalance??>${user.unCashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
+    <dd><input name="ounCashBalance" type="text" class="input normal"sucmsg=" " value="<#if user?? && user.unCashBalance??>${user.unCashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
   </dl>
   </#if>
-  <#if !user?? || user?? && user.userType?? && user.userType == 1>
+  <#if !user?? || user?? && user.userType?? && user.userType == 100>
   <dl>
     <dt>下级用户总数</dt>
     <dd><input name="totalLowerUsers" type="text" id="txtPay_Password" class="input normal" sucmsg=" " value="<#if user?? && user.totalLowerUsers??>${user.totalLowerUsers?c}</#if>"> <span class="Validform_checktip"></span></dd>

@@ -31,7 +31,7 @@ public class TdBalanceLog {
 	@Column
 	private String username;
 	
-	//金额
+	//金额 变化金额
 	@Column(scale = 2)
 	private Double money;
 
@@ -61,9 +61,9 @@ public class TdBalanceLog {
 	@Column(scale = 2)
 	private Double balance;
 	
-	// 变化金额
-	@Column(scale = 2)
-	private Double changeBalance;
+	// 管理员改变预存款的类型(0: balance 1: cashBalance 2:unCashBalance）
+	@Column
+	private Long balanceType;
 	
 	// 操作人员
 	@Column
@@ -73,10 +73,6 @@ public class TdBalanceLog {
 	@Column
 	private String operatorIp;
 	
-	// 备注
-	@Column
-	private String remark;
-
 	public Long getId() {
 		return id;
 	}
@@ -157,14 +153,6 @@ public class TdBalanceLog {
 		this.username = username;
 	}
 
-	public Double getChangeBalance() {
-		return changeBalance;
-	}
-
-	public void setChangeBalance(Double changeBalance) {
-		this.changeBalance = changeBalance;
-	}
-
 	public String getOperator() {
 		return operator;
 	}
@@ -181,12 +169,12 @@ public class TdBalanceLog {
 		this.operatorIp = operatorIp;
 	}
 
-	public String getRemark() {
-		return remark;
+	public Long getBalanceType() {
+		return balanceType;
 	}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
+	public void setBalanceType(Long balanceType) {
+		this.balanceType = balanceType;
 	}
 	
 }

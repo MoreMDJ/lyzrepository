@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdBalanceLog;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdMessage;
 import com.ynyes.lyz.entity.TdMessageType;
 import com.ynyes.lyz.entity.TdOrder;
@@ -37,6 +39,7 @@ import com.ynyes.lyz.entity.TdUserComment;
 import com.ynyes.lyz.entity.TdUserLevel;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdUserSuggestion;
+import com.ynyes.lyz.service.TdBalanceLogService;
 import com.ynyes.lyz.service.TdCartColorPackageService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCityService;
@@ -44,6 +47,7 @@ import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
+import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdMessageService;
 import com.ynyes.lyz.service.TdMessageTypeService;
 import com.ynyes.lyz.service.TdOrderService;
@@ -98,6 +102,12 @@ public class TdManagerUserController {
 
 	@Autowired
 	private TdDiySiteService tdDiySiteService;
+	
+	@Autowired
+	private TdBalanceLogService tdBalanceLogService;
+	
+	@Autowired
+	private TdManagerService tdManagerService;
 
 	/**
 	 * 修改账户名所用 2016-1-8 10:34:46
@@ -302,10 +312,14 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/save")
-	public String orderEdit(TdUser tdUser, /* String oldUsername, */
-			String oldPassword, String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req) {
+	public String orderEdit(TdUser tdUser,Double obalance,Double ocashBalance,Double ounCashBalance, String oldPassword, String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
+			return "redirect:/Verwalter/login";
+		}
+		TdManager manager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		if (manager == null)
+		{
 			return "redirect:/Verwalter/login";
 		}
 		
@@ -331,16 +345,50 @@ public class TdManagerUserController {
 				e.printStackTrace();
 			}
 		}
-
+		
+		Boolean isVipUser0 = true;
+		Boolean isVipUser1 = true;
+		Boolean isVipUser2 = true;
+		if (obalance == null) 
+		{
+			obalance = 0.00;
+			isVipUser0 = false;
+		}
+		if (ocashBalance == null) 
+		{
+			ocashBalance = 0.00;
+			isVipUser1 = false;
+		}
+		if (ounCashBalance == null) 
+		{
+			ounCashBalance = 0.00;
+			isVipUser2 = false;
+		}
+		
 		// 设置新密码 zhangji 2016-1-7 22:01:45
-		if (null != tdUser.getId())
+		if (null != tdUser.getId()) //老用户
 		{
 			if (StringUtils.isNotBlank(oldPassword)) 
 			{
 				tdUser.setPassword(MD5.md5(oldPassword, 32));
 			}
-			// add MDJ
 			
+			// add MDJ
+			if (!obalance.equals(tdUser.getBalance()) && isVipUser0)
+			{
+				this.setAndSaveBalanceLog(obalance - tdUser.getBalance(),0L, tdUser, manager);
+				tdUser.setBalance(obalance);
+			}
+			if (!ocashBalance.equals(tdUser.getCashBalance()) && isVipUser1)
+			{
+				this.setAndSaveBalanceLog(ocashBalance - tdUser.getCashBalance(),1L, tdUser, manager);
+				tdUser.setCashBalance(ocashBalance);
+			}
+			if (!ounCashBalance.equals(tdUser.getUnCashBalance()) && isVipUser2)
+			{
+				this.setAndSaveBalanceLog(ounCashBalance - tdUser.getUnCashBalance(),2L, tdUser, manager);
+				tdUser.setUnCashBalance(ounCashBalance);
+			}
 		}
 		else//新用户
 		{
@@ -363,6 +411,26 @@ public class TdManagerUserController {
 			tdUser.setNickname(tdUser.getUsername());
 			tdUser.setFirstOrder(true);
 			tdUser.setIsOld(false);
+			
+			// add MDJ
+			tdUser.setBalance(0d);
+			tdUser.setCashBalance(0d);
+			tdUser.setUnCashBalance(0d);
+			if (obalance != 0)
+			{
+				this.setAndSaveBalanceLog(obalance,0L, tdUser, manager);
+			}
+			if (ocashBalance != 0)
+			{
+				this.setAndSaveBalanceLog(ocashBalance,1L, tdUser, manager);
+			}
+			if (ounCashBalance != 0)
+			{
+				this.setAndSaveBalanceLog(ounCashBalance,2L, tdUser, manager);
+			}
+			tdUser.setBalance(obalance);
+			tdUser.setCashBalance(ocashBalance);
+			tdUser.setUnCashBalance(ounCashBalance);
 		}
 		
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
@@ -375,7 +443,6 @@ public class TdManagerUserController {
 		{
 			tdManagerLogService.addLog("edit", "修改用户", req);
 		}
-
 		tdUserService.save(tdUser);
 
 		return "redirect:/Verwalter/user/list/";
@@ -386,11 +453,23 @@ public class TdManagerUserController {
 	 * @param operator 管理员
 	 * @param newUser 修改后的user
 	 */
-	private void saveBalanceLogWhenChange(String operator,TdUser newUser)
+	private void saveBalanceLogWhenChange(TdManager operator,TdUser newUser)
 	{
 		if (newUser.getId() == null) //新增用户
 		{
 			
+			if (newUser.getBalance() != 0)
+			{
+				this.setAndSaveBalanceLog(null,0L, newUser, operator);
+			}
+			if (newUser.getCashBalance() != 0)
+			{
+				this.setAndSaveBalanceLog(null,1L, newUser, operator);
+			}
+			if (newUser.getUnCashBalance() != 0)
+			{
+				this.setAndSaveBalanceLog(null,2L, newUser, operator);
+			}
 		}
 		else //修改用户
 		{
@@ -400,17 +479,60 @@ public class TdManagerUserController {
 			Double oUnCashBalance = originalUser.getUnCashBalance();
 			if (oBalance != newUser.getBalance())
 			{
-				
+				this.setAndSaveBalanceLog(newUser.getBalance() - oBalance,0L, newUser, operator);
 			}
 			if (oCashBalance != newUser.getCashBalance())
 			{
-
+				this.setAndSaveBalanceLog(newUser.getCashBalance() - oCashBalance,1L, newUser, operator);
 			}
 			if (oUnCashBalance != newUser.getUnCashBalance())
 			{
-
+				this.setAndSaveBalanceLog(newUser.getUnCashBalance() - oUnCashBalance,2L, newUser, operator);
 			}
 		}
+	}
+	
+	private void setAndSaveBalanceLog( Double changeBalance,Long balancelType,TdUser newUser,TdManager operator)
+	{
+		TdBalanceLog balanceLog = new TdBalanceLog();
+		balanceLog.setUsername(newUser.getUsername());
+		if (changeBalance != null) 
+		{
+			balanceLog.setMoney(changeBalance);
+		}
+		else
+		{
+			balanceLog.setMoney(newUser.getBalance());
+		}
+		balanceLog.setType(2L);
+		balanceLog.setCreateTime(new Date());
+		balanceLog.setFinishTime(new Date());
+		balanceLog.setIsSuccess(true);
+		balanceLog.setBalanceType(balancelType);
+		if (balancelType == 0)
+		{
+			balanceLog.setBalance(newUser.getBalance() + changeBalance);
+		}
+		else if (balancelType == 1)
+		{
+			balanceLog.setBalance(newUser.getCashBalance() + changeBalance);
+		}
+		else if (balancelType == 2)
+		{
+			balanceLog.setBalance(newUser.getUnCashBalance() + changeBalance);
+		}
+		balanceLog.setOperator(operator.getUsername());
+		balanceLog.setOperatorIp(operator.getLastLoginIp());
+		balanceLog.setReason("后台管理员修改");
+		if (newUser.getId() != null) 
+		{
+			balanceLog.setUserId(newUser.getId());
+		}
+		else
+		{
+			balanceLog.setReason("后台新增会员设置预存款");
+		}
+		tdBalanceLogService.save(balanceLog);
 	}
 
 	/**
