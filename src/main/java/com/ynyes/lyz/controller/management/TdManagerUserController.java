@@ -308,7 +308,7 @@ public class TdManagerUserController {
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
-
+		
 		// 修改门店的时候要修改用户的customerId和diyName
 		Long diySiteId = tdUser.getUpperDiySiteId();
 		if (null != diySiteId) {
@@ -339,6 +339,8 @@ public class TdManagerUserController {
 			{
 				tdUser.setPassword(MD5.md5(oldPassword, 32));
 			}
+			// add MDJ
+			
 		}
 		else//新用户
 		{
@@ -377,6 +379,38 @@ public class TdManagerUserController {
 		tdUserService.save(tdUser);
 
 		return "redirect:/Verwalter/user/list/";
+	}
+	
+	/**
+	 * 记录管理员修改用户的预存款
+	 * @param operator 管理员
+	 * @param newUser 修改后的user
+	 */
+	private void saveBalanceLogWhenChange(String operator,TdUser newUser)
+	{
+		if (newUser.getId() == null) //新增用户
+		{
+			
+		}
+		else //修改用户
+		{
+			TdUser originalUser = tdUserService.findByUsername(newUser.getUsername());
+			Double oBalance = originalUser.getBalance();
+			Double oCashBalance = originalUser.getCashBalance();
+			Double oUnCashBalance = originalUser.getUnCashBalance();
+			if (oBalance != newUser.getBalance())
+			{
+				
+			}
+			if (oCashBalance != newUser.getCashBalance())
+			{
+
+			}
+			if (oUnCashBalance != newUser.getUnCashBalance())
+			{
+
+			}
+		}
 	}
 
 	/**
