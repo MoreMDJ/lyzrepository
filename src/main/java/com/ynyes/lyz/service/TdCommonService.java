@@ -50,14 +50,14 @@ import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
+import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
 
 @Service
 public class TdCommonService {
 
-	// static String wmsUrl =
-	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+//	static String wmsUrl =  "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -122,6 +122,68 @@ public class TdCommonService {
 
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
+	
+	@Autowired
+	private TdWareHouseService tdWareHouseService;
+	
+	
+	/**
+	 * 根据仓库编号获取仓库名
+	 * @param name
+	 * @return
+	 */
+	public String changeName(String name)
+	{
+//		郑州公司	11	总仓
+//		天荣中转仓	1101	分仓
+//		五龙口中转仓	1102	分仓
+//		东大中转仓	1103	分仓
+//		百姓中转仓	1104	分仓
+//		主仓库	1105	分仓
+		
+		List<TdWareHouse> wareHouses = tdWareHouseService.findBywhNumberOrderBySortIdAsc(name);
+		if (wareHouses != null && wareHouses.size() > 0)
+		{
+			return wareHouses.get(0).getWhName();
+		}
+		else 
+		{
+			return "未知编号：" + name;
+		}
+		
+//		if (name == null || name.equalsIgnoreCase(""))
+//		{
+//			return "未知";
+//		}
+//		if (name.equalsIgnoreCase("11"))
+//		{
+//			return "郑州公司";
+//		}
+//		else if (name.equalsIgnoreCase("1101"))
+//		{
+//			return "天荣中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1102"))
+//		{
+//			return "五龙口中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1103"))
+//		{
+//			return "东大中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1104"))
+//		{
+//			return "百姓中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1105"))
+//		{
+//			return "主仓库";
+//		}
+//		else
+//		{
+//			return "未知编号：" + name;
+//		}
+	}
 
 	public TdReturnNote MakeReturnNote(TdOrder order, Long type, String msg) {
 		TdReturnNote returnNote = new TdReturnNote();
@@ -328,12 +390,11 @@ public class TdCommonService {
 		return priceItemList.get(0);
 	}
 
-	public List<TdGoods> geTdGoodsByDiySiteCode(TdDiySite diySite) {
+	public List<TdGoods> getTdGoodsByDiySiteCode(TdDiySite diySite) {
 		List<TdGoods> tdGoodsList = new ArrayList<TdGoods>();
 		Long sobId = diySite.getRegionId();
 		String priceType = "LYZ";
-		List<TdPriceList> priceList_list = tdPriceListService
-				.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
+		List<TdPriceList> priceList_list = tdPriceListService.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
 		return tdGoodsList;
 	}
 
@@ -1053,7 +1114,7 @@ public class TdCommonService {
 											orderGoods.setGoodsId(goods.getId());
 											orderGoods.setGoodsTitle(goods.getTitle());
 											orderGoods.setGoodsSubTitle(goods.getSubTitle());
-											orderGoods.setGiftPrice(priceListItem.getPrice());
+											orderGoods.setPrice(0.0);
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
@@ -1776,7 +1837,10 @@ public class TdCommonService {
 				order.setTotalPrice(0.0);
 			}
 
-			Double left = order.getTotalPrice() - order.getAllActualPay();
+//			Double left = order.getTotalPrice() - order.getAllActualPay();
+			
+			//add MDJ totalPrice修改后，改变
+			Double left = order.getAllTotalPay();
 
 			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
 

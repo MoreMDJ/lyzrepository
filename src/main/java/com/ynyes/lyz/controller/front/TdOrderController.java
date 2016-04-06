@@ -213,6 +213,7 @@ public class TdOrderController {
 			if (null != coupon_list) {
 				no_product_coupon_list.addAll(coupon_list);
 			}
+
 		}
 
 		// 遍历所有已选，查找用户对于当前订单可以使用的指定商品现金券和产品券

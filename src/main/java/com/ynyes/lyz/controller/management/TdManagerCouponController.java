@@ -437,7 +437,10 @@ public class TdManagerCouponController {
 		   
 			}else if(__EVENTTARGET.equalsIgnoreCase("changeType")){
 				
-			}
+			}else if(__EVENTTARGET.equalsIgnoreCase("btnFailure")){
+            	btnFailure(listId, listChkId);
+            	tdManagerLogService.addLog("failure", "失效优惠卷", req);
+            }
         }
         
         if (null == page || page < 0)
@@ -546,7 +549,7 @@ public class TdManagerCouponController {
         map.addAttribute("typeId", typeId);
         
       //城市和门店信息
-		if (null != tdManagerRole && tdManagerRole.getTitle().equalsIgnoreCase("超级管理组")){
+		if (null != tdManagerRole && tdManagerRole.getIsSys()){
 //			map.addAttribute("diySiteList",tdDiySiteService.findAll());
 			map.addAttribute("cityList", tdCityService.findAll());
 		}
@@ -1247,7 +1250,7 @@ public class TdManagerCouponController {
         List<TdCoupon> coupon = null;
 //        coupon=tdCouponService.findByIsDistributtedTrueOrderByIdDesc();
         
-        if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") &&  null != cityId){
+        if(tdManagerRole.getIsSys() &&  null != cityId){
         	coupon= tdCouponService.findByGetTimeAndCityIdOrderByGetTimeDesc(date1, date2, cityId);
     	}else{
     		TdCity city= tdCityService.findByCityName(user.getCityName());
@@ -1364,4 +1367,26 @@ public class TdManagerCouponController {
 		} 
 		return true;	
 	}
+	private void btnFailure(Long[] ids, Integer[] chkIds)
+    {
+        if (null == ids || null == chkIds
+                || ids.length < 1 || chkIds.length < 1)
+        {
+            return;
+        }
+        
+        for (int chkId : chkIds)
+        {
+            if (chkId >=0 && ids.length > chkId)
+            {
+                Long id = ids[chkId];
+                TdCoupon e = tdCouponService.findOne(id);
+                if(null != e){
+                	 e.setIsOutDate(true);
+                     tdCouponService.save(e);
+                }
+            }
+        }
+    }
+	
 }
