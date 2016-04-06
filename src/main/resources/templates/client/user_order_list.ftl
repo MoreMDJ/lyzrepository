@@ -48,6 +48,10 @@
             $('.turn_div').fadeOut(600);
         };
         
+        function win_no_turn(){  
+            $('.turn_div').fadeOut(600);
+        };
+        
         window.onload = function(){
             footer();
         }
@@ -101,7 +105,7 @@
                 <input onclick="win_no();" type="button" name="" id="" value="否" />
                 -->
                 <input type="submit" name="" id="" value="是" />
-                <input onclick="javascript:win_no();" type="button" value="否" />
+                <input onclick="javascript:win_no_turn();" type="button" value="否" />
             </span>             
         </div>
         </form>

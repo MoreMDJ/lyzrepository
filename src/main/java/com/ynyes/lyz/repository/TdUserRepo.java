@@ -25,8 +25,7 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 
 	Page<TdUser> findByUserLevelIdOrderByIdDesc(Long userlevelId, Pageable page);
 
-	Page<TdUser> findByUsernameContainingOrEmailContainingOrderByIdDesc(String keywords1, String keywords2,
-			Pageable page);
+	Page<TdUser> findByUsernameContainingOrRealNameContainingOrderByIdDesc(String keywords1, String keywords2,Pageable page);
 
 	Page<TdUser> findByUsernameContainingAndUserLevelIdOrEmailContainingAndUserLevelIdOrderByIdDesc(String keywords1,
 			Long userLevelId, String keywords3, Long userLevelId2, Pageable page);
@@ -92,5 +91,5 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	/**
 	 * @注释：搜索城市下面的用户
 	 */
-	public Page<TdUser> findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(String keywords,String keywords1,String cityName,Pageable page );
+	public Page<TdUser> findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(String cityName0,String username,String cityName,String realName,Pageable page );
 }

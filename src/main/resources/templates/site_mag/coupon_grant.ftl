@@ -150,6 +150,8 @@ function __doPostBack(eventTarget, eventArgument) {
       <input name="keywords" type="text" class="keyword" value="${keywords!''}">
       <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
       <a id="" class="" href="javascript:__doPostBack('grantMore','')">一键派发</a>
+      <a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a>
+      
     </div>
       <table width="60%" border="0" cellspacing="0" cellpadding="0" class="ltable">
           <tbody>

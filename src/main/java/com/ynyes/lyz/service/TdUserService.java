@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -141,7 +142,7 @@ public class TdUserService {
 	public Page<TdUser> searchAndOrderByIdDesc(String keywords, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByUsernameContainingOrEmailContainingOrderByIdDesc(keywords, keywords, pageRequest);
+		return repository.findByUsernameContainingOrRealNameContainingOrderByIdDesc(keywords, keywords, pageRequest);
 	}
 
 	/**
@@ -264,7 +265,10 @@ public class TdUserService {
 	 */
 	public Page<TdUser> searchcityNameAndOrderByIdDesc(String keywords,String cityName, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-
-		return repository.findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(cityName,keywords, keywords, pageRequest);
+		if (StringUtils.isBlank(cityName) || StringUtils.isBlank(keywords))
+		{
+			return null;
+		}
+		return repository.findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(cityName,keywords, cityName,keywords, pageRequest);
 	}
 }
