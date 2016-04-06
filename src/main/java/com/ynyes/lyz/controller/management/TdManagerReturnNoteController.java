@@ -207,7 +207,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				}
 				//城市和门店信息
 				if (tdManagerRole.getIsSys()){
-//					map.addAttribute("diySiteList",tdDiySiteService.findAll());
+					map.addAttribute("diySiteList",tdDiySiteService.findAll());
 					map.addAttribute("cityList", tdCityService.findAll());
 				}
 				return "/site_mag/returnNote_list";
@@ -624,7 +624,6 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
     			System.out.println(e);
     		}
         }
-		diyCode=null;
     	if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
         	diyCode=tdManager.getDiyCode();

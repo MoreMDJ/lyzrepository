@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -550,7 +551,7 @@ public class TdManagerCouponController {
         
       //城市和门店信息
 		if (null != tdManagerRole && tdManagerRole.getIsSys()){
-//			map.addAttribute("diySiteList",tdDiySiteService.findAll());
+			map.addAttribute("diySiteList",tdDiySiteService.findAll());
 			map.addAttribute("cityList", tdCityService.findAll());
 		}
         
@@ -1142,7 +1143,7 @@ public class TdManagerCouponController {
 	 */
 	@RequestMapping(value = "/downdata",method = RequestMethod.GET)
 	@ResponseBody
-	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,Long cityId)
+	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,Long cityId,String diyCode)
 	{
 		
 		String username = (String) req.getSession().getAttribute("manager");
@@ -1245,6 +1246,12 @@ public class TdManagerCouponController {
         cell.setCellValue("使用订单号");
         cell.setCellStyle(style);
         cell = row.createCell(10);  
+        cell.setCellValue("城市名称");
+        cell.setCellStyle(style);
+        cell = row.createCell(11);  
+        cell.setCellValue("门店名称");
+        cell.setCellStyle(style);
+        cell = row.createCell(12); 
        
         // 第五步，设置值  
         List<TdCoupon> coupon = null;
@@ -1254,6 +1261,7 @@ public class TdManagerCouponController {
         	coupon= tdCouponService.findByGetTimeAndCityIdOrderByGetTimeDesc(date1, date2, cityId);
     	}else{
     		TdCity city= tdCityService.findByCityName(user.getCityName());
+    		diyCode=user.getDiyCode();
     		if(null != city){
     			coupon= tdCouponService.findByGetTimeAndCityIdOrderByGetTimeDesc(date1, date2, city.getId());
     		}
@@ -1263,6 +1271,9 @@ public class TdManagerCouponController {
         Integer i = 0;
         for (TdCoupon tdCoupon : coupon)
         {
+        	TdUser couponUser= tdUseService.findByUsername(tdCoupon.getUsername());
+        	if(StringUtils.isBlank(diyCode) || couponUser.getDiyName().equals(diyCode)){
+        		
         	row = sheet.createRow((int) i + 1);
         	if(null != tdCoupon.getTypeCategoryId()){
         		if(tdCoupon.getTypeCategoryId().equals(1L)){
@@ -1322,8 +1333,15 @@ public class TdManagerCouponController {
         		}
             	
     		}
+        	if(null != tdCoupon.getCityName()){
+        		row.createCell(10).setCellValue(tdCoupon.getCityName());
+        	}
+        	if(null != couponUser.getDiyName()){
+        		row.createCell(11).setCellValue(couponUser.getDiyName());
+        	}
         	
         	i++;
+        	}
 		}
         
         String exportAllUrl = SiteMagConstant.backupPath;
