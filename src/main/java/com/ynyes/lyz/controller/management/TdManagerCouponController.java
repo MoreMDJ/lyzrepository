@@ -982,8 +982,7 @@ public class TdManagerCouponController {
     
     private void grantMoreCoupon(Long[] ids,Integer[] chkIds,Long[] numbers,Long couponId)
     {
-    	if (null == ids || null == chkIds || null == numbers
-                || ids.length < 1 || chkIds.length < 1 || numbers.length < 1)
+    	if (null == ids || null == chkIds || null == numbers || ids.length < 1 || chkIds.length < 1 || numbers.length < 1)
         {
             return;
         }

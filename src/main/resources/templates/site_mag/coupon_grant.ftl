@@ -126,7 +126,7 @@
          </dl>
   </#if>
 </div>
-<form action="/Verwalter/coupon/grant/${couponId?c}" id="form1">
+<form action="/Verwalter/coupon/grant/${couponId?c}" method="POST" id="form1">
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="${__EVENTTARGET!""}">
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="${__EVENTARGUMENT!""}">
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}">
@@ -143,6 +143,17 @@ function __doPostBack(eventTarget, eventArgument) {
         theForm.submit();
     }
 }
+
+function checkAllNumber(chkobj) {
+    if ($(chkobj).text() == "全选") {
+        $(chkobj).children("span").text("取消");
+        $("#quantityId input:enabled").val($("#setQuantity").val());
+    } else {
+        $(chkobj).children("span").text("全选");
+        $("#quantityId input:enabled").val($("#setQuantity").val());
+    }
+}
+
 </script>
 
 <div class="tab-content">
@@ -151,6 +162,8 @@ function __doPostBack(eventTarget, eventArgument) {
       <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
       <a id="" class="" href="javascript:__doPostBack('grantMore','')">一键派发</a>
       <a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a>
+      <a class="all" href="javascript:;" onclick="checkAllNumber(this);"><i></i><span>设置数量</span></a>
+      <input type="text" id="setQuantity">
       
     </div>
       <table width="60%" border="0" cellspacing="0" cellpadding="0" class="ltable">
@@ -168,7 +181,7 @@ function __doPostBack(eventTarget, eventArgument) {
                     <tr>
                         <td align="center">
                             <span class="checkall" style="vertical-align:middle;">
-                                <input id="listChkId" type="checkbox" name="listChkId" value="${user_index}" >
+                                <input id="listChkId" type="checkbox" name="listChkId" value="${user_index?c}" >
                             </span>
                             <input type="hidden" name="listId" id="listId" value="${user.id?c}">
                         </td>
@@ -178,7 +191,7 @@ function __doPostBack(eventTarget, eventArgument) {
                           </div>
                         </td>
                         <td align="left">${user.diyName!""}</td>
-                        <td><input type="number" name="quantity" id="quan${user.id?c}"></td>
+                        <td id="quantityId"><input type="number" name="quantity" id="quan${user.id?c}"></td>
                         <td align="center">
                             <a href="javascript:grantCoupon(${user.id?c});">发券</a> 
                       </tr>
