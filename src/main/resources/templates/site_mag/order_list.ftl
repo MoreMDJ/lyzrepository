@@ -152,21 +152,21 @@ function downloaddate(type)
            
             <div class="r-list">
               <div class="odiv">  <span class="span1">开始时间：</span>
-                <input name="orderStartTime" id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
+                <input name="orderStartTime" id="begain" type="text" value="${orderStartTime!"" }" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
              </div>
              <div class="odiv">   <span class="span1">结束时间：</span>
-                <input name="orderEndTime" id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
+                <input name="orderEndTime" id="end" type="text" value="${orderEndTime!"" }" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
                </div>
                
 
                
-                <div  class="odiv"><span class="span1">会员姓名：</span><input name="realName" type="text" class="input"></div>
-                <div  class="odiv"><span class="span1">收货人电话：</span><input name="shippingPhone" type="text" class="input"></div>
-                <div class="odiv" ><span class="span1">预约送货时间：</span><input name="deliveryTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
-                <div class="odiv" ><span class="span1">导购姓名：</span><input name="sellerRealName" type="text" class="input"></div>
-				<div class="odiv" ><span class="span1">收货地址：</span><input name="shippingAddress" type="text" class="input"></div>
-                <div class="odiv" ><span class="span1">会员电话：</span><input name="userPhone" type="text" class="input"></div>
-                <div class="odiv" ><span class="span1">收货人姓名：</span><input name="shippingName" type="text" class="input"></div>
+                <div  class="odiv"><span class="span1">会员姓名：</span><input value="${realName!"" }" name="realName" type="text" class="input" value="${realName!"" }"></div>
+                <div  class="odiv"><span class="span1">收货人电话：</span><input value="${shippingPhone!"" }" name="shippingPhone" type="text" class="input"></div>
+                <div class="odiv" ><span class="span1">预约送货时间：</span><input value="${deliveryTime!"" }" name="deliveryTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
+                <div class="odiv" ><span class="span1">导购姓名：</span><input value="${sellerRealName!"" }" name="sellerRealName" type="text" class="input"></div>
+				<div class="odiv" ><span class="span1">收货地址：</span><input value="${shippingAddress!"" }" name="shippingAddress" type="text" class="input"></div>
+                <div class="odiv" ><span class="span1">会员电话：</span><input value="${userPhone!"" }" name="userPhone" type="text" class="input"></div>
+                <div class="odiv" ><span class="span1">收货人姓名：</span><input value="${shippingName!"" }" name="shippingName" type="text" class="input"></div>
                 
      			<!--<div class="odiv" style="float:left;width:310px;"><span class="span1">送货状态：</span>
                 	<div class="rule-single-select">
@@ -190,14 +190,14 @@ function downloaddate(type)
 					
             	</div>
                 <div class="odiv" ><span class="span1">中转仓库：</span><input name="tt" type="text" class="input"></div>
- -->                <div class="odiv" ><span class="span1">实际送货时间：</span><input  name="sendTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
+ -->                <div class="odiv" ><span class="span1">实际送货时间：</span><input value="${sendTime!"" }" name="sendTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
             <#if diySiteList?? && diySiteList?size gt 0 >
             <div class="odiv" style="float:left;width:310px;"><span class="span1">门店名称：</span>
                 	<div class="rule-single-select">
                         <select name="diyCode" id="diyCode">
                         <option value="" >请选择</option>      
                         <#list diySiteList as diySite>
-                        	<option value="${diySite.storeCode }" >${diySite.title }</option>
+                        	<option value="${diySite.storeCode }" <#if diyCode?? && diyCode==diySite.storeCode>selected</#if> >${diySite.title }</option>
                         </#list>
                         </select>
             		</div>
@@ -209,13 +209,13 @@ function downloaddate(type)
                         <select name="city" id="city">
                         <option value="" >请选择</option>      
                         <#list cityList as city>
-                        	<option value="${city.cityName }" >${city.cityName }</option>
+                        	<option value="${city.cityName }" <#if cityname?? && cityname==city.cityName>selected</#if> >${city.cityName }</option>
                         </#list>
                         </select>
             		</div>
             	</div>
             	</#if>
-            	<div class="odiv" style="width:715px;float:right"><div style="float:left;"><span class="span1">订单号：</span><input name="keywords" type="text" class="input">
+            	<div class="odiv" style="width:715px;float:right"><div style="float:left;"><span class="span1">订单号：</span><input name="keywords" type="text" class="input" value="${orderNumber!"" }">
                 </div>
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
                 <a style="color:black;" href="javascript:downloaddate(0);" class="a1">代收款报表下载</a>

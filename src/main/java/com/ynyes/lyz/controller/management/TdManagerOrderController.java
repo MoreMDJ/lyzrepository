@@ -1589,10 +1589,22 @@ public class TdManagerOrderController {
 			map.addAttribute("diySiteList",tdDiySiteService.findAll());
 			map.addAttribute("cityList", tdCityService.findAll());
 		}
-		
 		// 参数注回
-		map.addAttribute("page", page);
-		map.addAttribute("size", size);
+		map.addAttribute("orderNumber", keywords);
+		map.addAttribute("orderStartTime", orderStartTime);
+		map.addAttribute("orderEndTime", orderEndTime);
+		map.addAttribute("realName", realName);
+		map.addAttribute("sellerRealName", sellerRealName);
+		map.addAttribute("shippingAddress", shippingAddress);
+		map.addAttribute("shippingPhone", shippingPhone);
+		map.addAttribute("deliveryTime", deliveryTime);
+		map.addAttribute("userPhone", userPhone);
+		map.addAttribute("shippingName", shippingName);
+		map.addAttribute("sendTime", sendTime);
+		map.addAttribute("statusId", statusId);
+		map.addAttribute("diyCode", diyCode);
+		map.addAttribute("cityname", city);
+		
 		map.addAttribute("keywords", keywords);
 		map.addAttribute("statusId", statusId);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
