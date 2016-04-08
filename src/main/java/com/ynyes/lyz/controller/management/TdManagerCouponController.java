@@ -402,12 +402,13 @@ public class TdManagerCouponController extends TdManagerBaseController{
                           HttpServletRequest req){
         
         String username = (String) req.getSession().getAttribute("manager");
-        
-        if (null == username) {
+        if (null == username) 
+        {
             return "redirect:/Verwalter/login";
         }
         TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
 		TdManagerRole tdManagerRole = null;
+		
 		if (tdManager != null && tdManager.getRoleId() != null)
 		{
 			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
@@ -432,11 +433,8 @@ public class TdManagerCouponController extends TdManagerBaseController{
                 btnSave(listId, listSortId);
                 tdManagerLogService.addLog("edit", "修改优惠券", req);
             }
-            else if (__EVENTTARGET.equalsIgnoreCase("changeDiysite")) {
-		   
-			}else if(__EVENTTARGET.equalsIgnoreCase("changeType")){
-				
-			}else if(__EVENTTARGET.equalsIgnoreCase("btnFailure")){
+            else if(__EVENTTARGET.equalsIgnoreCase("btnFailure"))
+            {
             	btnFailure(listId, listChkId);
             	tdManagerLogService.addLog("failure", "失效优惠卷", req);
             }
@@ -470,57 +468,90 @@ public class TdManagerCouponController extends TdManagerBaseController{
        
         Page<TdCoupon> couponPage = null;
         
-        if(typeId.equals(0L)){
-        	if(isUsed.equals(0L)){
-        		if(null != keywords && !keywords.equalsIgnoreCase("")){
+        if(typeId.equals(0L))
+        {
+        	if(isUsed.equals(0L))
+        	{
+        		if(StringUtils.isNotBlank(keywords))
+        		{
         			//模糊查询优惠券名称,已领取的优惠券,根据领取时间排序
-        			couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueOrderByGetTimeDesc(keywords,page, size);
-        		}else{
+        			couponPage = tdCouponService.findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueOrderByGetTimeDesc(keywords,page, size);
+        		}
+        		else
+        		{
         			//查询已领取的优惠券,根据领取时间排序
         			couponPage = tdCouponService.findByIsDistributtedTrueOrderByGetTimeDesc(page, size);
         		}
-        	}else{
-        		if(null != keywords && !keywords.equalsIgnoreCase("")){
-        			if(isUsed.equals(1L)){
+        	}
+        	else
+        	{
+        		if(StringUtils.isNotBlank(keywords))
+        		{
+        			if(isUsed.equals(1L))
+        			{
         				//模糊查询优惠券名称,已领取,已使用的优惠券,根据领取时间排序
-        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,true,page, size);
-        			}else{
-        				//模糊查询优惠券名称,已领取,未使用的优惠券,根据领取时间排序
-        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,false,page, size);
+        				couponPage = tdCouponService.findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,true,page, size);
         			}
-        		}else{
-        			if(isUsed.equals(1L)){
+        			else
+        			{
+        				//模糊查询优惠券名称,已领取,未使用的优惠券,根据领取时间排序
+        				couponPage = tdCouponService.findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,false,page, size);
+        			}
+        		}
+        		else
+        		{
+        			if(isUsed.equals(1L))
+        			{
         				//已领取,已使用的优惠券,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(true,page, size);
-        			}else{
+        			}
+        			else
+        			{
         				//已领取,未使用的优惠券,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(false,page, size);
         			}
         		}
         	}
-        }else{
-        	if(isUsed.equals(0L)){
-        		if(null != keywords && !keywords.equalsIgnoreCase("")){
+        }
+        else
+        {
+        	if(isUsed.equals(0L))
+        	{
+        		if(null != keywords && !keywords.equalsIgnoreCase(""))
+        		{
         			//模糊查询优惠券名称,已领取的优惠券,类型筛选,根据领取时间排序
-        			couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(keywords,typeId,page, size);
-        		}else{
+        			couponPage = tdCouponService.findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(keywords,typeId,page, size);
+        		}
+        		else
+        		{
         			//查询领取的优惠券,类型筛选,根据领取时间排序
         			couponPage = tdCouponService.findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(typeId,page, size);
         		}
-        	}else{
-        		if(null != keywords && !keywords.equalsIgnoreCase("")){
-        			if(isUsed.equals(1L)){
+        	}
+        	else
+        	{
+        		if(null != keywords && !keywords.equalsIgnoreCase(""))
+        		{
+        			if(isUsed.equals(1L))
+        			{
         				//模糊查询优惠券名称,已领取,已使用,类型筛选,根据领取时间排序
-        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,true,typeId,page, size);
-        			}else{
-        				//模糊查询优惠券名称,已领取,未使用,类型筛选,根据领取时间排序
-        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,false,typeId,page, size);
+        				couponPage = tdCouponService.findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,true,typeId,page, size);
         			}
-        		}else{
-        			if(isUsed.equals(1L)){
+        			else
+        			{
+        				//模糊查询优惠券名称,已领取,未使用,类型筛选,根据领取时间排序
+        				couponPage = tdCouponService.findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,false,typeId,page, size);
+        			}
+        		}
+        		else
+        		{
+        			if(isUsed.equals(1L))
+        			{
         				//查询已领取,已使用,类型筛选,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(true,typeId,page, size);
-        			}else{
+        			}
+        			else
+        			{
         				//查询已领取,未使用,类型筛选,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(false,typeId,page, size);
         			}

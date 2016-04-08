@@ -170,7 +170,7 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueOrderByGetTimeDesc(String keywords,Pageable page);
+	Page<TdCoupon> findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueOrderByGetTimeDesc(String keywords,String username,Pageable page);
 	
 	/**
 	 * 查询已领取,已使用或未使用,根据领取时间排序
@@ -185,7 +185,7 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(String keywords,Boolean isUsed,Pageable page);
+	Page<TdCoupon> findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(String keywords,String username,Boolean isUsed,Pageable page);
 	/**
 	 * 查询已领取,类型筛选,根据领取时间排序
 	 * @param page
@@ -199,7 +199,7 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Long typeCategoryId,Pageable page);
+	Page<TdCoupon> findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(String keywords,String username,Long typeCategoryId,Pageable page);
 	
 	/**
 	 * 查询已领取,已使用或未使用,类型筛选,根据领取时间排序
@@ -214,7 +214,7 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Boolean isUsed,Long typeCategoryId,Pageable page);
+	Page<TdCoupon> findByTypeTitleContainingAndUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(String keywords,String username,Boolean isUsed,Long typeCategoryId,Pageable page);
 
 	// Max 根据城市名类别和发放类型查找未过期 优惠券
 	List<TdCoupon> findByCityNameAndTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(String cityName,Long typeId,Long cateId,Date date);
