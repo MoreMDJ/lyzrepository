@@ -224,47 +224,54 @@ public class TdUserService {
 		if (null == cityId || null == customerId || null == keywords) {
 			return null;
 		}
-		return repository.findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(cityId, customerId,
-				0L, keywords);
+		return repository
+				.findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrCityIdAndCustomerIdAndUserTypeAndUsernameContainingOrderBySortIdAsc(
+						cityId, customerId, 0L, keywords, cityId, customerId, 0L, keywords);
 	}
+
 	/**
 	 * 根据真实姓名查询用户
+	 * 
 	 * @param realName
 	 * @return
 	 */
-	public TdUser findByRealName(String realName){
+	public TdUser findByRealName(String realName) {
 		if (null == realName) {
 			return null;
 		}
 		return repository.findByRealName(realName);
 	}
+
 	/**
 	 * 根据主单号查询快递员
-	 * @param mainOrderNumber 主单号
+	 * 
+	 * @param mainOrderNumber
+	 *            主单号
 	 * @return
 	 */
-	public TdUser searchDriverByMainOrderNumber(String mainOrderNumber){
+	public TdUser searchDriverByMainOrderNumber(String mainOrderNumber) {
 		if (null == mainOrderNumber) {
 			return null;
 		}
 		return repository.searchDriverByMainOrderNumber(mainOrderNumber);
 	}
-	
+
 	/**
 	 * @注释：根据城市查找所有按id降序排序
 	 */
-	public Page<TdUser> findByCityNameOrderByIdDesc(String cityName,int page, int size) {
+	public Page<TdUser> findByCityNameOrderByIdDesc(String cityName, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
 
-		return repository.findByCityNameOrderByIdDesc(cityName,pageRequest);
+		return repository.findByCityNameOrderByIdDesc(cityName, pageRequest);
 	}
-	
+
 	/**
 	 * @注释：搜索城市下面的用户
 	 */
-	public Page<TdUser> searchcityNameAndOrderByIdDesc(String keywords,String cityName, int page, int size) {
+	public Page<TdUser> searchcityNameAndOrderByIdDesc(String keywords, String cityName, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(keywords, keywords,cityName, pageRequest);
+		return repository.findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(keywords, keywords,
+				cityName, pageRequest);
 	}
 }

@@ -63,34 +63,42 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 * @author DengXiao
 	 */
 	List<TdUser> findByCityIdAndCustomerIdAndUserTypeOrderBySortIdAsc(Long cityId, Long customerId, Long userType);
-	
+
 	/**
 	 * 根据关键词查询指定门店下的所有用户
 	 * 
 	 * @author DengXiao
 	 */
-	List<TdUser> findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(Long cityId, Long customerId, Long userType,String keywords);
+	List<TdUser> findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrCityIdAndCustomerIdAndUserTypeAndUsernameContainingOrderBySortIdAsc(
+			Long cityId1, Long customerId1, Long userType1, String keywords1, Long cityId2, Long customerId2,
+			Long userType2, String keywords2);
+
 	/**
 	 * 根据真实姓名查询用户
+	 * 
 	 * @param realName
 	 * @return
 	 */
 	TdUser findByRealName(String realName);
+
 	/**
 	 * 根据主单号查询快递员
-	 * @param mainOrderNumber 主单号
+	 * 
+	 * @param mainOrderNumber
+	 *            主单号
 	 * @return
 	 */
 	@Query("select u from TdUser u,TdDeliveryInfo d where u.opUser=d.driver and d.orderNumber=?1")
 	TdUser searchDriverByMainOrderNumber(String mainOrderNumber);
-	
+
 	/**
 	 * @注释：根据城市查找所有按id降序排序
 	 */
-	public Page<TdUser> findByCityNameOrderByIdDesc(String cityName,Pageable page);
-	
+	public Page<TdUser> findByCityNameOrderByIdDesc(String cityName, Pageable page);
+
 	/**
 	 * @注释：搜索城市下面的用户
 	 */
-	public Page<TdUser> findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(String keywords,String keywords1,String cityName,Pageable page );
+	public Page<TdUser> findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(String keywords,
+			String keywords1, String cityName, Pageable page);
 }

@@ -8,9 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ibm.icu.text.UTF16;
 import com.ibm.icu.util.Calendar;
-import com.tencent.protocol.pay_query_protocol.CouponData;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;

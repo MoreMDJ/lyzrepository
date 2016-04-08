@@ -134,7 +134,7 @@ public class TdOrderController {
 
 		// 如果session中没有虚拟订单，则通过方法生成一个
 		if (null == order_temp) {
-			order_temp = tdCommonService.createVirtual(req);
+			order_temp = tdCommonService.createVirtual(req, realUserId);
 		}
 
 		// 判断此单是否拥有商品
@@ -151,7 +151,7 @@ public class TdOrderController {
 		}
 
 		// 获取真实用户
-		TdUser realUser = tdUserService.findOne(realUserId);
+		TdUser realUser = tdUserService.findOne(order_temp.getRealUserId());
 		// 判断具有真实用户的情况，导购和门店默认为真实用户的归属导购和门店
 		if (null != realUser) {
 			order_temp.setRealUserRealName(realUser.getRealName());
@@ -159,7 +159,7 @@ public class TdOrderController {
 			order_temp.setRealUserUsername(realUser.getUsername());
 			// 获取真实用户的归属导购（在此不需要获取真实用户的门店，因为真实用户的门店和当前登录的销顾的门店肯定一致）
 			Long sellerId = realUser.getSellerId();
-			if (null != sellerId) {
+			if (null != sellerId && null != order_temp.getIsSellerOrder() && !order_temp.getIsSellerOrder()) {
 				TdUser seller = tdUserService.findOne(sellerId);
 				if (null != seller) {
 					order_temp.setHaveSeller(true);
@@ -170,8 +170,13 @@ public class TdOrderController {
 			}
 		}
 
+		Map<String, Object> results = null;
 		// 计算价格和最大优惠券使用金额
-		Map<String, Object> results = tdPriceCouintService.countPrice(order_temp, user);
+		if (null != realUser) {
+			results = tdPriceCouintService.countPrice(order_temp, realUser);
+		} else {
+			results = tdPriceCouintService.countPrice(order_temp, user);
+		}
 
 		// 如果计算的结果不为NULL，就获取一系列的值
 		if (null != results) {
@@ -207,13 +212,15 @@ public class TdOrderController {
 
 		// 遍历所有的品牌，查找用户对于当前订单可以使用的现金券
 		for (Long brandId : brandIds) {
-			List<TdCoupon> coupon_list = tdCouponService
-					.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
-							username, 1L, brandId, user.getCityName());
+			List<TdCoupon> coupon_list = null;
+			if (null != realUser) {
+				coupon_list = tdCouponService
+						.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
+								realUser.getUsername(), 1L, brandId, realUser.getCityName());
+			}
 			if (null != coupon_list) {
 				no_product_coupon_list.addAll(coupon_list);
 			}
-
 		}
 
 		// 遍历所有已选，查找用户对于当前订单可以使用的指定商品现金券和产品券
@@ -222,17 +229,23 @@ public class TdOrderController {
 			for (TdOrderGoods goods : selected) {
 				if (null != goods) {
 					// 查找能使用的产品券
-					List<TdCoupon> p_coupon_list = tdCouponService
-							.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-									username, goods.getGoodsId(), user.getCityName());
+					List<TdCoupon> p_coupon_list = null;
+					if (null != realUser) {
+						p_coupon_list = tdCouponService
+								.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
+										realUser.getUsername(), goods.getGoodsId(), realUser.getCityName());
+					}
 					if (null != p_coupon_list) {
 						product_coupon_list.addAll(p_coupon_list);
 					}
 
 					// 查找能使用的指定商品现金券
-					List<TdCoupon> c_coupon_list = tdCouponService
-							.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-									username, goods.getGoodsId(), user.getCityName());
+					List<TdCoupon> c_coupon_list = null;
+					if (null != realUser) {
+						c_coupon_list = tdCouponService
+								.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
+										realUser.getUsername(), goods.getGoodsId(), realUser.getCityName());
+					}
 					if (null != c_coupon_list) {
 						no_product_coupon_list.addAll(c_coupon_list);
 					}
@@ -752,6 +765,13 @@ public class TdOrderController {
 		// 获取虚拟订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 
+		// 获取订单的真实用户
+		Long realUserId = order.getRealUserId();
+		TdUser realUser = tdUserService.findOne(realUserId);
+		if (null == realUser) {
+			realUser = new TdUser();
+		}
+
 		// 获取所有已选的商品
 		List<TdOrderGoods> selected_list = order.getOrderGoodsList();
 
@@ -761,7 +781,7 @@ public class TdOrderController {
 		Map<Long, List<TdCoupon>> cash_coupon_map = new HashMap<>();
 
 		// 获取所有的品牌
-		List<Long> brandIds = tdCommonService.getBrandId(user.getId(), order);
+		List<Long> brandIds = tdCommonService.getBrandId(realUser.getId(), order);
 		if (null != brandIds && brandIds.size() > 0) {
 			for (int i = 0; i < brandIds.size(); i++) {
 				Long brandId = brandIds.get(i);
@@ -1119,25 +1139,32 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-		// 获取用户的城市
-		Long cityId = user.getCityId();
-		TdCity city = tdCityService.findBySobIdCity(cityId);
-		if (null != cityId) {
-			// 查找指定城市下的所有行政区划
-			List<TdDistrict> district_list = tdDistrictService.findByCityIdOrderBySortIdAsc(city.getId());
-			map.addAttribute("district_list", district_list);
-			if (null != district_list && district_list.size() > 0) {
-				// 默认行政区划为集合的第一个
-				TdDistrict district = district_list.get(0);
-				// 根据指定的行政区划查找其下的行政街道
-				if (null != district) {
-					List<TdSubdistrict> subdistrict_list = tdSubdistrictService
-							.findByDistrictIdOrderBySortIdAsc(district.getId());
-					map.addAttribute("subdistrict_list", subdistrict_list);
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		// 获取真实用户的id
+		Long realUserId = order.getRealUserId();
+		// 获取真实用户
+		TdUser realUser = tdUserService.findOne(realUserId);
+		if (null != realUser) {
+			// 获取用户的城市
+			Long cityId = realUser.getCityId();
+			TdCity city = tdCityService.findBySobIdCity(cityId);
+			if (null != cityId) {
+				// 查找指定城市下的所有行政区划
+				List<TdDistrict> district_list = tdDistrictService.findByCityIdOrderBySortIdAsc(city.getId());
+				map.addAttribute("district_list", district_list);
+				if (null != district_list && district_list.size() > 0) {
+					// 默认行政区划为集合的第一个
+					TdDistrict district = district_list.get(0);
+					// 根据指定的行政区划查找其下的行政街道
+					if (null != district) {
+						List<TdSubdistrict> subdistrict_list = tdSubdistrictService
+								.findByDistrictIdOrderBySortIdAsc(district.getId());
+						map.addAttribute("subdistrict_list", subdistrict_list);
+					}
 				}
 			}
+			map.addAttribute("user", realUser);
 		}
-		map.addAttribute("user", user);
 		return "/client/order_add_address";
 	}
 
@@ -1171,59 +1198,64 @@ public class TdOrderController {
 			return res;
 			// return "redirect:/login";
 		}
-		TdDistrict tdDistrict = tdDistrictService.findOne(district);
-		TdSubdistrict tdSubdistrict = tdSubdistrictService.findOne(subdistrict);
 
-		// 将用户所有的收货地址都设置为非默认
-		List<TdShippingAddress> shippingAddressList = user.getShippingAddressList();
-		if (null != shippingAddressList) {
-			for (TdShippingAddress address : shippingAddressList) {
-				if (null != address) {
-					address.setIsDefaultAddress(false);
-					tdShippingAddressService.save(address);
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		// 获取真实用户的id
+		Long realUserId = order.getRealUserId();
+		// 获取真实用户
+		TdUser realUser = tdUserService.findOne(realUserId);
+		if (null != realUser) {
+			TdDistrict tdDistrict = tdDistrictService.findOne(district);
+			TdSubdistrict tdSubdistrict = tdSubdistrictService.findOne(subdistrict);
+
+			// 将用户所有的收货地址都设置为非默认
+			List<TdShippingAddress> shippingAddressList = realUser.getShippingAddressList();
+			if (null != shippingAddressList) {
+				for (TdShippingAddress address : shippingAddressList) {
+					if (null != address) {
+						address.setIsDefaultAddress(false);
+						tdShippingAddressService.save(address);
+					}
 				}
 			}
+
+			TdShippingAddress address = new TdShippingAddress();
+			address.setCity(user.getCityName());
+			address.setCityId(user.getCityId());
+			address.setDetailAddress(detail);
+			address.setDisctrict(tdDistrict.getName());
+			address.setSubdistrict(tdSubdistrict.getName());
+			address.setDistrictId(district);
+			address.setSubdistrictId(subdistrict);
+			address.setIsDefaultAddress(true);
+			address.setReceiverMobile(receiveMobile);
+			address.setReceiverName(receiveName);
+			address.setSortId(1.0);
+			address = tdShippingAddressService.save(address);
+
+			List<TdShippingAddress> addressList = realUser.getShippingAddressList();
+			if (null == addressList) {
+				addressList = new ArrayList<>();
+			}
+
+			addressList.add(address);
+			tdUserService.save(user);
+
+			// Add by Shawn
+			order.setProvince(address.getProvince());
+			order.setCity(address.getCity());
+			order.setDisctrict(address.getDisctrict());
+			order.setSubdistrict(address.getSubdistrict());
+			order.setDetailAddress(address.getDetailAddress());
+
+			order.setShippingAddress(
+					address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
+			order.setShippingName(address.getReceiverName());
+			order.setShippingPhone(address.getReceiverMobile());
+			order.setDeliverFee(tdSubdistrict.getDeliveryFee());
+			req.getSession().setAttribute("order_temp", order);
+			tdOrderService.save(order);
 		}
-
-		TdShippingAddress address = new TdShippingAddress();
-		address.setCity(user.getCityName());
-		address.setCityId(user.getCityId());
-		address.setDetailAddress(detail);
-		address.setDisctrict(tdDistrict.getName());
-		address.setSubdistrict(tdSubdistrict.getName());
-		address.setDistrictId(district);
-		address.setSubdistrictId(subdistrict);
-		address.setIsDefaultAddress(true);
-		address.setReceiverMobile(receiveMobile);
-		address.setReceiverName(receiveName);
-		address.setSortId(1.0);
-		address = tdShippingAddressService.save(address);
-
-		List<TdShippingAddress> addressList = user.getShippingAddressList();
-		if (null == addressList) {
-			addressList = new ArrayList<>();
-		}
-
-		addressList.add(address);
-		tdUserService.save(user);
-
-		// 从session获取临时订单
-		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
-
-		// Add by Shawn
-		order.setProvince(address.getProvince());
-		order.setCity(address.getCity());
-		order.setDisctrict(address.getDisctrict());
-		order.setSubdistrict(address.getSubdistrict());
-		order.setDetailAddress(address.getDetailAddress());
-
-		order.setShippingAddress(
-				address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
-		order.setShippingName(address.getReceiverName());
-		order.setShippingPhone(address.getReceiverMobile());
-		order.setDeliverFee(tdSubdistrict.getDeliveryFee());
-		req.getSession().setAttribute("order_temp", order);
-		tdOrderService.save(order);
 		res.put("status", 0);
 		return res;
 	}
@@ -1240,9 +1272,15 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-
-		List<TdShippingAddress> address_list = user.getShippingAddressList();
-		map.addAttribute("address_list", address_list);
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		// 获取订单的真实用户id
+		Long realUserId = order.getRealUserId();
+		// 获取真实用户
+		TdUser realUser = tdUserService.findOne(realUserId);
+		if (null != realUser) {
+			List<TdShippingAddress> address_list = realUser.getShippingAddressList();
+			map.addAttribute("address_list", address_list);
+		}
 		return "/client/order_change_address";
 	}
 
@@ -1357,16 +1395,23 @@ public class TdOrderController {
 		String cashCouponId = order_temp.getCashCouponId();
 		String productCouponId = order_temp.getProductCouponId();
 
+		// 获取真实用户
+		Long realUserId = order_temp.getRealUserId();
+		TdUser realUser = tdUserService.findOne(realUserId);
+
 		if (isOnline) {
 			// 判断是否还有未支付的金额
 			if (order_temp.getTotalPrice() > 0) {
 				// 修改有效支付时间
 				orderValidTimeSet(req, order_temp);
-
-				// status的值为3代表需要通过第三方支付
-				res.put("status", 3);
-				res.put("title", payType.getTitle());
-				res.put("order_id", order_temp.getId());
+				if (null != order_temp.getIsSellerOrder() && order_temp.getIsSellerOrder()) {
+					res.put("message", "支付金额不足");
+				} else {
+					// status的值为3代表需要通过第三方支付
+					res.put("status", 3);
+					res.put("title", payType.getTitle());
+					res.put("order_id", order_temp.getId());
+				}
 				return res;
 			} else {
 				// 将选择的现金券和产品券设置为已使用
@@ -1406,6 +1451,10 @@ public class TdOrderController {
 					}
 				}
 				order_temp.setStatusId(3L);
+				if (null != order_temp.getIsSellerOrder() && order_temp.getIsSellerOrder()) {
+					order_temp.setUserId(order_temp.getRealUserId());
+					order_temp.setUsername(order_temp.getRealUserUsername());
+				}
 			}
 		} else {
 			// 将选择的现金券和产品券设置为已使用
@@ -1445,20 +1494,24 @@ public class TdOrderController {
 				}
 			}
 			order_temp.setStatusId(3L);
+			if (null != order_temp.getIsSellerOrder() && order_temp.getIsSellerOrder()) {
+				order_temp.setUserId(order_temp.getRealUserId());
+				order_temp.setUsername(order_temp.getRealUserUsername());
+			}
 		}
 		// 获取用户的不可体现余额
-		Double unCashBalance = user.getUnCashBalance();
+		Double unCashBalance = realUser.getUnCashBalance();
 		if (null == unCashBalance) {
 			unCashBalance = 0.00;
 		}
 
 		// 获取用户的可提现余额
-		Double cashBalance = user.getCashBalance();
+		Double cashBalance = realUser.getCashBalance();
 		if (null == cashBalance) {
 			cashBalance = 0.00;
 		}
 
-		Double balance = user.getBalance();
+		Double balance = realUser.getBalance();
 		if (null == balance) {
 			balance = 0.00;
 		}
@@ -1520,8 +1573,13 @@ public class TdOrderController {
 		}
 		// 获取当前订单信息
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		// 获取真实用户
+		Long realUserId = order.getRealUserId();
+		TdUser realUser = tdUserService.findOne(realUserId);
+		if (null != realUser) {
+			map.addAttribute("user", realUser);
+		}
 		map.addAttribute("order", order);
-		map.addAttribute("user", user);
 		map.addAttribute("max", max);
 		return "/client/order_balance";
 	}
@@ -1612,7 +1670,7 @@ public class TdOrderController {
 		// 查询到销顾的信息
 		TdUser seller = tdUserService.findOne(sellerId);
 		// 生成虚拟订单
-		TdOrder order = tdCommonService.createVirtual(req);
+		TdOrder order = tdCommonService.createVirtual(req, realUserId);
 		tdPriceCouintService.countPrice(order, realUser);
 
 		// 设置真实用户信息
