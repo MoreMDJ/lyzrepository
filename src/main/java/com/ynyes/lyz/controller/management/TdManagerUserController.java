@@ -165,7 +165,7 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/list")
-	public String setting(Integer page, Integer size, String keywords, Long roleId, Long userLevelId,
+	public String setting(Integer page, Integer size, String keywords, Long roleId, Long userType,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
 			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -200,61 +200,41 @@ public class TdManagerUserController {
 		map.addAttribute("size", size);
 		map.addAttribute("keywords", keywords);
 		map.addAttribute("roleId", roleId);
-		map.addAttribute("userLevelId", userLevelId);
+		map.addAttribute("userType", userType);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
 		// 等级list
-		// map.addAttribute("userLevelId_list",
+		// map.addAttribute("userType_list",
 		// tdUserLevelService.findIsEnableTrue());
 
 		Page<TdUser> userPage = null;
 
 		if (null == roleId) {
-			if (null == keywords || "".equalsIgnoreCase(keywords)) {
-				if (null == userLevelId) {
+			if (null == keywords || "".equalsIgnoreCase(keywords)) 
+			{
+				if (null == userType) 
+				{
 					userPage = tdUserService.findAllOrderByIdDesc(page, size);
-				} else {
-					userPage = tdUserService.findByUserLevelIdOrderByIdDesc(userLevelId, page, size);
+				} 
+				else 
+				{
+					userPage = tdUserService.findByUserTypeOrderByIdDesc(userType, page, size);
 				}
-			} else {
-				if (null == userLevelId) {
+			} 
+			else 
+			{
+				if (null == userType) 
+				{
 					userPage = tdUserService.searchAndOrderByIdDesc(keywords, page, size);
-				} else {
-					userPage = tdUserService.searchAndfindByUserLevelIdOrderByIdDesc(keywords, userLevelId, page, size);
+				}
+				else
+				{
+					userPage = tdUserService.searchAndfindByUserTypeOrderByIdDesc(keywords, userType, page, size);
 				}
 			}
 		}
-		// else
-		// {
-		// if (null == keywords || "".equalsIgnoreCase(keywords))
-		// {
-		// if (null == userLevelId) {
-		// userPage = tdUserService.findByRoleIdOrderByIdDesc(roleId, page,
-		// size);
-		// }
-		// else
-		// {
-		// userPage =
-		// tdUserService.findByRoleIdAndUserLevelIdOrderByIdDesc(roleId,
-		// userLevelId, page, size);
-		// }
-		// }
-		// else
-		// {
-		// if (null == userLevelId) {
-		// userPage = tdUserService.searchAndFindByRoleIdOrderByIdDesc(keywords,
-		// roleId, page, size);
-		// }
-		// else
-		// {
-		// userPage =
-		// tdUserService.searchAndFindByRoleIdAndUserLevelIdOrderByIdDesc(keywords,
-		// roleId, userLevelId, page, size);
-		// }
-		// }
-		// }
 
 		map.addAttribute("user_page", userPage);
 

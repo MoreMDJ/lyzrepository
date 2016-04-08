@@ -104,13 +104,14 @@ var theForm = document.forms['form1'];
       </ul>
       <div class="menu-list">      
         <div class="rule-single-select single-select">
-        <select name="userLevelId" onchange="javascript:setTimeout(__doPostBack('userLevelId',''), 0)" style="display: none;">
-            <option <#if !userLevelId??>selected="selected"</#if> value="">所有用户等级</option>
-            <#if userLevelId_list??>
-                <#list userLevelId_list as item>
-                    <option <#if userLevelId?? && userLevelId==item.levelId>selected="selected"</#if> value="${item.id?c}">${item.title!''}</option>
-                </#list>
-            </#if>                        
+        <select name="userType" onchange="javascript:setTimeout(__doPostBack('userType',''), 0)" style="display: none;">
+            <option <#if !userType??>selected="selected"</#if> value="">所有用户</option>
+                    <option <#if userType?? && userType==0>selected="selected"</#if> value="0">普通会员</option>
+                    <option <#if userType?? && userType==1>selected="selected"</#if> value="1">销售顾问</option>
+                    <option <#if userType?? && userType==2>selected="selected"</#if> value="2">店长</option>
+                    <option <#if userType?? && userType==3>selected="selected"</#if> value="3">店主</option>
+                    <option <#if userType?? && userType==4>selected="selected"</#if> value="4">区域经理</option>
+                    <option <#if userType?? && userType==5>selected="selected"</#if> value="5">配送员</option>
         </select>
         </div>
       </div>

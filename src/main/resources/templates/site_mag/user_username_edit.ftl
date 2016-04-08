@@ -115,7 +115,7 @@ $(function () {
 </div>
 <!--导航栏-->
 <div class="location" style="position: static; top: 0px;">
-  <a href="/Verwalter/user/list?roleId=${roleId!""}"><i></i><span>返回列表页</span></a>
+  <a href="/Verwalter/user/list?roleId=<#if roleId??>${roleId?c}"<#else>0</#if><i></i><span>返回列表页</span></a>
   <a href="/Verwalter/center" class="home"><i></i><span>首页</span></a>
   <i class="arrow"></i>
   <span>会员管理</span>
@@ -138,7 +138,7 @@ $(function () {
 
 <!--账户信息-->
 <div class="tab-content">
-	<input type="hidden" name="id" value="<#if user??>${user.id?c!''}</#if>" >
+	<input type="hidden" name="id" value="<#if user??>${user.id?c}</#if>" >
     <dl>
         <dt>原始用户名：</dt>
        <dd>
@@ -151,7 +151,7 @@ $(function () {
     <dl>
         <dt>用户名：</dt>
        <dd>
-            <input name="newUsername" type="text" value="<#if user??>${user.username!''}</#if>" maxlength="200" class="input normal" datatype="m|/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/" ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id}</#if>" sucmsg=" " minlength="2">
+            <input name="newUsername" type="text" value="<#if user??>${user.username!''}</#if>" maxlength="200" class="input normal" datatype="m|/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/" ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id?c}</#if>" sucmsg=" " minlength="2">
        		<input name="oldUsername" type="hidden" value="<#if user??>${user.username!''}</#if>" />
             <span class="Validform_checktip">*修改用户名后，相应的数据也将同步为新用户名</span>
         </span></dd>

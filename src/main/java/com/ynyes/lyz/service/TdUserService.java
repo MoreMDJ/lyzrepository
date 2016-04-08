@@ -129,10 +129,10 @@ public class TdUserService {
 	/**
 	 * @author lc @注释：
 	 */
-	public Page<TdUser> findByUserLevelIdOrderByIdDesc(Long userLevelId, int page, int size) {
+	public Page<TdUser> findByUserTypeOrderByIdDesc(Long usertype, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
 
-		return repository.findByUserLevelIdOrderByIdDesc(userLevelId, pageRequest);
+		return repository.findByUserTypeOrderByIdDesc(usertype, pageRequest);
 	}
 
 	/**
@@ -149,11 +149,11 @@ public class TdUserService {
 	 * @author lc
 	 * @注释：按等级搜索用户
 	 */
-	public Page<TdUser> searchAndfindByUserLevelIdOrderByIdDesc(String keywords, Long userLevelId, int page, int size) {
+	public Page<TdUser> searchAndfindByUserTypeOrderByIdDesc(String keywords, Long userType, int page, int size)
+	{
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByUsernameContainingAndUserLevelIdOrEmailContainingAndUserLevelIdOrderByIdDesc(keywords,
-				userLevelId, keywords, userLevelId, pageRequest);
+		return repository.findByUsernameContainingAndUserTypeOrEmailContainingAndUserTypeOrderByIdDesc(keywords,userType, keywords, userType, pageRequest);
 	}
 
 	public TdUser findByOpUser(String opUser) {

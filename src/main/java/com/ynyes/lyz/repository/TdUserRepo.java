@@ -20,15 +20,13 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 
 	TdUser findByUsernameAndCityNameAndIsEnableTrue(String username, String cityName);
 
-	TdUser findByUsernameAndIdNot(String username, Long id); // zhangji 2016-1-8
-																// 10:26:41
+	TdUser findByUsernameAndIdNot(String username, Long id); // zhangji 2016-1-8 // 10:26:41
 
-	Page<TdUser> findByUserLevelIdOrderByIdDesc(Long userlevelId, Pageable page);
+	Page<TdUser> findByUserTypeOrderByIdDesc(Long userlevelId, Pageable page);
 
 	Page<TdUser> findByUsernameContainingOrRealNameContainingOrderByIdDesc(String keywords1, String keywords2,Pageable page);
 
-	Page<TdUser> findByUsernameContainingAndUserLevelIdOrEmailContainingAndUserLevelIdOrderByIdDesc(String keywords1,
-			Long userLevelId, String keywords3, Long userLevelId2, Pageable page);
+	Page<TdUser> findByUsernameContainingAndUserTypeOrEmailContainingAndUserTypeOrderByIdDesc(String keywords1,Long userLevelId, String keywords3, Long userLevelId2, Pageable page);
 
 	TdUser findByOpUser(String opUser);
 
