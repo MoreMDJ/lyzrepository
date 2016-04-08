@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdCoupon;
+import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdCouponService;
+import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdUserService;
 /**
  * 抢券
@@ -30,6 +32,9 @@ public class TdCouponController {
 	
 	@Autowired
 	private TdCouponService tdCouponService;
+	
+	@Autowired
+	private TdGoodsService tdGoodsService;
 	
 	/**
 	 * 抢券
@@ -117,7 +122,10 @@ public class TdCouponController {
 			tdCoupon.setTypeId(coupon.getTypeId());
 			tdCoupon.setTypeTitle(coupon.getTypeTitle());
 			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
-			
+			TdGoods good= tdGoodsService.findOne(coupon.getGoodsId());
+			if(good!=null){
+				tdCoupon.setSku(good.getCode());
+			}
 			// 保存领取
 			tdCouponService.save(tdCoupon);
 			

@@ -992,6 +992,11 @@ public class TdManagerCouponController extends TdManagerBaseController{
     			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
     			tdCoupon.setCityId(coupon.getCityId());
     			tdCoupon.setCityName(coupon.getCityName());
+    			TdGoods good= tdGoodsService.findOne(coupon.getGoodsId());
+    			if(good!=null){
+    				tdCoupon.setSku(good.getCode());
+    			}
+    			
     			
     			// 保存领取
     			tdCouponService.save(tdCoupon);
@@ -1063,7 +1068,10 @@ public class TdManagerCouponController extends TdManagerBaseController{
         			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
         			tdCoupon.setCityId(coupon.getCityId());
         			tdCoupon.setCityName(coupon.getCityName());
-        			
+        			TdGoods good= tdGoodsService.findOne(coupon.getGoodsId());
+        			if(good!=null){
+        				tdCoupon.setSku(good.getCode());
+        			}
         			// 保存领取
         			tdCouponService.save(tdCoupon);
 				}
@@ -1261,8 +1269,6 @@ public class TdManagerCouponController extends TdManagerBaseController{
     		}
         }
         
-        
-        		
         Integer i = 0;
         for (TdCoupon tdCoupon : coupon)
         {
