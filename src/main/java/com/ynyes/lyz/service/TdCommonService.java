@@ -1702,56 +1702,75 @@ public class TdCommonService {
 
 		System.out.println("MDJWS:INTER:Order:" + orderList.get(0).getMainOrderNumber());
 
-		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase("")) {
+		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase("")) 
+		{
 			return;
 		}
 		TdRequisition requisition = SaveRequisiton(orderList, mainOrderNumber);
 
 		Object[] objects = null;
-		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
-			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
+		if (requisition != null && null != requisition.getRequisiteGoodsList()) 
+		{
+			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) 
+			{
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
 				System.err.println("MDJWS:Detail:invoke" + mainOrderNumber);
-				try {
+				try 
+				{
 					objects = WMSClient.invoke(WMSName, "td_requisition_goods", "1", xmlGoodsEncode);
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 					System.out.println("MDJWMS: " + mainOrderNumber + " 发送失败");
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
 				}
 				String result = "";
-				if (objects != null) {
-					for (Object object : objects) {
+				if (objects != null) 
+				{
+					for (Object object : objects) 
+					{
 						result += object;
 					}
 				}
 				String errorMsg = chectResult1(result);
-				if (errorMsg != null) {
+				if (errorMsg != null) 
+				{
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), errorMsg);
 				}
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
 			System.err.println("MDJWS:Main:invoke" + mainOrderNumber);
-			try {
+			try
+			{
 				objects = WMSClient.invoke(WMSName, "td_requisition", "1", xmlEncode);
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				e.printStackTrace();
 				writeErrorLog(mainOrderNumber, "无", e.getMessage());
 				// return "发送异常";
 			}
 			String result = null;
-			if (objects != null) {
-				for (Object object : objects) {
+			if (objects != null)
+			{
+				for (Object object : objects)
+				{
 					result += object;
 				}
 			}
 			String errorMsg = chectResult1(result);
-			if (errorMsg != null) {
+			if (errorMsg != null) 
+			{
 				writeErrorLog(mainOrderNumber, "无", errorMsg);
-			} else {
+			} 
+			else 
+			{
 				// 根据乐易装的要求，当成功将信息发送至WMS时，保留提示信息
-				for (TdOrder subOrder : orderList) {
-					if (null != subOrder) {
+				for (TdOrder subOrder : orderList) 
+				{
+					if (null != subOrder) 
+					{
 						subOrder.setRemarkInfo("物流已受理");
 						tdOrderService.save(subOrder);
 					}
@@ -1824,13 +1843,15 @@ public class TdCommonService {
 	 * @return
 	 */
 	private TdRequisition SaveRequisiton(List<TdOrder> orderList, String mainOrderNumber) {
-		if (orderList.size() <= 0) {
+		if (orderList.size() <= 0) 
+		{
 			return null;
 		}
 		TdOrder order = orderList.get(0);
 
 		TdRequisition requisition = tdRequisitionService.findByOrderNumber(mainOrderNumber);
-		if (requisition == null) {
+		if (requisition == null) 
+		{
 			requisition = new TdRequisition();
 			requisition.setDiySiteId(order.getDiySiteId());
 			requisition.setDiyCode(order.getDiySiteCode());
@@ -1845,20 +1866,22 @@ public class TdCommonService {
 			requisition.setOrderTime(order.getOrderTime());
 
 			// add by Shawn
-			if (null == order.getAllTotalPay()) {
+			if (null == order.getAllTotalPay()) 
+			{
 				order.setAllTotalPay(0.0);
 			}
 
-			if (null == order.getAllActualPay()) {
+			if (null == order.getAllActualPay())
+			{
 				order.setAllActualPay(0.0);
 			}
-			if (null == order.getTotalPrice()) {
+			if (null == order.getTotalPrice()) 
+			{
 				order.setTotalPrice(0.0);
 			}
 
-			// Double left = order.getTotalPrice() - order.getAllActualPay();
-
-			// add MDJ totalPrice修改后，改变
+//			Double left = order.getTotalPrice() - order.getAllActualPay();
+			//add MDJ totalPrice修改后，改变
 			Double left = order.getAllTotalPay();
 
 			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);

@@ -711,5 +711,5 @@ public class TdOrderService {
 			Date begin, Date end) {
 		return repository.findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(city, begin, end);
 	}
-
+	
 }

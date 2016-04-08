@@ -363,3 +363,20 @@ function buyNow(id) {
 	window.location.href = "/goods/buy/now?goodsId=" + id + "&quantity="
 			+ quantity;
 }
+function quantityChange(goodsId){
+	// 获取指定商品显示数量的输入框的id
+	var quantityElementId = "#quantity" + goodsId;
+	// 获取当前指定商品选择的数量
+	var quantity = $(quantityElementId).val();
+	// 获取商品的库存量的标签的id
+	var inventoryId = "#inventory" + goodsId;
+	// 获取当前商品的库存量
+	var inventory = $(inventoryId).val();
+	
+	if(parseInt(quantity)>parseInt(inventory)){
+		warning("亲，库存只有这么多啦");
+		$(quantityElementId).val(inventory);
+		return;
+	}
+	
+}

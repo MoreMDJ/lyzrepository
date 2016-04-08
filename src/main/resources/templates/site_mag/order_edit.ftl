@@ -669,6 +669,7 @@
                                     <td>${goods.goodsId?c!""}</td>
                                     <td style="text-align: left; white-space: normal;">
                                         ${goods.goodsTitle!""} 
+                                        ${goods.sku!""}
                                         ${goods.goodsColor!""}
                                         ${goods.goodsCapacity!""}
                                         ${goods.goodsVersion!""}

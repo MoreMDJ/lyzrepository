@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -128,10 +129,10 @@ public class TdUserService {
 	/**
 	 * @author lc @注释：
 	 */
-	public Page<TdUser> findByUserLevelIdOrderByIdDesc(Long userLevelId, int page, int size) {
+	public Page<TdUser> findByUserTypeOrderByIdDesc(Long usertype, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
 
-		return repository.findByUserLevelIdOrderByIdDesc(userLevelId, pageRequest);
+		return repository.findByUserTypeOrderByIdDesc(usertype, pageRequest);
 	}
 
 	/**
@@ -141,18 +142,18 @@ public class TdUserService {
 	public Page<TdUser> searchAndOrderByIdDesc(String keywords, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByUsernameContainingOrEmailContainingOrderByIdDesc(keywords, keywords, pageRequest);
+		return repository.findByUsernameContainingOrRealNameContainingOrderByIdDesc(keywords, keywords, pageRequest);
 	}
 
 	/**
 	 * @author lc
 	 * @注释：按等级搜索用户
 	 */
-	public Page<TdUser> searchAndfindByUserLevelIdOrderByIdDesc(String keywords, Long userLevelId, int page, int size) {
+	public Page<TdUser> searchAndfindByUserTypeOrderByIdDesc(String keywords, Long userType, int page, int size)
+	{
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByUsernameContainingAndUserLevelIdOrEmailContainingAndUserLevelIdOrderByIdDesc(keywords,
-				userLevelId, keywords, userLevelId, pageRequest);
+		return repository.findByUsernameContainingAndUserTypeOrEmailContainingAndUserTypeOrderByIdDesc(keywords,userType, keywords, userType, pageRequest);
 	}
 
 	public TdUser findByOpUser(String opUser) {
@@ -270,8 +271,20 @@ public class TdUserService {
 	 */
 	public Page<TdUser> searchcityNameAndOrderByIdDesc(String keywords, String cityName, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-
-		return repository.findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(keywords, keywords,
-				cityName, pageRequest);
+		if (StringUtils.isBlank(cityName) || StringUtils.isBlank(keywords))
+		{
+			return null;
+		}
+		return repository.findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(cityName,keywords, cityName,keywords, pageRequest);
 	}
+	
+	/**
+	 * 根据用户类型查询用户
+	 * @param userType 用户类型
+	 * @return
+	 */
+	public List<TdUser> findByUserTypeOrderByIdDesc(Long userType){
+		return repository.findByUserTypeOrderByIdDesc(userType);
+	}
+	
 }

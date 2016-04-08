@@ -36,6 +36,7 @@ import com.ynyes.lyz.entity.TdAgencyFund;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdGathering;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
@@ -56,6 +57,7 @@ import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDeliveryTypeService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
+import com.ynyes.lyz.service.TdGatheringService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdManagerRoleService;
@@ -162,6 +164,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdSalesDetailService tdSalesDetailService;
+	
+	@Autowired
+	private TdGatheringService tdGatheringService;
 	
 	@RequestMapping(value = "/downdatagoods")
 	@ResponseBody
@@ -428,13 +433,13 @@ public class TdManagerOrderController {
 			}
 		}*/
 		
-		if(date1.after(getStartTime()) || date2.after(getStartTime())){
-        	try {//调用存储过程 报错
-        		tdSalesDetailService.callInsertSalesDetail(getStartTime(), getEndTime());
-    		} catch (Exception e) {
-    			System.out.println(e);
-    		}
-        }
+		
+        try {//调用存储过程 报错
+        	tdSalesDetailService.callInsertSalesDetail(getStartTime(), getEndTime());
+    	} catch (Exception e) {
+    		System.out.println(e);
+    	}
+        
 		
 		if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
@@ -829,13 +834,12 @@ public class TdManagerOrderController {
         	i++;
 		}*/
         
-        if(date1.after(getStartTime()) || date2.after(getStartTime())){
-        	try {//调用存储过程 报错
-            	tdAgencyFundService.callInsertAgencyFund(getStartTime(), getEndTime());
-    		} catch (Exception e) {
-    			System.out.println(e);
-    		}
-        }
+        try {//调用存储过程 报错
+            tdAgencyFundService.callInsertAgencyFund(getStartTime(), getEndTime());
+    	} catch (Exception e) {
+    		System.out.println(e);
+    	}
+        
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
         	diyCode=tdManager.getDiyCode();
@@ -880,7 +884,7 @@ public class TdManagerOrderController {
         	
         	if (null != agencyFund.getPayPrice())
         	{
-    			row.createCell(6).setCellValue(agencyFund.getPayPrice()-(agencyFund.getUnCashBalanceUsed()==null?0:agencyFund.getUnCashBalanceUsed())-(agencyFund.getCashBalanceUsed()==null?0:agencyFund.getCashBalanceUsed()));
+    			row.createCell(6).setCellValue(agencyFund.getPayPrice());
     		}
         	if (null != agencyFund.getPayed())
         	{
@@ -1584,10 +1588,22 @@ public class TdManagerOrderController {
 			map.addAttribute("diySiteList",tdDiySiteService.findAll());
 			map.addAttribute("cityList", tdCityService.findAll());
 		}
-		
 		// 参数注回
-		map.addAttribute("page", page);
-		map.addAttribute("size", size);
+		map.addAttribute("orderNumber", keywords);
+		map.addAttribute("orderStartTime", orderStartTime);
+		map.addAttribute("orderEndTime", orderEndTime);
+		map.addAttribute("realName", realName);
+		map.addAttribute("sellerRealName", sellerRealName);
+		map.addAttribute("shippingAddress", shippingAddress);
+		map.addAttribute("shippingPhone", shippingPhone);
+		map.addAttribute("deliveryTime", deliveryTime);
+		map.addAttribute("userPhone", userPhone);
+		map.addAttribute("shippingName", shippingName);
+		map.addAttribute("sendTime", sendTime);
+		map.addAttribute("statusId", statusId);
+		map.addAttribute("diyCode", diyCode);
+		map.addAttribute("cityname", city);
+		
 		map.addAttribute("keywords", keywords);
 		map.addAttribute("statusId", statusId);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
@@ -2164,4 +2180,318 @@ public class TdManagerOrderController {
         todayEnd.set(Calendar.MILLISECOND, 999);  
         return todayEnd.getTime();  
     }  
+    
+    /*
+	 * 收款报表
+	 */
+	@RequestMapping(value = "/downdatapay",method = RequestMethod.GET)
+	@ResponseBody
+	public String dowmDataPay(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,String diyCode,String city)
+	{
+		//检查登录
+		String username = (String) req.getSession().getAttribute("manager");
+		if (null == username) {
+			return "redirect:/Verwalter/login";
+		}
+		//检查权限
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		if (tdManagerRole == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date1 = null;
+		Date date2 = null;
+		if(null !=begindata && !begindata.equals(""))
+		{
+			try {
+				date1 = sdf.parse(begindata);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		if(null !=enddata && !enddata.equals(""))
+		{
+			try {
+				date2 = sdf.parse(enddata);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		if (date2 == null)
+		{
+			date2 = new Date();
+		}
+		
+		// 第一步，创建一个webbook，对应一个Excel文件 
+        HSSFWorkbook wb = new HSSFWorkbook();  
+        // 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet  
+        HSSFSheet sheet = wb.createSheet("收款报表");  
+        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
+        //列宽
+        sheet.setColumnWidth(0 , 8*256);
+        sheet.setColumnWidth(1 , 13*256);
+        sheet.setColumnWidth(2 , 25*256);
+        sheet.setColumnWidth(3 , 25*256);
+        sheet.setColumnWidth(4 , 13*256);
+        sheet.setColumnWidth(5 , 13*256);
+        sheet.setColumnWidth(6 , 13*256);
+        sheet.setColumnWidth(7 , 13*256);
+        sheet.setColumnWidth(8 , 13*256);
+        sheet.setColumnWidth(9 , 13*256);
+        sheet.setColumnWidth(10 , 13*256);
+        sheet.setColumnWidth(11 , 13*256);
+        sheet.setColumnWidth(12 , 13*256);
+        sheet.setColumnWidth(13 , 13*256);
+        sheet.setColumnWidth(14 , 13*256);
+        
+        // 第四步，创建单元格，并设置值表头 设置表头居中  
+        HSSFCellStyle style = wb.createCellStyle();  
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
+        style.setWrapText(true);
+    	//门店、门店电话、单据、日期、预存款使用金额、代收款金额、实际代收款金额、欠款、配送人员、配送人电话、收货人、收货人电话、备注信息
+        HSSFRow row = sheet.createRow((int) 0); 
+        HSSFCell cell = row.createCell(0);  
+        cell.setCellValue("门店名称");
+        cell.setCellStyle(style);
+        cell = row.createCell(1);
+        cell.setCellValue("门店电话");  
+        cell.setCellStyle(style);  
+        cell = row.createCell(2);  
+        cell.setCellValue("主单号");  
+        cell.setCellStyle(style);
+        cell = row.createCell(3);  
+        cell.setCellValue("分单号");  
+        cell.setCellStyle(style);
+        cell = row.createCell(4);  
+        cell.setCellValue("品牌");  
+        cell.setCellStyle(style);
+        cell = row.createCell(5);
+        cell.setCellValue("导购");  
+        cell.setCellStyle(style);
+        cell = row.createCell(6);  
+        cell.setCellValue("订单日期");
+        cell.setCellStyle(style);
+        cell = row.createCell(7);  
+        cell.setCellValue("配送方式");
+        cell.setCellStyle(style);
+        cell = row.createCell(8);  
+        cell.setCellValue("使用可提现金额");
+        cell.setCellStyle(style);
+        cell = row.createCell(9);  
+        cell.setCellValue("使用不可提现金额");
+        cell.setCellStyle(style);
+        cell = row.createCell(10);
+        cell.setCellValue("使用现金劵额度");  
+        cell.setCellStyle(style);
+        cell = row.createCell(11); 
+        cell.setCellValue("使用产品券情况");  
+        cell.setCellStyle(style);
+        cell = row.createCell(12); 
+        cell.setCellValue("代收款金额");
+        cell.setCellStyle(style);
+        cell = row.createCell(13);  
+        cell.setCellValue("实际代收款金额");
+        cell.setCellStyle(style);
+        cell = row.createCell(14);  
+        cell.setCellValue("支付方式");
+        cell.setCellStyle(style);
+        cell = row.createCell(15);
+        cell.setCellValue("第三方支付金额");
+        cell.setCellStyle(style);
+        cell = row.createCell(16);
+        cell.setCellValue("欠款");
+        cell.setCellStyle(style);
+        cell = row.createCell(17);  
+        cell.setCellValue("配送人员");
+        cell.setCellStyle(style);
+        cell = row.createCell(18);  
+        cell.setCellValue("配送人电话");
+        cell.setCellStyle(style);
+        cell = row.createCell(19);  
+        cell.setCellValue("收货人");
+        cell.setCellStyle(style);
+        cell = row.createCell(20);  
+        cell.setCellValue("收货人电话");
+        cell.setCellStyle(style);
+        cell = row.createCell(21);  
+        cell.setCellValue("收货人地址");
+        cell.setCellStyle(style);
+        cell = row.createCell(22);  
+        cell.setCellValue("备注信息");
+        cell.setCellStyle(style);
+        cell = row.createCell(23);
+        cell.setCellValue("订单状态");
+        cell.setCellStyle(style);
+        cell = row.createCell(24);
+        cell.setCellValue("仓库名称");
+        cell.setCellStyle(style);
+        cell = row.createCell(25);
+        cell.setCellValue("订单总金额");
+        cell.setCellStyle(style);
+        cell = row.createCell(26);
+        cell.setCellValue("预约配送时间");
+        cell.setCellStyle(style);
+        cell = row.createCell(27);
+        cell.setCellValue("实际配送时间");
+        cell.setCellStyle(style);
+        
+        // 第五步，设置值  
+       
+        try {//调用存储过程 报错
+            tdGatheringService.callInsertGathering(getStartTime(), getEndTime());
+    	} catch (Exception e) {
+    		System.out.println(e);
+    	}
+        
+        if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
+		{
+        	diyCode=tdManager.getDiyCode();
+        	city=null;
+		}
+        List<TdGathering> gatheringList = tdGatheringService.searchGathering(date1, date2, city, diyCode);
+        
+        Integer i = 0;
+        for (TdGathering gathering : gatheringList)
+        {
+        	row = sheet.createRow((int) i + 1);
+        	if (null != gathering.getDiySiteName())
+        	{//门店名称
+            	row.createCell(0).setCellValue(gathering.getDiySiteName());
+    		}
+        	if (null != gathering.getDiySitePhone())
+        	{//门店电话
+            	row.createCell(1).setCellValue(gathering.getDiySitePhone());
+    		}
+        	if (null != gathering.getMainOrderNumber())
+        	{//主单号
+            	row.createCell(2).setCellValue(gathering.getMainOrderNumber());
+    		}
+        	if (null != gathering.getOrderNumber())
+        	{//分单号
+            	row.createCell(3).setCellValue(gathering.getOrderNumber());
+    		}
+        	if (null != gathering.getBrandTitle())
+        	{//品牌
+            	row.createCell(4).setCellValue(gathering.getBrandTitle());
+    		}else{
+    			String brand= gathering.getOrderNumber().substring(0, 2);
+    			if(brand.equals("HR")){
+    				row.createCell(4).setCellValue("华润");
+    			}else if(brand.equals("LY")){
+    				row.createCell(4).setCellValue("乐易装");
+    			}else if(brand.equals("YR")){
+    				row.createCell(4).setCellValue("莹润");
+    			}else{
+    				row.createCell(4).setCellValue("其他");
+    			}
+    		}
+        	if (null != gathering.getSellerRealName())
+        	{//导购
+            	row.createCell(5).setCellValue(gathering.getSellerRealName());
+    		}
+        	if (null != gathering.getOrderTime())
+        	{//订单日期
+        		Date orderTime = gathering.getOrderTime();
+        		String orderTimeStr = orderTime.toString();
+            	row.createCell(6).setCellValue(orderTimeStr);
+    		}
+        	if (null != gathering.getDeliverTypeTitle())
+        	{//配送方式
+            	row.createCell(7).setCellValue(gathering.getDeliverTypeTitle());
+    		}
+        	if (null != gathering.getCashBalanceUsed())
+        	{//使用可提现金额
+            	row.createCell(8).setCellValue(gathering.getCashBalanceUsed());
+    		}
+        	if (null != gathering.getUnCashBalanceUsed())
+        	{//使用不可提现金额
+            	row.createCell(9).setCellValue(gathering.getUnCashBalanceUsed());
+    		}
+        	if (null != gathering.getCashCoupon())
+        	{//使用现金劵金额
+            	row.createCell(10).setCellValue(gathering.getCashCoupon());
+    		}
+        	if (null != gathering.getProductCoupon())
+        	{//使用产品劵情况
+            	row.createCell(11).setCellValue(gathering.getProductCoupon());
+    		}
+        	if (null != gathering.getTotalPrice())
+        	{//代收款金额
+            	row.createCell(12).setCellValue(gathering.getTotalPrice()-(gathering.getUnCashBalanceUsed()==null?0:gathering.getUnCashBalanceUsed())-(gathering.getCashBalanceUsed()==null?0:gathering.getCashBalanceUsed()));
+    		}
+        	if(null!= gathering.getPayed()){//实际代收款金额 
+        			row.createCell(13).setCellValue(gathering.getPayed());
+        			
+        	}
+        	if(null!= gathering.getOwned()){//欠款
+        		row.createCell(16).setCellValue(gathering.getOwned());
+        	}
+        	
+        	if (null != gathering.getPayTypeTitle())
+        	{//支付方式
+            	row.createCell(14).setCellValue(gathering.getPayTypeTitle());
+    		}
+        	if (null != gathering.getOtherPay())
+        	{//第三方支付金额
+            	row.createCell(15).setCellValue(gathering.getOtherPay());
+    		}
+        	if(null!= gathering.getWhNo()){//配送仓库
+        		row.createCell(24).setCellValue(changeName(gathering.getWhNo()));
+        	}
+        	if(gathering.getRealName() != null){ //配送人员姓名 和电话
+        		row.createCell(17).setCellValue(gathering.getRealName());
+        	}
+        	if(gathering.getUsername() != null){ //配送人员姓名 和电话
+        		row.createCell(18).setCellValue(gathering.getUsername());
+        	}
+        	if (null != gathering.getShippingName())
+        	{//收货人姓名
+            	row.createCell(19).setCellValue(gathering.getShippingName());
+    		}
+        	if (null != gathering.getShippingPhone())
+        	{//收获人电话
+            	row.createCell(20).setCellValue(gathering.getShippingPhone());
+    		}
+        	if (null != gathering.getShippingAddress())
+        	{//收货人地址
+            	row.createCell(21).setCellValue(gathering.getShippingAddress());
+    		}
+        	if (null != gathering.getRemark())
+        	{//备注信息
+            	row.createCell(22).setCellValue(gathering.getRemark());
+    		}
+        	if (null != gathering.getStatusId())
+        	{//订单状态
+        		String statusStr = orderStatus(gathering.getStatusId());
+				row.createCell(23).setCellValue(statusStr);
+			}
+        	if (null != gathering.getTotalPrice())
+        	{//订单总金额
+				row.createCell(25).setCellValue(gathering.getTotalGoodsPrice());
+			}
+        	if (null != gathering.getDeliveryDate()) 
+        	{//预约配送时间
+        		String dayTime = gathering.getDeliveryDate();
+    			dayTime = dayTime + " " + gathering.getDeliveryDetailId() + ":30";
+				row.createCell(26).setCellValue(dayTime);
+			}
+        	if (null != gathering.getDeliveryTime()) 
+        	{//实际配送时间
+				row.createCell(27).setCellValue(gathering.getDeliveryTime().toString());
+			}
+        	
+        	i++;
+		}
+        
+        String exportAllUrl = SiteMagConstant.backupPath;
+        download(wb, exportAllUrl, response,"收款报表");
+        return "";
+	}
 }

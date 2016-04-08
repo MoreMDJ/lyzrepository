@@ -1,19 +1,18 @@
 package com.ynyes.lyz.controller.management;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -64,7 +63,7 @@ import com.ynyes.lyz.util.SiteMagConstant;
 
 @Controller
 @RequestMapping(value="/Verwalter/coupon")
-public class TdManagerCouponController {
+public class TdManagerCouponController extends TdManagerBaseController{
     
     @Autowired
     private TdCouponTypeService tdCouponTypeService;
@@ -403,12 +402,13 @@ public class TdManagerCouponController {
                           HttpServletRequest req){
         
         String username = (String) req.getSession().getAttribute("manager");
-        
-        if (null == username) {
+        if (null == username) 
+        {
             return "redirect:/Verwalter/login";
         }
         TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
 		TdManagerRole tdManagerRole = null;
+		
 		if (tdManager != null && tdManager.getRoleId() != null)
 		{
 			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
@@ -433,11 +433,8 @@ public class TdManagerCouponController {
                 btnSave(listId, listSortId);
                 tdManagerLogService.addLog("edit", "修改优惠券", req);
             }
-            else if (__EVENTTARGET.equalsIgnoreCase("changeDiysite")) {
-		   
-			}else if(__EVENTTARGET.equalsIgnoreCase("changeType")){
-				
-			}else if(__EVENTTARGET.equalsIgnoreCase("btnFailure")){
+            else if(__EVENTTARGET.equalsIgnoreCase("btnFailure"))
+            {
             	btnFailure(listId, listChkId);
             	tdManagerLogService.addLog("failure", "失效优惠卷", req);
             }
@@ -471,57 +468,90 @@ public class TdManagerCouponController {
        
         Page<TdCoupon> couponPage = null;
         
-        if(typeId.equals(0L)){
-        	if(isUsed.equals(0L)){
-        		if(null != keywords && !keywords.equalsIgnoreCase("")){
+        if(typeId.equals(0L))
+        {
+        	if(isUsed.equals(0L))
+        	{
+        		if(StringUtils.isNotBlank(keywords))
+        		{
         			//模糊查询优惠券名称,已领取的优惠券,根据领取时间排序
-        			couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueOrderByGetTimeDesc(keywords,page, size);
-        		}else{
+        			couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueOrUsernameContainingAndIsDistributtedTrueOrderByGetTimeDesc(keywords,page, size);
+        		}
+        		else
+        		{
         			//查询已领取的优惠券,根据领取时间排序
         			couponPage = tdCouponService.findByIsDistributtedTrueOrderByGetTimeDesc(page, size);
         		}
-        	}else{
-        		if(null != keywords && !keywords.equalsIgnoreCase("")){
-        			if(isUsed.equals(1L)){
+        	}
+        	else
+        	{
+        		if(StringUtils.isNotBlank(keywords))
+        		{
+        			if(isUsed.equals(1L))
+        			{
         				//模糊查询优惠券名称,已领取,已使用的优惠券,根据领取时间排序
-        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,true,page, size);
-        			}else{
-        				//模糊查询优惠券名称,已领取,未使用的优惠券,根据领取时间排序
-        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,false,page, size);
+        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,true,page, size);
         			}
-        		}else{
-        			if(isUsed.equals(1L)){
+        			else
+        			{
+        				//模糊查询优惠券名称,已领取,未使用的优惠券,根据领取时间排序
+        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,false,page, size);
+        			}
+        		}
+        		else
+        		{
+        			if(isUsed.equals(1L))
+        			{
         				//已领取,已使用的优惠券,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(true,page, size);
-        			}else{
+        			}
+        			else
+        			{
         				//已领取,未使用的优惠券,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(false,page, size);
         			}
         		}
         	}
-        }else{
-        	if(isUsed.equals(0L)){
-        		if(null != keywords && !keywords.equalsIgnoreCase("")){
+        }
+        else
+        {
+        	if(isUsed.equals(0L))
+        	{
+        		if(null != keywords && !keywords.equalsIgnoreCase(""))
+        		{
         			//模糊查询优惠券名称,已领取的优惠券,类型筛选,根据领取时间排序
-        			couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(keywords,typeId,page, size);
-        		}else{
+        			couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(keywords,typeId,page, size);
+        		}
+        		else
+        		{
         			//查询领取的优惠券,类型筛选,根据领取时间排序
         			couponPage = tdCouponService.findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(typeId,page, size);
         		}
-        	}else{
-        		if(null != keywords && !keywords.equalsIgnoreCase("")){
-        			if(isUsed.equals(1L)){
+        	}
+        	else
+        	{
+        		if(null != keywords && !keywords.equalsIgnoreCase(""))
+        		{
+        			if(isUsed.equals(1L))
+        			{
         				//模糊查询优惠券名称,已领取,已使用,类型筛选,根据领取时间排序
-        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,true,typeId,page, size);
-        			}else{
-        				//模糊查询优惠券名称,已领取,未使用,类型筛选,根据领取时间排序
-        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,false,typeId,page, size);
+        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,true,typeId,page, size);
         			}
-        		}else{
-        			if(isUsed.equals(1L)){
+        			else
+        			{
+        				//模糊查询优惠券名称,已领取,未使用,类型筛选,根据领取时间排序
+        				couponPage = tdCouponService.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,false,typeId,page, size);
+        			}
+        		}
+        		else
+        		{
+        			if(isUsed.equals(1L))
+        			{
         				//查询已领取,已使用,类型筛选,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(true,typeId,page, size);
-        			}else{
+        			}
+        			else
+        			{
         				//查询已领取,未使用,类型筛选,根据领取时间排序
         				couponPage = tdCouponService.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(false,typeId,page, size);
         			}
@@ -550,7 +580,7 @@ public class TdManagerCouponController {
         
       //城市和门店信息
 		if (null != tdManagerRole && tdManagerRole.getIsSys()){
-//			map.addAttribute("diySiteList",tdDiySiteService.findAll());
+			map.addAttribute("diySiteList",tdDiySiteService.findAll());
 			map.addAttribute("cityList", tdCityService.findAll());
 		}
         
@@ -962,6 +992,11 @@ public class TdManagerCouponController {
     			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
     			tdCoupon.setCityId(coupon.getCityId());
     			tdCoupon.setCityName(coupon.getCityName());
+    			TdGoods good= tdGoodsService.findOne(coupon.getGoodsId());
+    			if(good!=null){
+    				tdCoupon.setSku(good.getCode());
+    			}
+    			
     			
     			// 保存领取
     			tdCouponService.save(tdCoupon);
@@ -981,8 +1016,7 @@ public class TdManagerCouponController {
     
     private void grantMoreCoupon(Long[] ids,Integer[] chkIds,Long[] numbers,Long couponId)
     {
-    	if (null == ids || null == chkIds || null == numbers
-                || ids.length < 1 || chkIds.length < 1 || numbers.length < 1)
+    	if (null == ids || null == chkIds || null == numbers || ids.length < 1 || chkIds.length < 1 || numbers.length < 1)
         {
             return;
         }
@@ -1034,7 +1068,10 @@ public class TdManagerCouponController {
         			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
         			tdCoupon.setCityId(coupon.getCityId());
         			tdCoupon.setCityName(coupon.getCityName());
-        			
+        			TdGoods good= tdGoodsService.findOne(coupon.getGoodsId());
+        			if(good!=null){
+        				tdCoupon.setSku(good.getCode());
+        			}
         			// 保存领取
         			tdCouponService.save(tdCoupon);
 				}
@@ -1142,7 +1179,7 @@ public class TdManagerCouponController {
 	 */
 	@RequestMapping(value = "/downdata",method = RequestMethod.GET)
 	@ResponseBody
-	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,Long cityId)
+	public String dowmData(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,Long cityId,String diyCode)
 	{
 		
 		String username = (String) req.getSession().getAttribute("manager");
@@ -1191,61 +1228,22 @@ public class TdManagerCouponController {
         HSSFSheet sheet = wb.createSheet("领用记录报表");  
         // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
         //列宽
-        sheet.setColumnWidth(0 , 25*256);
-        sheet.setColumnWidth(1 , 13*256);
-        sheet.setColumnWidth(2 , 25*256);
-        sheet.setColumnWidth(3 , 25*256);
-        sheet.setColumnWidth(4 , 18*256);
-        sheet.setColumnWidth(5 , 11*256);
-        sheet.setColumnWidth(6 , 13*256);
-        sheet.setColumnWidth(7 , 11*256);
-        sheet.setColumnWidth(8 , 19*256);
-        sheet.setColumnWidth(9 , 12*256);
-        sheet.setColumnWidth(10 , 9*256);
-        sheet.setColumnWidth(11 , 13*256);
-        sheet.setColumnWidth(12 , 13*256);
-        sheet.setColumnWidth(13 , 13*256);
-        sheet.setColumnWidth(14 , 40*256);
-        sheet.setColumnWidth(15 , 40*256);
+        int[] widths={25,13,25,25,18,11,13,11,19,12,
+        		9,13,13,13,13,40,40};
+        sheetColumnWidth(sheet,widths);
         
         // 第四步，创建单元格，并设置值表头 设置表头居中  
         HSSFCellStyle style = wb.createCellStyle();  
         style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
         style.setWrapText(true);
+        
     	//优惠券名称、金额、领卷时间、领用用户、是否使用、使用的时间、使用订单号
         HSSFRow row = sheet.createRow((int) 0); 
-        HSSFCell cell = row.createCell(0);  
-        cell.setCellValue("优惠券类型");
-        cell.setCellStyle(style);
-        cell = row.createCell(1);
-        cell.setCellValue("优惠券名称");
-        cell.setCellStyle(style);
-        cell = row.createCell(2);
-        cell.setCellValue("金额");
-        cell.setCellStyle(style);  
-        cell = row.createCell(3);  
-        cell.setCellValue("劵的来源");
-        cell.setCellStyle(style);  
-        cell = row.createCell(4);  
-        cell.setCellValue("劵的归属");
-        cell.setCellStyle(style);  
-        cell = row.createCell(5);  
-        cell.setCellValue("领卷时间");  
-        cell.setCellStyle(style);
-        cell = row.createCell(6);  
-        cell.setCellValue("领用用户");  
-        cell.setCellStyle(style);
-        cell = row.createCell(7);  
-        cell.setCellValue("是否使用");
-        cell.setCellStyle(style);
-        cell = row.createCell(8);  
-        cell.setCellValue("使用时间");
-        cell.setCellStyle(style);
-        cell = row.createCell(9);  
-        cell.setCellValue("使用订单号");
-        cell.setCellStyle(style);
-        cell = row.createCell(10);  
-       
+        
+        String[] cellValues={"优惠券类型","优惠券名称","金额","劵的来源","劵的归属","领卷时间","领用用户","领用人姓名","券状态","失效时间",
+				"是否使用","使用时间","使用订单号","城市名称","门店名称"};
+		cellDates(cellValues, style, row);
+        
         // 第五步，设置值  
         List<TdCoupon> coupon = null;
 //        coupon=tdCouponService.findByIsDistributtedTrueOrderByIdDesc();
@@ -1254,17 +1252,30 @@ public class TdManagerCouponController {
         	coupon= tdCouponService.findByGetTimeAndCityIdOrderByGetTimeDesc(date1, date2, cityId);
     	}else{
     		TdCity city= tdCityService.findByCityName(user.getCityName());
+    		diyCode=user.getDiyCode();
     		if(null != city){
     			coupon= tdCouponService.findByGetTimeAndCityIdOrderByGetTimeDesc(date1, date2, city.getId());
     		}
     	}
+        //获取所有的会员
+        List<TdUser> userList=tdUseService.findByUserTypeOrderByIdDesc(0L);
+        //存放会员信息的map
+        Map<String,Object> userMap=new HashMap<String, Object>();
+        if(userList != null && userList.size()>0){
+        	for (TdUser tdUser : userList) {
+    			userMap.put(tdUser.getUsername()+"name",tdUser.getRealName());
+    			userMap.put(tdUser.getUsername()+"diyName",tdUser.getDiyName());
+    			userMap.put(tdUser.getUsername()+"diyCode",tdUser.getDiyCode());
+    		}
+        }
         
-        		
         Integer i = 0;
         for (TdCoupon tdCoupon : coupon)
         {
+        	if(StringUtils.isBlank(diyCode) || (null!=diyCode && diyCode.equals(userMap.get(tdCoupon.getUsername()+"diyName")))){
+        		
         	row = sheet.createRow((int) i + 1);
-        	if(null != tdCoupon.getTypeCategoryId()){
+        	if(null != tdCoupon.getTypeCategoryId()){//优惠券类型
         		if(tdCoupon.getTypeCategoryId().equals(1L)){
         			row.createCell(0).setCellValue("通用现金券");
         		}
@@ -1277,96 +1288,88 @@ public class TdManagerCouponController {
         	}
         		
         	if (null != tdCoupon.getTypeTitle())
-        	{
+        	{//优惠券名称
             	row.createCell(1).setCellValue(tdCoupon.getTypeTitle());
     		}
         	if (null != tdCoupon.getPrice())
-        	{
+        	{//金额
             	row.createCell(2).setCellValue(tdCoupon.getPrice());
     		}
-        	if(null != tdCoupon.getTypeId()){
-        		if(tdCoupon.getTypeId().equals(1L)){
-        			row.createCell(3).setCellValue("促销发劵");
+        	if(null != tdCoupon.getTypeId()){//劵的来源
+        		if(tdCoupon.getCustomerId()!=null){
+        			row.createCell(3).setCellValue("期初导入");
+        		}else{
+        			if(tdCoupon.getTypeId().equals(1L)){
+            			row.createCell(3).setCellValue("促销发劵");
+            		}
+            		if(tdCoupon.getTypeId().equals(2L)){
+            			row.createCell(3).setCellValue("抢劵");
+            		}
         		}
-        		if(tdCoupon.getTypeId().equals(2L)){
-        			row.createCell(3).setCellValue("抢劵");
-        		}
+        		
         	}
-        	if(null != tdCoupon.getBrandTitle()){
+        	if(null != tdCoupon.getBrandTitle()){//劵的归属
         		row.createCell(4).setCellValue(tdCoupon.getBrandTitle());
         	}
         	if (null != tdCoupon.getGetTime())
-        	{
+        	{//领卷时间
         		Date getTime = tdCoupon.getGetTime();
         		String couponTimeStr = getTime.toString();
             	row.createCell(5).setCellValue(couponTimeStr);
     		}
         	if (null != tdCoupon.getUsername())
-        	{
+        	{//领用用户
             	row.createCell(6).setCellValue(tdCoupon.getUsername());
     		}
+        	if(null!= userMap.get(tdCoupon.getUsername()+"name")){//领用人姓名
+        		row.createCell(7).setCellValue(userMap.get(tdCoupon.getUsername()+"name").toString());
+        	}
+        	if(null != tdCoupon.getIsOutDate()){//券状态
+        		if(tdCoupon.getIsOutDate()){
+        			row.createCell(8).setCellValue("失效");
+        		}else{
+        			row.createCell(8).setCellValue("生效");
+        		}
+        	}
+        	if(null != tdCoupon.getExpireTime()){//失效时间
+        		row.createCell(9).setCellValue(tdCoupon.getExpireTime().toString());
+        	}
+        		
         	if (null != tdCoupon.getIsUsed())
-        	{
+        	{//是否使用
         		if(tdCoupon.getIsUsed()){
-        			row.createCell(7).setCellValue("是");
+        			row.createCell(10).setCellValue("是");
         			String couponUserTimeStr="";
         			if (null != tdCoupon.getUseTime()){
         				Date userTime = tdCoupon.getUseTime();
         				couponUserTimeStr = userTime.toString();
         			}
-        			
-        			row.createCell(8).setCellValue(couponUserTimeStr);
-        			row.createCell(9).setCellValue(tdCoupon.getOrderNumber());
+        			//使用时间
+        			row.createCell(11).setCellValue(couponUserTimeStr);
+        			//使用单号
+        			row.createCell(12).setCellValue(tdCoupon.getOrderNumber());
         		}else{
-        			row.createCell(7).setCellValue("否");
+        			row.createCell(10).setCellValue("否");
         		}
             	
     		}
+        	if( null != tdCoupon.getCityName()){
+        		row.createCell(13).setCellValue(tdCoupon.getCityName());
+        	}
+        	if(null!= userMap.get(tdCoupon.getUsername()+"diyName") ){
+        		row.createCell(14).setCellValue(userMap.get(tdCoupon.getUsername()+"diyName").toString());
+        	}
         	
         	i++;
+        	}
 		}
         
         String exportAllUrl = SiteMagConstant.backupPath;
         download(wb, exportAllUrl, response,"领用记录");
         return "";
 	}
-	/**
-	 * @author lc
-	 * @注释：下载
-	 */
-	public Boolean download(HSSFWorkbook wb, String exportUrl, HttpServletResponse resp,String fileName){
-		String filename="table";
-		try {
-			filename = new String(fileName.getBytes("GBK"), "ISO-8859-1");
-		} catch (UnsupportedEncodingException e1) {
-			System.out.println("下载文件名格式转换错误！");
-		}
-		try
-		{
-			OutputStream os;
-			try {
-				os = resp.getOutputStream();
-				try {
-					resp.reset();
-					resp.setHeader("Content-Disposition", "attachment; filename=" + filename +".xls");
-					resp.setContentType("application/octet-stream; charset=utf-8");
-					wb.write(os);
-					os.flush();
-				}
-				finally {
-					if (os != null) {
-						os.close();
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}catch (Exception e)  
-		{  
-			e.printStackTrace();  
-		} 
-		return true;	
-	}
+	
+	
 	private void btnFailure(Long[] ids, Integer[] chkIds)
     {
         if (null == ids || null == chkIds

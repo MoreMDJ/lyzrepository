@@ -51,37 +51,41 @@
             $('.turn_div').fadeOut(600);
         };
         
+        function win_no_turn(){  
+            $('.turn_div').fadeOut(600);
+        };
+        
         window.onload = function(){
             footer();
         }
-  		
-  		<#-- 模糊查询订单的方法 -->
-  		function searchOrder(){
-  			<#-- 获取查询关键词 -->
-  			var keywords = $("#keywords").val();
-  			if("" === keywords){
-  				return;
-  			}
-			<#-- 开启等待图标 -->
-			wait();
-			$.ajax({
-				url : "/user/order/search",
-				type : "post",
-				timeout : 20000,
-				data:{
-					keywords : keywords
-				},
-				error:function(){
-					close(1);
-					warning("亲，您的网速不给力啊");
-				},
-				success:function(res){
-					$("#user_all_order").html(res);
-					$("#all").click();
-					close(1);
-				}
-			});
-  		}
+        
+        <#-- 模糊查询订单的方法 -->
+        function searchOrder(){
+            <#-- 获取查询关键词 -->
+            var keywords = $("#keywords").val();
+            if("" === keywords){
+                return;
+            }
+            <#-- 开启等待图标 -->
+            wait();
+            $.ajax({
+                url : "/user/order/search",
+                type : "post",
+                timeout : 20000,
+                data:{
+                    keywords : keywords
+                },
+                error:function(){
+                    close(1);
+                    warning("亲，您的网速不给力啊");
+                },
+                success:function(res){
+                    $("#user_all_order").html(res);
+                    $("#all").click();
+                    close(1);
+                }
+            });
+        }
     </script>
     <body style="background: #f3f4f6;">
     <div class="turn_div">
@@ -120,15 +124,15 @@
         <div>
             <div class="sec_header">
                 <a class="back" href="javascript:history.go(-1);"></a>
-                <p>我的订单</p>				
+                <p>我的订单</p>             
             </div>
             
             <section class="my_order">
                 <input id="typeId" type="hidden" value="${typeId!'0'}">
                 <div class="searchbox bgc-f3f4f6 bdt">
-                	<input type="text" id="keywords" placeholder="订单号/用户名">
-                	<a href="javascript:searchOrder();"></a>
-            	</div>			
+                    <input type="text" id="keywords" placeholder="订单号/用户名">
+                    <a href="javascript:searchOrder();"></a>
+                </div>          
                 <!-- 订单管理 -->
                 <ul class="order-nav">
                     <li id="all"><a>全部</a></li>
@@ -141,7 +145,7 @@
                 <!-- 订单分类 -->
                 <article class="orders-species"> 
                     <div id="user_all_order">
-                    	<#include "/client/user_all_order.ftl">
+                        <#include "/client/user_all_order.ftl">
                     </div>
                     
                     <#if undeliver_order_list??>
@@ -475,12 +479,12 @@
                         </div>
                     </#if>
                 </article>
-                <!-- 用户订单 END -->							
+                <!-- 用户订单 END -->                           
             </section>
 
             
             <div class="index_test_box02"></div>
             <#include "/client/common_footer.ftl">
-        </div>		
+        </div>      
     </body>
 </html>

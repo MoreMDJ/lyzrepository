@@ -103,8 +103,10 @@ function failureMsg(msg,objId){
       <div class="r-list">
                 <input name="keywords" type="text" class="keyword" value="<#if keywords??>${keywords!''}</#if>">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
+      </div>
+      <div style="clear: both;">
                 <#if cityList?? && cityList?size gt 0 >
-            	<div class="odiv" style="float:left;width:310px;"><span class="span1">城市名称：</span>
+            	<div class="odiv" style="float:left;width:250px;"><span class="span1">城市名称：</span>
                 	<div class="rule-single-select">
                         <select name="cityId" id="cityId">
                         <option value="0" >请选择</option>      
@@ -114,7 +116,19 @@ function failureMsg(msg,objId){
                         </select>
             		</div>
             	</div>
-            	</#if>
+            	</#if> 
+            	<#if diySiteList?? && diySiteList?size gt 0 >
+               <div class="odiv" style="float:left;width:250px;"><span class="span1">门店名称：</span>
+                	<div class="rule-single-select">
+                        <select name="diyCode" id="diyCode">
+                        <option value="" >请选择</option>      
+                        <#list diySiteList as diySite>
+                        	<option value="${diySite.title }" >${diySite.title }</option>
+                        </#list>
+                        </select>
+            		</div>
+            	</div>
+            	</#if> 
                                                 领取时间:
                 <input name="orderStartTime" id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
                 <input name=orderEndTime id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />

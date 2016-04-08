@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdBalanceLog;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdMessage;
 import com.ynyes.lyz.entity.TdMessageType;
 import com.ynyes.lyz.entity.TdOrder;
@@ -37,6 +39,7 @@ import com.ynyes.lyz.entity.TdUserComment;
 import com.ynyes.lyz.entity.TdUserLevel;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdUserSuggestion;
+import com.ynyes.lyz.service.TdBalanceLogService;
 import com.ynyes.lyz.service.TdCartColorPackageService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCityService;
@@ -44,6 +47,7 @@ import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
+import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdMessageService;
 import com.ynyes.lyz.service.TdMessageTypeService;
 import com.ynyes.lyz.service.TdOrderService;
@@ -98,6 +102,12 @@ public class TdManagerUserController {
 
 	@Autowired
 	private TdDiySiteService tdDiySiteService;
+	
+	@Autowired
+	private TdBalanceLogService tdBalanceLogService;
+	
+	@Autowired
+	private TdManagerService tdManagerService;
 
 	/**
 	 * 修改账户名所用 2016-1-8 10:34:46
@@ -155,7 +165,7 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/list")
-	public String setting(Integer page, Integer size, String keywords, Long roleId, Long userLevelId,
+	public String setting(Integer page, Integer size, String keywords, Long roleId, Long userType,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
 			ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -190,61 +200,41 @@ public class TdManagerUserController {
 		map.addAttribute("size", size);
 		map.addAttribute("keywords", keywords);
 		map.addAttribute("roleId", roleId);
-		map.addAttribute("userLevelId", userLevelId);
+		map.addAttribute("userType", userType);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
 		// 等级list
-		// map.addAttribute("userLevelId_list",
+		// map.addAttribute("userType_list",
 		// tdUserLevelService.findIsEnableTrue());
 
 		Page<TdUser> userPage = null;
 
 		if (null == roleId) {
-			if (null == keywords || "".equalsIgnoreCase(keywords)) {
-				if (null == userLevelId) {
+			if (null == keywords || "".equalsIgnoreCase(keywords)) 
+			{
+				if (null == userType) 
+				{
 					userPage = tdUserService.findAllOrderByIdDesc(page, size);
-				} else {
-					userPage = tdUserService.findByUserLevelIdOrderByIdDesc(userLevelId, page, size);
+				} 
+				else 
+				{
+					userPage = tdUserService.findByUserTypeOrderByIdDesc(userType, page, size);
 				}
-			} else {
-				if (null == userLevelId) {
+			} 
+			else 
+			{
+				if (null == userType) 
+				{
 					userPage = tdUserService.searchAndOrderByIdDesc(keywords, page, size);
-				} else {
-					userPage = tdUserService.searchAndfindByUserLevelIdOrderByIdDesc(keywords, userLevelId, page, size);
+				}
+				else
+				{
+					userPage = tdUserService.searchAndfindByUserTypeOrderByIdDesc(keywords, userType, page, size);
 				}
 			}
 		}
-		// else
-		// {
-		// if (null == keywords || "".equalsIgnoreCase(keywords))
-		// {
-		// if (null == userLevelId) {
-		// userPage = tdUserService.findByRoleIdOrderByIdDesc(roleId, page,
-		// size);
-		// }
-		// else
-		// {
-		// userPage =
-		// tdUserService.findByRoleIdAndUserLevelIdOrderByIdDesc(roleId,
-		// userLevelId, page, size);
-		// }
-		// }
-		// else
-		// {
-		// if (null == userLevelId) {
-		// userPage = tdUserService.searchAndFindByRoleIdOrderByIdDesc(keywords,
-		// roleId, page, size);
-		// }
-		// else
-		// {
-		// userPage =
-		// tdUserService.searchAndFindByRoleIdAndUserLevelIdOrderByIdDesc(keywords,
-		// roleId, userLevelId, page, size);
-		// }
-		// }
-		// }
 
 		map.addAttribute("user_page", userPage);
 
@@ -302,13 +292,17 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/save")
-	public String orderEdit(TdUser tdUser, /* String oldUsername, */
-			String oldPassword, String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req) {
+	public String orderEdit(TdUser tdUser,Double obalance,Double ocashBalance,Double ounCashBalance, String oldPassword, String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
-
+		TdManager manager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		if (manager == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
+		
 		// 修改门店的时候要修改用户的customerId和diyName
 		Long diySiteId = tdUser.getUpperDiySiteId();
 		if (null != diySiteId) {
@@ -331,13 +325,49 @@ public class TdManagerUserController {
 				e.printStackTrace();
 			}
 		}
-
+		
+		Boolean isVipUser0 = true;
+		Boolean isVipUser1 = true;
+		Boolean isVipUser2 = true;
+		if (obalance == null) 
+		{
+			obalance = 0.00;
+			isVipUser0 = false;
+		}
+		if (ocashBalance == null) 
+		{
+			ocashBalance = 0.00;
+			isVipUser1 = false;
+		}
+		if (ounCashBalance == null) 
+		{
+			ounCashBalance = 0.00;
+			isVipUser2 = false;
+		}
+		
 		// 设置新密码 zhangji 2016-1-7 22:01:45
-		if (null != tdUser.getId())
+		if (null != tdUser.getId()) //老用户
 		{
 			if (StringUtils.isNotBlank(oldPassword)) 
 			{
 				tdUser.setPassword(MD5.md5(oldPassword, 32));
+			}
+			
+			// add MDJ
+			if (!obalance.equals(tdUser.getBalance()) && isVipUser0)
+			{
+				this.setAndSaveBalanceLog(obalance - tdUser.getBalance(),0L, tdUser, manager);
+				tdUser.setBalance(obalance);
+			}
+			if (!ocashBalance.equals(tdUser.getCashBalance()) && isVipUser1)
+			{
+				this.setAndSaveBalanceLog(ocashBalance - tdUser.getCashBalance(),1L, tdUser, manager);
+				tdUser.setCashBalance(ocashBalance);
+			}
+			if (!ounCashBalance.equals(tdUser.getUnCashBalance()) && isVipUser2)
+			{
+				this.setAndSaveBalanceLog(ounCashBalance - tdUser.getUnCashBalance(),2L, tdUser, manager);
+				tdUser.setUnCashBalance(ounCashBalance);
 			}
 		}
 		else//新用户
@@ -361,6 +391,26 @@ public class TdManagerUserController {
 			tdUser.setNickname(tdUser.getUsername());
 			tdUser.setFirstOrder(true);
 			tdUser.setIsOld(false);
+			
+			// add MDJ
+			tdUser.setBalance(0d);
+			tdUser.setCashBalance(0d);
+			tdUser.setUnCashBalance(0d);
+			if (obalance != 0)
+			{
+				this.setAndSaveBalanceLog(obalance,0L, tdUser, manager);
+			}
+			if (ocashBalance != 0)
+			{
+				this.setAndSaveBalanceLog(ocashBalance,1L, tdUser, manager);
+			}
+			if (ounCashBalance != 0)
+			{
+				this.setAndSaveBalanceLog(ounCashBalance,2L, tdUser, manager);
+			}
+			tdUser.setBalance(obalance);
+			tdUser.setCashBalance(ocashBalance);
+			tdUser.setUnCashBalance(ounCashBalance);
 		}
 		
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
@@ -373,10 +423,52 @@ public class TdManagerUserController {
 		{
 			tdManagerLogService.addLog("edit", "修改用户", req);
 		}
-
 		tdUserService.save(tdUser);
 
 		return "redirect:/Verwalter/user/list/";
+	}
+	
+	private void setAndSaveBalanceLog( Double changeBalance,Long balancelType,TdUser newUser,TdManager operator)
+	{
+		TdBalanceLog balanceLog = new TdBalanceLog();
+		balanceLog.setUsername(newUser.getUsername());
+		if (changeBalance != null)
+		{
+			balanceLog.setMoney(changeBalance);
+		}
+		else
+		{
+			balanceLog.setMoney(newUser.getBalance());
+		}
+		balanceLog.setType(2L);
+		balanceLog.setCreateTime(new Date());
+		balanceLog.setFinishTime(new Date());
+		balanceLog.setIsSuccess(true);
+		balanceLog.setBalanceType(balancelType);
+		if (balancelType == 0)
+		{
+			balanceLog.setBalance(newUser.getBalance() + changeBalance);
+		}
+		else if (balancelType == 1)
+		{
+			balanceLog.setBalance(newUser.getCashBalance() + changeBalance);
+		}
+		else if (balancelType == 2)
+		{
+			balanceLog.setBalance(newUser.getUnCashBalance() + changeBalance);
+		}
+		balanceLog.setOperator(operator.getUsername());
+		balanceLog.setOperatorIp(operator.getLastLoginIp());
+		balanceLog.setReason("后台管理员修改");
+		if (newUser.getId() != null) 
+		{
+			balanceLog.setUserId(newUser.getId());
+		}
+		else
+		{
+			balanceLog.setReason("后台新增会员设置预存款");
+		}
+		tdBalanceLogService.save(balanceLog);
 	}
 
 	/**

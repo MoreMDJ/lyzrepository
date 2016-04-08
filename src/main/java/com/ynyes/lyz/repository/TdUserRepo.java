@@ -20,16 +20,13 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 
 	TdUser findByUsernameAndCityNameAndIsEnableTrue(String username, String cityName);
 
-	TdUser findByUsernameAndIdNot(String username, Long id); // zhangji 2016-1-8
-																// 10:26:41
+	TdUser findByUsernameAndIdNot(String username, Long id); // zhangji 2016-1-8 // 10:26:41
 
-	Page<TdUser> findByUserLevelIdOrderByIdDesc(Long userlevelId, Pageable page);
+	Page<TdUser> findByUserTypeOrderByIdDesc(Long userlevelId, Pageable page);
 
-	Page<TdUser> findByUsernameContainingOrEmailContainingOrderByIdDesc(String keywords1, String keywords2,
-			Pageable page);
+	Page<TdUser> findByUsernameContainingOrRealNameContainingOrderByIdDesc(String keywords1, String keywords2,Pageable page);
 
-	Page<TdUser> findByUsernameContainingAndUserLevelIdOrEmailContainingAndUserLevelIdOrderByIdDesc(String keywords1,
-			Long userLevelId, String keywords3, Long userLevelId2, Pageable page);
+	Page<TdUser> findByUsernameContainingAndUserTypeOrEmailContainingAndUserTypeOrderByIdDesc(String keywords1,Long userLevelId, String keywords3, Long userLevelId2, Pageable page);
 
 	TdUser findByOpUser(String opUser);
 
@@ -99,6 +96,12 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	/**
 	 * @注释：搜索城市下面的用户
 	 */
-	public Page<TdUser> findByCityNameAndUsernameContainingOrEmailContainingOrderByIdDesc(String keywords,
-			String keywords1, String cityName, Pageable page);
+	public Page<TdUser> findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(String cityName0,String username,String cityName,String realName,Pageable page );
+	
+	/**
+	 * 根据用户类型查询用户
+	 * @param userType 用户类型
+	 * @return
+	 */
+	public List<TdUser> findByUserTypeOrderByIdDesc(Long userType);
 }

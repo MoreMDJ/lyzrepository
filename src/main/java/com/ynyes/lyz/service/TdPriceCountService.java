@@ -119,22 +119,26 @@ public class TdPriceCountService {
 				TdPayType type = tdPayTypeService.findOne(payTypeId);
 				// 如果支付方式属于线下支付，则不能够使用预存款和券
 				if (null != type && null != type.getIsOnlinePay() && !type.getIsOnlinePay()) {
-					order.setCashCouponId("");
-					order.setProductCouponId("");
-					canUseBalance = false;
+					//到店支付可以使用预存款和优惠卷
+					if(!"到店支付".equals(type.getTitle())){
+						order.setCashCouponId("");
+						order.setProductCouponId("");
+						canUseBalance = false;
+					}
+					
 				}
 			}
 		}
 		// 将运费的费用添加到订单总额中
 		order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
 
-		// 判断能否使用预存款和优惠券（支付方式为到店支付的情况下不能够使用预存款和优惠券）
-		String payTypeTitle = order.getPayTypeTitle();
-		if (null != payTypeTitle && payTypeTitle.equalsIgnoreCase("到店支付")) {
-			order.setCashCouponId("");
-			order.setProductCouponId("");
-			canUseBalance = false;
-		}
+//		// 判断能否使用预存款和优惠券（支付方式为到店支付的情况下不能够使用预存款和优惠券）
+//		String payTypeTitle = order.getPayTypeTitle();
+//		if (null != payTypeTitle && payTypeTitle.equalsIgnoreCase("到店支付")) {
+//			order.setCashCouponId("");
+//			order.setProductCouponId("");
+//			canUseBalance = false;
+//		}
 
 		if (canUseBalance) {
 			// 开始计算使用的现金券的价值

@@ -7,13 +7,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 public class TdManagerBaseController {
 
@@ -40,6 +43,18 @@ public class TdManagerBaseController {
 			}
 		}
 		return date;
+	}
+	
+	/**
+	 * 设置列宽
+	 * @param sheet
+	 * @param widths
+	 */
+	public void sheetColumnWidth(HSSFSheet sheet,int[] widths){
+		for (int i = 0; i < widths.length; i++) {
+			sheet.setColumnWidth(i , widths[i]*256);
+		}
+		
 	}
 
 	/**
@@ -100,5 +115,22 @@ public class TdManagerBaseController {
 		}
 		return true;
 	}
+	
+//	/**
+//     * 异常处理
+//     * @param r
+//     * @param e
+//     * @return
+//     */
+//    @ExceptionHandler
+//    public String exception(HttpServletRequest r, Exception e) {
+//        String view = "exception";
+//        r.setAttribute("exception", e);
+//        String xRequestedWith = r.getHeader("X-Requested-With");
+//        if (!StringUtils.isEmpty(xRequestedWith)) {
+//            view = "exceptionAjax";
+//        }
+//        return view;
+//    }
 
 }
