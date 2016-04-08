@@ -15,6 +15,12 @@
         <!-- js -->
         <script type="text/javascript" src="/client/js/jquery-1.11.0.js"></script>
         <script src="/client/js/rich_lee.js" type="text/javascript"></script>
+        <style type="text/css">
+        	.tab-content li section div.div2{
+        		left:212px;
+        		top:36px;
+        	}
+        </style>
         <script type="text/javascript">
             $(function(){
                 win_cla();
@@ -51,8 +57,8 @@
                                         <!-- 图片原始尺寸 992*386 -->
                                         <img src="/client/images/bg2_product_volume.png" alt="产品劵">
                                         <div class="div1">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy-MM-dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd")}</#if></span></div>
-                                        <div class="div2"></div>
-                                        <div class="div3">(<#if item.customerId??>CRM</#if>)${item.goodsName!''}</div>
+                                        <div class="div2">${item.sku!''}</div>
+                                        <div class="div3"><#if item.customerId??>(CRM)</#if>${item.goodsName!''}</div>
                                         <img class="product-pic" src="${item.picUri!''}" alt="产品图片">
                                     </a>
                                 </section>
@@ -70,7 +76,7 @@
                                     <!-- 图片原始尺寸 992*386 -->
                                     <img src="/client/images/bg1_product_volume.png" alt="产品劵">
                                     <div class="div1">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy-MM-dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd")}</#if></span></div>
-                                    <div class="div2"></div>
+                                    <div class="div2">${item.sku!''}</div>
                                     <div class="div3">${item.goodsName!''}</div>
                                     <img class="product-pic" src="${item.picUri!''}" alt="产品图片">
                                 </a>
@@ -89,7 +95,7 @@
                                     <!-- 图片原始尺寸 992*386 -->
                                     <img src="/client/images/bg1_product_volume.png" alt="产品劵">
                                     <div class="div1">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy-MM-dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy-MM-dd")}</#if></span></div>
-                                    <div class="div2"></div>
+                                    <div class="div2">${item.sku!''}</div>
                                     <div class="div3">${item.goodsName!''}</div>
                                     <img class="product-pic" src="${item.picUri!''}" alt="产品图片">
                                 </a>

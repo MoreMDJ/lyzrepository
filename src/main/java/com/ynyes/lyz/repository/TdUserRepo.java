@@ -90,4 +90,11 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 * @注释：搜索城市下面的用户
 	 */
 	public Page<TdUser> findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(String cityName0,String username,String cityName,String realName,Pageable page );
+	
+	/**
+	 * 根据用户类型查询用户
+	 * @param userType 用户类型
+	 * @return
+	 */
+	public List<TdUser> findByUserTypeOrderByIdDesc(Long userType);
 }
