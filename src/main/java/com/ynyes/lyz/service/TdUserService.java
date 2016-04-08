@@ -271,4 +271,14 @@ public class TdUserService {
 		}
 		return repository.findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(cityName,keywords, cityName,keywords, pageRequest);
 	}
+	
+	/**
+	 * 根据用户类型查询用户
+	 * @param userType 用户类型
+	 * @return
+	 */
+	public List<TdUser> findByUserTypeOrderByIdDesc(Long userType){
+		return repository.findByUserTypeOrderByIdDesc(userType);
+	}
+	
 }

@@ -433,13 +433,13 @@ public class TdManagerOrderController {
 			}
 		}*/
 		
-		if(date1.after(getStartTime()) || date2.after(getStartTime())){
-        	try {//调用存储过程 报错
-        		tdSalesDetailService.callInsertSalesDetail(getStartTime(), getEndTime());
-    		} catch (Exception e) {
-    			System.out.println(e);
-    		}
-        }
+		
+        try {//调用存储过程 报错
+        	tdSalesDetailService.callInsertSalesDetail(getStartTime(), getEndTime());
+    	} catch (Exception e) {
+    		System.out.println(e);
+    	}
+        
 		
 		if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
@@ -834,13 +834,12 @@ public class TdManagerOrderController {
         	i++;
 		}*/
         
-        if(date1.after(getStartTime()) || date2.after(getStartTime())){
-        	try {//调用存储过程 报错
-            	tdAgencyFundService.callInsertAgencyFund(getStartTime(), getEndTime());
-    		} catch (Exception e) {
-    			System.out.println(e);
-    		}
-        }
+        try {//调用存储过程 报错
+            tdAgencyFundService.callInsertAgencyFund(getStartTime(), getEndTime());
+    	} catch (Exception e) {
+    		System.out.println(e);
+    	}
+        
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
         	diyCode=tdManager.getDiyCode();
@@ -2345,13 +2344,12 @@ public class TdManagerOrderController {
         
         // 第五步，设置值  
        
-        if(date1.after(getStartTime()) || date2.after(getStartTime())){
-        	try {//调用存储过程 报错
-            	tdGatheringService.callInsertGathering(getStartTime(), getEndTime());
-    		} catch (Exception e) {
-    			System.out.println(e);
-    		}
-        }
+        try {//调用存储过程 报错
+            tdGatheringService.callInsertGathering(getStartTime(), getEndTime());
+    	} catch (Exception e) {
+    		System.out.println(e);
+    	}
+        
         if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
         	diyCode=tdManager.getDiyCode();
