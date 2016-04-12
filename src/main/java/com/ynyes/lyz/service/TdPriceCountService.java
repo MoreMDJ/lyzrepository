@@ -1,5 +1,6 @@
 package com.ynyes.lyz.service;
 
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -119,26 +120,26 @@ public class TdPriceCountService {
 				TdPayType type = tdPayTypeService.findOne(payTypeId);
 				// 如果支付方式属于线下支付，则不能够使用预存款和券
 				if (null != type && null != type.getIsOnlinePay() && !type.getIsOnlinePay()) {
-					//到店支付可以使用预存款和优惠卷
-					if(!"到店支付".equals(type.getTitle())){
+					// 到店支付可以使用预存款和优惠卷
+					if (!"到店支付".equals(type.getTitle())) {
 						order.setCashCouponId("");
 						order.setProductCouponId("");
 						canUseBalance = false;
 					}
-					
+
 				}
 			}
 		}
 		// 将运费的费用添加到订单总额中
 		order.setTotalPrice(order.getTotalPrice() + order.getDeliverFee());
 
-//		// 判断能否使用预存款和优惠券（支付方式为到店支付的情况下不能够使用预存款和优惠券）
-//		String payTypeTitle = order.getPayTypeTitle();
-//		if (null != payTypeTitle && payTypeTitle.equalsIgnoreCase("到店支付")) {
-//			order.setCashCouponId("");
-//			order.setProductCouponId("");
-//			canUseBalance = false;
-//		}
+		// // 判断能否使用预存款和优惠券（支付方式为到店支付的情况下不能够使用预存款和优惠券）
+		// String payTypeTitle = order.getPayTypeTitle();
+		// if (null != payTypeTitle && payTypeTitle.equalsIgnoreCase("到店支付")) {
+		// order.setCashCouponId("");
+		// order.setProductCouponId("");
+		// canUseBalance = false;
+		// }
 
 		if (canUseBalance) {
 			// 开始计算使用的现金券的价值
@@ -491,7 +492,7 @@ public class TdPriceCountService {
 							price = 0.00;
 						}
 						if (null != goodsId && null == result.get(goodsId)) {
-							Double[] val = new Double[4];
+							Double[] val = new Double[3];
 							val[0] = price;
 							val[1] = new Double(quantity);
 							val[2] = price * quantity;
@@ -555,7 +556,7 @@ public class TdPriceCountService {
 		}
 		for (TdOrderGoods orderGoods : goodsList) {
 			if (null != orderGoods && null != orderGoods.getPrice()) {
-				total += orderGoods.getPrice();
+				total += (orderGoods.getPrice() * orderGoods.getQuantity());
 			}
 		}
 		return total;
@@ -572,7 +573,7 @@ public class TdPriceCountService {
 		Double totalPrice = 0.00;
 		// 获取订单实际总价
 		for (Double[] counts : map.values()) {
-			if (null != counts && counts.length == 4) {
+			if (null != counts && counts.length == 3) {
 				Double single_total = counts[2];
 				if (null == single_total) {
 					single_total = 0.00;
@@ -598,6 +599,9 @@ public class TdPriceCountService {
 		// 获取订单的商品实际价值
 		Double totalOrderGoodsPrice = this.getTotalOrderGoodsPrice(order);
 
+		NumberFormat nf = NumberFormat.getNumberInstance();
+		nf.setMaximumFractionDigits(2);
+
 		// 获取订单商品数量、总价队列
 		Map<Long, Double[]> allOrderGoods = this.getAllOrderGoods(order);
 		if (null != allOrderGoods && null != realPrice && 0.0 != realPrice && null != totalOrderGoodsPrice
@@ -607,16 +611,19 @@ public class TdPriceCountService {
 				if (null != goodsId) {
 					Double[] infos = allOrderGoods.get(goodsId);
 					// 判断是否获取到一个正确的队列
-					if (null != infos && infos.length == 4) {
+					if (null != infos && infos.length == 3) {
 						// 取出商品的总价
 						Double goodsTotalPrice = infos[2];
 						if (null != goodsTotalPrice) {
 							// 开始计算该件商品的价值比例
 							Double point = goodsTotalPrice / totalOrderGoodsPrice;
+
 							// 通过这个比例计算实际上的商品退货单价
 							Double GoodsRealTotal = realPrice * point;
 							if (null != GoodsRealTotal && null != infos[1] && 0.0 != infos[1]) {
 								Double unit = GoodsRealTotal / infos[1];
+								String sUnit = nf.format(unit);
+								unit = Double.parseDouble(sUnit);
 								res.put(goodsId, unit);
 							}
 						}
@@ -770,9 +777,13 @@ public class TdPriceCountService {
 							// 计算该商品的退货总额
 							Double total = number * unit;
 							if (null != goodsId) {
+								TdGoods goods = tdGoodsService.findOne(goodsId);
 								// 退还指定产品现金券
 								if (useProCashCoupon) {
 									Double useProCash = (Double) result.get("proCash" + goodsId);
+									if (null == useProCash) {
+										useProCash = 0.00;
+									}
 									// 创建一个变量用于表示退还的券的金额
 									Double proCashPrice = 0.0;
 									if (total > useProCash) {
@@ -781,8 +792,6 @@ public class TdPriceCountService {
 										proCashPrice = total;
 									}
 									total -= proCashPrice;
-
-									TdGoods goods = tdGoodsService.findOne(goodsId);
 
 									// 开始新生成一个指定产品优惠券
 									TdCoupon proCashCoupon = new TdCoupon();
@@ -803,80 +812,81 @@ public class TdPriceCountService {
 									proCashCoupon.setIsOutDate(false);
 									proCashCoupon.setMobile(order.getUsername());
 									tdCouponService.save(proCashCoupon);
-									// 开始退还产品券
-									if (total > 0) {
-										if (useProCoupon) {
-											// 查找本产品是否使用了产品券
-											Long useNumber = (Long) result.get("pro" + goodsId);
-											if (null != useNumber && useNumber > 0L) {
-												// 开始计算退还几张券
-												for (int i = 0; i < useNumber; i++) {
-													if (total < unit) {
-														break;
-													}
-													TdCoupon proCoupon = new TdCoupon();
-													proCoupon.setTypeId(3L);
-													proCoupon.setTypeCategoryId(3L);
-													if (null != goods) {
-														proCoupon.setBrandId(goods.getBrandId());
-														proCoupon.setBrandTitle(goods.getBrandTitle());
-													}
-													proCoupon.setPicUri(goods.getCoverImageUri());
-													proCoupon.setGoodsName(goods.getTitle());
-													proCoupon.setIsDistributted(true);
-													proCoupon.setGetTime(new Date());
-													proCoupon.setExpireTime(endTime);
-													proCoupon.setUsername(order.getUsername());
-													proCoupon.setIsUsed(false);
-													proCoupon.setIsOutDate(false);
-													proCoupon.setMobile(order.getUsername());
-													tdCouponService.save(proCoupon);
-													total -= unit;
+								}
+								// 开始退还产品券
+								if (total > 0) {
+									if (useProCoupon) {
+										// 查找本产品是否使用了产品券
+										Long useNumber = (Long) result.get("pro" + goodsId);
+										if (null != useNumber && useNumber > 0L) {
+											// 开始计算退还几张券
+											for (int i = 0; i < useNumber; i++) {
+												if (total < unit) {
+													break;
 												}
-											}
-										}
-										// 开始退还通用现金券
-										if (total > 0) {
-											if (useCashCoupon) {
-												// 声明一个变量用来表示退还的通用现金券的面额
-												Double cashPrice = 0.00;
-												if (cashTotal > total) {
-													cashPrice = total;
-												} else {
-													cashPrice = cashTotal;
-												}
-
-												TdCoupon cashCoupon = new TdCoupon();
-												cashCoupon.setTypeId(3L);
-												cashCoupon.setTypeCategoryId(1L);
+												TdCoupon proCoupon = new TdCoupon();
+												proCoupon.setTypeId(3L);
+												proCoupon.setTypeCategoryId(3L);
 												if (null != goods) {
-													cashCoupon.setBrandId(goods.getBrandId());
-													cashCoupon.setBrandTitle(goods.getBrandTitle());
+													proCoupon.setBrandId(goods.getBrandId());
+													proCoupon.setBrandTitle(goods.getBrandTitle());
 												}
-												cashCoupon.setPicUri(goods.getCoverImageUri());
-												cashCoupon.setGoodsName(goods.getTitle());
-												cashCoupon.setPrice(cashPrice);
-												cashCoupon.setIsDistributted(true);
-												cashCoupon.setGetTime(new Date());
-												cashCoupon.setExpireTime(endTime);
-												cashCoupon.setUsername(order.getUsername());
-												cashCoupon.setIsUsed(false);
-												cashCoupon.setIsOutDate(false);
-												cashCoupon.setMobile(order.getUsername());
-												tdCouponService.save(cashCoupon);
-
-												total -= cashPrice;
-												// 如果还有金额没有退还，那就只能够退还不可提现余额了
-												if (total > 0) {
-													String username = order.getUsername();
-													TdUser user = tdUserService.findByUsername(username);
-													user.setUnCashBalance(user.getUnCashBalance() + total);
-													user.setBalance(user.getBalance() + total);
-													tdUserService.save(user);
-												}
+												proCoupon.setPicUri(goods.getCoverImageUri());
+												proCoupon.setGoodsName(goods.getTitle());
+												proCoupon.setIsDistributted(true);
+												proCoupon.setGetTime(new Date());
+												proCoupon.setExpireTime(endTime);
+												proCoupon.setUsername(order.getUsername());
+												proCoupon.setIsUsed(false);
+												proCoupon.setIsOutDate(false);
+												proCoupon.setMobile(order.getUsername());
+												tdCouponService.save(proCoupon);
+												total -= unit;
 											}
 										}
 									}
+								}
+								// 开始退还通用现金券
+								if (total > 0) {
+									if (useCashCoupon) {
+										// 声明一个变量用来表示退还的通用现金券的面额
+										Double cashPrice = 0.00;
+										if (cashTotal > total) {
+											cashPrice = total;
+										} else {
+											cashPrice = cashTotal;
+										}
+
+										TdCoupon cashCoupon = new TdCoupon();
+										cashCoupon.setTypeId(3L);
+										cashCoupon.setTypeCategoryId(1L);
+										if (null != goods) {
+											cashCoupon.setBrandId(goods.getBrandId());
+											cashCoupon.setBrandTitle(goods.getBrandTitle());
+										}
+										cashCoupon.setPicUri(goods.getCoverImageUri());
+										cashCoupon.setGoodsName(goods.getTitle());
+										cashCoupon.setPrice(cashPrice);
+										cashCoupon.setIsDistributted(true);
+										cashCoupon.setGetTime(new Date());
+										cashCoupon.setExpireTime(endTime);
+										cashCoupon.setUsername(order.getUsername());
+										cashCoupon.setIsUsed(false);
+										cashCoupon.setIsOutDate(false);
+										cashCoupon.setMobile(order.getUsername());
+										tdCouponService.save(cashCoupon);
+
+										total -= cashPrice;
+
+									}
+								}
+								// 如果还有金额没有退还，那就只能够退还不可提现余额了
+								if (total > 0) {
+									String username = order.getUsername();
+									TdUser user = tdUserService.findByUsername(username);
+									user.setUnCashBalance(user.getUnCashBalance() + total);
+									user.setBalance(user.getBalance() + total);
+									tdUserService.save(user);
 								}
 							}
 						}

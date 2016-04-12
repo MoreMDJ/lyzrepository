@@ -1731,9 +1731,18 @@ public class TdUserController {
 		// 获取退货单价
 		Map<Long, Double> returnUnitPrice = tdPriceCountService.getReturnUnitPrice(order);
 
-		if (null != returnUnitPrice && null != order && null != order.getOrderGoodsList()
-				&& order.getOrderGoodsList().size() > 0) {
-			for (TdOrderGoods goods : order.getOrderGoodsList()) {
+		List<TdOrderGoods> all_goods = new ArrayList<>();
+
+		if (null != order && null != order.getOrderGoodsList()) {
+			all_goods.addAll(order.getOrderGoodsList());
+		}
+
+		if (null != order && null != order.getPresentedList()) {
+			all_goods.addAll(order.getPresentedList());
+		}
+
+		if (null != returnUnitPrice && null != all_goods && all_goods.size() > 0) {
+			for (TdOrderGoods goods : all_goods) {
 				if (null != goods) {
 					Long goodsId = goods.getGoodsId();
 					if (null != goodsId) {
@@ -1745,12 +1754,13 @@ public class TdUserController {
 			}
 		}
 		map.addAttribute("order", order);
+		map.addAttribute("all_goods", all_goods);
 		return "/client/user_return";
 	}
 
 	@RequestMapping(value = "/return/check")
 	@ResponseBody
-	public Map<String, Object> userReturnCheck(Long orderId, String infos, Long turnType) {
+	public Map<String, Object> userReturnCheck(Long orderId, String infos, Long turnType, String remark) {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 		// 根据订单号查找订单
@@ -1789,7 +1799,7 @@ public class TdUserController {
 
 			// 退货信息
 			returnNote.setUsername(order.getUsername());
-			// returnNote.setRemarkInfo(remark);
+			returnNote.setRemarkInfo(remark);
 
 			// 退货方式
 			if ("门店自提".equals(order.getDeliverTypeTitle())) {
@@ -1879,6 +1889,17 @@ public class TdUserController {
 					}
 				}
 			}
+
+			// 获取订单的总价
+			Double main_order_goods_price = order.getTotalGoodsPrice();
+			if (null == main_order_goods_price) {
+				main_order_goods_price = 0.00;
+			}
+
+			if (totalGoodsPrice > main_order_goods_price) {
+				totalGoodsPrice = main_order_goods_price;
+			}
+
 			returnNote.setTurnPrice(totalGoodsPrice);
 			returnNote.setReturnGoodsList(orderGoodsList);
 			order.setStatusId(9L);

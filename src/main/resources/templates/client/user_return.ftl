@@ -105,15 +105,15 @@
 		var app = angular.module("app",[]);
 		var ctrl = app.controller("ctrl",function($scope,$http){
 			$scope.goods = [
-				<#if order.orderGoodsList??&&order.orderGoodsList?size gt 0>
-					<#list order.orderGoodsList as item>
+				<#if all_goods??&&all_goods?size gt 0>
+					<#list all_goods as item>
 						<#if item??>
 							{
 								id : ${item.goodsId?c},
 								title : "${item.goodsTitle!''}",
 								img : "${item.goodsCoverImageUri!''}",
 								quantity : ${item.quantity!''},
-								reQuantity : ${item.quantity!''},
+								reQuantity : 0,
 								<#if item.goodsId??&&("price"+item.goodsId?c)?eval??>
 									price : ${("price"+item.goodsId?c)?eval?string("0.00")},
 								<#else>
@@ -128,28 +128,42 @@
 								</#if>
 							}
 							<#-- 判断是否添加逗号 -->
-							<#if item_index!=order.orderGoodsList?size-1>
+							<#if item_index!=all_goods?size-1>
 								,
 							</#if>
 						</#if>
 					</#list>
 				</#if>
 			]
-					
+			$scope.remark = "";	
+			$scope.total = 0.00;
+			$scope.countTotal = function(){
+				var all = 0.00;
+				for(var i = 0; i < $scope.goods.length; i++){
+					if($scope.goods[i] && $scope.goods[i].unit && $scope.goods[i].reQuantity){
+						all += ($scope.goods[i].unit * $scope.goods[i].reQuantity);
+					}
+				}
+				$scope.total = all.toFixed(2);
+			}	
 			$scope.delete = function(index){
 				var number = this.goods[index].reQuantity;
 				if(number > 0){
 					this.goods[index].reQuantity -= 1;
 					this.goods[index].total -= this.goods[index].unit;
+					this.countTotal();
 				}
 			}
+			
 			$scope.add = function(index){
 				var number = this.goods[index].reQuantity;
 				if(number < this.goods[index].quantity){
 					this.goods[index].reQuantity += 1;
 					this.goods[index].total += this.goods[index].unit;
+					this.countTotal();
 				}
 			}
+
 			$scope.send = function(){
 				data = "";
 				for(var i = 0; i < this.goods.length; i++){
@@ -160,13 +174,21 @@
 				if("" === data){
 					return;
 				}
+				if("" === $scope.remark || "请输入您的退货原因" === $scope.remark){
+					$scope.remark = "请输入您的退货原因";
+					return;
+				}
+				
+				var remark = $scope.remark;
+				
 				wait();
 				$.ajax({
 					type:"post",
 					url:"/user/return/check",
 					data:{
 						orderId : ${order.id?c},
-						infos : data
+						infos : data,
+						remark : remark
 					},
 					error:function(){
 						close(1);
@@ -182,17 +204,39 @@
 		});
 		
 	</script>
-	<body style="background: #f3f4f6;height: 100%;" ng-app="app">
+	<script>
+        function win_no_return(){  
+            $('.turn_div').fadeOut(600);
+        };
+        
+		function order_return(){
+            var he = ($(window).height() - $('.turn_div div').height())/2 - 50;
+            $('.turn_div div').css({marginTop:he});   
+            $('.turn_div').fadeIn(600);
+        };
+	</script>
+	<body style="background: #f3f4f6;height: 100%;" ng-app="app" ng-controller="ctrl">
 		<#-- 引入警告提示样式 -->
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
        	<#include "/client/common_wait.ftl">  
+   	    <div class="turn_div">
+			<input type="hidden" value="" id="orderId" name="id">
+	        <div>                   
+	            <p id="title">退货原因</p>
+	            <textarea name="remark" ng-model="remark"></textarea>
+	            <span>
+	                <input type="button" name="" id="" value="是" ng-click="send();" />
+	                <input onclick="javascript:win_no_return();" type="button" value="否" />
+	            </span>             
+	        </div>
+	    </div>
 		<div class="sec_header">
 			<a href="javascript:history.go(-1);" class="back"></a>
 			<p>申请退货</p>	
 			<a></a>
 		</div>
-		<div class="fen_goodbox" ng-controller="ctrl">					
+		<div class="fen_goodbox">					
 			<dl ng-repeat="item in goods">
 				<dt>
 					<a>
@@ -203,7 +247,7 @@
 					<p>{{item.title}}</p>
 					<div class="fen_div01">
 						<a ng-click="delete($index);">-</a>
-						<input type="text" name="" id="{{$index}}" ng-model="item.reQuantity">
+						<input type="text" readOnly="true" name="" id="{{$index}}" ng-model="item.reQuantity">
 						<a ng-click="add($index);">+</a>
 					</div>
 					<div class="fen_div02">
@@ -211,8 +255,15 @@
 					</div>
 				</dd>
 			</dl>	
+			<span style="
+				margin:10px;
+				float:left;
+				color:#cc1421;
+				display:block;
+			">总金额：￥{{total | number:2}}</span>
 			<div style="float: left;width: 100%;height: 60px;"></div>
-			<input class="sub" type="button" ng-click="send();" value="去退货" />
+			<input class="sub" type="button" onclick="order_return();" value="去退货" />
 		</div>
+	
 	</body>
 </html>

@@ -24,9 +24,11 @@ import com.alipay.util.AlipaySubmit;
 import com.tencent.common.TdWXPay;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdOrderService;
+import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
 @Controller
@@ -41,6 +43,9 @@ public class TdPayController {
 
 	@Autowired
 	private TdCouponService tdCouponService;
+
+	@Autowired
+	private TdUserService tdUserService;
 
 	@RequestMapping(value = "/alipay")
 	public String alipay(HttpServletRequest req, ModelMap map, Long id, Long type) {
@@ -111,6 +116,7 @@ public class TdPayController {
 		String out_trade_no = null;
 		String trade_no = null;
 		String trade_status = null;
+		String total_fee = null;
 		try {
 			// 商户订单号
 			out_trade_no = new String(req.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
@@ -118,6 +124,8 @@ public class TdPayController {
 			trade_no = new String(req.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
 			// 交易状态
 			trade_status = new String(req.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
+			total_fee = new String(req.getParameter("total_fee").getBytes("ISO-8859-1"), "UTF-8");
+
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -137,7 +145,9 @@ public class TdPayController {
 
 				// 如果是下单的情况
 				TdOrder order = tdOrderService.findByOrderNumber(out_trade_no);
-				order.setActualPay(order.getTotalPrice());
+				order.setOtherPay(Double.parseDouble(total_fee));
+				Long id = order.getRealUserId();
+				TdUser realUser = tdUserService.findOne(id);
 				if (null != order) {
 					req.getSession().setAttribute("order_temp", order);
 					String cashCouponId = order.getCashCouponId();
@@ -176,6 +186,37 @@ public class TdPayController {
 							}
 						}
 					}
+
+					// 获取用户的不可体现余额
+					Double unCashBalance = realUser.getUnCashBalance();
+					if (null == unCashBalance) {
+						unCashBalance = 0.00;
+					}
+
+					// 获取用户的可提现余额
+					Double cashBalance = realUser.getCashBalance();
+					if (null == cashBalance) {
+						cashBalance = 0.00;
+					}
+
+					Double balance = realUser.getBalance();
+					if (null == balance) {
+						balance = 0.00;
+					}
+
+					// 如果用户的不可提现余额大于或等于订单的预存款使用额，则表示改单用的全部都是不可提现余额
+					if (unCashBalance >= order.getActualPay()) {
+						realUser.setUnCashBalance(realUser.getUnCashBalance() - order.getActualPay());
+						order.setUnCashBalanceUsed(order.getActualPay());
+					} else {
+						realUser.setCashBalance(
+								realUser.getCashBalance() + realUser.getUnCashBalance() - order.getActualPay());
+						realUser.setUnCashBalance(0.0);
+						order.setUnCashBalanceUsed(realUser.getUnCashBalance());
+						order.setCashBalanceUsed(order.getActualPay() - realUser.getUnCashBalance());
+					}
+					realUser.setBalance(realUser.getBalance() - order.getActualPay());
+					tdUserService.save(realUser);
 					// 虚拟订单需要分单
 					if (out_trade_no.contains("XN")) {
 						tdCommonService.dismantleOrder(req, username);
@@ -250,6 +291,9 @@ public class TdPayController {
 				if (null != SUCCESS && SUCCESS.charValue() == 'Y') {
 					if (null != order) {
 						req.getSession().setAttribute("order_temp", order);
+						order.setOtherPay(PAYMENT);
+						Long id = order.getRealUserId();
+						TdUser realUser = tdUserService.findOne(id);
 						String cashCouponId = order.getCashCouponId();
 						String productCouponId = order.getProductCouponId();
 						// 将所使用的优惠券设置为已使用状态
@@ -286,6 +330,36 @@ public class TdPayController {
 								}
 							}
 						}
+						// 获取用户的不可体现余额
+						Double unCashBalance = realUser.getUnCashBalance();
+						if (null == unCashBalance) {
+							unCashBalance = 0.00;
+						}
+
+						// 获取用户的可提现余额
+						Double cashBalance = realUser.getCashBalance();
+						if (null == cashBalance) {
+							cashBalance = 0.00;
+						}
+
+						Double balance = realUser.getBalance();
+						if (null == balance) {
+							balance = 0.00;
+						}
+
+						// 如果用户的不可提现余额大于或等于订单的预存款使用额，则表示改单用的全部都是不可提现余额
+						if (unCashBalance >= order.getActualPay()) {
+							realUser.setUnCashBalance(realUser.getUnCashBalance() - order.getActualPay());
+							order.setUnCashBalanceUsed(order.getActualPay());
+						} else {
+							realUser.setCashBalance(
+									realUser.getCashBalance() + realUser.getUnCashBalance() - order.getActualPay());
+							realUser.setUnCashBalance(0.0);
+							order.setUnCashBalanceUsed(realUser.getUnCashBalance());
+							order.setCashBalanceUsed(order.getActualPay() - realUser.getUnCashBalance());
+						}
+						realUser.setBalance(realUser.getBalance() - order.getActualPay());
+						tdUserService.save(realUser);
 						if (ORDERID.contains("XN")) {
 							tdCommonService.dismantleOrder(req, username);
 						}

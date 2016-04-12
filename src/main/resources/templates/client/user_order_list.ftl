@@ -51,9 +51,11 @@
             $('.turn_div').fadeOut(600);
         };
         
-        function win_no_turn(){  
-            $('.turn_div').fadeOut(600);
-        };
+        <#--
+	        function win_no_turn(){  
+	            $('.turn_div').fadeOut(600);
+	        };
+        -->
         
         window.onload = function(){
             footer();
