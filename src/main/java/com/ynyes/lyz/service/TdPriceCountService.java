@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ibm.icu.util.Calendar;
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
@@ -39,6 +40,9 @@ public class TdPriceCountService {
 
 	@Autowired
 	private TdGoodsService tdGoodsService;
+
+	@Autowired
+	private TdCityService tdCityService;
 
 	/**
 	 * 计算订单价格和能使用的最大的预存款的方法
@@ -673,6 +677,7 @@ public class TdPriceCountService {
 									coupon.setRealPrice(0.00);
 								}
 								cashTotal += coupon.getRealPrice();
+								result.put("useCashCoupon", true);
 							}
 							if (null != categoryId && 2L == categoryId.longValue()) {
 								Long goodsId = coupon.getGoodsId();
@@ -690,6 +695,7 @@ public class TdPriceCountService {
 								if (null != goodsId && null == result.get("proCash" + goodsId)) {
 									result.put("proCash" + goodsId, price);
 								}
+								result.put("useProCashCoupon", true);
 							}
 						}
 					}
@@ -708,15 +714,13 @@ public class TdPriceCountService {
 						if (null != coupon) {
 							Long goodsId = coupon.getGoodsId();
 							if (null != goodsId && null != result.get("pro" + goodsId)) {
-								Long number = (Long) result.get("pro" + goodsId);
-								if (null == number) {
-									number = 0L;
-								}
+								Integer number = (Integer) result.get("pro" + goodsId);
 								result.put("pro" + goodsId, number + 1);
 							}
 							if (null != goodsId && null == result.get("pro" + goodsId)) {
 								result.put("pro" + goodsId, 1);
 							}
+							result.put("useProCoupon", true);
 						}
 					}
 				}
@@ -735,7 +739,12 @@ public class TdPriceCountService {
 	 */
 	public void returnCashOrCoupon(Long orderId, String params) {
 		TdOrder order = tdOrderService.findOne(orderId);
-		if (null != order && null != params && !"".equals(params)) {
+		Long userId = order.getUserId();
+		TdUser user = tdUserService.findOne(userId);
+		String cityName = user.getCityName();
+		TdCity city = tdCityService.findByCityName(cityName);
+		if (null != order && null != params && !"".equals(params)
+				&& !(null != order.getIsRefund() && order.getIsRefund())) {
 			Map<String, Object> result = this.countCouponCondition(orderId);
 
 			Boolean useProCashCoupon = (Boolean) result.get("useProCashCoupon");
@@ -802,23 +811,32 @@ public class TdPriceCountService {
 										proCashCoupon.setBrandTitle(goods.getBrandTitle());
 									}
 									proCashCoupon.setPicUri(goods.getCoverImageUri());
+									proCashCoupon.setGoodsId(goods.getId());
 									proCashCoupon.setGoodsName(goods.getTitle());
+									proCashCoupon.setTypeTitle("退货返还的优惠券");
 									proCashCoupon.setPrice(proCashPrice);
+									if (null != city) {
+										proCashCoupon.setCityName(city.getCityName());
+										proCashCoupon.setCityId(city.getId());
+									}
 									proCashCoupon.setIsDistributted(true);
+									proCashCoupon.setGetNumber(1L);
 									proCashCoupon.setGetTime(new Date());
+									proCashCoupon.setAddTime(new Date());
 									proCashCoupon.setExpireTime(endTime);
 									proCashCoupon.setUsername(order.getUsername());
 									proCashCoupon.setIsUsed(false);
 									proCashCoupon.setIsOutDate(false);
 									proCashCoupon.setMobile(order.getUsername());
+									proCashCoupon.setSku(goods.getCode());
 									tdCouponService.save(proCashCoupon);
 								}
 								// 开始退还产品券
 								if (total > 0) {
 									if (useProCoupon) {
 										// 查找本产品是否使用了产品券
-										Long useNumber = (Long) result.get("pro" + goodsId);
-										if (null != useNumber && useNumber > 0L) {
+										Integer useNumber = (Integer) result.get("pro" + goodsId);
+										if (null != useNumber && useNumber > 0) {
 											// 开始计算退还几张券
 											for (int i = 0; i < useNumber; i++) {
 												if (total < unit) {
@@ -832,14 +850,24 @@ public class TdPriceCountService {
 													proCoupon.setBrandTitle(goods.getBrandTitle());
 												}
 												proCoupon.setPicUri(goods.getCoverImageUri());
+												proCoupon.setGoodsId(goods.getId());
+												proCoupon.setPrice(0.0);
+												proCoupon.setTypeTitle("退货返还的优惠券");
 												proCoupon.setGoodsName(goods.getTitle());
 												proCoupon.setIsDistributted(true);
+												if (null != city) {
+													proCoupon.setCityName(city.getCityName());
+													proCoupon.setCityId(city.getId());
+												}
 												proCoupon.setGetTime(new Date());
+												proCoupon.setAddTime(new Date());
+												proCoupon.setGetNumber(1L);
 												proCoupon.setExpireTime(endTime);
 												proCoupon.setUsername(order.getUsername());
 												proCoupon.setIsUsed(false);
 												proCoupon.setIsOutDate(false);
 												proCoupon.setMobile(order.getUsername());
+												proCoupon.setSku(goods.getCode());
 												tdCouponService.save(proCoupon);
 												total -= unit;
 											}
@@ -867,6 +895,13 @@ public class TdPriceCountService {
 										cashCoupon.setPicUri(goods.getCoverImageUri());
 										cashCoupon.setGoodsName(goods.getTitle());
 										cashCoupon.setPrice(cashPrice);
+										cashCoupon.setTypeTitle("退货返还的优惠券");
+										cashCoupon.setGetNumber(1L);
+										if (null != city) {
+											cashCoupon.setCityName(city.getCityName());
+											cashCoupon.setCityId(city.getId());
+										}
+										cashCoupon.setAddTime(new Date());
 										cashCoupon.setIsDistributted(true);
 										cashCoupon.setGetTime(new Date());
 										cashCoupon.setExpireTime(endTime);
@@ -882,8 +917,6 @@ public class TdPriceCountService {
 								}
 								// 如果还有金额没有退还，那就只能够退还不可提现余额了
 								if (total > 0) {
-									String username = order.getUsername();
-									TdUser user = tdUserService.findByUsername(username);
 									user.setUnCashBalance(user.getUnCashBalance() + total);
 									user.setBalance(user.getBalance() + total);
 									tdUserService.save(user);
